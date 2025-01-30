@@ -14,9 +14,9 @@ export const Colors = {
     yellow: "#F1AC16",
     base: "#F0F0F0",
     background: "#FFFFFF",
-    background_secondary: "#E9E9E9",
+    "background-variant": "#E9E9E9",
     foreground: "#000000",
-    foreground_secondary: "#6D6D6D",
+    "foreground-variant": "#6D6D6D",
     border: "#D6D6D6",
   },
   dark: {
@@ -27,9 +27,9 @@ export const Colors = {
     yellow: "#F1AC16",
     base: "#000000",
     background: "#1C1C1C",
-    background_secondary: "#444444",
+    "background-variant": "#444444",
     foreground: "#FFFFFF",
-    foreground_secondary: "#C2C2C2",
+    "foreground-variant": "#C2C2C2",
     border: "#272727",
   },
 };

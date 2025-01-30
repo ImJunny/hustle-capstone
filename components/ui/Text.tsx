@@ -25,7 +25,7 @@ export default function Text({
   return (
     <NativeText
       style={[
-        { color: textColor, fontFamily: `Inter_${weight}` },
+        { color: textColor, fontFamily: `Inter-${weight}` },
         fontSizeStyles[size],
         style,
       ]}

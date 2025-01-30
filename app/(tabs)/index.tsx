@@ -18,7 +18,7 @@ export default function HomeScreen() {
       }
     >
       <View style={styles.titleContainer}>
-        <Text size="2xl" style={{ fontFamily: "Lexend_bold" }}>
+        <Text size="2xl" style={{ fontFamily: "Lexend-bold" }}>
           Hustle
         </Text>
         <Text size="lg">Large text is this.</Text>

@@ -3,7 +3,7 @@ import View from "@/components/ui/View";
 
 export default function Badge({ children, style }: ViewProps) {
   return (
-    <View style={[styles.badgeContainer, style]} color="background_secondary">
+    <View style={[styles.badgeContainer, style]} color="background-variant">
       {children}
     </View>
   );

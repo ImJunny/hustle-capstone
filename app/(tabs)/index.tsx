@@ -1,9 +1,10 @@
-import { Image, StyleSheet, Platform } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
+import { Image, StyleSheet } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import Text from "@/components/ui/Text";
+import Icon from "@/components/ui/Icon";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import View from "@/components/ui/View";
 
 export default function HomeScreen() {
   return (
@@ -16,49 +17,30 @@ export default function HomeScreen() {
         />
       }
     >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText size="xl">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText size="lg">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText size="xl">app/(tabs)/index.tsx</ThemedText> to see
-          changes. Press{" "}
-          <ThemedText size="xl">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12",
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText size="sm">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText size="lg">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText size="xl">npm run reset-project</ThemedText> to get a
-          fresh <ThemedText size="xl">app</ThemedText> directory. This will move
-          the current <ThemedText size="xl">app</ThemedText> to{" "}
-          <ThemedText size="xl">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text size="2xl" style={{ fontFamily: "Lexend_bold" }}>
+          Hustle
+        </Text>
+        <Text size="lg">Large text is this.</Text>
+        <Text size="md">Hustle</Text>
+        <Badge>
+          <Icon name="star" size="xs" />
+          <Text size="sm" weight="semibold">
+            4.5/5
+          </Text>
+        </Badge>
+        <Button color="black">
+          <Text weight="semibold" color="background">
+            Home
+          </Text>
+        </Button>
+      </View>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },

@@ -1,6 +1,7 @@
 import {
   DarkTheme,
   DefaultTheme,
+  Theme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -23,16 +24,6 @@ export default function RootLayout() {
     "Inter-semibold": require("../assets/fonts/Inter-SemiBold.ttf"),
     "Inter-bold": require("../assets/fonts/Inter-Bold.ttf"),
   });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

@@ -1,43 +1,35 @@
 // This file is a fallback for using MaterialIcons on Android and web.
 
+import { TColors } from "@/constants/Colors";
+import { IconSizes, TIconSizes } from "@/constants/Sizes";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
 import { SymbolWeight } from "expo-symbols";
 import React from "react";
 import { OpaqueColorValue, StyleProp, TextStyle } from "react-native";
 
 type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
+type IconProps = {
+  name: IconSymbolName;
+  size?: TIconSizes;
+  color?: TColors;
+  style?: StyleProp<TextStyle>;
+  weight?: SymbolWeight;
+};
 
 export default function Icon({
   name,
   size = "md",
-  color = "black",
+  color = "foreground",
   style,
-}: {
-  name: IconSymbolName;
-  size?: keyof typeof iconSizeStyles;
-  color?: string | OpaqueColorValue;
-  style?: StyleProp<TextStyle>;
-  weight?: SymbolWeight;
-}) {
+}: IconProps) {
+  const iconColor = useThemeColor(color);
+
   return (
-    <Ionicons name={name} style={[iconSizeStyles[size], style]} color={color} />
+    <Ionicons
+      name={name}
+      style={[{ fontSize: IconSizes[size] }, style]}
+      color={iconColor}
+    />
   );
 }
-
-const iconSizeStyles = {
-  xs: {
-    fontSize: 12,
-  },
-  sm: {
-    fontSize: 16,
-  },
-  md: {
-    fontSize: 28,
-  },
-  lg: {
-    fontSize: 40,
-  },
-  xl: {
-    fontSize: 44,
-  },
-};

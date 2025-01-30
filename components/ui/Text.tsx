@@ -7,10 +7,11 @@ import {
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
+import { FontSizes, TFontSizes } from "@/constants/Sizes";
 
 export type ThemedTextProps = TextProps & {
   color?: TColors;
-  size?: keyof typeof fontSizeStyles;
+  size?: TFontSizes;
   weight?: "normal" | "semibold" | "bold";
 };
 
@@ -25,29 +26,14 @@ export default function Text({
   return (
     <NativeText
       style={[
-        { color: textColor, fontFamily: `Inter-${weight}` },
-        fontSizeStyles[size],
+        {
+          color: textColor,
+          fontSize: FontSizes[size],
+          fontFamily: `Inter${weight}`,
+        },
         style,
       ]}
       {...rest}
     />
   );
 }
-
-const fontSizeStyles = StyleSheet.create({
-  sm: {
-    fontSize: 14,
-  },
-  md: {
-    fontSize: 16,
-  },
-  lg: {
-    fontSize: 18,
-  },
-  xl: {
-    fontSize: 20,
-  },
-  "2xl": {
-    fontSize: 24,
-  },
-});

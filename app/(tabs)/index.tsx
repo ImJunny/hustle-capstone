@@ -1,12 +1,19 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, useColorScheme } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import Text from "@/components/ui/Text";
 import Icon from "@/components/ui/Icon";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import View from "@/components/ui/View";
+import IconButton from "@/components/ui/IconButton";
+import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import { useTheme } from "@react-navigation/native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function HomeScreen() {
+  const borderColor = useThemeColor("border");
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -21,8 +28,10 @@ export default function HomeScreen() {
         <Text size="2xl" style={{ fontFamily: "Lexend-bold" }}>
           Hustle
         </Text>
-        <Text size="lg">Large text is this.</Text>
-        <Text size="md">Hustle</Text>
+        <Text size="xl" weight="semibold">
+          You can mix different sizes and weights to text.
+        </Text>
+        <Text>This page is a demonstration of custom made components</Text>
         <Badge>
           <Icon name="star" size="xs" />
           <Text size="sm" weight="semibold">
@@ -30,10 +39,23 @@ export default function HomeScreen() {
           </Text>
         </Badge>
         <Button color="black">
-          <Text weight="semibold" color="background">
-            Home
+          <Text weight="semibold" color="white">
+            Click me!
           </Text>
         </Button>
+        <Icon name="home" />
+        <IconButton
+          name="home"
+          onPress={() => router.push("/(tabs)/explore")}
+        />
+        <View
+          style={{
+            height: 50,
+            borderWidth: 2,
+            borderRadius: 8,
+            borderColor: borderColor,
+          }}
+        />
       </View>
     </ParallaxScrollView>
   );
@@ -41,7 +63,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    alignItems: "center",
     gap: 8,
   },
   stepContainer: {

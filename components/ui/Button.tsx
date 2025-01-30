@@ -6,6 +6,7 @@ type ButtonProps = {
   children: React.ReactNode;
   color?: TColors;
   fullWidth?: boolean;
+  onPress?: () => void;
 } & ViewProps;
 
 export default function Button({
@@ -13,11 +14,13 @@ export default function Button({
   color = "foreground",
   fullWidth,
   style,
+  onPress,
 }: ButtonProps) {
   const buttonColor = useThemeColor(color);
 
   return (
     <TouchableOpacity
+      onPress={onPress}
       style={[
         styles.buttonContainer,
         { backgroundColor: buttonColor, width: fullWidth ? "100%" : "auto" },

@@ -1,5 +1,5 @@
 # Hustle Capstone
-Members: John Nguyen, Hassan Sessay, Daniel Dsouza
+Members: John Nguyen, Hassan Sesay, Daniel Dsouza
 ### What is _Hustle_?
 _Hustle_ is a social media platform that allows users to post and accept local/remote, one-and-done jobs. It takes inspiration from existing services such as Fiverr, TaskRabbit, Indeed, and more to promote a community of productivity. Unlike these services, Hustle aims to act as a social media platform, allowing users to both work _and_ hire, making it suitable for both those who want to work for others or hire others to complete tasks for them. Users can also list their own services to advertise their skills to potential employers. 
 

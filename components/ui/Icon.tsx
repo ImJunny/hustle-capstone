@@ -23,13 +23,13 @@ export default function Icon({
   color = "foreground",
   style,
 }: IconProps) {
-  const iconColor = useThemeColor(color);
+  const themeColor = useThemeColor();
 
   return (
     <Ionicons
       name={name}
       style={[{ fontSize: IconSizes[size] }, style]}
-      color={iconColor}
+      color={themeColor[color]}
     />
   );
 }

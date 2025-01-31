@@ -16,14 +16,14 @@ export default function Button({
   style,
   onPress,
 }: ButtonProps) {
-  const buttonColor = useThemeColor(color);
+  const themeColor = useThemeColor()
 
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[
         styles.buttonContainer,
-        { backgroundColor: buttonColor, width: fullWidth ? "100%" : "auto" },
+        { backgroundColor: themeColor.foreground, width: fullWidth ? "100%" : "auto" },
         style,
       ]}
     >

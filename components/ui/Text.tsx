@@ -1,8 +1,6 @@
 import {
   Text as NativeText,
   type TextProps,
-  StyleSheet,
-  TextStyle,
 } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -22,14 +20,14 @@ export default function Text({
   weight = "normal",
   ...rest
 }: ThemedTextProps) {
-  const textColor = useThemeColor(color);
+  const themeColor = useThemeColor();
   return (
     <NativeText
       style={[
         {
-          color: textColor,
+          color: themeColor[color],
           fontSize: FontSizes[size],
-          fontFamily: `Inter${weight}`,
+          fontFamily: `Inter-${weight}`,
         },
         style,
       ]}

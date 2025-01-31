@@ -1,4 +1,4 @@
-import { Image, StyleSheet, useColorScheme } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import Text from "@/components/ui/Text";
 import Icon from "@/components/ui/Icon";
@@ -7,21 +7,17 @@ import Button from "@/components/ui/Button";
 import View from "@/components/ui/View";
 import IconButton from "@/components/ui/IconButton";
 import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-import { useTheme } from "@react-navigation/native";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
 export default function HomeScreen() {
-  const borderColor = useThemeColor("border");
+  const themeColor = useThemeColor()
 
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
       headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
+        <ImagePlaceholder style={{position:"absolute"}}/>
       }
     >
       <View style={styles.titleContainer}>
@@ -31,7 +27,10 @@ export default function HomeScreen() {
         <Text size="xl" weight="semibold">
           You can mix different sizes and weights to text.
         </Text>
-        <Text>This page is a demonstration of custom made components</Text>
+        <Text size="lg">This page is a demonstration of custom made components.</Text>
+        <Text>This text is by default "md" size.</Text>
+        <Text size="sm">And it can get smaller.</Text>
+
         <Badge>
           <Icon name="star" size="xs" />
           <Text size="sm" weight="semibold">
@@ -53,7 +52,7 @@ export default function HomeScreen() {
             height: 50,
             borderWidth: 2,
             borderRadius: 8,
-            borderColor: borderColor,
+            borderColor: themeColor.border,
           }}
         />
       </View>
@@ -64,16 +63,5 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
+  }
 });

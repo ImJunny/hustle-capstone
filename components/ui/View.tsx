@@ -6,9 +6,9 @@ import {
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
 
-export type ViewProps = NativeViewProps & {
+export type ViewProps = {
   color?: TColors;
-};
+} & NativeViewProps;
 
 export default function View({
   style,

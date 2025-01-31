@@ -1,7 +1,4 @@
-import {
-  Text as NativeText,
-  type TextProps,
-} from "react-native";
+import { Text as NativeText, type TextProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
@@ -18,7 +15,7 @@ export default function Text({
   color = "foreground",
   size = "md",
   weight = "normal",
-  ...rest
+  ...props
 }: ThemedTextProps) {
   const themeColor = useThemeColor();
   return (
@@ -31,7 +28,7 @@ export default function Text({
         },
         style,
       ]}
-      {...rest}
+      {...props}
     />
   );
 }

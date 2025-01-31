@@ -16,7 +16,7 @@ export const Colors = {
     background: "#FFFFFF",
     "background-variant": "#E9E9E9",
     foreground: "#000000",
-    "foreground-variant": "#6D6D6D",
+    muted: "#6D6D6D",
     border: "#D6D6D6",
   },
   dark: {
@@ -29,7 +29,7 @@ export const Colors = {
     background: "#000000",
     "background-variant": "#444444",
     foreground: "#FFFFFF",
-    "foreground-variant": "#C2C2C2",
+    muted: "#C2C2C2",
     border: "#272727",
   },
 };

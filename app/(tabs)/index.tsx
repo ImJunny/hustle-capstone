@@ -7,54 +7,69 @@ import Button from "@/components/ui/Button";
 import View from "@/components/ui/View";
 import IconButton from "@/components/ui/IconButton";
 import { router } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import Input from "@/components/ui/Input";
 
 export default function HomeScreen() {
-  const themeColor = useThemeColor()
-
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <ImagePlaceholder style={{position:"absolute"}}/>
-      }
+      headerImage={<ImagePlaceholder style={{ position: "absolute" }} />}
     >
+      {/* Text demo */}
       <View style={styles.titleContainer}>
         <Text size="2xl" style={{ fontFamily: "Lexend-bold" }}>
           Hustle
         </Text>
-        <Text size="xl" weight="semibold">
-          You can mix different sizes and weights to text.
+        <Text size="2xl" weight="semibold">
+          Largest font size. (2xl)
         </Text>
-        <Text size="lg">This page is a demonstration of custom made components.</Text>
-        <Text>This text is by default "md" size.</Text>
-        <Text size="sm">And it can get smaller.</Text>
+        <Text size="xl">This is XL. (xl)</Text>
+        <Text size="lg">
+          This page is a demonstration of custom made components. (lg)
+        </Text>
+        <Text>Text is this size by default. (md)</Text>
+        <Text weight="bold">
+          Text weight options are normal (by default), semibold, and bold. This
+          is bold.
+        </Text>
+        <Text size="sm">And it can get smaller. (sm)</Text>
 
-        <Badge>
-          <Icon name="star" size="xs" />
-          <Text size="sm" weight="semibold">
-            4.5/5
-          </Text>
+        <Badge>Tag</Badge>
+        <Badge style={{ gap: 4 }}>
+          <Icon name="star" />
+          4.5/5
         </Badge>
-        <Button color="black">
-          <Text weight="semibold" color="white">
-            Click me!
-          </Text>
+
+        {/* Button demo */}
+
+        <Button
+          type="primary"
+          onPress={() => alert("Button pressed!")}
+          style={{ gap: 8 }}
+        >
+          <Icon name="person" size="lg" color="background" />
+          Click me!
         </Button>
+        <Button type="primary">Primary</Button>
+        <Button type="secondary">Secondary</Button>
+        <Button type="outline">Outline</Button>
+        <Button type="variant" isFullWidth>
+          Variant with isFullWidth
+        </Button>
+
+        {/* Icon & IconButton demo */}
+        <Icon name="home" size="sm" />
         <Icon name="home" />
+        <Icon name="home" size="lg" />
         <IconButton
           name="home"
+          size="xl"
           onPress={() => router.push("/(tabs)/explore")}
         />
-        <View
-          style={{
-            height: 50,
-            borderWidth: 2,
-            borderRadius: 8,
-            borderColor: themeColor.border,
-          }}
-        />
+
+        {/* Input demo */}
+        <Input placeholder="This is an input..." />
       </View>
     </ParallaxScrollView>
   );
@@ -63,5 +78,5 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     gap: 8,
-  }
+  },
 });

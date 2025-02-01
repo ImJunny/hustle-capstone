@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, ScrollView, StyleSheet } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import Text from "@/components/ui/Text";
 import Icon from "@/components/ui/Icon";
@@ -12,10 +12,7 @@ import Input from "@/components/ui/Input";
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={<ImagePlaceholder style={{ position: "absolute" }} />}
-    >
+    <ScrollView>
       {/* Text demo */}
       <View style={styles.titleContainer}>
         <Text size="2xl">Largest font size. (2xl)</Text>
@@ -66,12 +63,14 @@ export default function HomeScreen() {
         {/* Input demo */}
         <Input placeholder="This is an input..." />
       </View>
-    </ParallaxScrollView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
     gap: 8,
+    paddingVertical: 80,
+    paddingHorizontal: 20,
   },
 });

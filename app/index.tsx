@@ -1,3 +1,4 @@
+import View from "@/components/ui/View";
 import { Redirect } from "expo-router";
 
 export default function HomeScreen() {

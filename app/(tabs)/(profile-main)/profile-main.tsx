@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 export default function TabTwoScreen() {
   return (
     <View style={styles.titleContainer}>
-      <Text>Messages</Text>
+      <Text>Profile</Text>
       <Button onPress={() => router.push("/settings")}>Profile Main</Button>
     </View>
   );

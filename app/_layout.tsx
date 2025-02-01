@@ -12,7 +12,12 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "react-native";
-
+import { createStackNavigator } from "@react-navigation/stack";
+import TabLayout from "./(tabs)/_layout";
+import ExternalScreen from "./external";
+import OtherScreen from "./other";
+import * as SystemUI from "expo-system-ui";
+SystemUI.setBackgroundColorAsync("black");
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -39,9 +44,42 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        {/* <Stack.Screen
+          name="external"
+          options={{
+            animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
+          name="other"
+          options={{ animation: "slide_from_right" }}
+        /> */}
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
+
+  // const Stack = createStackNavigator();
+  // return (
+  //   <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+  //     <Stack.Navigator>
+  //       <Stack.Screen
+  //         name="(tabs)"
+  //         options={{ headerShown: false }}
+  //         component={TabLayout}
+  //       />
+  //       <Stack.Screen
+  //         name="external"
+  //         component={ExternalScreen}
+  //         options={{ animation: "slide_from_right" }}
+  //       />
+  //       <Stack.Screen
+  //         name="other"
+  //         component={OtherScreen}
+  //         options={{ animation: "slide_from_right" }}
+  //       />
+  //     </Stack.Navigator>
+  //     <StatusBar style="auto" />
+  //   </ThemeProvider>
+  // );
 }

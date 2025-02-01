@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
@@ -7,18 +7,16 @@ import Icon from "@/components/ui/Icon";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
+import TabBar from "@/components/ui/TabBar";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      screenOptions={({ route }) => ({
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].foreground,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-      })}
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <TabBar {...props} />}
     >
       <Tabs.Screen
         name="(home)"
@@ -35,7 +33,7 @@ export default function TabLayout() {
         options={{
           title: "Explore",
           tabBarIcon: ({ focused }) => (
-            <Icon name={focused ? "chatbox" : "chatbox-outline"} size="xl" />
+            <Icon name={focused ? "search" : "search-outline"} size="xl" />
           ),
         }}
       />

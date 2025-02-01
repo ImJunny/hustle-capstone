@@ -1,5 +1,6 @@
 export type TFontSizes = keyof typeof FontSizes;
 export const FontSizes = {
+  xs: 10,
   sm: 12,
   md: 14,
   lg: 18,

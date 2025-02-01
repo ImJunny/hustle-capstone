@@ -18,12 +18,7 @@ export default function HomeScreen() {
     >
       {/* Text demo */}
       <View style={styles.titleContainer}>
-        <Text size="2xl" style={{ fontFamily: "Lexend-bold" }}>
-          Hustle
-        </Text>
-        <Text size="2xl" weight="semibold">
-          Largest font size. (2xl)
-        </Text>
+        <Text size="2xl">Largest font size. (2xl)</Text>
         <Text size="xl">This is XL. (xl)</Text>
         <Text size="lg">
           This page is a demonstration of custom made components. (lg)
@@ -63,9 +58,9 @@ export default function HomeScreen() {
         <Icon name="home" />
         <Icon name="home" size="lg" />
         <IconButton
-          name="home"
+          name="chevron-forward"
           size="xl"
-          onPress={() => router.push("/(tabs)/explore")}
+          onPress={() => router.push("/profile")}
         />
 
         {/* Input demo */}

@@ -4,11 +4,13 @@ import { Collapsible } from "@/components/Collapsible";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
+import Button from "@/components/ui/Button";
+import { router } from "expo-router";
 
 export default function TabTwoScreen() {
   return (
     <>
-      <View style={styles.titleContainer}>
+      <View>
         <Text>Explore</Text>
       </View>
       <Text>This app includes example code to help you get started.</Text>
@@ -21,16 +23,3 @@ export default function TabTwoScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-});

@@ -50,7 +50,7 @@ export default function Button({
 
   return (
     <TouchableOpacity
-      onPress={props.onPress}
+      {...props}
       style={[
         styles.buttonContainer,
         {

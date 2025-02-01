@@ -3,20 +3,20 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import "react-native-reanimated";
 import ExploreScreen from "./explore";
-import JobPostScreen from "../(home,explore,jobs,messages,profile-main)/job-post";
-import ProfileScreen from "../(home,explore,jobs,messages,profile-main)/profile";
-import ChatScreen from "../(home,explore,jobs,messages,profile-main)/chat";
-import ExternalScreen from "../../external";
-import { Stack } from "expo-router";
+import JobPostScreen from "../../job-post";
+import ProfileScreen from "../../profile";
+import ChatScreen from "../../chat";
+import { Slot, Stack } from "expo-router";
 
 export default function Layout() {
   return (
-    <Stack>
-      <Stack.Screen name="explore" />
-      <Stack.Screen name="chat" />
-      <Stack.Screen name="job-post" />
-      <Stack.Screen name="profile" />
-    </Stack>
+    <Slot />
+    // <Stack>
+    //   <Stack.Screen name="explore" options={{ headerShown: false }} />
+    //   <Stack.Screen name="chat" />
+    //   <Stack.Screen name="job-post" options={{ headerShown: false }} />
+    //   <Stack.Screen name="profile" />
+    // </Stack>
   );
 
   // const Stack = createStackNavigator();

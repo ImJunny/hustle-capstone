@@ -5,7 +5,7 @@ import React from "react";
 import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 
-export default function JobPost() {
+export default function JobPostScreen() {
   return (
     <View>
       <Text>A job post</Text>

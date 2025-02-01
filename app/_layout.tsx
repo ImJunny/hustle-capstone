@@ -11,17 +11,24 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { Easing, useColorScheme } from "react-native";
+import {
+  createStackNavigator,
+  StackNavigationOptions,
+} from "@react-navigation/stack";
 import TabLayout from "./(tabs)/_layout";
-import ExternalScreen from "./external";
-import OtherScreen from "./other";
 import * as SystemUI from "expo-system-ui";
-SystemUI.setBackgroundColorAsync("black");
+import JobPostScreen from "./job-post";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import ProfileScreen from "./profile";
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const themeColor = useThemeColor();
+  SystemUI.setBackgroundColorAsync(themeColor.background);
+
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     "Lexend-bold": require("../assets/fonts/Lexend-Bold.ttf"),
@@ -44,16 +51,20 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* <Stack.Screen
-          name="external"
+        <Stack.Screen
+          name="chat"
           options={{
             animation: "slide_from_right",
           }}
         />
         <Stack.Screen
-          name="other"
+          name="job-post"
           options={{ animation: "slide_from_right" }}
-        /> */}
+        />
+        <Stack.Screen
+          name="profile"
+          options={{ animation: "slide_from_right" }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -69,13 +80,13 @@ export default function RootLayout() {
   //         component={TabLayout}
   //       />
   //       <Stack.Screen
-  //         name="external"
-  //         component={ExternalScreen}
+  //         name="job-post"
+  //         component={JobPostScreen}
   //         options={{ animation: "slide_from_right" }}
   //       />
   //       <Stack.Screen
-  //         name="other"
-  //         component={OtherScreen}
+  //         name="profile"
+  //         component={ProfileScreen}
   //         options={{ animation: "slide_from_right" }}
   //       />
   //     </Stack.Navigator>

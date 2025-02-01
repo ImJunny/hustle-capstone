@@ -13,41 +13,41 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].foreground,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {},
-        }),
-      }}
+      })}
     >
       <Tabs.Screen
         name="(home)"
         options={{
           href: "/(tabs)/(home)",
           title: "Home",
-          tabBarIcon: ({ color }) => <Icon name="home" size="xl" />,
+          tabBarIcon: ({ focused }) => (
+            <Icon name={focused ? "home" : "home-outline"} size="xl" />
+          ),
         }}
       />
       <Tabs.Screen
         name="(explore)"
         options={{
           title: "Explore",
-          tabBarIcon: ({ color }) => <Icon name="search" size="xl" />,
+          tabBarIcon: ({ focused }) => (
+            <Icon name={focused ? "chatbox" : "chatbox-outline"} size="xl" />
+          ),
         }}
       />
       <Tabs.Screen
         name="(jobs)"
         options={{
           title: "Job Center",
-          tabBarIcon: ({ color }) => (
-            <Icon name="calendar-clear-outline" size="xl" />
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name={focused ? "calendar-clear" : "calendar-clear-outline"}
+              size="xl"
+            />
           ),
         }}
       />
@@ -55,34 +55,21 @@ export default function TabLayout() {
         name="(messages)"
         options={{
           title: "Messages",
-          tabBarIcon: ({ color }) => <Icon name="chatbox-outline" size="xl" />,
+          tabBarIcon: ({ focused }) => (
+            <Icon name={focused ? "chatbox" : "chatbox-outline"} size="xl" />
+          ),
         }}
       />
       <Tabs.Screen
         name="(profile-main)"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <Icon name="person-circle-outline" size="xl" />
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name={focused ? "person-circle" : "person-circle-outline"}
+              size="xl"
+            />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="(profile-main))/chat"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="(profile-main))/job-post"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="(profile-main))/profile"
-        options={{
-          href: null,
         }}
       />
     </Tabs>

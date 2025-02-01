@@ -20,6 +20,7 @@ export default function TabTwoScreen() {
           library to create a waving hand animation.
         </Text>
       </Collapsible>
+      <Button onPress={() => router.push("/job-post")}>Go to a job post</Button>
     </>
   );
 }

@@ -9,7 +9,6 @@ export default function Layout() {
       <Stack.Screen name="chat" />
       <Stack.Screen name="job-post" />
       <Stack.Screen name="profile" />
-      <Stack.Screen name="apage" />
     </Stack>
   );
 }

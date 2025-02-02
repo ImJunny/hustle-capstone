@@ -1,11 +1,16 @@
 import { Image, ImageProps } from "react-native";
 
-type ImagePlaceholderProps = {
-    size?:number
-} & ImageProps
-
-export default function ImagePlaceholder({size=600}:ImagePlaceholderProps){
-    return (
-        <Image source={{uri:`https://picsum.photos/${size}`}} style={{height:"100%", width:"100%"}}/>
-    )
+export default function ImagePlaceholder({
+  style,
+  width = 200,
+  height = 200,
+}: ImageProps) {
+  return (
+    <Image
+      source={{
+        uri: `https://picsum.photos/${width}/${height}?${Math.random()}`,
+      }}
+      style={[{ height, width }, style]}
+    />
+  );
 }

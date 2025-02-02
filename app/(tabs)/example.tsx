@@ -8,6 +8,9 @@ import { router } from "expo-router";
 import Input from "@/components/ui/Input";
 import ScrollView from "@/components/ui/ScrollView";
 import View from "@/components/ui/View";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
+import Separator from "@/components/ui/Separator";
 
 export default function ExampleScreen() {
   return (
@@ -24,16 +27,39 @@ export default function ExampleScreen() {
           Text weight options are normal (by default), semibold, and bold. This
           is bold.
         </Text>
-        <Text size="sm">And it can get smaller. (sm)</Text>
+        <Text size="sm" color="muted">
+          And it can get smaller. (sm) This text is in muted color, which is a
+          lighter foreground.
+        </Text>
+        <Separator />
 
+        {/* ImagePlaceholder & ImageBackgroundPlaceholder demo */}
+        <ImagePlaceholder width={150} height={150} />
+        <ImageBackgroundPlaceholder
+          width={150}
+          height={150}
+          style={{ justifyContent: "center" }}
+        >
+          <Text
+            size="xl"
+            weight="semibold"
+            color="white"
+            style={{ textAlign: "center" }}
+          >
+            Text
+          </Text>
+        </ImageBackgroundPlaceholder>
+        <Separator />
+
+        {/* Badge demo */}
         <Badge>Tag</Badge>
         <Badge style={{ gap: 4 }}>
           <Icon name="star" />
           4.5/5
         </Badge>
+        <Separator />
 
         {/* Button demo */}
-
         <Button
           type="primary"
           onPress={() => alert("Button pressed!")}
@@ -48,6 +74,7 @@ export default function ExampleScreen() {
         <Button type="variant" isFullWidth>
           Variant with isFullWidth
         </Button>
+        <Separator />
 
         {/* Icon & IconButton demo */}
         <Icon name="home" size="sm" />
@@ -58,6 +85,7 @@ export default function ExampleScreen() {
           size="xl"
           onPress={() => router.push("/profile")}
         />
+        <Separator />
 
         {/* Input demo */}
         <Input placeholder="This is an input..." type="default" />

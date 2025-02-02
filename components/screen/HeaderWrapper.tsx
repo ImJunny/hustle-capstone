@@ -1,5 +1,5 @@
 import React from "react";
-import View, { ViewProps } from "./View";
+import View, { ViewProps } from "../ui/View";
 import { Platform, StatusBar, StyleSheet } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";

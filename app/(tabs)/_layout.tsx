@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import Icon from "@/components/ui/Icon";
-import TabBar from "@/components/ui/TabBar";
-import HeaderWrapper from "@/components/ui/HeaderWrapper";
+import TabBar from "@/components/screen/TabBar";
+import HeaderWrapper from "@/components/screen/HeaderWrapper";
 import ExampleHeader from "@/components/headers/ExampleHeader";
 
 /* 

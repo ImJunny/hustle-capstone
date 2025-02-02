@@ -1,5 +1,5 @@
 import React from "react";
-import HeaderWrapper from "../ui/HeaderWrapper";
+import HeaderWrapper from "../screen/HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 

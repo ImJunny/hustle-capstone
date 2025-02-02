@@ -1,7 +1,7 @@
 import { useLinkBuilder } from "@react-navigation/native";
 import { PlatformPressable } from "@react-navigation/elements";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import View from "./View";
+import View from "../ui/View";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 export default function TabBar({

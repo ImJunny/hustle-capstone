@@ -9,9 +9,9 @@ export const FontSizes = {
   xs: 10,
   sm: 12,
   md: 14,
-  lg: 18,
-  xl: 20,
-  "2xl": 24,
+  lg: 16,
+  xl: 18,
+  "2xl": 22,
 };
 
 export type TIconSizes = keyof typeof IconSizes;

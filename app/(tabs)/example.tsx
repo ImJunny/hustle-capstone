@@ -1,18 +1,19 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import Icon from "@/components/ui/Icon";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
-import View from "@/components/ui/View";
 import IconButton from "@/components/ui/IconButton";
 import { router } from "expo-router";
 import Input from "@/components/ui/Input";
+import ScrollView from "@/components/ui/ScrollView";
+import View from "@/components/ui/View";
 
 export default function ExampleScreen() {
   return (
     <ScrollView>
-      {/* Text demo */}
-      <View style={styles.titleContainer}>
+      <View style={styles.container}>
+        {/* Text demo */}
         <Text size="2xl">Largest font size. (2xl)</Text>
         <Text size="xl">This is XL. (xl)</Text>
         <Text size="lg">
@@ -59,16 +60,18 @@ export default function ExampleScreen() {
         />
 
         {/* Input demo */}
-        <Input placeholder="This is an input..." />
+        <Input placeholder="This is an input..." type="default" />
+        <Input placeholder="This is an input..." type="outline" />
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
     gap: 8,
-    paddingVertical: 80,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 100,
   },
 });

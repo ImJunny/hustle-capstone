@@ -1,12 +1,8 @@
 import { useLinkBuilder } from "@react-navigation/native";
 import { PlatformPressable } from "@react-navigation/elements";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Text from "./Text";
 import View from "./View";
-import { useSegments } from "expo-router";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useEffect } from "react";
-import { LayoutAnimation } from "react-native";
 
 export default function TabBar({
   state,
@@ -16,25 +12,14 @@ export default function TabBar({
   const { buildHref } = useLinkBuilder();
   const themeColor = useThemeColor();
 
-  // const segments = useSegments();
-  // const hiddenBarScreens = ["chat", "job-post", "profile"];
-  // const segmentSet = new Set(segments);
-  // const hide = hiddenBarScreens.some((screen: any) => segmentSet.has(screen));
-
-  // useEffect(() => {
-  //   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  // }, [segments]);
-
-  // if (hide) return null;
-
   return (
     <View
       style={{
         flexDirection: "row",
         backgroundColor: themeColor.background,
-        height: 64,
+        height: 56,
         borderColor: themeColor.border,
-        borderTopWidth: 2,
+        borderTopWidth: 1,
       }}
     >
       {state.routes.map((route: any, index: any) => {
@@ -84,13 +69,6 @@ export default function TabBar({
                 color: "",
                 size: 0,
               })}
-            <Text
-              size="xs"
-              weight={isFocused ? "bold" : "normal"}
-              color={isFocused ? "foreground" : "muted"}
-            >
-              {label}
-            </Text>
           </PlatformPressable>
         );
       })}

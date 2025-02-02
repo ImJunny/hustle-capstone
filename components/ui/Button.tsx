@@ -33,7 +33,7 @@ export default function Button({
 
   const textColor = type === "primary" ? "background" : "foreground";
   const borderColor = type === "outline" ? themeColor["border"] : "transparent";
-  const borderWidth = type === "outline" ? 2 : 0;
+  const borderWidth = type === "outline" ? 1 : 0;
 
   // If child is a string, use predefined Text component. Otherwise, use children as is.
   const processChildren = React.Children.map(children, (child) => {

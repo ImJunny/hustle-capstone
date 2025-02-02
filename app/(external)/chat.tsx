@@ -1,14 +1,14 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router } from "expo-router";
 import Button from "@/components/ui/Button";
+import { router } from "expo-router";
 
-export default function ExploreScreen() {
+export default function ChatScreen() {
   return (
     <View>
-      <Text>Explore</Text>
-      <Button onPress={() => router.push("/job-post")}>Go to a job post</Button>
+      <Text>A chat room</Text>
+      <Button onPress={() => router.push("/profile")}>Go to a profile</Button>
     </View>
   );
 }

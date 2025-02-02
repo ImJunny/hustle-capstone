@@ -4,11 +4,11 @@ import React from "react";
 import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 
-export default function ExploreScreen() {
+export default function JobPostScreen() {
   return (
     <View>
-      <Text>Explore</Text>
-      <Button onPress={() => router.push("/job-post")}>Go to a job post</Button>
+      <Text>A job post</Text>
+      <Button onPress={() => router.push("/profile")}>Go to a profile</Button>
     </View>
   );
 }

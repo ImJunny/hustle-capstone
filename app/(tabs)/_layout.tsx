@@ -15,7 +15,7 @@ export default function TabLayout() {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tabs.Screen
-        name="(example)"
+        name="example"
         options={{
           title: "Example",
           tabBarIcon: ({ focused }) => (
@@ -24,9 +24,8 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(home)"
+        name="index"
         options={{
-          href: "/(tabs)/(home)",
           title: "Home",
           tabBarIcon: ({ focused }) => (
             <Icon name={focused ? "home" : "home-outline"} size="xl" />
@@ -34,7 +33,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(explore)"
+        name="explore"
         options={{
           title: "Explore",
           tabBarIcon: ({ focused }) => (
@@ -43,7 +42,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(jobs)"
+        name="jobs"
         options={{
           title: "Job Center",
           tabBarIcon: ({ focused }) => (
@@ -55,7 +54,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(messages)"
+        name="messages"
         options={{
           title: "Messages",
           tabBarIcon: ({ focused }) => (
@@ -64,7 +63,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(profile-main)"
+        name="profile-main"
         options={{
           title: "Profile",
           tabBarIcon: ({ focused }) => (

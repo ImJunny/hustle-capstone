@@ -1,23 +1,28 @@
-import { Tabs, useSegments } from "expo-router";
+import { Tabs } from "expo-router";
 import React from "react";
-import { Platform } from "react-native";
-
-import { HapticTab } from "@/components/HapticTab";
 import Icon from "@/components/ui/Icon";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "react-native";
 import TabBar from "@/components/ui/TabBar";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
+/* 
+  Tab bar elements are based off files in the (tabs) directory. 
+  This convention is provided by Expo Router. The default tab bar 
+  is overridden by a custom component called TabBar.
+ */
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <TabBar {...props} />}
     >
+      <Tabs.Screen
+        name="(example)"
+        options={{
+          title: "Example",
+          tabBarIcon: ({ focused }) => (
+            <Icon name={focused ? "help" : "help-outline"} size="xl" />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="(home)"
         options={{

@@ -1,4 +1,3 @@
-import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";

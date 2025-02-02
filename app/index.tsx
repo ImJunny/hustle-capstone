@@ -2,5 +2,5 @@ import View from "@/components/ui/View";
 import { Redirect } from "expo-router";
 
 export default function HomeScreen() {
-  return <Redirect href="/(tabs)/(home)" />;
+  return <Redirect href="/example" />;
 }

@@ -5,25 +5,17 @@ import React from "react";
 import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 
-export default function TabTwoScreen() {
+export default function JobsScreen() {
   return (
-    <View style={styles.titleContainer}>
+    <View style={styles.container}>
       <Text>Job Center</Text>
-      <Button onPress={() => router.push("/job-post")}>Go to a job post</Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
+  container: {
     marginTop: 100,
-    flexDirection: "row",
-    gap: 8,
+    paddingVertical: 20,
   },
 });

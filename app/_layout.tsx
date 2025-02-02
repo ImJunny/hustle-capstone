@@ -1,7 +1,6 @@
 import {
   DarkTheme,
   DefaultTheme,
-  Theme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -11,20 +10,19 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { Easing, useColorScheme } from "react-native";
-import {
-  createStackNavigator,
-  StackNavigationOptions,
-} from "@react-navigation/stack";
-import TabLayout from "./(tabs)/_layout";
+import { useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
-import JobPostScreen from "./job-post";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import ProfileScreen from "./profile";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+/*
+  This is the root layout which includes a stack from Expo Router.
+  This determines the behavior of screens where (tabs) routes stack 
+  logic is separate from (external) routes. This allows for customization 
+  for both stacks like animation, headers, etc..
+*/
 export default function RootLayout() {
   const themeColor = useThemeColor();
   SystemUI.setBackgroundColorAsync(themeColor.background);
@@ -47,50 +45,17 @@ export default function RootLayout() {
     return null;
   }
 
+  /* 
+    ThemeProvider sets theme colors of the app, but this is not the main
+    colors used. The relevant colors can be found in the constants folder.
+  */
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="chat"
-          options={{
-            animation: "slide_from_right",
-          }}
-        />
-        <Stack.Screen
-          name="job-post"
-          options={{ animation: "slide_from_right" }}
-        />
-        <Stack.Screen
-          name="profile"
-          options={{ animation: "slide_from_right" }}
-        />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(external)" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
-
-  // const Stack = createStackNavigator();
-  // return (
-  //   <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-  //     <Stack.Navigator>
-  //       <Stack.Screen
-  //         name="(tabs)"
-  //         options={{ headerShown: false }}
-  //         component={TabLayout}
-  //       />
-  //       <Stack.Screen
-  //         name="job-post"
-  //         component={JobPostScreen}
-  //         options={{ animation: "slide_from_right" }}
-  //       />
-  //       <Stack.Screen
-  //         name="profile"
-  //         component={ProfileScreen}
-  //         options={{ animation: "slide_from_right" }}
-  //       />
-  //     </Stack.Navigator>
-  //     <StatusBar style="auto" />
-  //   </ThemeProvider>
-  // );
 }

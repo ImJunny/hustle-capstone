@@ -1,10 +1,9 @@
 import React from "react";
 import View, { ViewProps } from "../ui/View";
-import { Platform, StatusBar, StyleSheet } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
 import SafeAreaView from "../ui/SafeAreaView";
-import Text from "../ui/Text";
 
 type HeaderWrapperProps = {
   type?: "default" | "custom";

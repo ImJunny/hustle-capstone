@@ -7,8 +7,8 @@ import Button from "@/components/ui/Button";
 export default function ExploreScreen() {
   return (
     <View>
-      <Text>Explore</Text>
-      <Button onPress={() => router.push("/job-post")}>Go to a job post</Button>
+      <Text>Explore page/Search page!</Text>
+      <Button onPress={() => router.push("/job-post")}>~Go to a job post~</Button>
     </View>
   );
 }

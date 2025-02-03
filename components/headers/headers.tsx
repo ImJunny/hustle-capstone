@@ -1,12 +1,12 @@
 import React from "react";
-import HeaderWrapper from "../screen/HeaderWrapper";
+import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
+import { router } from "expo-router";
 
-export default function ExampleHeader() {
+export function ExampleHeader() {
   return (
     <HeaderWrapper
-      type="default"
       options={{
         left: (
           <Text
@@ -23,6 +23,22 @@ export default function ExampleHeader() {
             name="information-circle-outline"
             size="xl"
             onPress={() => alert("Information clicked!")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
+export function BackHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <IconButton
+            name="arrow-back"
+            size="xl"
+            onPress={() => router.back()}
           />
         ),
       }}

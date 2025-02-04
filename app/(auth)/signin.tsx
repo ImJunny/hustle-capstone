@@ -6,7 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { StyleSheet } from "react-native";
 
 export default function SignInScreen() {
@@ -53,9 +53,9 @@ export default function SignInScreen() {
         </View>
         <Text color="muted" style={styles.bottomText}>
           Don't have an account?{" "}
-          <Text weight="bold" onPress={() => router.replace("/signup")}>
-            Sign Up.
-          </Text>
+          <Link href="/signup" replace>
+            <Text weight="bold">Sign Up.</Text>
+          </Link>
         </Text>
       </View>
     </SafeAreaView>

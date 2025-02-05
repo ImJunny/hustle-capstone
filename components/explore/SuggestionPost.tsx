@@ -3,6 +3,8 @@ import { View, StyleSheet, ImageSourcePropType } from "react-native";
 import Text from "@/components/ui/Text";
 import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import Badge from "../ui/Badge";
+import Icon from "../ui/Icon";
 
 type SuggestionPostProps = {
   imageSource: ImageSourcePropType;
@@ -41,19 +43,17 @@ export default function SuggestionPost({
         >
           {title}
         </Text>
-        <View style={styles.tagRow}>
-          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+        <View style={styles.badgeRow}>
+          <Badge>
+            <Icon name="logo-usd" />
             {rate}
-          </Text>
-          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+          </Badge>
+          <Badge style={{ gap: 4 }}>
+            <Icon name="star" />
             {rating}
-          </Text>
-          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
-            {tags.join(", ")}
-          </Text>
-          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
-            {distance}
-          </Text>
+          </Badge>
+          <Badge>{tags.join(", ")}</Badge>
+          <Badge>{distance}</Badge>
         </View>
       </View>
     </View>
@@ -69,34 +69,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   entryImage: {
-    width: 100,
-    height: 96,
+    width: 96,
+    height: "100%",
     marginRight: 12,
-    borderBottomWidth: 1,
   },
   entryContent: {
     flex: 1,
   },
-  tagRow: {
+  badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 4,
-    color: "black",
+    gap: 8,
   },
   title: {
-    paddingTop: 6,
-  },
-  tag: {
-    backgroundColor: "#444444",
-    borderRadius: 50,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 8,
-    marginBottom: 6,
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    minWidth: 50,
-    alignSelf: "center",
+    paddingVertical: 2,
   },
 });

@@ -7,7 +7,6 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import SuggestionPost from "@/components/explore/SuggestionPost";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
 const categories = [
   { id: 1, title: "Technology" },
@@ -19,8 +18,8 @@ const suggestions = [
   {
     id: 1,
     title: "Yard Work",
-    rate: "$50-150",
-    rating: "⭐ 4.5/5",
+    rate: "50-150",
+    rating: "4.5/5",
     tags: ["Yardwork"],
     distance: "within 10 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -28,8 +27,8 @@ const suggestions = [
   {
     id: 2,
     title: "Plumbing",
-    rate: "$215-250",
-    rating: "⭐ 5/5",
+    rate: "215-250",
+    rating: "5/5",
     tags: ["Plumbing"],
     distance: "within 15 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -37,8 +36,8 @@ const suggestions = [
   {
     id: 3,
     title: "Painting",
-    rate: "$75-100",
-    rating: "⭐ 2/5",
+    rate: "75-100",
+    rating: "2/5",
     tags: ["Painting"],
     distance: "within 20 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -46,8 +45,8 @@ const suggestions = [
   {
     id: 4,
     title: "Shopping",
-    rate: "$50-125",
-    rating: "⭐ 3/5",
+    rate: "50-125",
+    rating: "3/5",
     tags: ["Shopping"],
     distance: "within 25 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -62,6 +61,7 @@ export default function ExploreScreen() {
           weight="semibold"
           color="white"
           style={{ marginBottom: 8 }}
+          onPress={() => router.push("/exploreSearch")}
         >
           Top Categories
         </Text>

@@ -10,7 +10,7 @@ type CategoryCardProps = {
 
 export default function CategoryCard({ title, style }: CategoryCardProps) {
   return (
-    <View style={[{ marginRight: 10 }, style]}>
+    <View style={{ marginRight: 10 }}>
       <ImageBackgroundPlaceholder
         width={100}
         height={100}
@@ -21,5 +21,3 @@ export default function CategoryCard({ title, style }: CategoryCardProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

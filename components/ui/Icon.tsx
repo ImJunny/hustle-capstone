@@ -8,7 +8,7 @@ import { SymbolWeight } from "expo-symbols";
 import React from "react";
 import { OpaqueColorValue, StyleProp, TextStyle } from "react-native";
 
-type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
+export type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
 type IconProps = {
   name: IconSymbolName;
   size?: TIconSizes;

@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
-import { IconSizes, TIconSizes } from "@/constants/Sizes";
+import { TIconSizes } from "@/constants/Sizes";
 import { TColors } from "@/constants/Colors";
-import Icon from "./Icon";
+import Icon, { IconSymbolName } from "./Icon";
 
-type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
 type IconButtonProps = {
   name: IconSymbolName;
   size?: TIconSizes;

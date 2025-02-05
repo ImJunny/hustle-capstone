@@ -12,6 +12,7 @@ export const FontSizes = {
   lg: 16,
   xl: 18,
   "2xl": 22,
+  "3xl": 30,
 };
 
 export type TIconSizes = keyof typeof IconSizes;

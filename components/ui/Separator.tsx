@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "./View";
 
 export default function Separator({
@@ -5,7 +6,13 @@ export default function Separator({
   color = "border",
   ...props
 }: ViewProps) {
+  const themeColor = useThemeColor();
+  const backgroundColor = themeColor[color];
+
   return (
-    <View color={color} style={[{ height: 1, flex: 1 }, style]} {...props} />
+    <View
+      style={[{ height: 1, width: "100%", backgroundColor }, style]}
+      {...props}
+    />
   );
 }

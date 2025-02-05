@@ -22,7 +22,28 @@ export function ExampleHeader() {
           <IconButton
             name="information-circle-outline"
             size="xl"
-            onPress={() => alert("Information clicked!")}
+            onPress={() => router.push("/example")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
+export function JobsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <Text weight="semibold" size="xl">
+            Job Center
+          </Text>
+        ),
+        right: (
+          <IconButton
+            name="notifications-outline"
+            size="xl"
+            onPress={() => router.push("/example")}
           />
         ),
       }}

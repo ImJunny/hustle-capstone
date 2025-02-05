@@ -13,6 +13,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import * as NavigationBar from "expo-navigation-bar";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,6 +27,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const themeColor = useThemeColor();
   SystemUI.setBackgroundColorAsync(themeColor.background);
+  NavigationBar.setBackgroundColorAsync(themeColor.background);
 
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({

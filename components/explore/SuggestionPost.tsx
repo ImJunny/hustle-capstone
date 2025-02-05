@@ -1,37 +1,36 @@
 import React from "react";
-import { View, StyleSheet, ImageSourcePropType } from "react-native";
+import { StyleSheet, ImageSourcePropType } from "react-native";
 import Text from "@/components/ui/Text";
 import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Badge from "../ui/Badge";
 import Icon from "../ui/Icon";
+import View, { ViewProps } from "../ui/View";
 
 type SuggestionPostProps = {
-  imageSource: ImageSourcePropType;
   title: string;
   rate: string;
   rating: string;
   tags: string[];
   distance: string;
-};
+} & ViewProps;
 
 export default function SuggestionPost({
-  imageSource,
   title,
   rate,
   rating,
   tags,
   distance,
+  style,
 }: SuggestionPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
   return (
-    <View style={[styles.entry, { borderColor }]}>
+    <View style={[styles.entry, { borderColor }, style]} color="background">
       <ImageBackgroundPlaceholder
-        source={imageSource}
         width={100}
-        height={96}
+        height={100}
         style={styles.entryImage}
       />
       <View style={styles.entryContent}>
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 96,
     marginBottom: 2,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
   entryImage: {
     width: 96,

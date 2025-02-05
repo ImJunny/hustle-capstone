@@ -9,7 +9,7 @@ import { StyleSheet } from "react-native";
 import SuggestionPost from "@/components/explore/SuggestionPost";
 
 const categories = [
-  { id: 1, title: "Technology" },
+  { id: 1, title: "Tech" },
   { id: 2, title: "Health" },
   { id: 3, title: "Finance" },
   { id: 4, title: "Education" },
@@ -54,34 +54,28 @@ const suggestions = [
 ];
 export default function ExploreScreen() {
   return (
-    <ScrollView style={styles.container} color="base">
-      <View style={styles.leftMargin} color="base">
+    <ScrollView style={styles.container}>
+      <View>
         <Text
           size="xl"
           weight="semibold"
-          color="white"
-          style={{ marginBottom: 8 }}
+          style={styles.sectionTitle}
           onPress={() => router.push("/exploreSearch")}
         >
           Top Categories
         </Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {categories.map((category, i) => (
-            <CategoryCard key={category.id} title={category.title} style={{}} />
-          ))}
-        </ScrollView>
+        <View style={{ paddingLeft: 16, paddingRight: 6 }}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {categories.map((category) => (
+              <CategoryCard key={category.id} title={category.title} />
+            ))}
+          </ScrollView>
+        </View>
       </View>
       <View>
-        <View style={styles.leftMargin} color="base">
-          <Text
-            size="xl"
-            weight="bold"
-            color="white"
-            style={{ marginBottom: 8 }}
-          >
-            Job Suggestions
-          </Text>
-        </View>
+        <Text size="xl" weight="bold" style={styles.sectionTitle}>
+          Job Suggestions
+        </Text>
         {suggestions.map((suggestion, i) => (
           <SuggestionPost
             key={suggestion.id}
@@ -90,23 +84,14 @@ export default function ExploreScreen() {
             rating={suggestion.rating}
             tags={suggestion.tags}
             distance={suggestion.distance}
-            imageSource={{
-              uri: `https://picsum.photos/100/100?${Math.random()}`,
-            }}
+            style={{ borderBottomWidth: i != suggestions.length - 1 ? 1 : 0 }}
           />
         ))}
       </View>
       <View>
-        <View style={styles.leftMargin} color="base">
-          <Text
-            size="xl"
-            weight="bold"
-            color="white"
-            style={{ marginBottom: 8 }}
-          >
-            Service Suggestions
-          </Text>
-        </View>
+        <Text size="xl" weight="bold" style={styles.sectionTitle}>
+          Service Suggestions
+        </Text>
         {suggestions.map((suggestion, i) => (
           <SuggestionPost
             key={suggestion.id}
@@ -115,9 +100,7 @@ export default function ExploreScreen() {
             rating={suggestion.rating}
             tags={suggestion.tags}
             distance={suggestion.distance}
-            imageSource={{
-              uri: `https://picsum.photos/100/100?${Math.random()}`,
-            }}
+            style={{ borderBottomWidth: i != suggestions.length - 1 ? 1 : 0 }}
           />
         ))}
       </View>
@@ -127,13 +110,11 @@ export default function ExploreScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginRight: 16,
-    marginTop: 16,
-    marginBottom: 16,
+    flex: 1,
   },
-  leftMargin: {
+  sectionTitle: {
+    marginBottom: 8,
     marginLeft: 16,
-    marginBottom: 16,
-    marginTop: 16,
+    marginTop: 20,
   },
 });

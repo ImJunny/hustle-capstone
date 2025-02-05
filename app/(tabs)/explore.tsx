@@ -20,7 +20,7 @@ const suggestions = [
     id: 1,
     title: "Yard Work",
     rate: "$50-150",
-    rating: "⭐4.5/5",
+    rating: "⭐ 4.5/5",
     tags: ["Yardwork"],
     distance: "within 10 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -29,7 +29,7 @@ const suggestions = [
     id: 2,
     title: "Plumbing",
     rate: "$215-250",
-    rating: "⭐5/5",
+    rating: "⭐ 5/5",
     tags: ["Plumbing"],
     distance: "within 15 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -38,7 +38,7 @@ const suggestions = [
     id: 3,
     title: "Painting",
     rate: "$75-100",
-    rating: "⭐2/5",
+    rating: "⭐ 2/5",
     tags: ["Painting"],
     distance: "within 20 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -47,7 +47,7 @@ const suggestions = [
     id: 4,
     title: "Shopping",
     rate: "$50-125",
-    rating: "⭐3/5",
+    rating: "⭐ 3/5",
     tags: ["Shopping"],
     distance: "within 25 miles",
     imageSource: "https://via.placeholder.com/100",
@@ -55,9 +55,14 @@ const suggestions = [
 ];
 export default function ExploreScreen() {
   return (
-    <ScrollView style={styles.container} color="background">
-      <View>
-        <Text size="xl" weight="bold" color="white" style={{ marginBottom: 8 }}>
+    <ScrollView style={styles.container} color="base">
+      <View style={styles.leftMargin} color="base">
+        <Text
+          size="xl"
+          weight="semibold"
+          color="white"
+          style={{ marginBottom: 8 }}
+        >
           Top Categories
         </Text>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -67,7 +72,7 @@ export default function ExploreScreen() {
         </ScrollView>
       </View>
       <View>
-        <View>
+        <View style={styles.leftMargin} color="base">
           <Text
             size="xl"
             weight="bold"
@@ -92,7 +97,7 @@ export default function ExploreScreen() {
         ))}
       </View>
       <View>
-        <View>
+        <View style={styles.leftMargin} color="base">
           <Text
             size="xl"
             weight="bold"
@@ -122,6 +127,13 @@ export default function ExploreScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 16,
+    marginRight: 16,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  leftMargin: {
+    marginLeft: 16,
+    marginBottom: 16,
+    marginTop: 16,
   },
 });

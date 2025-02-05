@@ -13,7 +13,7 @@ type SuggestionPostProps = {
   distance: string;
 };
 
-function SuggestionPost({
+export default function SuggestionPost({
   imageSource,
   title,
   rate,
@@ -29,23 +29,31 @@ function SuggestionPost({
       <ImageBackgroundPlaceholder
         source={imageSource}
         width={100}
-        height={100}
+        height={96}
         style={styles.entryImage}
       />
       <View style={styles.entryContent}>
         <Text
-          size="xl"
+          size="md"
           weight="bold"
           color="white"
-          style={{ textAlign: "left" }}
+          style={[styles.title, { textAlign: "left" }]}
         >
           {title}
         </Text>
         <View style={styles.tagRow}>
-          <Text style={styles.tag}>{rate}</Text>
-          <Text style={styles.tag}>{rating}</Text>
-          <Text style={styles.tag}>{tags.join(", ")}</Text>
-          <Text style={styles.tag}>{distance}</Text>
+          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+            {rate}
+          </Text>
+          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+            {rating}
+          </Text>
+          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+            {tags.join(", ")}
+          </Text>
+          <Text size="sm" weight="semibold" color="white" style={styles.tag}>
+            {distance}
+          </Text>
         </View>
       </View>
     </View>
@@ -56,13 +64,15 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
-    borderBottomWidth: 1,
+    height: 96,
+    marginBottom: 2,
+    borderBottomWidth: 2,
   },
   entryImage: {
     width: 100,
-    height: 100,
+    height: 96,
     marginRight: 12,
+    borderBottomWidth: 1,
   },
   entryContent: {
     flex: 1,
@@ -70,7 +80,11 @@ const styles = StyleSheet.create({
   tagRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 8,
+    marginTop: 4,
+    color: "black",
+  },
+  title: {
+    paddingTop: 6,
   },
   tag: {
     backgroundColor: "#444444",
@@ -78,8 +92,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     marginRight: 8,
-    marginBottom: 8,
+    marginBottom: 6,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    minWidth: 50,
+    alignSelf: "center",
   },
 });
-
-export default SuggestionPost;

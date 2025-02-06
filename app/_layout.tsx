@@ -59,8 +59,8 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(external)" />
         </Stack>
-        <StatusBar style="auto" />
       </SafeAreaView>
+      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }

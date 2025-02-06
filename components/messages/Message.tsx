@@ -1,10 +1,8 @@
 import React from "react";
-import { StyleSheet, ImageSourcePropType } from "react-native";
+import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Badge from "../ui/Badge";
-import Icon from "../ui/Icon";
 import View, { ViewProps } from "../ui/View";
 
 type MessageProps = {
@@ -26,16 +24,11 @@ export default function Message({
   return (
     <View style={[styles.entry, { borderColor }]} color="background">
       <View
-        style={{ borderRadius: 999, width: 50, height: 50, padding: 10 }}
+        style={{ borderRadius: 999, width: 50, height: 50 }}
         color="muted"
       />
       <View style={styles.entryContent}>
-        <Text
-          size="xl"
-          weight="bold"
-          color="foreground"
-          style={[styles.title, { textAlign: "left" }]}
-        >
+        <Text size="lg" weight="bold" color="foreground" style={styles.title}>
           {messenger}
         </Text>
         <Text
@@ -44,16 +37,11 @@ export default function Message({
           color="foreground"
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={[styles.title, { textAlign: "left" }]}
+          style={styles.title}
         >
           {message}
         </Text>
-        <Text
-          size="sm"
-          weight="normal"
-          color="white"
-          style={[styles.title, { textAlign: "left" }]}
-        >
+        <Text size="sm" weight="normal" color="muted" style={styles.title}>
           {last_message}
         </Text>
       </View>
@@ -70,12 +58,12 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    height: 85,
-    marginBottom: 2,
+    height: 84,
     borderBottomWidth: 1,
+    paddingHorizontal: 16,
   },
   entryImage: {
-    padding: 5,
+    marginLeft: 12,
   },
   entryContent: {
     flex: 1,
@@ -87,7 +75,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    padding: 2.5,
     paddingHorizontal: 10,
   },
 });

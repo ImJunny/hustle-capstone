@@ -1,7 +1,6 @@
 import View, { ViewProps } from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
-import { StyleSheet } from "react-native";
 import React from "react";
 
 type CategoryCardProps = {
@@ -16,7 +15,9 @@ export default function CategoryCard({ title, style }: CategoryCardProps) {
         height={100}
         style={{ justifyContent: "center" }}
       >
-        <Text style={{ textAlign: "center" }}>{title}</Text>
+        <Text style={{ textAlign: "center" }} color="background" weight="bold">
+          {title}
+        </Text>
       </ImageBackgroundPlaceholder>
     </View>
   );

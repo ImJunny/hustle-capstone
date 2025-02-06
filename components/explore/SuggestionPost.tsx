@@ -37,7 +37,7 @@ export default function SuggestionPost({
         <Text
           size="md"
           weight="bold"
-          color="white"
+          color="foreground"
           style={[styles.title, { textAlign: "left" }]}
         >
           {title}

@@ -7,7 +7,11 @@ export default function Badge({ children, style }: ViewProps) {
   // If child is a string, use predefined Text component. Otherwise, use children as is.
   const processChildren = React.Children.map(children, (child) => {
     if (typeof child === "string") {
-      return <Text weight="semibold">{child}</Text>;
+      return (
+        <Text weight="semibold" size="sm">
+          {child}
+        </Text>
+      );
     } else {
       return child;
     }

@@ -2,7 +2,6 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import { router } from "expo-router";
-import Button from "@/components/ui/Button";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
@@ -18,37 +17,37 @@ const suggestions = [
   {
     id: 1,
     title: "Yard Work",
-    rate: "50-150",
-    rating: "4.5/5",
-    tags: ["Yardwork"],
-    distance: "within 10 miles",
+    rate: "50+",
+    rating: "4.5",
+    tags: ["yardwork"],
+    distance: "< 10 mi",
     imageSource: "https://via.placeholder.com/100",
   },
   {
     id: 2,
     title: "Plumbing",
-    rate: "215-250",
-    rating: "5/5",
-    tags: ["Plumbing"],
-    distance: "within 15 miles",
+    rate: "215",
+    rating: "5",
+    tags: ["plumbing", "homecare"],
+    distance: "< 15 mi",
     imageSource: "https://via.placeholder.com/100",
   },
   {
     id: 3,
     title: "Painting",
-    rate: "75-100",
-    rating: "2/5",
-    tags: ["Painting"],
-    distance: "within 20 miles",
+    rate: "75+",
+    rating: "2",
+    tags: ["painting"],
+    distance: "< 20 mi",
     imageSource: "https://via.placeholder.com/100",
   },
   {
     id: 4,
     title: "Shopping",
-    rate: "50-125",
-    rating: "3/5",
-    tags: ["Shopping"],
-    distance: "within 25 miles",
+    rate: "50",
+    rating: "3",
+    tags: ["shopping"],
+    distance: "< 25 mi",
     imageSource: "https://via.placeholder.com/100",
   },
 ];
@@ -60,14 +59,22 @@ export default function ExploreScreen() {
           size="xl"
           weight="semibold"
           style={styles.sectionTitle}
-          onPress={() => router.push("/exploreSearch")}
+          onPress={() => router.push("/explore-recent")}
         >
           Top Categories
         </Text>
-        <View style={{ paddingLeft: 16, paddingRight: 6 }}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {categories.map((category) => (
-              <CategoryCard key={category.id} title={category.title} />
+        <View style={{ backgroundColor: "red" }}>
+          <ScrollView
+            style={{ paddingLeft: 16 }}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            {categories.map((category, i) => (
+              <CategoryCard
+                key={category.id}
+                title={category.title}
+                style={{ paddingRight: i != categories.length - 1 ? 0 : 16 }}
+              />
             ))}
           </ScrollView>
         </View>
@@ -81,10 +88,11 @@ export default function ExploreScreen() {
             key={suggestion.id}
             title={suggestion.title}
             rate={suggestion.rate}
-            rating={suggestion.rating}
             tags={suggestion.tags}
             distance={suggestion.distance}
-            style={{ borderBottomWidth: i != suggestions.length - 1 ? 1 : 0 }}
+            style={{
+              borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+            }}
           />
         ))}
       </View>
@@ -100,7 +108,9 @@ export default function ExploreScreen() {
             rating={suggestion.rating}
             tags={suggestion.tags}
             distance={suggestion.distance}
-            style={{ borderBottomWidth: i != suggestions.length - 1 ? 1 : 0 }}
+            style={{
+              borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+            }}
           />
         ))}
       </View>

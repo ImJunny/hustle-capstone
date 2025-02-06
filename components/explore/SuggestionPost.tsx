@@ -10,7 +10,7 @@ import View, { ViewProps } from "../ui/View";
 type SuggestionPostProps = {
   title: string;
   rate: string;
-  rating: string;
+  rating?: string;
   tags: string[];
   distance: string;
 } & ViewProps;
@@ -29,8 +29,8 @@ export default function SuggestionPost({
   return (
     <View style={[styles.entry, { borderColor }, style]} color="background">
       <ImageBackgroundPlaceholder
-        width={100}
-        height={100}
+        width={85}
+        height={85}
         style={styles.entryImage}
       />
       <View style={styles.entryContent}>
@@ -44,14 +44,22 @@ export default function SuggestionPost({
         </Text>
         <View style={styles.badgeRow}>
           <Badge>
-            <Icon name="logo-usd" />
-            {rate}
+            <View style={{ flexDirection: "row", gap: 2 }}>
+              <Text weight="semibold" size="sm">
+                $
+              </Text>
+              <Text weight="semibold" size="sm">
+                {rate}
+              </Text>
+            </View>
           </Badge>
-          <Badge style={{ gap: 4 }}>
-            <Icon name="star" />
-            {rating}
-          </Badge>
-          <Badge>{tags.join(", ")}</Badge>
+          {rating && (
+            <Badge style={{ gap: 4 }}>
+              <Icon name="star" />
+              {rating}
+            </Badge>
+          )}
+          <Badge>{tags[0]}</Badge>
           <Badge>{distance}</Badge>
         </View>
       </View>
@@ -63,13 +71,11 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    height: 96,
+    height: 85,
     marginBottom: 2,
     borderBottomWidth: 1,
   },
   entryImage: {
-    width: 96,
-    height: "100%",
     marginRight: 12,
   },
   entryContent: {

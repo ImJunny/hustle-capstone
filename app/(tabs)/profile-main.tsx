@@ -8,7 +8,7 @@ export default function ProfileMainScreen() {
   return (
     <View>
       <Text>Profile Main</Text>
-      <Button onPress={() => router.push("/settings")}>Settings</Button>
+      <Button onPress={() => router.push("/settings")}>Settings123</Button>
     </View>
   );
 }

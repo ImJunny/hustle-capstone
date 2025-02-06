@@ -11,6 +11,7 @@ type HeaderWrapperProps = {
     center?: React.JSX.Element;
     right?: React.JSX.Element;
   };
+  color?: TColors;
 } & ViewProps;
 
 export default function HeaderWrapper({
@@ -18,9 +19,11 @@ export default function HeaderWrapper({
   options = {},
   children,
   style,
+  color = "background",
   ...props
 }: HeaderWrapperProps) {
   const borderColor = useThemeColor().border as TColors;
+  const themeColor = useThemeColor();
 
   return (
     <View
@@ -28,8 +31,9 @@ export default function HeaderWrapper({
         {
           borderColor,
           height: 56,
-          paddingHorizontal: 16,
           borderBottomWidth: 1,
+          paddingHorizontal: 16,
+          backgroundColor: themeColor[color],
         },
         style,
       ]}
@@ -50,7 +54,6 @@ export default function HeaderWrapper({
             right: 0,
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: 16,
           }}
         >
           {options.center}

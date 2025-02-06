@@ -1,6 +1,6 @@
 import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
 
 export type TServerData = {
@@ -76,6 +76,7 @@ export default function HomeScreen() {
   const statusBarHeight = StatusBar.currentHeight || 0;
   const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
+
   return (
     <>
       <ExampleHeader />

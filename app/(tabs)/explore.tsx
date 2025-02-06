@@ -6,7 +6,7 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import SuggestionPost from "@/components/explore/SuggestionPost";
-import { EmptyHeader } from "@/components/headers/Headers";
+import { EmptyHeader, ExploreHeader } from "@/components/headers/Headers";
 
 const categories = [
   { id: 1, title: "Tech" },
@@ -55,7 +55,7 @@ const suggestions = [
 export default function ExploreScreen() {
   return (
     <>
-      <EmptyHeader />
+      <ExploreHeader />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View>
           <Text

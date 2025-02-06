@@ -3,6 +3,7 @@ import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
+import Input from "../ui/Input";
 
 export function ExampleHeader() {
   return (
@@ -71,4 +72,14 @@ export function BackHeader() {
 
 export function EmptyHeader() {
   return <HeaderWrapper />;
+}
+
+export function ExploreHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        center: <Input style={{ width: "100%" }} />,
+      }}
+    />
+  );
 }

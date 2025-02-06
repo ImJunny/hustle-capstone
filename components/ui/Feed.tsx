@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, StatusBar } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -7,26 +7,42 @@ import IconButton from "./IconButton";
 import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
 import Icon from "./Icon";
 import Button from "./Button";
-import { TServerData } from "@/app/(tabs)";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height } = Dimensions.get("window");
-const contentHeight = height * 0.8; // 80% of the screen height
+const { width, height: totalHeight } = Dimensions.get("window");
 
+const statusBarHeight = StatusBar.currentHeight || 0;
+const subtractedHeight = 57 + 57 + statusBarHeight + 17;
+const newHeight = totalHeight - subtractedHeight;
+console.log(totalHeight - newHeight);
 function Feed({ postData }: { postData: any }) {
-  console.log(postData);
   return (
-    <View style={styles.feedContainer}>
-      <ImageBackgroundPlaceholder
-        style={{ height: contentHeight * 0.7, width: "100%" }}
-      />
-      <View style={{ width: "100%" }} />
+    <View style={[styles.feedContainer, { height: newHeight }]} color="black">
       <View
         style={{
-          position: "absolute",
-          width: "100%",
+          height: newHeight * 0.75,
+        }}
+      >
+        <ImageBackgroundPlaceholder style={{ width: "100%", height: "100%" }} />
+        <LinearGradient
+          colors={["rgb(0, 0, 0)", "transparent"]}
+          start={{ x: 0, y: 1 }}
+          end={{ x: 0, y: 0 }}
+          style={{
+            left: 0,
+            right: 0,
+            height: 250,
+            bottom: 0,
+            position: "absolute",
+          }}
+        />
+      </View>
+      <View
+        style={{
+          flex: 1,
           bottom: 0,
           padding: 16,
-          backgroundColor: "black",
+          position: "absolute",
         }}
       >
         <View style={{ flexDirection: "row" }}>
@@ -51,7 +67,7 @@ function Feed({ postData }: { postData: any }) {
                     flexDirection: "row",
                     gap: 10,
                     paddingBottom: 12,
-                    paddingTop: 22,
+                    marginTop: 18,
                   }}
                 >
                   {postData.tags.map((tag: string, i: number) => (
@@ -119,8 +135,7 @@ export default Feed;
 
 const styles = StyleSheet.create({
   feedContainer: {
-    height: contentHeight,
-    width: width,
+    flex: 1,
   },
   textContainer: {},
   badgeSpace: {},
@@ -147,5 +162,6 @@ const styles = StyleSheet.create({
   viewButton: {
     marginLeft: "auto",
     backgroundColor: "white",
+    paddingHorizontal: 30,
   },
 });

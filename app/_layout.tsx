@@ -14,6 +14,7 @@ import { useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import * as NavigationBar from "expo-navigation-bar";
+import SafeAreaView from "@/components/ui/SafeAreaView";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -53,11 +54,13 @@ export default function RootLayout() {
   */
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(external)" />
-      </Stack>
-      <StatusBar style="auto" />
+      <SafeAreaView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(external)" />
+        </Stack>
+        <StatusBar style="auto" />
+      </SafeAreaView>
     </ThemeProvider>
   );
 }

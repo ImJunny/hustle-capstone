@@ -20,16 +20,14 @@ export default function HeaderWrapper({
   style,
   ...props
 }: HeaderWrapperProps) {
-  const paddingTop = StatusBar.currentHeight || 0;
   const borderColor = useThemeColor().border as TColors;
 
   return (
     <View
       style={[
         {
-          paddingTop,
           borderColor,
-          height: 56 + paddingTop,
+          height: 56,
           paddingHorizontal: 16,
           borderBottomWidth: 1,
         },
@@ -47,7 +45,6 @@ export default function HeaderWrapper({
         <View
           style={{
             position: "absolute",
-            marginTop: paddingTop,
             marginInline: "auto",
             left: 0,
             right: 0,

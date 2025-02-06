@@ -12,7 +12,7 @@ export type ViewProps = {
 
 export default function View({
   style,
-  color = "background",
+  color = "transparent",
   ...otherProps
 }: ViewProps) {
   const backgroundColor = useThemeColor()[color];

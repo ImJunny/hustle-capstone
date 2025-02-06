@@ -19,6 +19,7 @@ export const Colors = {
     foreground: "#000000",
     muted: "#6D6D6D",
     border: "#D6D6D6",
+    transparent: "transparent",
   },
   dark: {
     black: "#000000",
@@ -32,5 +33,6 @@ export const Colors = {
     foreground: "#FFFFFF",
     muted: "#C2C2C2",
     border: "#272727",
+    transparent: "transparent",
   },
 };

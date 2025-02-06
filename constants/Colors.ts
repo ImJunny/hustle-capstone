@@ -20,6 +20,7 @@ export const Colors = {
     muted: "#6D6D6D",
     border: "#D6D6D6",
     transparent: "transparent",
+    "muted-dark": "#C2C2C2",
   },
   dark: {
     black: "#000000",
@@ -34,5 +35,6 @@ export const Colors = {
     muted: "#C2C2C2",
     border: "#272727",
     transparent: "transparent",
+    "muted-dark": "#C2C2C2",
   },
 };

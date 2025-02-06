@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions, StatusBar } from "react-native";
+import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -9,13 +9,12 @@ import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height: totalHeight } = Dimensions.get("window");
-
-const statusBarHeight = StatusBar.currentHeight || 0;
-const subtractedHeight = 57 + 57 + statusBarHeight + 17;
-const newHeight = totalHeight - subtractedHeight;
-console.log(totalHeight - newHeight);
 function Feed({ postData }: { postData: any }) {
+  const { width, height: totalHeight } = Dimensions.get("window");
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const subtractedHeight = 57 + 57 + statusBarHeight;
+  const newHeight = totalHeight - subtractedHeight;
+
   return (
     <View style={[styles.feedContainer, { height: newHeight }]} color="black">
       <View
@@ -23,7 +22,11 @@ function Feed({ postData }: { postData: any }) {
           height: newHeight * 0.75,
         }}
       >
-        <ImageBackgroundPlaceholder style={{ width: "100%", height: "100%" }} />
+        <ImageBackgroundPlaceholder
+          width={800}
+          height={800}
+          style={{ width: "100%", height: "100%" }}
+        />
         <LinearGradient
           colors={["rgb(0, 0, 0)", "transparent"]}
           start={{ x: 0, y: 1 }}
@@ -32,7 +35,7 @@ function Feed({ postData }: { postData: any }) {
             left: 0,
             right: 0,
             height: 250,
-            bottom: 0,
+            bottom: -2,
             position: "absolute",
           }}
         />
@@ -67,7 +70,7 @@ function Feed({ postData }: { postData: any }) {
                     flexDirection: "row",
                     gap: 10,
                     paddingBottom: 12,
-                    marginTop: 18,
+                    marginTop: 10,
                   }}
                 >
                   {postData.tags.map((tag: string, i: number) => (
@@ -80,7 +83,7 @@ function Feed({ postData }: { postData: any }) {
                   numberOfLines={3}
                   ellipsizeMode="tail"
                   style={styles.description}
-                  color="white"
+                  color="muted-dark"
                 >
                   {postData.description}
                 </Text>
@@ -114,9 +117,9 @@ function Feed({ postData }: { postData: any }) {
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
-              <Icon name={"star-outline"} color="white"></Icon>
+              <Icon name={"star"} color="white"></Icon>
               <Text color="white" weight="semibold">
-                {postData.rate}/5
+                {postData.rating}/5
               </Text>
             </View>
           </View>

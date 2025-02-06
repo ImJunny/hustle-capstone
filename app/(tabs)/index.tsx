@@ -1,8 +1,5 @@
-import { StyleSheet, FlatList, Dimensions } from "react-native";
+import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
-
-const { height } = Dimensions.get("window");
-const contentHeight = height * 0.8; // 80% of the screen height
 
 export type TServerData = {
   data: {
@@ -10,6 +7,7 @@ export type TServerData = {
     title: string;
     description: string;
     rate: number;
+    rating: number;
     tags: string[];
     location_type: string;
     location_address: string;
@@ -20,11 +18,12 @@ export type TServerData = {
 const serverData: TServerData = {
   data: [
     {
-      uuid: "udha838ru23r",
+      uuid: "udha85438ru23r",
       title: "Lawn Mowing Needed",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
       rate: 5,
+      rating: 5,
       tags: ["$60", "yardwork", "within 10 miles"],
       location_type: "local",
       location_address: "123 St",
@@ -32,10 +31,11 @@ const serverData: TServerData = {
       name: "Kevin Li",
     },
     {
-      uuid: "udha838ru23s",
+      uuid: "udha83138ru23s",
       title: "Lawn Mowing",
       description: "Lorem Ipsum...",
       rate: 3,
+      rating: 4.5,
       tags: ["blank", "blank2", "blank3"],
       location_type: "local",
       location_address: "123 St",
@@ -43,10 +43,23 @@ const serverData: TServerData = {
       name: "Kevin Li",
     },
     {
-      uuid: "udha838ru23t",
+      uuid: "udha838432ru23t",
       title: "Lawn Mowing",
       description: "Lorem Ipsum...",
       rate: 4,
+      rating: 3.5,
+      tags: ["blank", "blank2", "blank3"],
+      location_type: "local",
+      location_address: "123 St",
+      date: "January 20th",
+      name: "Kevin Li",
+    },
+    {
+      uuid: "udha832348ru23t",
+      title: "Lawn Mowing",
+      description: "Lorem Ipsum...",
+      rate: 6,
+      rating: 5,
       tags: ["blank", "blank2", "blank3"],
       location_type: "local",
       location_address: "123 St",
@@ -57,19 +70,23 @@ const serverData: TServerData = {
 };
 
 export default function HomeScreen() {
+  const { width, height: totalHeight } = Dimensions.get("window");
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const subtractedHeight = 57 + 57 + statusBarHeight;
+  const newHeight = totalHeight - subtractedHeight;
   return (
     <FlatList
       data={serverData.data}
-      renderItem={({ item }) => <Feed postData={item} />}
+      renderItem={({ item }) => <Feed key={item.uuid} postData={item} />}
       keyExtractor={(item) => item.uuid}
       pagingEnabled
-      snapToInterval={contentHeight}
-      snapToAlignment="start"
+      snapToInterval={newHeight}
+      snapToAlignment="end"
       decelerationRate="fast"
       showsVerticalScrollIndicator={false}
       getItemLayout={(data, index) => ({
-        length: contentHeight,
-        offset: contentHeight * index,
+        length: newHeight,
+        offset: newHeight * index,
         index,
       })}
     />

@@ -7,64 +7,108 @@ import IconButton from "./IconButton";
 import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
 import Icon from "./Icon";
 import Button from "./Button";
+import { TServerData } from "@/app/(tabs)";
 
 const { width, height } = Dimensions.get("window");
 const contentHeight = height * 0.8; // 80% of the screen height
 
-function Feed({ postData }) {
+function Feed({ postData }: { postData: any }) {
+  console.log(postData);
   return (
     <View style={styles.feedContainer}>
-      <View style={{ height: contentHeight * 0.7 }}>
-        <ImageBackgroundPlaceholder style={{ height: "100%", width: "100%" }}>
-          <View style={styles.textContainer}>
-            <Text style={{ marginVertical: 5 }} size="2xl">
-              {postData.title}
+      <ImageBackgroundPlaceholder
+        style={{ height: contentHeight * 0.7, width: "100%" }}
+      />
+      <View style={{ width: "100%" }} />
+      <View
+        style={{
+          position: "absolute",
+          width: "100%",
+          bottom: 0,
+          padding: 16,
+          backgroundColor: "black",
+        }}
+      >
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flex: 1 }}>
+            <View style={styles.textContainer}>
+              <Text
+                style={{ marginVertical: 4 }}
+                color="white"
+                size="xl"
+                weight="semibold"
+              >
+                {postData.title}
+              </Text>
+              <Text size="lg" color="white" weight="semibold">
+                Due {postData.date}
+              </Text>
+            </View>
+            <View style={styles.middleContainer}>
+              <View style={styles.descriptionContainer}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 10,
+                    paddingBottom: 12,
+                    paddingTop: 22,
+                  }}
+                >
+                  {postData.tags.map((tag: string, i: number) => (
+                    <Badge style={styles.badgeSpace} key={"tag-" + i}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </View>
+                <Text
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                  style={styles.description}
+                  color="white"
+                >
+                  {postData.description}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.iconButtonsContainer}>
+            <IconButton
+              name={"heart-outline"}
+              style={styles.iconButton}
+              color="white"
+            ></IconButton>
+            <IconButton
+              name={"paper-plane-outline"}
+              style={styles.iconButton}
+              color="white"
+            ></IconButton>
+          </View>
+        </View>
+
+        <View style={styles.bottomContainer}>
+          <View
+            style={{ borderRadius: 999, width: 40, height: 40 }}
+            color="muted"
+          />
+          <View style={styles.nameContainer}>
+            <Text color="white" weight="semibold">
+              {postData.name}
             </Text>
-            <Text size="md">Due {postData.date}</Text>
+            <View
+              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+            >
+              <Icon name={"star-outline"} color="white"></Icon>
+              <Text color="white" weight="semibold">
+                {postData.rate}/5
+              </Text>
+            </View>
           </View>
-        </ImageBackgroundPlaceholder>
-      </View>
-      <View style={styles.middleContainer}>
-        <View style={styles.descriptionContainer}>
-          <View style={{ flexDirection: "row", padding: 10 }}>
-            {postData.tags.map((tag, i) => (
-              <Badge style={styles.badgeSpace} key={"tag-" + i}>
-                {tag}
-              </Badge>
-            ))}
-          </View>
-          <Text
-            numberOfLines={3}
-            ellipsizeMode="tail"
-            style={styles.description}
-          >
-            {postData.description}
-          </Text>
-        </View>
-        <View style={styles.iconButtonsContainer}>
-          <IconButton
-            name={"heart-outline"}
-            style={styles.iconButton}
-          ></IconButton>
-          <IconButton
-            name={"share-outline"}
-            style={styles.iconButton}
-          ></IconButton>
-        </View>
-      </View>
-      <View style={styles.bottomContainer}>
-        <Icon size="xxl" name={"person-circle-outline"} />
-        <View style={styles.nameContainer}>
-          <Text style={{ fontSize: 24 }}>{postData.name}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Icon name={"star-outline"} size="lg"></Icon>
-            <Text style={{ marginHorizontal: 5, fontSize: 18 }}>
-              {postData.rate}/5
+          <Button style={styles.viewButton}>
+            <Text color="black" weight="semibold">
+              View
             </Text>
-          </View>
-        </View>
-        <View style={{ marginLeft: "auto" }}>
-          <Button style={styles.viewButton}>View</Button>
+          </Button>
         </View>
       </View>
     </View>
@@ -78,47 +122,30 @@ const styles = StyleSheet.create({
     height: contentHeight,
     width: width,
   },
-  textContainer: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    backgroundColor: "clear",
-  },
-  badgeSpace: {
-    marginHorizontal: 5,
-  },
+  textContainer: {},
+  badgeSpace: {},
   descriptionContainer: {
     flex: 1,
   },
-  description: {
-    padding: 7.5,
-    marginHorizontal: 2.5,
-  },
-  iconButton: {
-    padding: 10,
-  },
+  description: {},
+  iconButton: { paddingBottom: 20 },
   middleContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingVertical: 12,
   },
   iconButtonsContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
+    marginLeft: 20,
+    marginTop: "auto",
   },
   bottomContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    marginVertical: 20,
-    position: "absolute",
-    bottom: 0,
     width: "100%",
   },
-  nameContainer: {
-    paddingLeft: 10,
-  },
+  nameContainer: { marginLeft: 20 },
   viewButton: {
-    fontSize: 24,
+    marginLeft: "auto",
+    backgroundColor: "white",
   },
 });

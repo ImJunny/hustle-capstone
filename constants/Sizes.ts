@@ -20,7 +20,7 @@ export const IconSizes = {
   md: 14,
   lg: 18,
   xl: 28,
-  xxl: 44,
+  "2xl": 44,
 };
 
 export type TIconButtonSizes = keyof typeof IconSizes;

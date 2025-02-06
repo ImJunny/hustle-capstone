@@ -1,14 +1,23 @@
-import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, FlatList, Dimensions } from "react-native";
 import Feed from "@/components/ui/Feed";
-import ScrollView from "@/components/ui/ScrollView";
 
 const { height } = Dimensions.get("window");
 const contentHeight = height * 0.8; // 80% of the screen height
 
-const serverData = {
+export type TServerData = {
+  data: {
+    uuid: string;
+    title: string;
+    description: string;
+    rate: number;
+    tags: string[];
+    location_type: string;
+    location_address: string;
+    date: string;
+    name: string;
+  }[];
+};
+const serverData: TServerData = {
   data: [
     {
       uuid: "udha838ru23r",

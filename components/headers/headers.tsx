@@ -68,3 +68,7 @@ export function BackHeader() {
     />
   );
 }
+
+export function EmptyHeader() {
+  return <HeaderWrapper />;
+}

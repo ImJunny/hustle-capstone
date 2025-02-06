@@ -1,5 +1,7 @@
 import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
+import React from "react";
+import { ExampleHeader } from "@/components/headers/Headers";
 
 export type TServerData = {
   data: {
@@ -72,24 +74,27 @@ const serverData: TServerData = {
 export default function HomeScreen() {
   const { width, height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 57 + 57 + statusBarHeight;
+  const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
   return (
-    <FlatList
-      data={serverData.data}
-      renderItem={({ item }) => <Feed key={item.uuid} postData={item} />}
-      keyExtractor={(item) => item.uuid}
-      pagingEnabled
-      snapToInterval={newHeight}
-      snapToAlignment="end"
-      decelerationRate="fast"
-      showsVerticalScrollIndicator={false}
-      getItemLayout={(data, index) => ({
-        length: newHeight,
-        offset: newHeight * index,
-        index,
-      })}
-    />
+    <>
+      <ExampleHeader />
+      <FlatList
+        data={serverData.data}
+        renderItem={({ item }) => <Feed key={item.uuid} postData={item} />}
+        keyExtractor={(item) => item.uuid}
+        pagingEnabled
+        snapToInterval={newHeight}
+        snapToAlignment="end"
+        decelerationRate="fast"
+        showsVerticalScrollIndicator={false}
+        getItemLayout={(data, index) => ({
+          length: newHeight,
+          offset: newHeight * index,
+          index,
+        })}
+      />
+    </>
   );
 }
 

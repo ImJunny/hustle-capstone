@@ -1,11 +1,9 @@
-import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import Input from "@/components/ui/Input";
-import { router } from "expo-router";
-import ScrollView from "@/components/ui/ScrollView";
-import { StyleSheet, FlatList, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import Message from "@/components/messages/Message";
+import { EmptyHeader } from "@/components/headers/Headers";
 
 const { height } = Dimensions.get("window");
 const contentHeight = height * 0.8; // 80% of the screen height
@@ -55,25 +53,28 @@ const inbox = [
 
 export default function MessagesScreen() {
   return (
-    <View>
-      <View style={styles.search_container}>
-        <Input placeholder="Search users, jobs, messages, etc..."></Input>
-      </View>
+    <>
+      <EmptyHeader />
       <View>
-        {inbox.map((message, i) => (
-          <Message
-            key={message.id}
-            messenger={message.messenger}
-            num_of_new_mes={message.num_of_new_mes}
-            message={message.message}
-            last_message={message.last_message}
-            style={{
-              borderBottomWidth: i != inbox.length - 1 ? 1 : 0,
-            }}
-          />
-        ))}
+        <View style={styles.search_container}>
+          <Input placeholder="Search users, jobs, messages, etc..."></Input>
+        </View>
+        <View>
+          {inbox.map((message, i) => (
+            <Message
+              key={message.id}
+              messenger={message.messenger}
+              num_of_new_mes={message.num_of_new_mes}
+              message={message.message}
+              last_message={message.last_message}
+              style={{
+                borderBottomWidth: i != inbox.length - 1 ? 1 : 0,
+              }}
+            />
+          ))}
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 

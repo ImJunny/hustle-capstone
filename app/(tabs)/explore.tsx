@@ -6,6 +6,7 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import SuggestionPost from "@/components/explore/SuggestionPost";
+import { EmptyHeader } from "@/components/headers/Headers";
 
 const categories = [
   { id: 1, title: "Tech" },
@@ -53,68 +54,71 @@ const suggestions = [
 ];
 export default function ExploreScreen() {
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View>
-        <Text
-          size="xl"
-          weight="semibold"
-          style={styles.sectionTitle}
-          onPress={() => router.push("/explore-recent")}
-        >
-          Top Categories
-        </Text>
-        <View style={{ backgroundColor: "red" }}>
-          <ScrollView
-            style={{ paddingLeft: 16 }}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
+    <>
+      <EmptyHeader />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View>
+          <Text
+            size="xl"
+            weight="semibold"
+            style={styles.sectionTitle}
+            onPress={() => router.push("/explore-recent")}
           >
-            {categories.map((category, i) => (
-              <CategoryCard
-                key={category.id}
-                title={category.title}
-                style={{ paddingRight: i != categories.length - 1 ? 0 : 16 }}
-              />
-            ))}
-          </ScrollView>
+            Top Categories
+          </Text>
+          <View style={{ backgroundColor: "red" }}>
+            <ScrollView
+              style={{ paddingLeft: 16 }}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              {categories.map((category, i) => (
+                <CategoryCard
+                  key={category.id}
+                  title={category.title}
+                  style={{ paddingRight: i != categories.length - 1 ? 0 : 16 }}
+                />
+              ))}
+            </ScrollView>
+          </View>
         </View>
-      </View>
-      <View>
-        <Text size="xl" weight="bold" style={styles.sectionTitle}>
-          Job Suggestions
-        </Text>
-        {suggestions.map((suggestion, i) => (
-          <SuggestionPost
-            key={suggestion.id}
-            title={suggestion.title}
-            rate={suggestion.rate}
-            tags={suggestion.tags}
-            distance={suggestion.distance}
-            style={{
-              borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
-            }}
-          />
-        ))}
-      </View>
-      <View>
-        <Text size="xl" weight="bold" style={styles.sectionTitle}>
-          Service Suggestions
-        </Text>
-        {suggestions.map((suggestion, i) => (
-          <SuggestionPost
-            key={suggestion.id}
-            title={suggestion.title}
-            rate={suggestion.rate}
-            rating={suggestion.rating}
-            tags={suggestion.tags}
-            distance={suggestion.distance}
-            style={{
-              borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
-            }}
-          />
-        ))}
-      </View>
-    </ScrollView>
+        <View>
+          <Text size="xl" weight="bold" style={styles.sectionTitle}>
+            Job Suggestions
+          </Text>
+          {suggestions.map((suggestion, i) => (
+            <SuggestionPost
+              key={suggestion.id}
+              title={suggestion.title}
+              rate={suggestion.rate}
+              tags={suggestion.tags}
+              distance={suggestion.distance}
+              style={{
+                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+              }}
+            />
+          ))}
+        </View>
+        <View>
+          <Text size="xl" weight="bold" style={styles.sectionTitle}>
+            Service Suggestions
+          </Text>
+          {suggestions.map((suggestion, i) => (
+            <SuggestionPost
+              key={suggestion.id}
+              title={suggestion.title}
+              rate={suggestion.rate}
+              rating={suggestion.rating}
+              tags={suggestion.tags}
+              distance={suggestion.distance}
+              style={{
+                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+              }}
+            />
+          ))}
+        </View>
+      </ScrollView>
+    </>
   );
 }
 

@@ -1,9 +1,8 @@
 import React from "react";
 import View, { ViewProps } from "../ui/View";
-import { StatusBar, StyleSheet } from "react-native";
+import { StatusBar } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
-import SafeAreaView from "../ui/SafeAreaView";
 
 type HeaderWrapperProps = {
   type?: "default" | "custom";
@@ -25,13 +24,25 @@ export default function HeaderWrapper({
   const borderColor = useThemeColor().border as TColors;
 
   return (
-    <SafeAreaView {...props}>
+    <View
+      style={[
+        {
+          paddingTop,
+          borderColor,
+          height: 56 + paddingTop,
+          paddingHorizontal: 16,
+          borderBottomWidth: 1,
+        },
+        style,
+      ]}
+      {...props}
+    >
       <View
-        style={[
-          { paddingTop, borderColor, height: 56 + paddingTop },
-          styles.header,
-          style,
-        ]}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flex: 1,
+        }}
       >
         <View
           style={{
@@ -50,7 +61,6 @@ export default function HeaderWrapper({
         <View
           style={{
             marginRight: "auto",
-            justifyContent: "flex-end",
           }}
         >
           {options.left}
@@ -58,21 +68,11 @@ export default function HeaderWrapper({
         <View
           style={{
             marginLeft: "auto",
-            justifyContent: "flex-end",
           }}
         >
           {options.right}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-  },
-});

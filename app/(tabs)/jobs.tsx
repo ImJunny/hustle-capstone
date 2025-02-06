@@ -6,35 +6,39 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "@/components/ui/IconButton";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
+import { JobsHeader } from "@/components/headers/Headers";
 
 export default function JobsScreen() {
   return (
-    <View style={styles.screen} color="background">
-      <View style={styles.category}>
-        <Text size="xl" weight="semibold">
-          Your Posts
-        </Text>
-        <LinkEntry iconName="copy-outline" title="Job posts" />
-        <LinkEntry iconName="copy-outline" title="Service posts" />
-        <Button isFullWidth style={{ marginTop: 16 }}>
-          Create a post
-        </Button>
+    <>
+      <JobsHeader />
+      <View style={styles.screen} color="background">
+        <View style={styles.category}>
+          <Text size="xl" weight="semibold">
+            Your Posts
+          </Text>
+          <LinkEntry iconName="copy-outline" title="Job posts" />
+          <LinkEntry iconName="copy-outline" title="Service posts" />
+          <Button isFullWidth style={{ marginTop: 16 }}>
+            Create a post
+          </Button>
+        </View>
+        <View style={styles.category}>
+          <Text size="xl" weight="semibold">
+            Tracking
+          </Text>
+          <LinkEntry iconName="briefcase-outline" title="Working" />
+          <LinkEntry iconName="calendar-outline" title="Hiring" />
+        </View>
+        <View style={styles.category}>
+          <Text size="xl" weight="semibold">
+            Activity
+          </Text>
+          <LinkEntry iconName="time-outline" title="Recently viewed" />
+          <LinkEntry iconName="heart-outline" title="Liked" />
+        </View>
       </View>
-      <View style={styles.category}>
-        <Text size="xl" weight="semibold">
-          Tracking
-        </Text>
-        <LinkEntry iconName="briefcase-outline" title="Working" />
-        <LinkEntry iconName="calendar-outline" title="Hiring" />
-      </View>
-      <View style={styles.category}>
-        <Text size="xl" weight="semibold">
-          Activity
-        </Text>
-        <LinkEntry iconName="time-outline" title="Recently viewed" />
-        <LinkEntry iconName="heart-outline" title="Liked" />
-      </View>
-    </View>
+    </>
   );
 }
 

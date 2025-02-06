@@ -31,6 +31,7 @@ export default function HeaderWrapper({
           borderColor,
           height: 56 + paddingTop,
           paddingHorizontal: 16,
+          borderBottomWidth: 1,
         },
         style,
       ]}

@@ -1,6 +1,5 @@
 import "react-native-reanimated";
 import { Stack } from "expo-router";
-import { BackHeader } from "@/components/headers/headers";
 
 /*
   This is the layout for external routes which are those that do not 
@@ -9,9 +8,7 @@ import { BackHeader } from "@/components/headers/headers";
 */
 export default function Layout() {
   return (
-    <Stack
-      screenOptions={{ animation: "default", header: () => <BackHeader /> }}
-    >
+    <Stack screenOptions={{ animation: "default", headerShown: false }}>
       <Stack.Screen name="chat" />
       <Stack.Screen name="job-post" />
       <Stack.Screen name="profile" />

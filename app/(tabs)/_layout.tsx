@@ -2,8 +2,6 @@ import { Tabs } from "expo-router";
 import React from "react";
 import Icon from "@/components/ui/Icon";
 import TabBar from "@/components/navigation/TabBar";
-import { ExampleHeader, JobsHeader } from "@/components/headers/headers";
-import HeaderWrapper from "@/components/headers/HeaderWrapper";
 
 /* 
   Tab bar elements are based off files in the (tabs) directory. 
@@ -13,7 +11,7 @@ import HeaderWrapper from "@/components/headers/HeaderWrapper";
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{ headerShown: true, header: () => <HeaderWrapper /> }}
+      screenOptions={{ headerShown: false }}
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tabs.Screen
@@ -23,7 +21,6 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Icon name={focused ? "home" : "home-outline"} size="xl" />
           ),
-          header: () => <ExampleHeader />,
         }}
       />
       <Tabs.Screen
@@ -45,7 +42,6 @@ export default function TabLayout() {
               size="xl"
             />
           ),
-          header: () => <JobsHeader />,
         }}
       />
       <Tabs.Screen

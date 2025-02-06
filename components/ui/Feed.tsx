@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 function Feed({ postData }: { postData: any }) {
   const { width, height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 57 + 57 + statusBarHeight;
+  const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   return (

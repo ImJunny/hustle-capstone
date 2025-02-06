@@ -93,14 +93,16 @@ function Feed({ postData }: { postData: any }) {
 
           <View style={styles.iconButtonsContainer}>
             <IconButton
-              name={"heart-outline"}
+              name={"add-circle-outline"}
               style={styles.iconButton}
               color="white"
+              size="2xl"
             ></IconButton>
             <IconButton
               name={"paper-plane-outline"}
               style={styles.iconButton}
               color="white"
+              size="2xl"
             ></IconButton>
           </View>
         </View>

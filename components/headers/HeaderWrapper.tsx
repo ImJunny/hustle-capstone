@@ -38,7 +38,6 @@ export default function HeaderWrapper({
             position: "absolute",
             marginTop: paddingTop,
             marginInline: "auto",
-            bottom: 16,
             left: 0,
             right: 0,
             alignItems: "center",
@@ -72,7 +71,7 @@ export default function HeaderWrapper({
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    paddingBottom: 16,
+    alignItems: "center",
     paddingHorizontal: 16,
     borderBottomWidth: 1,
   },

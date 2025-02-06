@@ -21,14 +21,5 @@ export const IconSizes = {
   md: 14,
   lg: 18,
   xl: 28,
-  "2xl": 44,
-};
-
-export type TIconButtonSizes = keyof typeof IconSizes;
-export const IconButtonSizes = {
-  sm: 12,
-  md: 14,
-  lg: 18,
-  xl: 28,
-  xxl: 44,
+  "2xl": 34,
 };

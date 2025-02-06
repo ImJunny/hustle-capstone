@@ -5,17 +5,32 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import Separator from "@/components/ui/Separator";
 
-export type recentProps = {
-  recent: string;
+export type savedProps = {
+  saved: string;
+  rate: string;
+  distance: string;
 } & ViewProps;
 
-export default function RecentSuggestion({ recent, style }: recentProps) {
+export default function RecentSuggestion({
+  saved,
+  rate,
+  distance,
+  style,
+}: savedProps) {
   return (
     <>
       <View style={[styles.container, style]}>
         <Text size="lg" style={styles.text}>
-          {recent}
+          {saved}
         </Text>
+        <View style={styles.tag}>
+          <Text size="sm" color="muted">
+            {rate},
+          </Text>
+          <Text size="sm" color="muted">
+            {distance}
+          </Text>
+        </View>
       </View>
       <Separator />
     </>
@@ -33,5 +48,9 @@ const styles = StyleSheet.create({
   text: {
     justifyContent: "center",
     paddingVertical: 16,
+  },
+  tag: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

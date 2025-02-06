@@ -5,40 +5,43 @@ import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet } from "react-native";
-import RecentSuggestion from "@/components/explore/RecentSuggestion";
+import SuggestionPost from "@/components/explore/SuggestionPost";
+import SavedSuggestion from "@/components/explore/SavedSuggestion";
 
-const recents = [
-  { id: 1, recent: "Technology" },
-  { id: 2, recent: "Health" },
-  { id: 3, recent: "Finance" },
-  { id: 4, recent: "Education" },
+const saves = [
+  { id: 1, saved: "Technology", rate: "$100 >", distance: " < 20 mi" },
+  { id: 2, saved: "Health", rate: "$50 >", distance: " remote" },
+  { id: 3, saved: "Finance", rate: "< $75", distance: " < 10 mi" },
+  { id: 4, saved: "Education", rate: "$150 >", distance: " < 15 mi" },
 ];
 
 export default function ExploreScreen() {
   return (
     <>
       <View style={styles.recentSavedRow}>
-        <View style={[styles.recentRow, styles.selectedTab]}>
-          <Text size="xl" weight="semibold" color="white">
-            Recent
-          </Text>
-        </View>
-        <View style={styles.savedRow}>
+        <View style={styles.recentRow}>
           <Text
             size="xl"
             weight="semibold"
             color="muted"
-            onPress={() => router.push("/explore-saved")}
+            onPress={() => router.push("/explore-recent")}
           >
+            Recent
+          </Text>
+        </View>
+        <View style={[styles.savedRow, styles.selectedTab]}>
+          <Text size="xl" weight="semibold" color="white">
             Saved
           </Text>
         </View>
       </View>
       <View>
-        {recents.map((suggestion, i) => (
-          <RecentSuggestion
+        {saves.map((suggestion, i) => (
+          <SavedSuggestion
             key={suggestion.id}
-            recent={suggestion.recent}
+            saved={suggestion.saved}
+            rate={suggestion.rate}
+            distance={suggestion.distance}
             style={{}}
           />
         ))}

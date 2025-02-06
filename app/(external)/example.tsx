@@ -14,7 +14,7 @@ import Separator from "@/components/ui/Separator";
 
 export default function ExampleScreen() {
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         {/* Text demo */}
         <Text size="2xl">Largest font size. (2xl)</Text>

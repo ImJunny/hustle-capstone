@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 
 export default function JobsScreen() {
   return (
-    <View style={styles.screen}>
+    <View style={styles.screen} color="background">
       <View style={styles.category}>
         <Text size="xl" weight="semibold">
           Your Posts
@@ -57,6 +57,7 @@ function LinkEntry({ iconName, title }: LinkEntryProps) {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
     padding: 16,
   },
   category: {

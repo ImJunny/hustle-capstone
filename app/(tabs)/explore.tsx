@@ -53,7 +53,7 @@ const suggestions = [
 ];
 export default function ExploreScreen() {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View>
         <Text
           size="xl"

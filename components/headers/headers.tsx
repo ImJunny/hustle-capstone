@@ -12,7 +12,9 @@ export function ExampleHeader() {
           <Text
             weight="semibold"
             size="2xl"
-            style={{ fontFamily: "Lexend-bold" }}
+            style={{
+              fontFamily: "Lexend-bold",
+            }}
           >
             Hustle
           </Text>

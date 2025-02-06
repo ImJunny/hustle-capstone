@@ -56,7 +56,9 @@ export default function SuggestionPost({
           {rating && (
             <Badge style={{ gap: 4 }}>
               <Icon name="star" />
-              {rating}
+              <Text weight="semibold" size="sm">
+                {rating}/5
+              </Text>
             </Badge>
           )}
           <Badge>{tags[0]}</Badge>

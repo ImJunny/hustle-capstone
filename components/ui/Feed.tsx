@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -7,26 +7,45 @@ import IconButton from "./IconButton";
 import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
 import Icon from "./Icon";
 import Button from "./Button";
-import { TServerData } from "@/app/(tabs)";
-
-const { width, height } = Dimensions.get("window");
-const contentHeight = height * 0.8; // 80% of the screen height
+import { LinearGradient } from "expo-linear-gradient";
 
 function Feed({ postData }: { postData: any }) {
-  console.log(postData);
+  const { width, height: totalHeight } = Dimensions.get("window");
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const subtractedHeight = 57 + 57 + statusBarHeight;
+  const newHeight = totalHeight - subtractedHeight;
+
   return (
-    <View style={styles.feedContainer}>
-      <ImageBackgroundPlaceholder
-        style={{ height: contentHeight * 0.7, width: "100%" }}
-      />
-      <View style={{ width: "100%" }} />
+    <View style={[styles.feedContainer, { height: newHeight }]} color="black">
       <View
         style={{
-          position: "absolute",
-          width: "100%",
+          height: newHeight * 0.75,
+        }}
+      >
+        <ImageBackgroundPlaceholder
+          width={800}
+          height={800}
+          style={{ width: "100%", height: "100%" }}
+        />
+        <LinearGradient
+          colors={["rgb(0, 0, 0)", "transparent"]}
+          start={{ x: 0, y: 1 }}
+          end={{ x: 0, y: 0 }}
+          style={{
+            left: 0,
+            right: 0,
+            height: 250,
+            bottom: -2,
+            position: "absolute",
+          }}
+        />
+      </View>
+      <View
+        style={{
+          flex: 1,
           bottom: 0,
           padding: 16,
-          backgroundColor: "black",
+          position: "absolute",
         }}
       >
         <View style={{ flexDirection: "row" }}>
@@ -51,7 +70,7 @@ function Feed({ postData }: { postData: any }) {
                     flexDirection: "row",
                     gap: 10,
                     paddingBottom: 12,
-                    paddingTop: 22,
+                    marginTop: 10,
                   }}
                 >
                   {postData.tags.map((tag: string, i: number) => (
@@ -64,7 +83,7 @@ function Feed({ postData }: { postData: any }) {
                   numberOfLines={3}
                   ellipsizeMode="tail"
                   style={styles.description}
-                  color="white"
+                  color="muted-dark"
                 >
                   {postData.description}
                 </Text>
@@ -74,14 +93,16 @@ function Feed({ postData }: { postData: any }) {
 
           <View style={styles.iconButtonsContainer}>
             <IconButton
-              name={"heart-outline"}
+              name={"add-circle-outline"}
               style={styles.iconButton}
               color="white"
+              size="2xl"
             ></IconButton>
             <IconButton
               name={"paper-plane-outline"}
               style={styles.iconButton}
               color="white"
+              size="2xl"
             ></IconButton>
           </View>
         </View>
@@ -98,9 +119,9 @@ function Feed({ postData }: { postData: any }) {
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
-              <Icon name={"star-outline"} color="white"></Icon>
+              <Icon name={"star"} color="white"></Icon>
               <Text color="white" weight="semibold">
-                {postData.rate}/5
+                {postData.rating}/5
               </Text>
             </View>
           </View>
@@ -119,8 +140,7 @@ export default Feed;
 
 const styles = StyleSheet.create({
   feedContainer: {
-    height: contentHeight,
-    width: width,
+    flex: 1,
   },
   textContainer: {},
   badgeSpace: {},
@@ -147,5 +167,6 @@ const styles = StyleSheet.create({
   viewButton: {
     marginLeft: "auto",
     backgroundColor: "white",
+    paddingHorizontal: 30,
   },
 });

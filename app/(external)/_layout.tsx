@@ -13,6 +13,8 @@ export default function Layout() {
       <Stack.Screen name="job-post" />
       <Stack.Screen name="profile" />
       <Stack.Screen name="settings" />
+      <Stack.Screen name="(explore-tabs)" />
+      <Stack.Screen name="(searched-tabs)" />
     </Stack>
   );
 }

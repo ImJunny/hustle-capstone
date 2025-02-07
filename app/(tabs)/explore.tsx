@@ -62,7 +62,9 @@ export default function ExploreScreen() {
             size="xl"
             weight="semibold"
             style={styles.sectionTitle}
-            onPress={() => router.push("/explore-recent")}
+            onPress={() =>
+              router.push("/(external)/(explore-tabs)/explore-recent")
+            }
           >
             Top Categories
           </Text>
@@ -83,7 +85,14 @@ export default function ExploreScreen() {
           </View>
         </View>
         <View>
-          <Text size="xl" weight="bold" style={styles.sectionTitle}>
+          <Text
+            size="xl"
+            weight="bold"
+            style={styles.sectionTitle}
+            onPress={() =>
+              router.push("/(external)/(searched-tabs)/searched-jobs")
+            }
+          >
             Job Suggestions
           </Text>
           {suggestions.map((suggestion, i) => (

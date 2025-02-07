@@ -17,23 +17,6 @@ const recents = [
 export default function ExploreScreen() {
   return (
     <>
-      <View style={styles.recentSavedRow}>
-        <View style={[styles.recentRow, styles.selectedTab]}>
-          <Text size="xl" weight="semibold" color="white">
-            Recent
-          </Text>
-        </View>
-        <View style={styles.savedRow}>
-          <Text
-            size="xl"
-            weight="semibold"
-            color="muted"
-            onPress={() => router.push("/explore-saved")}
-          >
-            Saved
-          </Text>
-        </View>
-      </View>
       <View>
         {recents.map((suggestion, i) => (
           <RecentSuggestion
@@ -46,23 +29,3 @@ export default function ExploreScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  recentSavedRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 4,
-    gap: 8,
-  },
-  recentRow: {
-    marginHorizontal: 16,
-    padding: 6,
-  },
-  savedRow: {
-    padding: 6,
-  },
-  selectedTab: {
-    borderBottomWidth: 5,
-    borderColor: "white",
-  },
-});

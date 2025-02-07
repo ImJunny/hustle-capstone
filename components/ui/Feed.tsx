@@ -8,6 +8,7 @@ import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
 import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 function Feed({ postData }: { postData: any }) {
   const { width, height: totalHeight } = Dimensions.get("window");
@@ -125,7 +126,10 @@ function Feed({ postData }: { postData: any }) {
               </Text>
             </View>
           </View>
-          <Button style={styles.viewButton}>
+          <Button
+            style={styles.viewButton}
+            onPress={() => router.push(`/job/${postData.uuid}`)}
+          >
             <Text color="black" weight="semibold">
               View
             </Text>

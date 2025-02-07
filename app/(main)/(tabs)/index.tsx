@@ -20,7 +20,7 @@ export type TServerData = {
 const serverData: TServerData = {
   data: [
     {
-      uuid: "udha85438ru23r",
+      uuid: "asdf",
       title: "Lawn Mowing Needed",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
@@ -33,7 +33,7 @@ const serverData: TServerData = {
       name: "Kevin Li",
     },
     {
-      uuid: "udha83138ru23s",
+      uuid: "fdsa",
       title: "Lawn Mowing",
       description: "Lorem Ipsum...",
       rate: 3,
@@ -45,7 +45,7 @@ const serverData: TServerData = {
       name: "Kevin Li",
     },
     {
-      uuid: "udha838432ru23t",
+      uuid: "543zgfg",
       title: "Lawn Mowing",
       description: "Lorem Ipsum...",
       rate: 4,
@@ -57,7 +57,7 @@ const serverData: TServerData = {
       name: "Kevin Li",
     },
     {
-      uuid: "udha832348ru23t",
+      uuid: "udha8323",
       title: "Lawn Mowing",
       description: "Lorem Ipsum...",
       rate: 6,

@@ -20,10 +20,9 @@ export function ExampleHeader() {
             Hustle
           </Text>
         ),
-        center: <Text>Middle</Text>,
         right: (
           <IconButton
-            name="information-circle-outline"
+            name="filter"
             size="xl"
             onPress={() => router.push("/example")}
           />

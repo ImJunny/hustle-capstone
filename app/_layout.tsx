@@ -19,12 +19,6 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-/*
-  This is the root layout which includes a stack from Expo Router.
-  This determines the behavior of screens where (tabs) routes stack 
-  logic is separate from (external) routes. This allows for customization 
-  for both stacks like animation, headers, etc..
-*/
 export default function RootLayout() {
   const themeColor = useThemeColor();
   SystemUI.setBackgroundColorAsync(themeColor.background);
@@ -56,8 +50,8 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <SafeAreaView style={{ flex: 1 }}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(external)" />
+          <Stack.Screen name="(main)" />
+          <Stack.Screen name="(auth)" />
         </Stack>
       </SafeAreaView>
       <StatusBar style="auto" />

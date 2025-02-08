@@ -33,7 +33,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="jobs"
+        name="(job-center)"
         options={{
           title: "Job Center",
           tabBarIcon: ({ focused }) => (

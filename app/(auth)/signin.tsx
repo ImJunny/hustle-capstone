@@ -28,7 +28,7 @@ export default function SignInScreen() {
         <View style={styles.formContainer}>
           <Input placeholder="Email or username" style={styles.input} />
           <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(tabs)")}>
+          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
             Log In
           </Button>
           <View style={styles.separatorContainer}>

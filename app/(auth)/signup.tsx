@@ -29,7 +29,7 @@ export default function SignUpScreen() {
           <Input placeholder="Email" style={styles.input} />
           <Input placeholder="Username" style={styles.input} />
           <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(tabs)")}>
+          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
             Sign Up
           </Button>
           <View style={styles.separatorContainer}>

@@ -26,7 +26,7 @@ const serverData: TServerData = {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
       rate: 5,
       rating: 5,
-      tags: ["$60", "yardwork", "within 10 miles"],
+      tags: ["$60", "yardwork", "< 10 mi"],
       location_type: "local",
       location_address: "123 St",
       date: "January 20th",
@@ -34,11 +34,11 @@ const serverData: TServerData = {
     },
     {
       uuid: "fdsa",
-      title: "Lawn Mowing",
+      title: "Need someone to help me move ASAP!",
       description: "Lorem Ipsum...",
       rate: 3,
       rating: 4.5,
-      tags: ["blank", "blank2", "blank3"],
+      tags: ["$ 130+", "< 5 mi", "moving", "home care"],
       location_type: "local",
       location_address: "123 St",
       date: "January 20th",
@@ -72,7 +72,7 @@ const serverData: TServerData = {
 };
 
 export default function HomeScreen() {
-  const { width, height: totalHeight } = Dimensions.get("window");
+  const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
   const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;

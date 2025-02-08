@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SymbolWeight } from "expo-symbols";
 import React from "react";
 import { OpaqueColorValue, StyleProp, TextStyle } from "react-native";
+import { ViewProps } from "./View";
 
 export type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
 type IconProps = {

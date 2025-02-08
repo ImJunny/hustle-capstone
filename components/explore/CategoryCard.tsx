@@ -11,11 +11,17 @@ export default function CategoryCard({ title, style }: CategoryCardProps) {
   return (
     <View style={[{ marginRight: 10 }, style]}>
       <ImageBackgroundPlaceholder
-        width={100}
-        height={100}
+        width={110}
+        height={110}
         style={{ justifyContent: "center" }}
+        dark
       >
-        <Text style={{ textAlign: "center" }} color="background" weight="bold">
+        <Text
+          style={{ textAlign: "center" }}
+          color="white"
+          weight="bold"
+          size="lg"
+        >
           {title}
         </Text>
       </ImageBackgroundPlaceholder>

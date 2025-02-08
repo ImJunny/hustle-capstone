@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useRef, useState } from "react";
 import Badge from "./Badge";
 import IconButton from "./IconButton";
 import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
@@ -11,7 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
 function Feed({ postData }: { postData: any }) {
-  const { width, height: totalHeight } = Dimensions.get("window");
+  const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
   const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
@@ -55,7 +55,7 @@ function Feed({ postData }: { postData: any }) {
               <Text
                 style={{ marginVertical: 4 }}
                 color="white"
-                size="xl"
+                size="2xl"
                 weight="semibold"
               >
                 {postData.title}
@@ -93,12 +93,12 @@ function Feed({ postData }: { postData: any }) {
           </View>
 
           <View style={styles.iconButtonsContainer}>
-            <IconButton
+            <Icon
               name={"add-circle-outline"}
               style={styles.iconButton}
               color="white"
               size="2xl"
-            ></IconButton>
+            ></Icon>
             <IconButton
               name={"paper-plane-outline"}
               style={styles.iconButton}
@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
+    marginTop: 8,
   },
   nameContainer: { marginLeft: 20 },
   viewButton: {

@@ -57,7 +57,7 @@ export default function MessagesScreen() {
       <EmptyHeader />
       <View>
         <View style={styles.search_container}>
-          <Input placeholder="Search users, jobs, messages, etc..."></Input>
+          <Input placeholder="Search in messages..."></Input>
         </View>
         <View>
           {inbox.map((message, i) => (

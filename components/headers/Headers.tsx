@@ -4,6 +4,7 @@ import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
+import View from "../ui/View";
 
 export function ExampleHeader() {
   return (
@@ -32,7 +33,7 @@ export function ExampleHeader() {
   );
 }
 
-export function JobsHeader() {
+export function JobsCenterHeader() {
   return (
     <HeaderWrapper
       options={{
@@ -69,6 +70,27 @@ export function BackHeader() {
   );
 }
 
+export function SimpleHeader({ title }: { title: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text size="xl" weight="semibold">
+              {title}
+            </Text>
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
 export function EmptyHeader() {
   return <HeaderWrapper />;
 }
@@ -77,7 +99,12 @@ export function ExploreHeader() {
   return (
     <HeaderWrapper
       options={{
-        center: <Input style={{ width: "100%" }} />,
+        center: (
+          <Input
+            placeholder="Search users, services, jobs, etc..."
+            style={{ width: "100%" }}
+          />
+        ),
       }}
     />
   );

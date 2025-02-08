@@ -5,22 +5,25 @@ import { router } from "expo-router";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
-import SuggestionPost from "@/components/explore/SuggestionPost";
-import { EmptyHeader, ExploreHeader } from "@/components/headers/Headers";
+import JobPost from "@/components/posts/JobPost";
+import { ExploreHeader } from "@/components/headers/Headers";
+import ServicePost from "@/components/posts/ServicePost";
 
 const categories = [
   { id: 1, title: "Tech" },
   { id: 2, title: "Health" },
-  { id: 3, title: "Finance" },
-  { id: 4, title: "Education" },
+  { id: 3, title: "Home Care" },
+  { id: 4, title: "Food" },
+  { id: 5, title: "Education" },
+  { id: 6, title: "Gaming" },
 ];
-const suggestions = [
+export const suggestions = [
   {
     id: 1,
     title: "Yard Work",
     rate: "50+",
     rating: "4.5",
-    tags: ["yardwork"],
+    tags: ["yardwork", "home"],
     distance: "< 10 mi",
     imageSource: "https://via.placeholder.com/100",
   },
@@ -32,6 +35,7 @@ const suggestions = [
     tags: ["plumbing", "homecare"],
     distance: "< 15 mi",
     imageSource: "https://via.placeholder.com/100",
+    status: "1 accepted",
   },
   {
     id: 3,
@@ -39,16 +43,17 @@ const suggestions = [
     rate: "75+",
     rating: "2",
     tags: ["painting"],
-    distance: "< 20 mi",
+    distance: "remote",
     imageSource: "https://via.placeholder.com/100",
   },
   {
     id: 4,
-    title: "Shopping",
-    rate: "50",
+    title: "Paint a Meural",
+    rate: "300+",
     rating: "3",
-    tags: ["shopping"],
+    tags: ["art", "painting"],
     distance: "< 25 mi",
+    status: "10 accepted",
     imageSource: "https://via.placeholder.com/100",
   },
 ];
@@ -87,8 +92,9 @@ export default function ExploreScreen() {
             Job Suggestions
           </Text>
           {suggestions.map((suggestion, i) => (
-            <SuggestionPost
+            <JobPost
               key={suggestion.id}
+              postID={suggestion.id}
               title={suggestion.title}
               rate={suggestion.rate}
               tags={suggestion.tags}
@@ -96,6 +102,7 @@ export default function ExploreScreen() {
               style={{
                 borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
               }}
+              status={suggestion.status}
             />
           ))}
         </View>
@@ -104,8 +111,9 @@ export default function ExploreScreen() {
             Service Suggestions
           </Text>
           {suggestions.map((suggestion, i) => (
-            <SuggestionPost
+            <ServicePost
               key={suggestion.id}
+              postID={suggestion.id}
               title={suggestion.title}
               rate={suggestion.rate}
               rating={suggestion.rating}

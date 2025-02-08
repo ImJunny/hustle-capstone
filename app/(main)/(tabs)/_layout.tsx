@@ -54,6 +54,7 @@ export default function TabLayout() {
                 focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"
               }
               size="xl"
+              flippedX
             />
           ),
         }}

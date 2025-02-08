@@ -33,8 +33,9 @@ export default function IconButton({
       <Icon
         size={size}
         name={name}
-        style={[flippedX && { transform: "scaleX(-1)" }, style]}
+        style={style}
         color={color}
+        flippedX={flippedX}
       />
     </TouchableOpacity>
   );

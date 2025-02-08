@@ -108,7 +108,7 @@ export function MessagesHeader() {
               Messages
             </Text>
           ),
-          right: <IconButton name="ellipsis-vertical" />,
+          right: <IconButton name="ellipsis-vertical" flippedX />,
         }}
       />
       <HeaderWrapper

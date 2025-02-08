@@ -6,39 +6,39 @@ import Badge from "../ui/Badge";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TJobPost } from "@/server/utils/example_data";
+import { TServicePost } from "@/server/utils/example_data";
+import Icon from "../ui/Icon";
 
 export type ServicePostProps = {
-  data: TJobPost;
+  data: TServicePost;
 } & ViewProps;
 
 export default function ServicePost({ data, style }: ServicePostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const { distance, min_rate, tags, title, uuid, max_rate, status } = data;
+  const { distance, min_rate, tags, title, uuid, max_rate, user_rating } = data;
 
   return (
     <Link href={`/job/${uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <ImagePlaceholder
-            width={112}
-            height={112}
-            style={{ borderRadius: 0 }}
+            width={80}
+            height={80}
+            style={{ borderRadius: 4 }}
           />
+
           <View style={styles.entryContent}>
-            <Text
-              size="md"
-              weight="semibold"
-              color="foreground"
-              style={styles.title}
-            >
-              {title}
-            </Text>
-            <Text weight="semibold" color="foreground" size="sm">
-              Due August 1
-            </Text>
+            <Text weight="semibold">{title}</Text>
             <View style={styles.badgeRow}>
+              {user_rating && (
+                <Badge style={{ flexDirection: "row", gap: 2 }}>
+                  <Icon name="star" />
+                  <Text weight="semibold" size="sm">
+                    {user_rating}/5
+                  </Text>
+                </Badge>
+              )}
               <Badge style={{ flexDirection: "row", gap: 2 }}>
                 <Text weight="semibold" size="sm">
                   $
@@ -53,11 +53,6 @@ export default function ServicePost({ data, style }: ServicePostProps) {
                 <Badge key={i}>{tag}</Badge>
               ))}
             </View>
-            {status && (
-              <Text weight="semibold" color="muted" size="sm">
-                {status}
-              </Text>
-            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -71,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 16,
     gap: 16,
-    height: 144,
+    height: 112,
   },
   entryContent: {
     flex: 1,
@@ -82,7 +77,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 6,
     marginBottom: 8,
-    gap: 4,
+    columnGap: 4,
+    rowGap: 6,
   },
-  title: {},
 });

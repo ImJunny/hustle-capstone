@@ -49,7 +49,12 @@ export default function TabLayout() {
         options={{
           title: "Messages",
           tabBarIcon: ({ focused }) => (
-            <Icon name={focused ? "mail" : "mail-outline"} size="xl" />
+            <Icon
+              name={
+                focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"
+              }
+              size="xl"
+            />
           ),
         }}
       />

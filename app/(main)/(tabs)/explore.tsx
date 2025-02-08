@@ -8,7 +8,11 @@ import { StyleSheet } from "react-native";
 import JobPost from "@/components/posts/JobPost";
 import { ExploreHeader } from "@/components/headers/Headers";
 import ServicePost from "@/components/posts/ServicePost";
-import { categories, exampleJobPosts } from "@/server/utils/example_data";
+import {
+  categories,
+  exampleJobPosts,
+  exampleServicePosts,
+} from "@/server/utils/example_data";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 
@@ -64,12 +68,12 @@ export default function ExploreScreen() {
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Service Suggestions
           </Text>
-          {exampleJobPosts.map((post, i) => (
+          {exampleServicePosts.map((post, i) => (
             <ServicePost
               key={i}
               data={post}
               style={{
-                borderBottomWidth: i != exampleJobPosts.length - 1 ? 1 : 0,
+                borderBottomWidth: i != exampleServicePosts.length - 1 ? 1 : 0,
               }}
             />
           ))}

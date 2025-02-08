@@ -15,28 +15,22 @@ export type JobPostProps = {
 export default function JobPost({ data, style }: JobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const { distance, min_rate, tags, title, uuid, max_rate, status } = data;
+  const { distance, min_rate, tags, title, uuid, max_rate, status, date } =
+    data;
 
   return (
     <Link href={`/job/${uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <ImagePlaceholder
-            width={112}
-            height={112}
-            style={{ borderRadius: 0 }}
+            width={100}
+            height={100}
+            style={{ borderRadius: 4 }}
           />
           <View style={styles.entryContent}>
-            <Text
-              size="md"
-              weight="semibold"
-              color="foreground"
-              style={styles.title}
-            >
-              {title}
-            </Text>
-            <Text weight="semibold" color="foreground" size="sm">
-              Due August 1
+            <Text weight="semibold">{title}</Text>
+            <Text weight="semibold" size="sm">
+              Due {date}
             </Text>
             <View style={styles.badgeRow}>
               <Badge style={{ flexDirection: "row", gap: 2 }}>
@@ -71,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 16,
     gap: 16,
-    height: 144,
+    height: 154,
   },
   entryContent: {
     flex: 1,
@@ -82,7 +76,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 6,
     marginBottom: 8,
-    gap: 4,
+    columnGap: 4,
+    rowGap: 6,
   },
-  title: {},
 });

@@ -5,6 +5,7 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ExampleHeader() {
   return (
@@ -93,6 +94,28 @@ export function SimpleHeader({ title }: { title: string }) {
 
 export function EmptyHeader() {
   return <HeaderWrapper />;
+}
+
+export function MessagesHeader() {
+  const borderColor = useThemeColor().border;
+  return (
+    <View style={{ borderBottomWidth: 1, borderColor }}>
+      <HeaderWrapper
+        style={{ borderBottomWidth: 0 }}
+        options={{
+          left: (
+            <Text size="xl" weight="semibold">
+              Messages
+            </Text>
+          ),
+          right: <IconButton name="ellipsis-vertical" />,
+        }}
+      />
+      <View style={{ padding: 10, borderBottomWidth: 1 }} color="background">
+        <Input placeholder="Search in messages..."></Input>
+      </View>
+    </View>
+  );
 }
 
 export function ExploreHeader() {

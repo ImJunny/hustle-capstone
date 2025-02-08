@@ -10,11 +10,12 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "react-native";
+import { KeyboardAvoidingView, useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import * as NavigationBar from "expo-navigation-bar";
 import SafeAreaView from "@/components/ui/SafeAreaView";
+import TabBar from "@/components/navigation/TabBar";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -9,12 +9,18 @@ import JobPost from "@/components/posts/JobPost";
 import { ExploreHeader } from "@/components/headers/Headers";
 import ServicePost from "@/components/posts/ServicePost";
 import { categories, exampleJobPosts } from "@/server/utils/example_data";
+import Button from "@/components/ui/Button";
+import Icon from "@/components/ui/Icon";
 
 export default function ExploreScreen() {
   return (
     <>
       <ExploreHeader />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        color="base"
+      >
         <View>
           <Text
             size="xl"
@@ -24,7 +30,7 @@ export default function ExploreScreen() {
           >
             Top Categories
           </Text>
-          <View style={{ backgroundColor: "red" }}>
+          <View>
             <ScrollView
               style={{ paddingLeft: 16 }}
               horizontal={true}
@@ -42,7 +48,7 @@ export default function ExploreScreen() {
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Job exampleJobPosts
+            Job Suggestions
           </Text>
           {exampleJobPosts.map((post, i) => (
             <JobPost
@@ -56,7 +62,7 @@ export default function ExploreScreen() {
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Service exampleJobPosts
+            Service Suggestions
           </Text>
           {exampleJobPosts.map((post, i) => (
             <ServicePost

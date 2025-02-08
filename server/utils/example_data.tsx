@@ -20,7 +20,7 @@ export type TJobPost = {
 };
 export const exampleJobPosts: TJobPost[] = [
   {
-    uuid: "dwadaw",
+    uuid: "asdfsaf",
     title: "Yard Work",
     description: "Lorem ipsum",
     min_rate: 50,
@@ -40,7 +40,7 @@ export const exampleJobPosts: TJobPost[] = [
     date: "February 8",
   },
   {
-    uuid: "dwadaw",
+    uuid: "jhgddj",
     title: "Yard Work",
     description: "Lorem ipsum",
     min_rate: 50,
@@ -50,7 +50,7 @@ export const exampleJobPosts: TJobPost[] = [
     date: "February 8",
   },
   {
-    uuid: "dwadaw",
+    uuid: "tydwasytss",
     title: "Yard Work",
     description: "Lorem ipsum",
     min_rate: 50,

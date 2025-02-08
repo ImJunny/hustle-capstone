@@ -12,7 +12,7 @@ export type ViewProps = {
 
 export default function ScrollView({
   style,
-  color = "base",
+  color = "transparent",
   ...otherProps
 }: ViewProps) {
   const backgroundColor = useThemeColor()[color];

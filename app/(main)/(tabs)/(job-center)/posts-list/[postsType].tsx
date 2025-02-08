@@ -1,6 +1,7 @@
 import { SimpleHeader } from "@/components/headers/Headers";
 import JobPost from "@/components/posts/JobPost";
 import ScrollView from "@/components/ui/ScrollView";
+import { exampleJobPosts } from "@/server/utils/example_data";
 import { useLocalSearchParams } from "expo-router";
 
 export default function PostListScreen() {
@@ -16,11 +17,7 @@ export default function PostListScreen() {
     posts.push(
       <JobPost
         key={`post-${i}`}
-        postID={i}
-        distance="< 5 mi"
-        rate="50"
-        tags={["home care"]}
-        title="Home Cleaning"
+        data={exampleJobPosts[0]}
         style={{
           borderBottomWidth: i != posts.length - 1 ? 1 : 0,
         }}

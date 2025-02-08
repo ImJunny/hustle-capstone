@@ -1,12 +1,10 @@
 import View from "@/components/ui/View";
 import React from "react";
 import Input from "@/components/ui/Input";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 import Message from "@/components/messages/Message";
-import { EmptyHeader } from "@/components/headers/Headers";
-
-const { height } = Dimensions.get("window");
-const contentHeight = height * 0.8; // 80% of the screen height
+import { MessagesHeader } from "@/components/headers/Headers";
+import ScrollView from "@/components/ui/ScrollView";
 
 const inbox = [
   {
@@ -54,11 +52,8 @@ const inbox = [
 export default function MessagesScreen() {
   return (
     <>
-      <EmptyHeader />
-      <View>
-        <View style={styles.search_container}>
-          <Input placeholder="Search in messages..."></Input>
-        </View>
+      <MessagesHeader />
+      <ScrollView style={{ flex: 1 }} color="base">
         <View>
           {inbox.map((message, i) => (
             <Message
@@ -73,7 +68,7 @@ export default function MessagesScreen() {
             />
           ))}
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }
@@ -82,8 +77,4 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  search_container: {
-    padding: 10,
-  },
-  messages_container: {},
 });

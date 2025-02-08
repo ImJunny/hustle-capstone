@@ -3,7 +3,6 @@ import { PlatformPressable } from "@react-navigation/elements";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View from "../ui/View";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import SafeAreaView from "../ui/SafeAreaView";
 
 export default function TabBar({
   state,

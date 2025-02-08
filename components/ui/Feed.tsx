@@ -78,26 +78,22 @@ function Feed({ data }: { data: TJobPost }) {
             </View>
             <View style={styles.middleContainer}>
               <View style={styles.descriptionContainer}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 10,
-                    paddingBottom: 12,
-                    marginTop: 10,
-                  }}
-                >
+                <View style={styles.badgeRow}>
+                  <Badge style={{ flexDirection: "row", gap: 2 }}>
+                    <Text weight="semibold" size="sm">
+                      $
+                    </Text>
+                    <Text weight="semibold" size="sm">
+                      {min_rate}
+                      {max_rate && "+"}
+                    </Text>
+                  </Badge>
+                  <Badge>{distance}</Badge>
                   {tags.map((tag, i) => (
-                    <Badge style={styles.badgeSpace} key={i}>
-                      {tag}
-                    </Badge>
+                    <Badge key={i}>{tag}</Badge>
                   ))}
                 </View>
-                <Text
-                  numberOfLines={3}
-                  ellipsizeMode="tail"
-                  style={styles.description}
-                  color="muted-dark"
-                >
+                <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
                   {description}
                 </Text>
               </View>
@@ -163,7 +159,13 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     flex: 1,
   },
-  description: {},
+  badgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 6,
+    marginBottom: 8,
+    gap: 2,
+  },
   iconButton: { paddingBottom: 20 },
   middleContainer: {
     flexDirection: "row",

@@ -16,24 +16,6 @@ export default function JobCenterScreen() {
       <View style={styles.screen} color="background">
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
-            Your Posts
-          </Text>
-          <LinkEntry
-            iconName="copy-outline"
-            title="Job posts"
-            href="/posts-list/job-posts"
-          />
-          <LinkEntry
-            iconName="copy-outline"
-            title="Service posts"
-            href="/posts-list/service-posts"
-          />
-          <Button isFullWidth style={{ marginTop: 16 }}>
-            Create a post
-          </Button>
-        </View>
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
             Tracking
           </Text>
           <LinkEntry
@@ -46,20 +28,23 @@ export default function JobCenterScreen() {
             title="Hiring"
             href="/posts-list/hiring"
           />
+          <Button isFullWidth style={{ marginTop: 16 }}>
+            Create a post
+          </Button>
         </View>
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
             Activity
           </Text>
           <LinkEntry
-            iconName="time-outline"
-            title="Recently viewed"
-            href="/posts-list/recently-viewed"
-          />
-          <LinkEntry
             iconName="heart-outline"
             title="Liked"
             href="/posts-list/liked"
+          />
+          <LinkEntry
+            iconName="time-outline"
+            title="Recently viewed"
+            href="/posts-list/recently-viewed"
           />
         </View>
       </View>

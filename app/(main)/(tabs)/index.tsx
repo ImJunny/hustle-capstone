@@ -3,6 +3,7 @@ import Feed from "@/components/ui/Feed";
 import React from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
 import { exampleJobPosts } from "@/server/utils/example_data";
+import View from "@/components/ui/View";
 
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
@@ -13,21 +14,23 @@ export default function HomeScreen() {
   return (
     <>
       <ExampleHeader />
-      <FlatList
-        data={exampleJobPosts}
-        renderItem={({ item }) => <Feed key={item.uuid} data={item} />}
-        keyExtractor={(item) => item.uuid}
-        pagingEnabled
-        snapToInterval={newHeight}
-        snapToAlignment="end"
-        decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
-        getItemLayout={(data, index) => ({
-          length: newHeight,
-          offset: newHeight * index,
-          index,
-        })}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={exampleJobPosts}
+          renderItem={({ item }) => <Feed key={item.uuid} data={item} />}
+          keyExtractor={(item) => item.uuid}
+          pagingEnabled
+          snapToInterval={newHeight}
+          snapToAlignment="end"
+          decelerationRate="fast"
+          showsVerticalScrollIndicator={false}
+          getItemLayout={(data, index) => ({
+            length: newHeight,
+            offset: newHeight * index,
+            index,
+          })}
+        />
+      </View>
     </>
   );
 }

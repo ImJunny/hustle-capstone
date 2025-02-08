@@ -28,7 +28,7 @@ export const Colors = {
     red: "#E93030",
     green: "#149D2D",
     yellow: "#F1AC16",
-    base: "#1C1C1C",
+    base: "#141414",
     background: "#000000",
     "background-variant": "#444444",
     foreground: "#FFFFFF",

@@ -17,22 +17,26 @@ export type TJobPost = {
   distance: string;
   status?: string;
   date: string;
+  comments?: number;
 };
 export const exampleJobPosts: TJobPost[] = [
   {
     uuid: "asdfsaf",
     title: "Yard Work",
-    description: "Lorem ipsum",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
     max_rate: 100,
     tags: ["yardwork", "home"],
     distance: "< 10 mi",
     date: "February 8",
+    comments: 1,
   },
   {
     uuid: "dwadaw",
     title: "Yard Work",
-    description: "Lorem ipsum",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
     max_rate: 100,
     tags: ["yardwork", "home"],
@@ -42,17 +46,20 @@ export const exampleJobPosts: TJobPost[] = [
   {
     uuid: "jhgddj",
     title: "Yard Work",
-    description: "Lorem ipsum",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
     max_rate: 100,
     tags: ["yardwork", "home"],
     distance: "< 10 mi",
     date: "February 8",
+    comments: 4,
   },
   {
     uuid: "tydwasytss",
     title: "Yard Work",
-    description: "Lorem ipsum",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
     max_rate: 100,
     tags: ["yardwork", "home"],

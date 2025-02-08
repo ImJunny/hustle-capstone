@@ -27,6 +27,7 @@ function Feed({ data }: { data: TJobPost }) {
     status,
     date,
     description,
+    comments,
   } = data;
   return (
     <View style={[styles.feedContainer, { height: newHeight }]} color="black">
@@ -62,7 +63,7 @@ function Feed({ data }: { data: TJobPost }) {
         }}
       >
         <View style={{ flexDirection: "row" }}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, alignSelf: "flex-end" }}>
             <View style={styles.textContainer}>
               <Text
                 style={{ marginVertical: 4 }}
@@ -101,18 +102,35 @@ function Feed({ data }: { data: TJobPost }) {
           </View>
 
           <View style={styles.iconButtonsContainer}>
-            <Icon
+            <IconButton
               name={"add-circle-outline"}
               style={styles.iconButton}
               color="white"
               size="2xl"
-            ></Icon>
+            />
+            <View style={styles.iconButton}>
+              <IconButton
+                name={"chatbubble-outline"}
+                color="white"
+                size="2xl"
+                flippedX
+              />
+              {comments && (
+                <Text
+                  style={{ textAlign: "center", marginTop: 2 }}
+                  weight="semibold"
+                >
+                  {comments}
+                </Text>
+              )}
+            </View>
+
             <IconButton
               name={"paper-plane-outline"}
               style={styles.iconButton}
               color="white"
               size="2xl"
-            ></IconButton>
+            />
           </View>
         </View>
 

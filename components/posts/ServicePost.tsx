@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 6,
     marginBottom: 8,
-    gap: 2,
+    gap: 4,
   },
   title: {},
 });

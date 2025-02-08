@@ -14,7 +14,7 @@ export function ExampleHeader() {
         left: (
           <Text
             weight="semibold"
-            size="2xl"
+            size="3xl"
             style={{
               fontFamily: "Lexend-bold",
             }}
@@ -99,7 +99,7 @@ export function EmptyHeader() {
 export function MessagesHeader() {
   const borderColor = useThemeColor().border;
   return (
-    <View style={{ borderBottomWidth: 1, borderColor }}>
+    <View color="background">
       <HeaderWrapper
         style={{ borderBottomWidth: 0 }}
         options={{
@@ -111,9 +111,17 @@ export function MessagesHeader() {
           right: <IconButton name="ellipsis-vertical" />,
         }}
       />
-      <View style={{ padding: 10, borderBottomWidth: 1 }} color="background">
-        <Input placeholder="Search in messages..."></Input>
-      </View>
+      <HeaderWrapper
+        style={{ marginTop: -10 }}
+        options={{
+          center: (
+            <Input
+              placeholder="Search users, services, jobs..."
+              style={{ width: "100%" }}
+            />
+          ),
+        }}
+      />
     </View>
   );
 }
@@ -124,7 +132,7 @@ export function ExploreHeader() {
       options={{
         center: (
           <Input
-            placeholder="Search users, services, jobs, etc..."
+            placeholder="Search users, services, jobs..."
             style={{ width: "100%" }}
           />
         ),

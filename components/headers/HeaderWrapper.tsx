@@ -1,6 +1,5 @@
 import React from "react";
 import View, { ViewProps } from "../ui/View";
-import { StatusBar } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TColors } from "@/constants/Colors";
 
@@ -30,7 +29,7 @@ export default function HeaderWrapper({
       style={[
         {
           borderColor,
-          height: 56,
+          height: 66,
           borderBottomWidth: 1,
           paddingHorizontal: 16,
           backgroundColor: themeColor[color],

@@ -14,7 +14,7 @@ import { TJobPost } from "@/server/utils/example_data";
 function Feed({ data }: { data: TJobPost }) {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 56 + 56 + statusBarHeight;
+  const subtractedHeight = 66 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   const {
@@ -119,6 +119,7 @@ function Feed({ data }: { data: TJobPost }) {
                 <Text
                   style={{ textAlign: "center", marginTop: 2 }}
                   weight="semibold"
+                  color="white"
                 >
                   {comments}
                 </Text>
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 6,
     marginBottom: 8,
-    gap: 2,
+    gap: 8,
   },
   iconButton: { paddingBottom: 20 },
   middleContainer: {

@@ -16,7 +16,7 @@ export default function SignInScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text
-          size="3xl"
+          size="4xl"
           style={{
             fontFamily: "Lexend-bold",
             textAlign: "center",

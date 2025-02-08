@@ -42,6 +42,7 @@ export const exampleJobPosts: TJobPost[] = [
     tags: ["yardwork", "home"],
     distance: "< 10 mi",
     date: "February 8",
+    status: "1 accepted",
   },
   {
     uuid: "jhgddj",
@@ -65,5 +66,6 @@ export const exampleJobPosts: TJobPost[] = [
     tags: ["yardwork", "home"],
     distance: "< 10 mi",
     date: "February 8",
+    status: "7 accepted",
   },
 ];

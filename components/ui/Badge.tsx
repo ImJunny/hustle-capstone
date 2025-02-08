@@ -32,6 +32,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 999,
     alignSelf: "flex-start",
-    borderWidth: 2,
   },
 });

@@ -8,7 +8,7 @@ import View from "@/components/ui/View";
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 56 + 56 + statusBarHeight;
+  const subtractedHeight = 66 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   return (

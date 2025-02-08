@@ -1,0 +1,62 @@
+export const categories = [
+  { id: 1, title: "Tech" },
+  { id: 2, title: "Health" },
+  { id: 3, title: "Home Care" },
+  { id: 4, title: "Food" },
+  { id: 5, title: "Education" },
+  { id: 6, title: "Gaming" },
+];
+
+export type TJobPost = {
+  uuid: string;
+  title: string;
+  description: string;
+  min_rate: number;
+  max_rate?: number;
+  tags: string[];
+  distance: string;
+  status?: string;
+  date: string;
+};
+export const exampleJobPosts: TJobPost[] = [
+  {
+    uuid: "dwadaw",
+    title: "Yard Work",
+    description: "Lorem ipsum",
+    min_rate: 50,
+    max_rate: 100,
+    tags: ["yardwork", "home"],
+    distance: "< 10 mi",
+    date: "February 8",
+  },
+  {
+    uuid: "dwadaw",
+    title: "Yard Work",
+    description: "Lorem ipsum",
+    min_rate: 50,
+    max_rate: 100,
+    tags: ["yardwork", "home"],
+    distance: "< 10 mi",
+    date: "February 8",
+  },
+  {
+    uuid: "dwadaw",
+    title: "Yard Work",
+    description: "Lorem ipsum",
+    min_rate: 50,
+    max_rate: 100,
+    tags: ["yardwork", "home"],
+    distance: "< 10 mi",
+    date: "February 8",
+  },
+  {
+    uuid: "dwadaw",
+    title: "Yard Work",
+    description: "Lorem ipsum",
+    min_rate: 50,
+    max_rate: 100,
+    tags: ["yardwork", "home"],
+    distance: "< 10 mi",
+    date: "February 8",
+  },
+];

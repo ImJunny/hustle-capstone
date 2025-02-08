@@ -8,55 +8,8 @@ import { StyleSheet } from "react-native";
 import JobPost from "@/components/posts/JobPost";
 import { ExploreHeader } from "@/components/headers/Headers";
 import ServicePost from "@/components/posts/ServicePost";
+import { categories, exampleJobPosts } from "@/server/utils/example_data";
 
-const categories = [
-  { id: 1, title: "Tech" },
-  { id: 2, title: "Health" },
-  { id: 3, title: "Home Care" },
-  { id: 4, title: "Food" },
-  { id: 5, title: "Education" },
-  { id: 6, title: "Gaming" },
-];
-export const suggestions = [
-  {
-    id: 1,
-    title: "Yard Work",
-    rate: "50+",
-    rating: "4.5",
-    tags: ["yardwork", "home"],
-    distance: "< 10 mi",
-    imageSource: "https://via.placeholder.com/100",
-  },
-  {
-    id: 2,
-    title: "Plumbing",
-    rate: "215",
-    rating: "5",
-    tags: ["plumbing", "homecare"],
-    distance: "< 15 mi",
-    imageSource: "https://via.placeholder.com/100",
-    status: "1 accepted",
-  },
-  {
-    id: 3,
-    title: "Painting",
-    rate: "75+",
-    rating: "2",
-    tags: ["painting"],
-    distance: "remote",
-    imageSource: "https://via.placeholder.com/100",
-  },
-  {
-    id: 4,
-    title: "Paint a Meural",
-    rate: "300+",
-    rating: "3",
-    tags: ["art", "painting"],
-    distance: "< 25 mi",
-    status: "10 accepted",
-    imageSource: "https://via.placeholder.com/100",
-  },
-];
 export default function ExploreScreen() {
   return (
     <>
@@ -79,7 +32,7 @@ export default function ExploreScreen() {
             >
               {categories.map((category, i) => (
                 <CategoryCard
-                  key={category.id}
+                  key={i}
                   title={category.title}
                   style={{ paddingRight: i != categories.length - 1 ? 0 : 16 }}
                 />
@@ -89,38 +42,28 @@ export default function ExploreScreen() {
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Job Suggestions
+            Job exampleJobPosts
           </Text>
-          {suggestions.map((suggestion, i) => (
+          {exampleJobPosts.map((post, i) => (
             <JobPost
-              key={suggestion.id}
-              postID={suggestion.id}
-              title={suggestion.title}
-              rate={suggestion.rate}
-              tags={suggestion.tags}
-              distance={suggestion.distance}
+              key={i}
+              data={post}
               style={{
-                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+                borderBottomWidth: i != exampleJobPosts.length - 1 ? 1 : 0,
               }}
-              status={suggestion.status}
             />
           ))}
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Service Suggestions
+            Service exampleJobPosts
           </Text>
-          {suggestions.map((suggestion, i) => (
+          {exampleJobPosts.map((post, i) => (
             <ServicePost
-              key={suggestion.id}
-              postID={suggestion.id}
-              title={suggestion.title}
-              rate={suggestion.rate}
-              rating={suggestion.rating}
-              tags={suggestion.tags}
-              distance={suggestion.distance}
+              key={i}
+              data={post}
               style={{
-                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+                borderBottomWidth: i != exampleJobPosts.length - 1 ? 1 : 0,
               }}
             />
           ))}

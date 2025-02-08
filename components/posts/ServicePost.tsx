@@ -1,71 +1,63 @@
 import React from "react";
-import {
-  StyleSheet,
-  ImageSourcePropType,
-  Touchable,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Badge from "../ui/Badge";
-import Icon from "../ui/Icon";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { TJobPost } from "@/server/utils/example_data";
 
-type PostProps = {
-  postID: number;
-  title: string;
-  rate: string;
-  rating?: string;
-  tags: string[];
-  distance: string;
+export type ServicePostProps = {
+  data: TJobPost;
 } & ViewProps;
 
-export default function ServicePost({
-  postID,
-  title,
-  rate,
-  rating,
-  tags,
-  distance,
-  style,
-}: PostProps) {
+export default function ServicePost({ data, style }: ServicePostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const { distance, min_rate, tags, title, uuid, max_rate, status } = data;
 
   return (
-    <Link href={`/job/${postID}`} asChild>
+    <Link href={`/job/${uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
-          <ImagePlaceholder width={75} height={75} />
+          <ImagePlaceholder
+            width={112}
+            height={112}
+            style={{ borderRadius: 0 }}
+          />
           <View style={styles.entryContent}>
             <Text
               size="md"
-              weight="bold"
+              weight="semibold"
               color="foreground"
               style={styles.title}
             >
               {title}
             </Text>
+            <Text weight="semibold" color="foreground" size="sm">
+              Due August 1
+            </Text>
             <View style={styles.badgeRow}>
-              <Badge>
-                <View style={{ flexDirection: "row", gap: 2 }}>
-                  <Text weight="semibold" size="sm">
-                    $
-                  </Text>
-                  <Text weight="semibold" size="sm">
-                    {rate}
-                  </Text>
-                </View>
+              <Badge style={{ flexDirection: "row", gap: 2 }}>
+                <Text weight="semibold" size="sm">
+                  $
+                </Text>
+                <Text weight="semibold" size="sm">
+                  {min_rate}
+                  {max_rate && "+"}
+                </Text>
               </Badge>
               <Badge>{distance}</Badge>
-              <Badge>{tags[0]}</Badge>
+              {tags.map((tag, i) => (
+                <Badge key={i}>{tag}</Badge>
+              ))}
             </View>
-            <Text size="sm" color="muted">
-              @johnsmith
-            </Text>
+            {status && (
+              <Text weight="semibold" color="muted" size="sm">
+                {status}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -77,19 +69,20 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "flex-start",
-    height: 75,
+    padding: 16,
+    gap: 16,
+    height: 144,
   },
   entryContent: {
     flex: 1,
-    padding: 12,
+    alignSelf: "stretch",
   },
   badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginTop: 2,
+    marginTop: 6,
+    marginBottom: 8,
+    gap: 2,
   },
-  title: {
-    marginBottom: 2,
-  },
+  title: {},
 });

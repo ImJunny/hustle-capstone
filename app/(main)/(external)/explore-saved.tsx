@@ -35,7 +35,7 @@ export default function ExploreScreen() {
       <View>
         {saves.map((suggestion, i) => (
           <SavedSuggestion
-            key={suggestion.id}
+            key={i}
             saved={suggestion.saved}
             rate={suggestion.rate}
             distance={suggestion.distance}

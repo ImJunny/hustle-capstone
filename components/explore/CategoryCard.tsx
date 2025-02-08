@@ -11,8 +11,8 @@ export default function CategoryCard({ title, style }: CategoryCardProps) {
   return (
     <View style={[{ marginRight: 10 }, style]}>
       <ImageBackgroundPlaceholder
-        width={110}
-        height={110}
+        width={90}
+        height={90}
         style={{ justifyContent: "center" }}
         dark
       >

@@ -1,75 +1,8 @@
 import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
-
-export type TServerData = {
-  data: {
-    uuid: string;
-    title: string;
-    description: string;
-    rate: number;
-    rating: number;
-    tags: string[];
-    location_type: string;
-    location_address: string;
-    date: string;
-    name: string;
-  }[];
-};
-const serverData: TServerData = {
-  data: [
-    {
-      uuid: "asdf",
-      title: "Lawn Mowing Needed",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
-      rate: 5,
-      rating: 5,
-      tags: ["$60", "yardwork", "< 10 mi"],
-      location_type: "local",
-      location_address: "123 St",
-      date: "January 20th",
-      name: "Kevin Li",
-    },
-    {
-      uuid: "fdsa",
-      title: "Need someone to help me move ASAP!",
-      description: "Lorem Ipsum...",
-      rate: 3,
-      rating: 4.5,
-      tags: ["$ 130+", "< 5 mi", "moving", "home care"],
-      location_type: "local",
-      location_address: "123 St",
-      date: "January 20th",
-      name: "Kevin Li",
-    },
-    {
-      uuid: "543zgfg",
-      title: "Lawn Mowing",
-      description: "Lorem Ipsum...",
-      rate: 4,
-      rating: 3.5,
-      tags: ["blank", "blank2", "blank3"],
-      location_type: "local",
-      location_address: "123 St",
-      date: "January 20th",
-      name: "Kevin Li",
-    },
-    {
-      uuid: "udha8323",
-      title: "Lawn Mowing",
-      description: "Lorem Ipsum...",
-      rate: 6,
-      rating: 5,
-      tags: ["blank", "blank2", "blank3"],
-      location_type: "local",
-      location_address: "123 St",
-      date: "January 20th",
-      name: "Kevin Li",
-    },
-  ],
-};
+import { exampleJobPosts } from "@/server/utils/example_data";
 
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
@@ -81,8 +14,8 @@ export default function HomeScreen() {
     <>
       <ExampleHeader />
       <FlatList
-        data={serverData.data}
-        renderItem={({ item }) => <Feed key={item.uuid} postData={item} />}
+        data={exampleJobPosts}
+        renderItem={({ item }) => <Feed key={item.uuid} data={item} />}
         keyExtractor={(item) => item.uuid}
         pagingEnabled
         snapToInterval={newHeight}

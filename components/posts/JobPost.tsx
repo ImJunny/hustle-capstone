@@ -1,44 +1,29 @@
 import React from "react";
-import { ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Badge from "../ui/Badge";
-import Icon from "../ui/Icon";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { TJobPost } from "@/server/utils/example_data";
 
-type PostProps = {
-  postID: number;
-  title: string;
-  rate: string;
-  rating?: string;
-  tags: string[];
-  distance: string;
-  status?: string;
+export type JobPostProps = {
+  data: TJobPost;
 } & ViewProps;
 
-export default function JobPost({
-  postID,
-  title,
-  rate,
-  rating,
-  tags,
-  distance,
-  status,
-  style,
-}: PostProps) {
+export default function JobPost({ data, style }: JobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const { distance, min_rate, tags, title, uuid, max_rate, status } = data;
 
   return (
-    <Link href={`/job/${postID}`} asChild>
+    <Link href={`/job/${uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <ImagePlaceholder
-            width={100}
-            height={100}
+            width={112}
+            height={112}
             style={{ borderRadius: 0 }}
           />
           <View style={styles.entryContent}>
@@ -59,32 +44,20 @@ export default function JobPost({
                   $
                 </Text>
                 <Text weight="semibold" size="sm">
-                  {rate}
+                  {min_rate}
+                  {max_rate && "+"}
                 </Text>
               </Badge>
-              {rating && (
-                <Badge style={{ gap: 4 }}>
-                  <Icon name="star" />
-                  <Text weight="semibold" size="sm">
-                    {rating}/5
-                  </Text>
-                </Badge>
-              )}
               <Badge>{distance}</Badge>
               {tags.map((tag, i) => (
                 <Badge key={i}>{tag}</Badge>
               ))}
-              {/* <Badge>{tags[0]}</Badge> */}
             </View>
             {status && (
-              <Text weight="semibold" color="foreground" size="sm">
+              <Text weight="semibold" color="muted" size="sm">
                 {status}
               </Text>
             )}
-
-            <Text weight="normal" color="muted" size="sm">
-              1 hour ago
-            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -98,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 16,
     gap: 16,
-    height: 160,
+    height: 144,
   },
   entryContent: {
     flex: 1,

@@ -9,13 +9,25 @@ import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { TJobPost } from "@/server/utils/example_data";
 
-function Feed({ postData }: { postData: any }) {
+function Feed({ data }: { data: TJobPost }) {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
   const subtractedHeight = 56 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
+  const {
+    distance,
+    min_rate,
+    tags,
+    title,
+    uuid,
+    max_rate,
+    status,
+    date,
+    description,
+  } = data;
   return (
     <View style={[styles.feedContainer, { height: newHeight }]} color="black">
       <View
@@ -58,10 +70,10 @@ function Feed({ postData }: { postData: any }) {
                 size="2xl"
                 weight="semibold"
               >
-                {postData.title}
+                {title}
               </Text>
               <Text size="lg" color="white" weight="semibold">
-                Due {postData.date}
+                Due {date}
               </Text>
             </View>
             <View style={styles.middleContainer}>
@@ -74,8 +86,8 @@ function Feed({ postData }: { postData: any }) {
                     marginTop: 10,
                   }}
                 >
-                  {postData.tags.map((tag: string, i: number) => (
-                    <Badge style={styles.badgeSpace} key={"tag-" + i}>
+                  {tags.map((tag, i) => (
+                    <Badge style={styles.badgeSpace} key={i}>
                       {tag}
                     </Badge>
                   ))}
@@ -86,7 +98,7 @@ function Feed({ postData }: { postData: any }) {
                   style={styles.description}
                   color="muted-dark"
                 >
-                  {postData.description}
+                  {description}
                 </Text>
               </View>
             </View>
@@ -115,20 +127,20 @@ function Feed({ postData }: { postData: any }) {
           />
           <View style={styles.nameContainer}>
             <Text color="white" weight="semibold">
-              {postData.name}
+              John Smith
             </Text>
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <Icon name={"star"} color="white"></Icon>
               <Text color="white" weight="semibold">
-                {postData.rating}/5
+                4.5/5
               </Text>
             </View>
           </View>
           <Button
             style={styles.viewButton}
-            onPress={() => router.push(`/job/${postData.uuid}`)}
+            onPress={() => router.push(`/job/${uuid}`)}
           >
             <Text color="black" weight="semibold">
               View

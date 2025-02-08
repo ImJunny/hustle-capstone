@@ -62,7 +62,7 @@ export default function MessagesScreen() {
         <View>
           {inbox.map((message, i) => (
             <Message
-              key={message.id}
+              key={i}
               messenger={message.messenger}
               num_of_new_mes={message.num_of_new_mes}
               message={message.message}

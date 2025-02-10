@@ -1,8 +1,7 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router, useLocalSearchParams } from "expo-router";
-import Button from "@/components/ui/Button";
+import { useLocalSearchParams, useSegments } from "expo-router";
 import { BackHeader } from "@/components/headers/Headers";
 
 export default function JobPostScreen() {

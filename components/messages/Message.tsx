@@ -1,25 +1,19 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
+import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { TMessage } from "@/server/utils/example_data";
 
 type MessageProps = {
-  message: string;
-  num_of_new_mes: number;
-  last_message: string;
-  messenger: string;
+  data: TMessage;
 } & ViewProps;
 
-export default function Message({
-  message,
-  num_of_new_mes,
-  last_message,
-  messenger,
-}: MessageProps) {
+export default function Message({ data }: MessageProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const { last_message, message, messenger, uuid, is_job } = data;
 
   return (
     <View style={[styles.entry, { borderColor }]} color="background">
@@ -45,11 +39,9 @@ export default function Message({
           {last_message}
         </Text>
       </View>
-      <ImageBackgroundPlaceholder
-        width={70}
-        height={70}
-        style={styles.entryImage}
-      />
+      {is_job && (
+        <ImagePlaceholder width={70} height={70} style={styles.entryImage} />
+      )}
     </View>
   );
 }
@@ -64,6 +56,7 @@ const styles = StyleSheet.create({
   },
   entryImage: {
     marginLeft: 12,
+    borderRadius: 4,
   },
   entryContent: {
     flex: 1,

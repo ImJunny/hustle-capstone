@@ -16,7 +16,7 @@ export default function SignInScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text
-          size="3xl"
+          size="4xl"
           style={{
             fontFamily: "Lexend-bold",
             textAlign: "center",
@@ -28,7 +28,7 @@ export default function SignInScreen() {
         <View style={styles.formContainer}>
           <Input placeholder="Email or username" style={styles.input} />
           <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(tabs)")}>
+          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
             Log In
           </Button>
           <View style={styles.separatorContainer}>

@@ -1,118 +1,102 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router } from "expo-router";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
-import SuggestionPost from "@/components/explore/SuggestionPost";
-import { EmptyHeader, ExploreHeader } from "@/components/headers/Headers";
+import { ExploreHeader } from "@/components/headers/Headers";
+import {
+  categories,
+  exampleJobPosts,
+  exampleServicePosts,
+} from "@/server/utils/example_data";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import { LinearGradient } from "expo-linear-gradient";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import Post from "@/components/posts/Post";
 
-const categories = [
-  { id: 1, title: "Tech" },
-  { id: 2, title: "Health" },
-  { id: 3, title: "Finance" },
-  { id: 4, title: "Education" },
-];
-const suggestions = [
-  {
-    id: 1,
-    title: "Yard Work",
-    rate: "50+",
-    rating: "4.5",
-    tags: ["yardwork"],
-    distance: "< 10 mi",
-    imageSource: "https://via.placeholder.com/100",
-  },
-  {
-    id: 2,
-    title: "Plumbing",
-    rate: "215",
-    rating: "5",
-    tags: ["plumbing", "homecare"],
-    distance: "< 15 mi",
-    imageSource: "https://via.placeholder.com/100",
-  },
-  {
-    id: 3,
-    title: "Painting",
-    rate: "75+",
-    rating: "2",
-    tags: ["painting"],
-    distance: "< 20 mi",
-    imageSource: "https://via.placeholder.com/100",
-  },
-  {
-    id: 4,
-    title: "Shopping",
-    rate: "50",
-    rating: "3",
-    tags: ["shopping"],
-    distance: "< 25 mi",
-    imageSource: "https://via.placeholder.com/100",
-  },
-];
 export default function ExploreScreen() {
+  const themeColor = useThemeColor();
   return (
     <>
       <ExploreHeader />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View>
-          <Text
-            size="xl"
-            weight="semibold"
-            style={styles.sectionTitle}
-            onPress={() => router.push("/explore-recent")}
-          >
-            Top Categories
-          </Text>
-          <View style={{ backgroundColor: "red" }}>
-            <ScrollView
-              style={{ paddingLeft: 16 }}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            >
-              {categories.map((category, i) => (
-                <CategoryCard
-                  key={category.id}
-                  title={category.title}
-                  style={{ paddingRight: i != categories.length - 1 ? 0 : 16 }}
-                />
-              ))}
-            </ScrollView>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        color="base"
+      >
+        <View style={{ paddingBottom: 40 }}>
+          <View style={{ height: 260 }}>
+            <ImagePlaceholder
+              width={600}
+              height={260}
+              style={{ height: "100%", position: "absolute" }}
+              isDark
+            />
+            <View style={{ flex: 1, paddingTop: 70, paddingHorizontal: 16 }}>
+              <LinearGradient
+                colors={["transparent", themeColor.base]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={{
+                  left: 0,
+                  right: 0,
+                  height: 30,
+                  bottom: 0,
+                  position: "absolute",
+                }}
+              />
+              <Text color="white" weight="semibold" size="3xl">
+                Find the right job for you.
+              </Text>
+              <Text color="white" size="lg">
+                Discover from many categories, jobs, services, and more.
+              </Text>
+            </View>
           </View>
+          <ScrollView
+            style={{ paddingLeft: 16, position: "absolute", bottom: 0 }}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            {categories.map((category, i) => (
+              <CategoryCard
+                key={i}
+                title={category.title}
+                style={{
+                  paddingRight: i != categories.length - 1 ? 0 : 16,
+                }}
+              />
+            ))}
+          </ScrollView>
         </View>
+
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Job Suggestions
+            Jobs you might like
           </Text>
-          {suggestions.map((suggestion, i) => (
-            <SuggestionPost
-              key={suggestion.id}
-              title={suggestion.title}
-              rate={suggestion.rate}
-              tags={suggestion.tags}
-              distance={suggestion.distance}
+          {exampleJobPosts.map((post, i) => (
+            <Post
+              key={i}
+              data={post}
               style={{
-                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+                borderTopWidth: i == 0 ? 1 : 0,
+                borderBottomWidth: 1,
               }}
             />
           ))}
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
-            Service Suggestions
+            Services suggested for you
           </Text>
-          {suggestions.map((suggestion, i) => (
-            <SuggestionPost
-              key={suggestion.id}
-              title={suggestion.title}
-              rate={suggestion.rate}
-              rating={suggestion.rating}
-              tags={suggestion.tags}
-              distance={suggestion.distance}
+          {exampleServicePosts.map((post, i) => (
+            <Post
+              key={i}
+              data={post}
               style={{
-                borderBottomWidth: i != suggestions.length - 1 ? 1 : 0,
+                borderTopWidth: i == 0 ? 1 : 0,
+                borderBottomWidth: i != exampleServicePosts.length - 1 ? 1 : 0,
               }}
             />
           ))}
@@ -127,8 +111,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionTitle: {
-    marginBottom: 8,
+    marginTop: 26,
+    marginBottom: 10,
     marginLeft: 16,
-    marginTop: 20,
   },
 });

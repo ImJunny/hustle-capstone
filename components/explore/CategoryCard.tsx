@@ -9,13 +9,24 @@ type CategoryCardProps = {
 
 export default function CategoryCard({ title, style }: CategoryCardProps) {
   return (
-    <View style={[{ marginRight: 10 }, style]}>
+    <View
+      style={[{ marginRight: 10, borderRadius: 4, overflow: "hidden" }, style]}
+    >
       <ImageBackgroundPlaceholder
-        width={100}
-        height={100}
-        style={{ justifyContent: "center" }}
+        width={90}
+        height={90}
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        dark
       >
-        <Text style={{ textAlign: "center" }} color="background" weight="bold">
+        <Text
+          style={{ textAlign: "center" }}
+          color="white"
+          weight="bold"
+          size="md"
+        >
           {title}
         </Text>
       </ImageBackgroundPlaceholder>

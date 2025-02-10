@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useRef, useState } from "react";
 import Badge from "./Badge";
 import IconButton from "./IconButton";
 import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
@@ -9,11 +9,13 @@ import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { TPost } from "@/server/utils/example_data";
+import ImagePlaceholder from "./ImagePlaceholder";
 
-function Feed({ postData }: { postData: any }) {
-  const { width, height: totalHeight } = Dimensions.get("window");
+function Feed({ data }: { data: TPost }) {
+  const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 56 + 56 + statusBarHeight;
+  const subtractedHeight = 66 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   return (
@@ -23,7 +25,7 @@ function Feed({ postData }: { postData: any }) {
           height: newHeight * 0.75,
         }}
       >
-        <ImageBackgroundPlaceholder
+        <ImagePlaceholder
           width={800}
           height={800}
           style={{ width: "100%", height: "100%" }}
@@ -50,43 +52,43 @@ function Feed({ postData }: { postData: any }) {
         }}
       >
         <View style={{ flexDirection: "row" }}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, alignSelf: "flex-end" }}>
             <View style={styles.textContainer}>
               <Text
                 style={{ marginVertical: 4 }}
                 color="white"
-                size="xl"
+                size="2xl"
                 weight="semibold"
               >
-                {postData.title}
+                {data.title}
               </Text>
               <Text size="lg" color="white" weight="semibold">
-                Due {postData.date}
+                Due {data.due_date}
               </Text>
             </View>
             <View style={styles.middleContainer}>
               <View style={styles.descriptionContainer}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 10,
-                    paddingBottom: 12,
-                    marginTop: 10,
-                  }}
-                >
-                  {postData.tags.map((tag: string, i: number) => (
-                    <Badge style={styles.badgeSpace} key={"tag-" + i}>
-                      {tag}
-                    </Badge>
+                <Text weight="semibold" size="4xl" color="white">
+                  ${data.min_rate}
+                  {data.max_rate && "+"}
+                </Text>
+                <View style={styles.badgeRow}>
+                  <Badge>
+                    <Text
+                      style={{ textTransform: "uppercase" }}
+                      size="sm"
+                      weight="semibold"
+                    >
+                      {data.type}
+                    </Text>
+                  </Badge>
+                  <Badge>{data.distance}</Badge>
+                  {data.tags.map((tag, i) => (
+                    <Badge key={i}>{tag}</Badge>
                   ))}
                 </View>
-                <Text
-                  numberOfLines={3}
-                  ellipsizeMode="tail"
-                  style={styles.description}
-                  color="muted-dark"
-                >
-                  {postData.description}
+                <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
+                  {data.description}
                 </Text>
               </View>
             </View>
@@ -98,13 +100,31 @@ function Feed({ postData }: { postData: any }) {
               style={styles.iconButton}
               color="white"
               size="2xl"
-            ></IconButton>
+            />
+            <View style={styles.iconButton}>
+              <IconButton
+                name={"chatbubble-outline"}
+                color="white"
+                size="2xl"
+                flippedX
+              />
+              {data.comments && (
+                <Text
+                  style={{ textAlign: "center", marginTop: 2 }}
+                  weight="semibold"
+                  color="white"
+                >
+                  {data.comments}
+                </Text>
+              )}
+            </View>
+
             <IconButton
               name={"paper-plane-outline"}
               style={styles.iconButton}
               color="white"
               size="2xl"
-            ></IconButton>
+            />
           </View>
         </View>
 
@@ -115,20 +135,20 @@ function Feed({ postData }: { postData: any }) {
           />
           <View style={styles.nameContainer}>
             <Text color="white" weight="semibold">
-              {postData.name}
+              {data.user_name}
             </Text>
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <Icon name={"star"} color="white"></Icon>
               <Text color="white" weight="semibold">
-                {postData.rating}/5
+                4.5/5
               </Text>
             </View>
           </View>
           <Button
             style={styles.viewButton}
-            onPress={() => router.push(`/job/${postData.uuid}`)}
+            onPress={() => router.push(`/job/${data.uuid}`)}
           >
             <Text color="black" weight="semibold">
               View
@@ -151,7 +171,13 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     flex: 1,
   },
-  description: {},
+  badgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+    marginBottom: 8,
+    gap: 8,
+  },
   iconButton: { paddingBottom: 20 },
   middleContainer: {
     flexDirection: "row",
@@ -166,6 +192,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
+    marginTop: 8,
   },
   nameContainer: { marginLeft: 20 },
   viewButton: {

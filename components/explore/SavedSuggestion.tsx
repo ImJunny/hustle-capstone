@@ -1,6 +1,5 @@
 import View, { ViewProps } from "@/components/ui/View";
 import Text from "@/components/ui/Text";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { StyleSheet } from "react-native";
 import React from "react";
 import Separator from "@/components/ui/Separator";

@@ -36,11 +36,7 @@ export default function ExploreScreen() {
       </View>
       <View>
         {recents.map((suggestion, i) => (
-          <RecentSuggestion
-            key={suggestion.id}
-            recent={suggestion.recent}
-            style={{}}
-          />
+          <RecentSuggestion key={i} recent={suggestion.recent} style={{}} />
         ))}
       </View>
     </>

@@ -9,7 +9,6 @@ import Input from "@/components/ui/Input";
 import ScrollView from "@/components/ui/ScrollView";
 import View from "@/components/ui/View";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import Separator from "@/components/ui/Separator";
 
 export default function ExampleScreen() {
@@ -35,20 +34,6 @@ export default function ExampleScreen() {
 
         {/* ImagePlaceholder & ImageBackgroundPlaceholder demo */}
         <ImagePlaceholder width={150} height={150} />
-        <ImageBackgroundPlaceholder
-          width={150}
-          height={150}
-          style={{ justifyContent: "center" }}
-        >
-          <Text
-            size="xl"
-            weight="semibold"
-            color="white"
-            style={{ textAlign: "center" }}
-          >
-            Text
-          </Text>
-        </ImageBackgroundPlaceholder>
         <Separator />
 
         {/* Badge demo */}

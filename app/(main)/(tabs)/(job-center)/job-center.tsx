@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -6,36 +6,46 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "@/components/ui/IconButton";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
-import { JobsHeader } from "@/components/headers/Headers";
+import { JobsCenterHeader } from "@/components/headers/Headers";
+import { Href, Link } from "expo-router";
 
-export default function JobsScreen() {
+export default function JobCenterScreen() {
   return (
     <>
-      <JobsHeader />
+      <JobsCenterHeader />
       <View style={styles.screen} color="background">
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
-            Your Posts
+            Tracking
           </Text>
-          <LinkEntry iconName="copy-outline" title="Job posts" />
-          <LinkEntry iconName="copy-outline" title="Service posts" />
+          <LinkEntry
+            iconName="briefcase-outline"
+            title="Working"
+            href="/posts-list/working"
+          />
+          <LinkEntry
+            iconName="calendar-outline"
+            title="Hiring"
+            href="/posts-list/hiring"
+          />
           <Button isFullWidth style={{ marginTop: 16 }}>
             Create a post
           </Button>
         </View>
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
-            Tracking
-          </Text>
-          <LinkEntry iconName="briefcase-outline" title="Working" />
-          <LinkEntry iconName="calendar-outline" title="Hiring" />
-        </View>
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
             Activity
           </Text>
-          <LinkEntry iconName="time-outline" title="Recently viewed" />
-          <LinkEntry iconName="heart-outline" title="Liked" />
+          <LinkEntry
+            iconName="heart-outline"
+            title="Liked"
+            href="/posts-list/liked"
+          />
+          <LinkEntry
+            iconName="time-outline"
+            title="Recently viewed"
+            href="/posts-list/recently-viewed"
+          />
         </View>
       </View>
     </>
@@ -45,17 +55,22 @@ export default function JobsScreen() {
 type LinkEntryProps = {
   iconName: IconSymbolName;
   title: string;
+  href: Href;
 };
-function LinkEntry({ iconName, title }: LinkEntryProps) {
+function LinkEntry({ iconName, title, href }: LinkEntryProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
   return (
-    <View style={[styles.entry, { borderColor }]}>
-      <Icon name={iconName} size="xl" />
-      <Text style={styles.entryText}>{title}</Text>
-      <IconButton name="chevron-forward" />
-    </View>
+    <Link href={href} asChild>
+      <TouchableOpacity>
+        <View style={[styles.entry, { borderColor }]}>
+          <Icon name={iconName} size="xl" />
+          <Text style={styles.entryText}>{title}</Text>
+          <Icon name="chevron-forward" size="xl" />
+        </View>
+      </TouchableOpacity>
+    </Link>
   );
 }
 

@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   badgeContainer: {
     flexDirection: "row",
     alignItems: "center",
-    height: 24,
+    height: 22,
     paddingHorizontal: 12,
     borderRadius: 999,
     alignSelf: "flex-start",

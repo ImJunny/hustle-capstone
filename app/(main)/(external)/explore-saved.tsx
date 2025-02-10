@@ -2,10 +2,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import { router } from "expo-router";
-import Button from "@/components/ui/Button";
-import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet } from "react-native";
-import SuggestionPost from "@/components/explore/SuggestionPost";
 import SavedSuggestion from "@/components/explore/SavedSuggestion";
 
 const saves = [
@@ -38,7 +35,7 @@ export default function ExploreScreen() {
       <View>
         {saves.map((suggestion, i) => (
           <SavedSuggestion
-            key={suggestion.id}
+            key={i}
             saved={suggestion.saved}
             rate={suggestion.rate}
             distance={suggestion.distance}

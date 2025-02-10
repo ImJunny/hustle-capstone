@@ -4,6 +4,8 @@ import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
+import View from "../ui/View";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ExampleHeader() {
   return (
@@ -12,7 +14,7 @@ export function ExampleHeader() {
         left: (
           <Text
             weight="semibold"
-            size="2xl"
+            size="3xl"
             style={{
               fontFamily: "Lexend-bold",
             }}
@@ -32,7 +34,7 @@ export function ExampleHeader() {
   );
 }
 
-export function JobsHeader() {
+export function JobsCenterHeader() {
   return (
     <HeaderWrapper
       options={{
@@ -69,15 +71,71 @@ export function BackHeader() {
   );
 }
 
+export function SimpleHeader({ title }: { title: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text size="xl" weight="semibold">
+              {title}
+            </Text>
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
 export function EmptyHeader() {
   return <HeaderWrapper />;
+}
+
+export function MessagesHeader() {
+  const borderColor = useThemeColor().border;
+  return (
+    <View color="background">
+      <HeaderWrapper
+        style={{ borderBottomWidth: 0 }}
+        options={{
+          left: (
+            <Text size="xl" weight="semibold">
+              Messages
+            </Text>
+          ),
+          right: <IconButton name="ellipsis-vertical" flippedX />,
+        }}
+      />
+      <HeaderWrapper
+        style={{ marginTop: -10 }}
+        options={{
+          center: (
+            <Input
+              placeholder="Search users, services, jobs..."
+              style={{ width: "100%" }}
+            />
+          ),
+        }}
+      />
+    </View>
+  );
 }
 
 export function ExploreHeader() {
   return (
     <HeaderWrapper
       options={{
-        center: <Input style={{ width: "100%" }} />,
+        center: (
+          <Input
+            placeholder="Search users, services, jobs..."
+            style={{ width: "100%" }}
+          />
+        ),
       }}
     />
   );

@@ -16,7 +16,7 @@ export default function SignUpScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text
-          size="3xl"
+          size="4xl"
           style={{
             fontFamily: "Lexend-bold",
             textAlign: "center",
@@ -29,7 +29,7 @@ export default function SignUpScreen() {
           <Input placeholder="Email" style={styles.input} />
           <Input placeholder="Username" style={styles.input} />
           <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(tabs)")}>
+          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
             Sign Up
           </Button>
           <View style={styles.separatorContainer}>

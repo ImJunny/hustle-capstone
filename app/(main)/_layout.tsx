@@ -12,7 +12,7 @@ export default function Layout() {
       />
       <Stack.Screen
         name="(external)/job/[id]"
-        options={{ animation: "fade" }}
+        options={{ animation: "fade_from_bottom" }}
       />
     </Stack>
   );

@@ -17,18 +17,26 @@ type IconButtonProps = {
   color?: TColors;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
+  flippedX?: boolean;
 } & TouchableOpacityProps;
 
 export default function IconButton({
   name,
   size = "xl",
   color = "foreground",
+  flippedX,
   style,
   ...props
 }: IconButtonProps) {
   return (
     <TouchableOpacity {...props}>
-      <Icon size={size} name={name} style={[style]} color={color} />
+      <Icon
+        size={size}
+        name={name}
+        style={style}
+        color={color}
+        flippedX={flippedX}
+      />
     </TouchableOpacity>
   );
 }

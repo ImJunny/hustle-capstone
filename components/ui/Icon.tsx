@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SymbolWeight } from "expo-symbols";
 import React from "react";
 import { OpaqueColorValue, StyleProp, TextStyle } from "react-native";
+import { ViewProps } from "./View";
 
 export type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
 type IconProps = {
@@ -15,12 +16,14 @@ type IconProps = {
   color?: TColors;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
+  flippedX?: boolean;
 };
 
 export default function Icon({
   name,
   size = "md",
   color = "foreground",
+  flippedX,
   style,
 }: IconProps) {
   const themeColor = useThemeColor();
@@ -28,7 +31,11 @@ export default function Icon({
   return (
     <Ionicons
       name={name}
-      style={[{ fontSize: IconSizes[size] }, style]}
+      style={[
+        flippedX && { transform: "scaleX(-1)" },
+        { fontSize: IconSizes[size] },
+        style,
+      ]}
       color={themeColor[color]}
     />
   );

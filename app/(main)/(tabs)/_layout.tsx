@@ -33,7 +33,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="jobs"
+        name="(job-center)"
         options={{
           title: "Job Center",
           tabBarIcon: ({ focused }) => (
@@ -49,7 +49,13 @@ export default function TabLayout() {
         options={{
           title: "Messages",
           tabBarIcon: ({ focused }) => (
-            <Icon name={focused ? "chatbox" : "chatbox-outline"} size="xl" />
+            <Icon
+              name={
+                focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"
+              }
+              size="xl"
+              flippedX
+            />
           ),
         }}
       />

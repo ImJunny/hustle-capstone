@@ -12,6 +12,7 @@ import {
 } from "@react-navigation/material-top-tabs";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import Icon from "@/components/ui/Icon";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -23,13 +24,14 @@ export const MaterialTopTabs = withLayoutContext<
 >(Navigator);
 
 export default function Layout() {
+  const themeColor = useThemeColor();
   return (
     <>
       <SearchedHeader />
       <>
         <MaterialTopTabs
           screenOptions={{
-            tabBarActiveTintColor: "#C2C2C2",
+            tabBarActiveTintColor: themeColor.muted,
             tabBarLabelStyle: { fontWeight: "bold", fontSize: 16 },
             tabBarIndicatorStyle: { backgroundColor: "#FFFFFF", height: 3 },
           }}

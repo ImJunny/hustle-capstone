@@ -10,7 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { KeyboardAvoidingView, useColorScheme } from "react-native";
+import { KeyboardAvoidingView, Platform, useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import * as NavigationBar from "expo-navigation-bar";
@@ -22,8 +22,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const themeColor = useThemeColor();
-  SystemUI.setBackgroundColorAsync(themeColor.background);
-  NavigationBar.setBackgroundColorAsync(themeColor.background);
+  const platform = Platform.OS;
+  if (platform == "android") {
+    SystemUI.setBackgroundColorAsync(themeColor.background);
+    NavigationBar.setBackgroundColorAsync(themeColor.background);
+  }
 
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({

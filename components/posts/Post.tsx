@@ -12,7 +12,7 @@ export type JobPostProps = {
   data: TPost;
 } & ViewProps;
 
-export default function JobPost({ data, style }: JobPostProps) {
+export default function Post({ data, style }: JobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 

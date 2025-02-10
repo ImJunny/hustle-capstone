@@ -1,5 +1,5 @@
 import { SimpleHeader } from "@/components/headers/Headers";
-import JobPost from "@/components/posts/JobPost";
+import Post from "@/components/posts/Post";
 import ScrollView from "@/components/ui/ScrollView";
 import { exampleJobPosts } from "@/server/utils/example_data";
 import { useLocalSearchParams } from "expo-router";
@@ -15,7 +15,7 @@ export default function PostListScreen() {
   const posts = [];
   for (let i = 0; i < 10; i++) {
     posts.push(
-      <JobPost
+      <Post
         key={`post-${i}`}
         data={exampleJobPosts[0]}
         style={{

@@ -4,9 +4,7 @@ import React from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
-import JobPost from "@/components/posts/JobPost";
 import { ExploreHeader } from "@/components/headers/Headers";
-import ServicePost from "@/components/posts/ServicePost";
 import {
   categories,
   exampleJobPosts,

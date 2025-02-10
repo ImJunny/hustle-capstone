@@ -9,27 +9,15 @@ import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { TJobPost } from "@/server/utils/example_data";
+import { TPost } from "@/server/utils/example_data";
 import ImagePlaceholder from "./ImagePlaceholder";
 
-function Feed({ data }: { data: TJobPost }) {
+function Feed({ data }: { data: TPost }) {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
   const subtractedHeight = 66 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
-  const {
-    distance,
-    min_rate,
-    tags,
-    title,
-    uuid,
-    max_rate,
-    status,
-    date,
-    description,
-    comments,
-  } = data;
   return (
     <View style={[styles.feedContainer, { height: newHeight }]} color="black">
       <View
@@ -72,31 +60,35 @@ function Feed({ data }: { data: TJobPost }) {
                 size="2xl"
                 weight="semibold"
               >
-                {title}
+                {data.title}
               </Text>
               <Text size="lg" color="white" weight="semibold">
-                Due {date}
+                Due {data.due_date}
               </Text>
             </View>
             <View style={styles.middleContainer}>
               <View style={styles.descriptionContainer}>
+                <Text weight="semibold" size="4xl" color="white">
+                  ${data.min_rate}
+                  {data.max_rate && "+"}
+                </Text>
                 <View style={styles.badgeRow}>
-                  <Badge style={{ flexDirection: "row", gap: 2 }}>
-                    <Text weight="semibold" size="sm">
-                      $
-                    </Text>
-                    <Text weight="semibold" size="sm">
-                      {min_rate}
-                      {max_rate && "+"}
+                  <Badge>
+                    <Text
+                      style={{ textTransform: "uppercase" }}
+                      size="sm"
+                      weight="semibold"
+                    >
+                      {data.type}
                     </Text>
                   </Badge>
-                  <Badge>{distance}</Badge>
-                  {tags.map((tag, i) => (
+                  <Badge>{data.distance}</Badge>
+                  {data.tags.map((tag, i) => (
                     <Badge key={i}>{tag}</Badge>
                   ))}
                 </View>
                 <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
-                  {description}
+                  {data.description}
                 </Text>
               </View>
             </View>
@@ -116,13 +108,13 @@ function Feed({ data }: { data: TJobPost }) {
                 size="2xl"
                 flippedX
               />
-              {comments && (
+              {data.comments && (
                 <Text
                   style={{ textAlign: "center", marginTop: 2 }}
                   weight="semibold"
                   color="white"
                 >
-                  {comments}
+                  {data.comments}
                 </Text>
               )}
             </View>
@@ -143,7 +135,7 @@ function Feed({ data }: { data: TJobPost }) {
           />
           <View style={styles.nameContainer}>
             <Text color="white" weight="semibold">
-              John Smith
+              {data.user_name}
             </Text>
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
@@ -156,7 +148,7 @@ function Feed({ data }: { data: TJobPost }) {
           </View>
           <Button
             style={styles.viewButton}
-            onPress={() => router.push(`/job/${uuid}`)}
+            onPress={() => router.push(`/job/${data.uuid}`)}
           >
             <Text color="black" weight="semibold">
               View
@@ -182,7 +174,7 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 6,
+    marginTop: 10,
     marginBottom: 8,
     gap: 8,
   },

@@ -44,20 +44,18 @@ export default function JobPost({ data, style }: JobPostProps) {
             <Text weight="semibold" size="sm">
               Due {data.due_date}
             </Text>
+            <Text weight="semibold" size="2xl">
+              ${data.min_rate}
+              {data.max_rate && "+"}
+            </Text>
+
             <View style={styles.badgeRow}>
-              <Badge style={{ flexDirection: "row", gap: 2 }}>
-                <Text weight="semibold" size="sm">
-                  $
-                </Text>
-                <Text weight="semibold" size="sm">
-                  {data.min_rate}
-                  {data.max_rate && "+"}
-                </Text>
-              </Badge>
+              <Badge>{data.type}</Badge>
               <Badge>{data.distance}</Badge>
-              {data.tags.map((tag, i) => (
+              {/* {data.tags.map((tag, i) => (
                 <Badge key={i}>{tag}</Badge>
-              ))}
+              ))} */}
+              <Badge>{data.tags[0]}</Badge>
             </View>
             {data.status && (
               <Text weight="semibold" color="muted" size="sm">

@@ -2,17 +2,17 @@ import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import Badge from "../ui/Badge";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TPost } from "@/server/utils/example_data";
-import Badge from "../ui/Badge";
 
 export type JobPostProps = {
   data: TPost;
 } & ViewProps;
 
-export default function Post({ data, style }: JobPostProps) {
+export default function JobPost({ data, style }: JobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
@@ -25,39 +25,37 @@ export default function Post({ data, style }: JobPostProps) {
             height={116}
             style={{ borderRadius: 4 }}
           />
-          <View style={{ flexDirection: "row", flex: 1 }}>
-            <View style={styles.entryContent}>
-              <Text weight="semibold" numberOfLines={2}>
-                {data.title}
-              </Text>
-              <Text size="sm">Due {data.due_date}</Text>
-              <Text size="2xl" weight="semibold" style={{ marginTop: 8 }}>
-                ${data.min_rate}
-                {data.max_rate && "+"}
-              </Text>
+          <View style={styles.entryContent}>
+            <Text weight="semibold" numberOfLines={1}>
+              {data.title}
+            </Text>
+            <Text size="sm">
+              {data.type == "work" ? `Due ${data.due_date}` : data.user_name}
+            </Text>
 
-              {data.status && (
+            <Text weight="semibold" size="2xl" style={{ marginTop: 4 }}>
+              ${data.min_rate}
+              {data.max_rate && "+"}
+            </Text>
+
+            <View style={styles.badgeRow}>
+              <Badge>
                 <Text
-                  weight="semibold"
-                  color="muted"
+                  style={{ textTransform: "uppercase" }}
                   size="sm"
-                  style={{ marginTop: "auto" }}
+                  weight="semibold"
                 >
-                  {data.status}
+                  {data.type}
                 </Text>
-              )}
+              </Badge>
+              <Badge>{data.distance}</Badge>
+              <Badge>{data.tags[0]}</Badge>
             </View>
-            <Badge
-              style={{ marginLeft: 10, width: 58, justifyContent: "center" }}
-            >
-              <Text
-                style={{ textTransform: "uppercase" }}
-                weight="semibold"
-                size="sm"
-              >
-                {data.type}
+            {data.status && (
+              <Text weight="semibold" color="muted" size="sm">
+                {data.status}
               </Text>
-            </Badge>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -71,9 +69,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 16,
     gap: 16,
+    height: 180,
   },
   entryContent: {
-    justifyContent: "space-between",
     flex: 1,
+    alignSelf: "stretch",
+  },
+  badgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 6,
+    marginBottom: 8,
+    columnGap: 4,
+    rowGap: 6,
   },
 });

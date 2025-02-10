@@ -15,11 +15,9 @@ export type JobPostProps = {
 export default function JobPost({ data, style }: JobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const { distance, min_rate, tags, title, uuid, max_rate, status, date } =
-    data;
 
   return (
-    <Link href={`/job/${uuid}`} asChild>
+    <Link href={`/job/${data.uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <ImagePlaceholder
@@ -28,9 +26,23 @@ export default function JobPost({ data, style }: JobPostProps) {
             style={{ borderRadius: 4 }}
           />
           <View style={styles.entryContent}>
-            <Text weight="semibold">{title}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 8,
+              }}
+            >
+              <Text color="muted" size="sm" weight="semibold">
+                {data.user_name}
+              </Text>
+              <Text color="muted" size="sm" weight="semibold">
+                {data.time_ago}
+              </Text>
+            </View>
+            <Text weight="semibold">{data.title}</Text>
             <Text weight="semibold" size="sm">
-              Due {date}
+              Due {data.date}
             </Text>
             <View style={styles.badgeRow}>
               <Badge style={{ flexDirection: "row", gap: 2 }}>
@@ -38,18 +50,18 @@ export default function JobPost({ data, style }: JobPostProps) {
                   $
                 </Text>
                 <Text weight="semibold" size="sm">
-                  {min_rate}
-                  {max_rate && "+"}
+                  {data.min_rate}
+                  {data.max_rate && "+"}
                 </Text>
               </Badge>
-              <Badge>{distance}</Badge>
-              {tags.map((tag, i) => (
+              <Badge>{data.distance}</Badge>
+              {data.tags.map((tag, i) => (
                 <Badge key={i}>{tag}</Badge>
               ))}
             </View>
-            {status && (
+            {data.status && (
               <Text weight="semibold" color="muted" size="sm">
-                {status}
+                {data.status}
               </Text>
             )}
           </View>
@@ -65,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 16,
     gap: 16,
-    height: 154,
+    height: 180,
   },
   entryContent: {
     flex: 1,

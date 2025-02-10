@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import ImagePlaceholder from "../ui/ImagePlaceholder";

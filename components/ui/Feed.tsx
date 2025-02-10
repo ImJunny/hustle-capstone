@@ -10,6 +10,7 @@ import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { TJobPost } from "@/server/utils/example_data";
+import ImagePlaceholder from "./ImagePlaceholder";
 
 function Feed({ data }: { data: TJobPost }) {
   const { height: totalHeight } = Dimensions.get("window");
@@ -36,7 +37,7 @@ function Feed({ data }: { data: TJobPost }) {
           height: newHeight * 0.75,
         }}
       >
-        <ImageBackgroundPlaceholder
+        <ImagePlaceholder
           width={800}
           height={800}
           style={{ width: "100%", height: "100%" }}

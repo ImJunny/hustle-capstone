@@ -18,32 +18,11 @@ export type TJobPost = {
   status?: string;
   date: string;
   comments?: number;
+  user_name: string;
+  time_ago: string;
 };
 
 export const exampleJobPosts: TJobPost[] = [
-  {
-    uuid: "asdfsaf",
-    title: "Lawn mowing needed",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    min_rate: 50,
-    max_rate: 100,
-    tags: ["yardwork", "home"],
-    distance: "< 5 mi",
-    date: "February 8",
-    comments: 1,
-  },
-  {
-    uuid: "dwadaw",
-    title: "I need help moving ASAP!",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    min_rate: 200,
-    tags: ["transport", "home"],
-    distance: "< 10 mi",
-    date: "February 7",
-    status: "1 accepted",
-  },
   {
     uuid: "jhgddj",
     title: "Design a poster",
@@ -55,7 +34,37 @@ export const exampleJobPosts: TJobPost[] = [
     distance: "remote",
     date: "March 20",
     comments: 4,
+    status: "2  accepted",
+    user_name: "@sukmoon44",
+    time_ago: "1 hr ago",
   },
+  {
+    uuid: "dwadaw",
+    title: "I need help moving ASAP!",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    min_rate: 200,
+    tags: ["transporting", "home"],
+    distance: "< 10 mi",
+    date: "February 7",
+    user_name: "@samdoe",
+    time_ago: "1 day ago",
+  },
+  {
+    uuid: "asdfsaf",
+    title: "Lawn mowing needed",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    min_rate: 50,
+    max_rate: 100,
+    tags: ["yardwork", "home"],
+    distance: "< 5 mi",
+    date: "February 8",
+    comments: 1,
+    user_name: "@johnsmith",
+    time_ago: "7 hrs ago",
+  },
+
   {
     uuid: "tydwasytss",
     title: "Painter Needed for Building Meural",
@@ -67,6 +76,8 @@ export const exampleJobPosts: TJobPost[] = [
     distance: "< 15 mi",
     date: "July 3",
     status: "7 accepted",
+    user_name: "@some_user",
+    time_ago: "1 mo ago",
   },
 ];
 
@@ -98,7 +109,7 @@ export const exampleServicePosts: TServicePost[] = [
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 200,
-    tags: ["transport", "home"],
+    tags: ["transporting", "home"],
     distance: "< 10 mi",
   },
   {

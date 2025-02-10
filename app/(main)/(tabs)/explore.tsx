@@ -14,6 +14,7 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Post from "@/components/posts/Post";
+import { router } from "expo-router";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -46,7 +47,16 @@ export default function ExploreScreen() {
                   position: "absolute",
                 }}
               />
-              <Text color="white" weight="semibold" size="3xl">
+              <Text
+                color="white"
+                weight="semibold"
+                size="3xl"
+                onPress={() =>
+                  router.push(
+                    "/(main)/(external)/(explore-tabs)/explore-recent"
+                  )
+                }
+              >
                 Find the right job for you.
               </Text>
               <Text color="white" size="lg">
@@ -72,7 +82,14 @@ export default function ExploreScreen() {
         </View>
 
         <View>
-          <Text size="xl" weight="bold" style={styles.sectionTitle}>
+          <Text
+            size="xl"
+            weight="bold"
+            style={styles.sectionTitle}
+            onPress={() =>
+              router.push("/(main)/(external)/(searched-tabs)/searched-jobs")
+            }
+          >
             Jobs you might like
           </Text>
           {exampleJobPosts.map((post, i) => (

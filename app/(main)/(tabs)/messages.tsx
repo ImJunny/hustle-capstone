@@ -1,7 +1,6 @@
 import View from "@/components/ui/View";
 import React from "react";
 import Input from "@/components/ui/Input";
-import { StyleSheet } from "react-native";
 import Message from "@/components/messages/Message";
 import { MessagesHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -27,9 +26,3 @@ export default function MessagesScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

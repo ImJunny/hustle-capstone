@@ -140,3 +140,52 @@ export function ExploreHeader() {
     />
   );
 }
+export function SearchingHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        center: (
+          <Input
+            placeholder="Search users, jobs, messages, etc..."
+            style={{ width: "80%" }}
+          />
+        ),
+        left: (
+          <IconButton
+            name="arrow-back"
+            size="2xl"
+            onPress={() => router.back()}
+          />
+        ),
+        right: (
+          <IconButton
+            name="ellipsis-vertical"
+            size="xl"
+            onPress={() => router.push("/example")}
+          />
+        ),
+      }}
+    />
+  );
+}
+export function SearchedHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        center: (
+          <Input
+            placeholder="Searched"
+            style={{ width: "90%", marginLeft: 50 }}
+          />
+        ),
+        left: (
+          <IconButton
+            name="arrow-back"
+            size="2xl"
+            onPress={() => router.back()}
+          />
+        ),
+      }}
+    />
+  );
+}

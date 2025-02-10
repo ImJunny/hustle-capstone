@@ -17,8 +17,4 @@ export default function searchedUsers() {
               borderBottomWidth: i != exampleMessages.length - 1 ? 1 : 0,
             }}
           />
-        ))}
-      </ScrollView>
-    </>
-  );
-}
+))}

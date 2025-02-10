@@ -7,8 +7,9 @@ export const categories = [
   { id: 6, title: "Gaming" },
 ];
 
-export type TJobPost = {
+export type TPost = {
   uuid: string;
+  user_uuid: string;
   title: string;
   description: string;
   min_rate: number;
@@ -16,42 +17,49 @@ export type TJobPost = {
   tags: string[];
   distance: string;
   status?: string;
-  date: string;
+  due_date?: string;
+  type: "work" | "hire";
   comments?: number;
   user_name: string;
   time_ago: string;
 };
 
-export const exampleJobPosts: TJobPost[] = [
+export const exampleJobPosts: TPost[] = [
   {
+    type: "work",
     uuid: "jhgddj",
+    user_uuid: "jhgddj",
     title: "Design a poster",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    min_rate: 50,
-    max_rate: 60,
+    min_rate: 75,
+    max_rate: 100,
     tags: ["design", "art", "media"],
     distance: "remote",
-    date: "March 20",
+    due_date: "March 20",
     comments: 4,
     status: "2  accepted",
     user_name: "@sukmoon44",
     time_ago: "1 hr ago",
   },
   {
+    type: "work",
     uuid: "dwadaw",
+    user_uuid: "jhgddj",
     title: "I need help moving ASAP!",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 200,
     tags: ["transporting", "home"],
     distance: "< 10 mi",
-    date: "February 7",
+    due_date: "February 7",
     user_name: "@samdoe",
     time_ago: "1 day ago",
   },
   {
+    type: "work",
     uuid: "asdfsaf",
+    user_uuid: "jhgddj",
     title: "Lawn mowing needed",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
@@ -59,80 +67,86 @@ export const exampleJobPosts: TJobPost[] = [
     max_rate: 100,
     tags: ["yardwork", "home"],
     distance: "< 5 mi",
-    date: "February 8",
+    due_date: "February 8",
     comments: 1,
     user_name: "@johnsmith",
     time_ago: "7 hrs ago",
   },
-
   {
+    type: "work",
     uuid: "tydwasytss",
-    title: "Painter Needed for Building Meural",
+    user_uuid: "jhgddj",
+    title: "Painter Needed for Building Meural at XYZ",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 450,
     max_rate: 600,
     tags: ["art", "painting"],
     distance: "< 15 mi",
-    date: "July 3",
+    due_date: "July 3",
     status: "7 accepted",
     user_name: "@some_user",
     time_ago: "1 mo ago",
   },
 ];
 
-export type TServicePost = {
-  uuid: string;
-  title: string;
-  description: string;
-  min_rate: number;
-  max_rate?: number;
-  tags: string[];
-  distance: string;
-  user_rating?: number;
-};
-export const exampleServicePosts: TServicePost[] = [
+export const exampleServicePosts: TPost[] = [
   {
+    type: "hire",
+    uuid: "jhgddj",
+    user_uuid: "jhgddj",
+    title: "Design a poster",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    min_rate: 75,
+    max_rate: 100,
+    tags: ["design", "art", "media"],
+    distance: "remote",
+    comments: 4,
+    user_name: "@sukmoon44",
+    time_ago: "1 hr ago",
+  },
+  {
+    type: "hire",
+    uuid: "dwadaw",
+    user_uuid: "jhgddj",
+    title: "I need help moving ASAP!",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    min_rate: 200,
+    tags: ["transporting", "home"],
+    distance: "< 10 mi",
+    user_name: "@samdoe",
+    time_ago: "1 day ago",
+  },
+  {
+    type: "hire",
     uuid: "asdfsaf",
-    title: "Yardwork Service",
+    user_uuid: "jhgddj",
+    title: "Lawn mowing needed",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
     max_rate: 100,
     tags: ["yardwork", "home"],
     distance: "< 5 mi",
-    user_rating: 4.9,
+    comments: 1,
+    user_name: "@johnsmith",
+    time_ago: "7 hrs ago",
   },
   {
-    uuid: "dwadaw",
-    title: "Mover",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    min_rate: 200,
-    tags: ["transporting", "home"],
-    distance: "< 10 mi",
-  },
-  {
-    uuid: "jhgddj",
-    title: "Digital Media Designer",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    min_rate: 50,
-    max_rate: 60,
-    tags: ["design", "art", "media"],
-    distance: "remote",
-    user_rating: 4.4,
-  },
-  {
+    type: "hire",
     uuid: "tydwasytss",
-    title: "Painter",
+    user_uuid: "jhgddj",
+    title: "Painter Needed for Building Meural at XYZ",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 450,
     max_rate: 600,
     tags: ["art", "painting"],
     distance: "< 15 mi",
-    user_rating: 5,
+    user_name: "@some_user",
+    time_ago: "1 mo ago",
   },
 ];
 

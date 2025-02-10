@@ -6,10 +6,10 @@ import Badge from "../ui/Badge";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TJobPost } from "@/server/utils/example_data";
+import { TPost } from "@/server/utils/example_data";
 
 export type JobPostProps = {
-  data: TJobPost;
+  data: TPost;
 } & ViewProps;
 
 export default function JobPost({ data, style }: JobPostProps) {
@@ -42,7 +42,7 @@ export default function JobPost({ data, style }: JobPostProps) {
             </View>
             <Text weight="semibold">{data.title}</Text>
             <Text weight="semibold" size="sm">
-              Due {data.date}
+              Due {data.due_date}
             </Text>
             <View style={styles.badgeRow}>
               <Badge style={{ flexDirection: "row", gap: 2 }}>

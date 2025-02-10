@@ -1,7 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router } from "expo-router";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
@@ -13,12 +12,10 @@ import {
   exampleJobPosts,
   exampleServicePosts,
 } from "@/server/utils/example_data";
-import Button from "@/components/ui/Button";
-import Icon from "@/components/ui/Icon";
-import ImageBackgroundPlaceholder from "@/components/ui/ImageBackgroundPlaceholder";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import Post from "@/components/posts/Post";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -28,7 +25,7 @@ export default function ExploreScreen() {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        color="background"
+        color="base"
       >
         <View style={{ paddingBottom: 40 }}>
           <View style={{ height: 260 }}>
@@ -38,9 +35,9 @@ export default function ExploreScreen() {
               style={{ height: "100%", position: "absolute" }}
               isDark
             />
-            <View style={{ flex: 1, paddingTop: 40, paddingHorizontal: 16 }}>
+            <View style={{ flex: 1, paddingTop: 70, paddingHorizontal: 16 }}>
               <LinearGradient
-                colors={["transparent", themeColor.background]}
+                colors={["transparent", themeColor.base]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={{
@@ -52,10 +49,10 @@ export default function ExploreScreen() {
                 }}
               />
               <Text color="white" weight="semibold" size="3xl">
-                Explore
-              </Text>
-              <Text color="white" weight="semibold" size="xl">
                 Find the right job for you.
+              </Text>
+              <Text color="white" size="lg">
+                Discover from many categories, jobs, services, and more.
               </Text>
             </View>
           </View>
@@ -81,7 +78,7 @@ export default function ExploreScreen() {
             Jobs you might like
           </Text>
           {exampleJobPosts.map((post, i) => (
-            <JobPost
+            <Post
               key={i}
               data={post}
               style={{
@@ -96,7 +93,7 @@ export default function ExploreScreen() {
             Services suggested for you
           </Text>
           {exampleServicePosts.map((post, i) => (
-            <ServicePost
+            <Post
               key={i}
               data={post}
               style={{
@@ -116,8 +113,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionTitle: {
-    marginBottom: 8,
+    marginTop: 26,
+    marginBottom: 10,
     marginLeft: 16,
-    marginTop: 40,
   },
 });

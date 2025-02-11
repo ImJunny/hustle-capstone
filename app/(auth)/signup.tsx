@@ -6,11 +6,35 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { supabase } from "@/server/lib/supabase";
 import { Link, router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { Alert, AppState, StyleSheet } from "react-native";
+
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
 
 export default function SignUpScreen() {
   const themeColor = useThemeColor();
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function signUpWithEmail() {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({ email, password });
+
+    if (error) Alert.alert("Error", error.message);
+    if (!session) Alert.alert("Check email for verification.");
+    if (session) router.replace("/(main)/(tabs)");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -26,10 +50,25 @@ export default function SignUpScreen() {
           Hustle
         </Text>
         <View style={styles.formContainer}>
-          <Input placeholder="Email" style={styles.input} />
-          <Input placeholder="Username" style={styles.input} />
-          <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
+          <Input
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <Input
+            placeholder="Username"
+            style={styles.input}
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+          />
+          <Input
+            placeholder="Password"
+            style={styles.input}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
+          <Button isFullWidth onPress={() => signUpWithEmail()}>
             Sign Up
           </Button>
           <View style={styles.separatorContainer}>

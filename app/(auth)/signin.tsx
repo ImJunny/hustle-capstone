@@ -6,11 +6,25 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { supabase } from "@/server/lib/supabase";
 import { Link, router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { Alert, StyleSheet } from "react-native";
 
 export default function SignInScreen() {
   const themeColor = useThemeColor();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function signInWithEmail() {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) Alert.alert(error.message);
+    if (data.user) router.replace("/(main)/(tabs)");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -26,9 +40,19 @@ export default function SignInScreen() {
           Hustle
         </Text>
         <View style={styles.formContainer}>
-          <Input placeholder="Email or username" style={styles.input} />
-          <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
+          <Input
+            placeholder="Email or username"
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <Input
+            placeholder="Password"
+            style={styles.input}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+          />
+          <Button isFullWidth onPress={() => signInWithEmail()}>
             Log In
           </Button>
           <View style={styles.separatorContainer}>

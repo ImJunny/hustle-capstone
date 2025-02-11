@@ -62,6 +62,20 @@ export default function SignUpScreen() {
             value={username}
             onChangeText={(text) => setUsername(text)}
           />
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <Input
+              placeholder="First"
+              style={{ flex: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Input
+              placeholder="Last"
+              style={{ flex: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+          </View>
           <Input
             placeholder="Password"
             style={styles.input}

@@ -53,7 +53,7 @@ export default function SignInScreen() {
             onChangeText={(text) => setPassword(text)}
           />
           <Button isFullWidth onPress={() => signInWithEmail()}>
-            Log In
+            Sign in
           </Button>
           <View style={styles.separatorContainer}>
             <Separator color="border" style={{ position: "absolute" }} />

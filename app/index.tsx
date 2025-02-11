@@ -3,7 +3,7 @@ import { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "../server/lib/supabase";
 
-export default function RootLayout() {
+export default function RootIndex() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 

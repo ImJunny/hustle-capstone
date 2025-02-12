@@ -8,6 +8,7 @@ import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { createUser } from "@/server/lib/database";
 import { supabase } from "@/server/lib/supabase";
+import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Alert, AppState, StyleSheet } from "react-native";
@@ -22,6 +23,7 @@ AppState.addEventListener("change", (state) => {
 
 export default function SignUpScreen() {
   const themeColor = useThemeColor();
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -29,22 +31,24 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
 
   async function signUpWithEmail() {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({ email, password });
+    if (isLoading) return;
 
-    if (error) Alert.alert("Error", error.message);
-    if (session) {
-      router.push("/(main)/(tabs)");
-      const result = createUser(
-        session.user.id,
-        email,
-        username,
-        firstName,
-        lastName
-      );
-      console.log(result);
+    setIsLoading(true);
+    try {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.signUp({ email, password });
+
+      if (error) throw error;
+      if (session) {
+        await createUser(session.user.id, email, username, firstName, lastName);
+        router.replace("/(main)/(tabs)");
+      }
+    } catch (error) {
+      Alert.alert("Error", (error as AuthError)?.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -94,8 +98,8 @@ export default function SignUpScreen() {
             value={password}
             onChangeText={(text) => setPassword(text)}
           />
-          <Button isFullWidth onPress={() => signUpWithEmail()}>
-            Sign Up
+          <Button isFullWidth onPress={signUpWithEmail} disabled={isLoading}>
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>
           <View style={styles.separatorContainer}>
             <Separator color="border" style={{ position: "absolute" }} />

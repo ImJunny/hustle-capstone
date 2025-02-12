@@ -1,16 +1,29 @@
 import { supabase } from "./supabase";
 
+export const dbResponse = (
+  isSuccess: boolean,
+  data?: any,
+  message?: string
+) => ({
+  isSuccess,
+  data,
+  message,
+});
+
 // Check if a user exists in the database
 export async function doesUserExist(uuid: string) {
-  const { error, data } = await supabase
-    .from("users")
-    .select()
-    .or(`uuid.eq.${uuid},email.eq.${uuid}`)
-    .single();
-  if (error) return error;
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select()
+      .or(`uuid.eq.${uuid},email.eq.${uuid}`);
 
-  if (data?.uuid) return true;
-  return false;
+    if (error) throw error;
+    if (data && data.length > 0) return true;
+    return false;
+  } catch (error) {
+    return error;
+  }
 }
 
 // Create user if they don't exist in the database
@@ -18,23 +31,23 @@ export async function createUser(
   uuid: string,
   email: string,
   username: string,
-  firstName: string,
-  lastName: string
+  first_name: string,
+  last_name: string
 ) {
-  const doesExist = await doesUserExist(uuid);
-  if (doesExist) {
-    return "User already exists.";
-  }
-
-  await supabase
-    .from("users")
-    .insert({
+  try {
+    const exists = await doesUserExist(uuid);
+    if (exists) throw "User already exists...";
+    const { error } = await supabase.from("users").insert({
       uuid,
-      email,
       created_at: new Date().toISOString(),
+      email,
+      first_name,
+      last_name,
       username,
-      first_name: firstName,
-      last_name: lastName,
     });
-  return "Success";
+    if (error) throw error;
+    console.log("Created user!");
+  } catch (error) {
+    return error;
+  }
 }

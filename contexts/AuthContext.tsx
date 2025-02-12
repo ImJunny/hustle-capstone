@@ -1,7 +1,7 @@
 import { supabase } from "@/server/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
-import { router } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { AppState } from "react-native";
 
 const AuthContext = createContext<{
   session: Session | null;
@@ -27,7 +27,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(user);
     }
+
     fetchData();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+    );
+
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        supabase.auth.startAutoRefresh();
+      } else {
+        supabase.auth.stopAutoRefresh();
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+      subscription.remove();
+    };
   }, []);
 
   const value = { session, user };

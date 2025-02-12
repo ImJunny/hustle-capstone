@@ -7,23 +7,33 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
+import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 
 export default function SignInScreen() {
   const themeColor = useThemeColor();
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function signInWithEmail() {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (isLoading) return;
 
-    if (error) Alert.alert(error.message);
-    if (data.user) router.replace("/(main)/(tabs)");
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      if (data.user) router.replace("/(main)/(tabs)");
+    } catch (error) {
+      Alert.alert("Error", (error as AuthError).message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -52,8 +62,12 @@ export default function SignInScreen() {
             value={password}
             onChangeText={(text) => setPassword(text)}
           />
-          <Button isFullWidth onPress={() => signInWithEmail()}>
-            Sign in
+          <Button
+            isFullWidth
+            onPress={() => signInWithEmail()}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign in"}
           </Button>
           <View style={styles.separatorContainer}>
             <Separator color="border" style={{ position: "absolute" }} />

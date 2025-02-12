@@ -28,18 +28,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(user);
     }
     fetchData();
-
-    // const { data: authListener } = supabase.auth.onAuthStateChange(
-    //   (_, newSession) => {
-    //     setSession(newSession);
-    //     setUser(newSession?.user || null);
-    //     if (!newSession) (async () => await supabase.auth.signOut())();
-    //   }
-    // );
-
-    // return () => {
-    //   authListener?.subscription.unsubscribe();
-    // };
   }, []);
 
   const value = { session, user };

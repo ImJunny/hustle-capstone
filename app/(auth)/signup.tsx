@@ -6,6 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { createUser } from "@/server/lib/database";
 import { supabase } from "@/server/lib/supabase";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -34,9 +35,16 @@ export default function SignUpScreen() {
     } = await supabase.auth.signUp({ email, password });
 
     if (error) Alert.alert("Error", error.message);
-    if (!session) Alert.alert("Check email for verification.");
     if (session) {
-      router.replace("/(main)/(tabs)");
+      router.push("/(main)/(tabs)");
+      const result = createUser(
+        session.user.id,
+        email,
+        username,
+        firstName,
+        lastName
+      );
+      console.log(result);
     }
   }
 
@@ -70,14 +78,14 @@ export default function SignUpScreen() {
             <Input
               placeholder="First"
               style={{ flex: 1 }}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
+              value={firstName}
+              onChangeText={(text) => setFirstName(text)}
             />
             <Input
               placeholder="Last"
               style={{ flex: 1 }}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
+              value={lastName}
+              onChangeText={(text) => setLastName(text)}
             />
           </View>
           <Input

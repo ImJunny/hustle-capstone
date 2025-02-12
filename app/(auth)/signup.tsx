@@ -23,6 +23,8 @@ export default function SignUpScreen() {
   const themeColor = useThemeColor();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
 
   async function signUpWithEmail() {
@@ -33,7 +35,9 @@ export default function SignUpScreen() {
 
     if (error) Alert.alert("Error", error.message);
     if (!session) Alert.alert("Check email for verification.");
-    if (session) router.replace("/(main)/(tabs)");
+    if (session) {
+      router.replace("/(main)/(tabs)");
+    }
   }
 
   return (

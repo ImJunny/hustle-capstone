@@ -1,4 +1,6 @@
+import { users } from "@/drizzle/schema";
 import { supabase } from "./supabase";
+import { InferModel, InferSelectModel } from "drizzle-orm";
 
 export const dbResponse = (
   isSuccess: boolean,
@@ -46,8 +48,24 @@ export async function createUser(
       username,
     });
     if (error) throw error;
-    console.log("Created user!");
   } catch (error) {
     return error;
   }
 }
+
+// Get user info
+export async function getUserInfo(uuid: string) {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("uuid", uuid)
+      .single();
+    if (error) throw error;
+    return data || null;
+  } catch (error) {
+    return error;
+  }
+}
+
+export type UserInfo = InferSelectModel<typeof users>;

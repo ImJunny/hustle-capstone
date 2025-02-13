@@ -9,4 +9,5 @@ export const users = app_schema.table("users", {
   first_name: text("first_name"),
   last_name: text("last_name"),
   created_at: timestamp("created_at"),
+  bio: text("bio"),
 });

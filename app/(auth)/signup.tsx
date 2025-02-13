@@ -6,11 +6,103 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { createUser, doesUserExist } from "@/server/lib/user";
+import { supabase } from "@/server/lib/supabase";
+import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { Alert, AppState, StyleSheet } from "react-native";
+
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
 
 export default function SignUpScreen() {
   const themeColor = useThemeColor();
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordHidden, setPasswordHidden] = useState(true);
+
+  // temporary sign up function; unsafe
+  async function signUpWithEmail() {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const {
+        data: { session, user },
+        error,
+      } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: "com.hustle://auth/callback" },
+      });
+
+      if (error) throw error;
+      if (session) {
+        console.log("user registered as ", user?.id);
+        if (user) {
+          await createUser(
+            user.id,
+            email,
+            username,
+            firstName,
+            lastName,
+            new Date(user.created_at).toISOString()
+          );
+          router.replace("/(main)/(tabs)");
+        }
+      }
+    } catch (error) {
+      Alert.alert("Error", (error as AuthError)?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // async function signUpWithEmail() {
+  //   if (isLoading) return;
+
+  //   setIsLoading(true);
+  //   try {
+  //     const {
+  //       data: { session, user },
+  //       error,
+  //     } = await supabase.auth.signUp({
+  //       email,
+  //       password,
+  //       options: { emailRedirectTo: "com.hustle://auth/callback" },
+  //     });
+
+  //     if (error) throw error;
+  //     if (!session) {
+  //       Alert.alert("Please check your inbox for email verification.");
+  //       console.log("user registered as ", user?.id);
+  //       if (user) {
+  //         await createUser(
+  //           user.id,
+  //           email,
+  //           username,
+  //           firstName,
+  //           lastName,
+  //           new Date(user.created_at).toISOString()
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     Alert.alert("Error", (error as AuthError)?.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -26,11 +118,59 @@ export default function SignUpScreen() {
           Hustle
         </Text>
         <View style={styles.formContainer}>
-          <Input placeholder="Email" style={styles.input} />
-          <Input placeholder="Username" style={styles.input} />
-          <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
-            Sign Up
+          <Input
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            autoCapitalize="none"
+          />
+          <Input
+            placeholder="Username"
+            style={styles.input}
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+            autoCapitalize="none"
+          />
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <Input
+              placeholder="First"
+              style={{ flex: 1 }}
+              value={firstName}
+              onChangeText={(text) => setFirstName(text)}
+            />
+            <Input
+              placeholder="Last"
+              style={{ flex: 1 }}
+              value={lastName}
+              onChangeText={(text) => setLastName(text)}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: themeColor["background-variant"],
+              borderRadius: 6,
+            }}
+          >
+            <Input
+              placeholder="Password"
+              style={{ flexGrow: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              autoCapitalize="none"
+              secureTextEntry={passwordHidden}
+            />
+            <IconButton
+              style={{ paddingHorizontal: 12 }}
+              name={passwordHidden ? "eye-outline" : "eye"}
+              onPress={() => setPasswordHidden(!passwordHidden)}
+              hideOpacity
+            />
+          </View>
+          <Button isFullWidth onPress={signUpWithEmail} disabled={isLoading}>
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>
           <View style={styles.separatorContainer}>
             <Separator color="border" style={{ position: "absolute" }} />

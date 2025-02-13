@@ -6,11 +6,51 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { supabase } from "@/server/lib/supabase";
+import { getUserData } from "@/server/lib/user";
+import { AuthError } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { Alert, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
   const themeColor = useThemeColor();
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordHidden, setPasswordHidden] = useState(true);
+
+  async function signInWithEmail() {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      Alert.alert("Error", (error as AuthError).message);
+      setIsLoading(false);
+      return;
+    }
+
+    if (user) {
+      const { username } = await getUserData(user?.id ?? "");
+      Toast.show({
+        type: "info",
+        text1: `Signed in as @${username}`,
+        swipeable: false,
+        visibilityTime: 2000,
+      });
+      router.replace("/(main)/(tabs)");
+    }
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -26,10 +66,43 @@ export default function SignInScreen() {
           Hustle
         </Text>
         <View style={styles.formContainer}>
-          <Input placeholder="Email or username" style={styles.input} />
-          <Input placeholder="Password" style={styles.input} />
-          <Button isFullWidth onPress={() => router.replace("/(main)/(tabs)")}>
-            Log In
+          <Input
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            autoCapitalize="none"
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: themeColor["background-variant"],
+              borderRadius: 6,
+            }}
+          >
+            <Input
+              placeholder="Password"
+              style={{ flexGrow: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              autoCapitalize="none"
+              secureTextEntry={passwordHidden}
+            />
+            <IconButton
+              style={{ paddingHorizontal: 12 }}
+              name={passwordHidden ? "eye-outline" : "eye"}
+              onPress={() => setPasswordHidden(!passwordHidden)}
+              hideOpacity
+            />
+          </View>
+
+          <Button
+            isFullWidth
+            onPress={() => signInWithEmail()}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign in"}
           </Button>
           <View style={styles.separatorContainer}>
             <Separator color="border" style={{ position: "absolute" }} />

@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 40,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    borderRadius: 6,
   },
 });

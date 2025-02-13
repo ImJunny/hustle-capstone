@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
+import { FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
 import React from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
@@ -34,9 +34,3 @@ export default function HomeScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

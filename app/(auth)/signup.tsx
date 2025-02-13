@@ -6,7 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser } from "@/server/lib/user";
+import { createUser, doesUserExist } from "@/server/lib/user";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
@@ -29,6 +29,7 @@ export default function SignUpScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordHidden, setPasswordHidden] = useState(true);
 
   // temporary sign up function; unsafe
   async function signUpWithEmail() {
@@ -42,13 +43,23 @@ export default function SignUpScreen() {
       } = await supabase.auth.signUp({
         email,
         password,
+        options: { emailRedirectTo: "com.hustle://auth/callback" },
       });
 
       if (error) throw error;
       if (session) {
         console.log("user registered as ", user?.id);
-        await createUser(session.user.id, email, username, firstName, lastName);
-        router.replace("/(main)/(tabs)");
+        if (user) {
+          await createUser(
+            user.id,
+            email,
+            username,
+            firstName,
+            lastName,
+            new Date(user.created_at).toISOString()
+          );
+          router.replace("/(main)/(tabs)");
+        }
       }
     } catch (error) {
       Alert.alert("Error", (error as AuthError)?.message);
@@ -76,8 +87,14 @@ export default function SignUpScreen() {
   //       Alert.alert("Please check your inbox for email verification.");
   //       console.log("user registered as ", user?.id);
   //       if (user) {
-  //         console.log("user created");
-  //         await createUser(user.id, email, username, firstName, lastName);
+  //         await createUser(
+  //           user.id,
+  //           email,
+  //           username,
+  //           firstName,
+  //           lastName,
+  //           new Date(user.created_at).toISOString()
+  //         );
   //       }
   //     }
   //   } catch (error) {
@@ -106,12 +123,14 @@ export default function SignUpScreen() {
             style={styles.input}
             value={email}
             onChangeText={(text) => setEmail(text)}
+            autoCapitalize="none"
           />
           <Input
             placeholder="Username"
             style={styles.input}
             value={username}
             onChangeText={(text) => setUsername(text)}
+            autoCapitalize="none"
           />
           <View style={{ flexDirection: "row", gap: 12 }}>
             <Input
@@ -127,12 +146,28 @@ export default function SignUpScreen() {
               onChangeText={(text) => setLastName(text)}
             />
           </View>
-          <Input
-            placeholder="Password"
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: themeColor["background-variant"],
+              borderRadius: 6,
+            }}
+          >
+            <Input
+              placeholder="Password"
+              style={{ flexGrow: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              autoCapitalize="none"
+              secureTextEntry={passwordHidden}
+            />
+            <IconButton
+              style={{ paddingHorizontal: 12 }}
+              name={passwordHidden ? "eye-outline" : "eye"}
+              onPress={() => setPasswordHidden(!passwordHidden)}
+            />
+          </View>
           <Button isFullWidth onPress={signUpWithEmail} disabled={isLoading}>
             {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>

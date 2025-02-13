@@ -17,6 +17,7 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordHidden, setPasswordHidden] = useState(true);
 
   async function signInWithEmail() {
     if (isLoading) return;
@@ -51,17 +52,35 @@ export default function SignInScreen() {
         </Text>
         <View style={styles.formContainer}>
           <Input
-            placeholder="Email or username"
+            placeholder="Email"
             style={styles.input}
             value={email}
             onChangeText={(text) => setEmail(text)}
+            autoCapitalize="none"
           />
-          <Input
-            placeholder="Password"
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: themeColor["background-variant"],
+              borderRadius: 6,
+            }}
+          >
+            <Input
+              placeholder="Password"
+              style={{ flexGrow: 1 }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              autoCapitalize="none"
+              secureTextEntry={passwordHidden}
+            />
+            <IconButton
+              style={{ paddingHorizontal: 12 }}
+              name={passwordHidden ? "eye-outline" : "eye"}
+              onPress={() => setPasswordHidden(!passwordHidden)}
+            />
+          </View>
+
           <Button
             isFullWidth
             onPress={() => signInWithEmail()}

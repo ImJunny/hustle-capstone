@@ -1,6 +1,6 @@
 import { users } from "@/drizzle/schema";
 import { supabase } from "./supabase";
-import { InferModel, InferSelectModel } from "drizzle-orm";
+import { InferSelectModel } from "drizzle-orm";
 
 export const dbResponse = (
   isSuccess: boolean,

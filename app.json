@@ -4,7 +4,7 @@
     "slug": "hustle-capstone",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "exp",
+    "scheme": "com.hustle",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {

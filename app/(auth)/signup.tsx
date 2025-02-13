@@ -6,7 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser } from "@/server/lib/database";
+import { createUser } from "@/server/lib/user";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
@@ -30,6 +30,7 @@ export default function SignUpScreen() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
 
+  // temporary sign up function; unsafe
   async function signUpWithEmail() {
     if (isLoading) return;
 
@@ -41,17 +42,13 @@ export default function SignUpScreen() {
       } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: "com.hustle://auth/callback" },
       });
 
       if (error) throw error;
-      if (!session) {
-        Alert.alert("Please check your inbox for email verification.");
+      if (session) {
         console.log("user registered as ", user?.id);
-        if (user) {
-          console.log("user created");
-          await createUser(user.id, email, username, firstName, lastName);
-        }
+        await createUser(session.user.id, email, username, firstName, lastName);
+        router.replace("/(main)/(tabs)");
       }
     } catch (error) {
       Alert.alert("Error", (error as AuthError)?.message);
@@ -59,6 +56,36 @@ export default function SignUpScreen() {
       setIsLoading(false);
     }
   }
+
+  // async function signUpWithEmail() {
+  //   if (isLoading) return;
+
+  //   setIsLoading(true);
+  //   try {
+  //     const {
+  //       data: { session, user },
+  //       error,
+  //     } = await supabase.auth.signUp({
+  //       email,
+  //       password,
+  //       options: { emailRedirectTo: "com.hustle://auth/callback" },
+  //     });
+
+  //     if (error) throw error;
+  //     if (!session) {
+  //       Alert.alert("Please check your inbox for email verification.");
+  //       console.log("user registered as ", user?.id);
+  //       if (user) {
+  //         console.log("user created");
+  //         await createUser(user.id, email, username, firstName, lastName);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     Alert.alert("Error", (error as AuthError)?.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 import { EmptyHeader } from "@/components/headers/Headers";
 import { supabase } from "@/server/lib/supabase";
-import { getUserInfo, UserInfo } from "@/server/lib/database";
+import { getUserInfo, UserInfo } from "@/server/lib/user";
 import { useAuthInfo } from "@/contexts/AuthContext";
 
 export default function ProfileMainScreen() {

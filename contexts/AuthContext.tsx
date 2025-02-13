@@ -3,7 +3,7 @@ import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
 import * as Linking from "expo-linking";
-import { createUser, verifyUser } from "@/server/lib/database";
+import { createUser, verifyUser } from "@/server/lib/user";
 
 const AuthContext = createContext<{
   session: Session | null;

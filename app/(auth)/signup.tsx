@@ -166,6 +166,7 @@ export default function SignUpScreen() {
               style={{ paddingHorizontal: 12 }}
               name={passwordHidden ? "eye-outline" : "eye"}
               onPress={() => setPasswordHidden(!passwordHidden)}
+              hideOpacity
             />
           </View>
           <Button isFullWidth onPress={signUpWithEmail} disabled={isLoading}>

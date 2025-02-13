@@ -1,33 +1,21 @@
-import { users } from "@/drizzle/schema";
 import { supabase } from "./supabase";
-import { InferSelectModel } from "drizzle-orm";
 
-export const dbResponse = (
-  isSuccess: boolean,
-  data?: any,
-  message?: string
-) => ({
-  isSuccess,
-  data,
-  message,
-});
+/*
+  Supabase calls for user-related data. Always throw the destructured
+  error variable. We can handle errors with TanStack Query.
+*/
 
 // Check if a user exists in the database
-export async function doesUserExist(uuid: string) {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .select()
-      .eq("uuid", uuid);
+export async function doesUserExist(uuid: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("users")
+    .select()
+    .eq("uuid", uuid);
 
-    console.log(data);
-    console.log(error);
-    if (error) throw error;
-    if (data && data.length > 0) return true;
-    return false;
-  } catch (error) {
-    return error;
-  }
+  if (error) throw error;
+
+  if (data && data.length > 0) return true;
+  return false;
 }
 
 // Create user if they don't exist in the database
@@ -39,39 +27,29 @@ export async function createUser(
   last_name: string,
   created_at: string
 ) {
-  try {
-    const exists = await doesUserExist(uuid);
-    if (exists) throw "User already exists!";
+  const userExists = await doesUserExist(uuid);
+  if (userExists) throw "User already exists.";
 
-    console.log("user registered as ", uuid);
-    const { error } = await supabase.from("users").insert({
-      uuid,
-      email,
-      first_name,
-      last_name,
-      username,
-      created_at,
-    });
-    if (error) throw error;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
+  const { error } = await supabase.from("users").insert({
+    uuid,
+    email,
+    first_name,
+    last_name,
+    username,
+    created_at,
+  });
+
+  if (error) throw error;
 }
 
 // Get user info
-export async function getUserInfo(uuid: string) {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("uuid", uuid)
-      .single();
-    if (error) throw error;
-    return data || null;
-  } catch (error) {
-    return error;
-  }
-}
+export async function getUserData(uuid: string) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("uuid", uuid)
+    .single();
 
-export type UserInfo = InferSelectModel<typeof users>;
+  if (error) throw error;
+  return data;
+}

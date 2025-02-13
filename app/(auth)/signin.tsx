@@ -7,10 +7,13 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
+import { getUserData } from "@/server/lib/user";
 import { AuthError } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
   const themeColor = useThemeColor();
@@ -23,17 +26,29 @@ export default function SignInScreen() {
     if (isLoading) return;
 
     setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      if (data.user) router.replace("/(main)/(tabs)");
-    } catch (error) {
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
       Alert.alert("Error", (error as AuthError).message);
-    } finally {
       setIsLoading(false);
+      return;
+    }
+
+    if (user) {
+      const { username } = await getUserData(user?.id ?? "");
+      Toast.show({
+        type: "info",
+        text1: `Signed in as @${username}`,
+        swipeable: false,
+        visibilityTime: 2000,
+      });
+      router.replace("/(main)/(tabs)");
     }
   }
 
@@ -78,6 +93,7 @@ export default function SignInScreen() {
               style={{ paddingHorizontal: 12 }}
               name={passwordHidden ? "eye-outline" : "eye"}
               onPress={() => setPasswordHidden(!passwordHidden)}
+              hideOpacity
             />
           </View>
 

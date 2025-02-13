@@ -1,10 +1,9 @@
-import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
+import { FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
 import React from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
 import { exampleJobPosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
-import { useAuthInfo } from "@/contexts/AuthContext";
 
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
@@ -12,8 +11,6 @@ export default function HomeScreen() {
   const subtractedHeight = 66 + 56 + statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
-  const { user } = useAuthInfo();
-  console.log("user from home is ", user?.id);
   return (
     <>
       <ExampleHeader />

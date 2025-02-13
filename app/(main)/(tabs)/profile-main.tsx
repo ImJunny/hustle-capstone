@@ -1,12 +1,14 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { router } from "expo-router";
 import Button from "@/components/ui/Button";
 import { EmptyHeader } from "@/components/headers/Headers";
 import { supabase } from "@/server/lib/supabase";
-import { getUserInfo, UserInfo } from "@/server/lib/user";
-import { useAuthInfo } from "@/contexts/AuthContext";
+import { getUserData } from "@/server/lib/user";
+import { useAuthData } from "@/contexts/AuthContext";
+import Toast from "react-native-toast-message";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProfileMainScreen() {
   async function handleSignout() {
@@ -16,30 +18,36 @@ export default function ProfileMainScreen() {
     } else {
       router.replace("/signin");
       console.log("Signed out successfully");
+      Toast.show({
+        type: "info",
+        text1: `Signed out`,
+        swipeable: false,
+        visibilityTime: 2000,
+      });
     }
   }
 
-  const { user } = useAuthInfo();
-  const [firstName, setFirstName] = useState("");
+  const { user } = useAuthData();
+  const { data, error } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUserData(user?.id ?? ""),
+  });
 
-  useEffect(() => {
-    async function getUserFirstName() {
-      if (user?.id) {
-        const userInfo = (await getUserInfo(user.id)) as UserInfo;
-        if (userInfo) {
-          setFirstName(userInfo.first_name || "NULL");
-        }
-      }
-    }
-
-    getUserFirstName();
-  }, []);
+  if (error) {
+    return (
+      <View>
+        <Text>User not found.</Text>
+      </View>
+    );
+  }
 
   return (
     <>
       <EmptyHeader />
       <View>
-        <Text>User first name is {firstName}</Text>
+        <Text>User username is {data?.username}</Text>
+        <Text>User first name is {data?.first_name}</Text>
+        <Text>User last name is {data?.last_name}</Text>
         <Button onPress={() => router.push("/settings")}>Settings</Button>
         <Button onPress={handleSignout}>Sign out</Button>
       </View>

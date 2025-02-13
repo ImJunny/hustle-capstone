@@ -18,6 +18,7 @@ type IconButtonProps = {
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
   flippedX?: boolean;
+  hideOpacity?: boolean;
 } & TouchableOpacityProps;
 
 export default function IconButton({
@@ -26,10 +27,11 @@ export default function IconButton({
   color = "foreground",
   flippedX,
   style,
+  hideOpacity,
   ...props
 }: IconButtonProps) {
   return (
-    <TouchableOpacity {...props}>
+    <TouchableOpacity {...props} activeOpacity={hideOpacity ? 1 : 0.2}>
       <Icon
         size={size}
         name={name}

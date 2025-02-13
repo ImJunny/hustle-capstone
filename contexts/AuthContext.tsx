@@ -2,15 +2,13 @@ import { supabase } from "@/server/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
-import * as Linking from "expo-linking";
-import { createUser, verifyUser } from "@/server/lib/user";
 
 const AuthContext = createContext<{
   session: Session | null;
   user: User | null;
 }>({ session: null, user: null });
 
-export function useAuthInfo() {
+export function useAuthData() {
   return useContext(AuthContext);
 }
 

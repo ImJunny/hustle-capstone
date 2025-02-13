@@ -38,6 +38,9 @@ dependencies:
   '@supabase/supabase-js':
     specifier: ^2.48.1
     version: 2.48.1
+  '@tanstack/react-query':
+    specifier: ^5.66.0
+    version: 5.66.0(react@18.3.1)
   drizzle-orm:
     specifier: ^0.39.3
     version: 0.39.3(postgres@3.4.5)
@@ -122,6 +125,9 @@ dependencies:
   react-native-screens:
     specifier: ~4.4.0
     version: 4.4.0(react-native@0.76.7)(react@18.3.1)
+  react-native-toast-message:
+    specifier: ^2.2.1
+    version: 2.2.1(react-native@0.76.7)(react@18.3.1)
   react-native-url-polyfill:
     specifier: ^2.0.0
     version: 2.0.0(react-native@0.76.7)
@@ -3591,6 +3597,19 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    dev: false
+
+  /@tanstack/query-core@5.66.0:
+    resolution: {integrity: sha512-J+JeBtthiKxrpzUu7rfIPDzhscXF2p5zE/hVdrqkACBP8Yu0M96mwJ5m/8cPPYQE9aRNvXztXHlNwIh4FEeMZw==}
+    dev: false
+
+  /@tanstack/react-query@5.66.0(react@18.3.1):
+    resolution: {integrity: sha512-z3sYixFQJe8hndFnXgWu7C79ctL+pI0KAelYyW+khaNJ1m22lWrhJU2QrsTcRKMuVPtoZvfBYrTStIdKo+x0Xw==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.66.0
+      react: 18.3.1
     dev: false
 
   /@tootallnate/once@2.0.0:
@@ -8664,6 +8683,16 @@ packages:
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(@types/react@18.3.18)(react@18.3.1)
       react-native-pager-view: 6.7.0(react-native@0.76.7)(react@18.3.1)
       use-latest-callback: 0.2.3(react@18.3.1)
+    dev: false
+
+  /react-native-toast-message@2.2.1(react-native@0.76.7)(react@18.3.1):
+    resolution: {integrity: sha512-iXFMnlxPcgKKs4bZOIl06W16m6KXMh/bAYpWLyVXlISSCdcL2+FX5WPpRP3TGQeM/u9q+j5ex48DDY+72en+Sw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 18.3.1
+      react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(@types/react@18.3.18)(react@18.3.1)
     dev: false
 
   /react-native-url-polyfill@2.0.0(react-native@0.76.7):

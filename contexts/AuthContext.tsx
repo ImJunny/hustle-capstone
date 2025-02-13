@@ -2,6 +2,8 @@ import { supabase } from "@/server/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
+import * as Linking from "expo-linking";
+import { createUser, verifyUser } from "@/server/lib/database";
 
 const AuthContext = createContext<{
   session: Session | null;
@@ -21,11 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       setSession(session);
-      setUser(user);
+      setUser(session?.user ?? null);
     }
 
     fetchData();

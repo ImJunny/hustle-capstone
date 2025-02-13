@@ -1,4 +1,11 @@
-import { date, pgSchema, text, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  date,
+  pgSchema,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const app_schema = pgSchema("app");
 
@@ -8,5 +15,6 @@ export const users = app_schema.table("users", {
   username: varchar("username"),
   first_name: text("first_name"),
   last_name: text("last_name"),
-  created_at: date("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  confirmed_at: timestamp("confirmed_at"),
 });

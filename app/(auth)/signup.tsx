@@ -36,14 +36,22 @@ export default function SignUpScreen() {
     setIsLoading(true);
     try {
       const {
-        data: { session },
+        data: { session, user },
         error,
-      } = await supabase.auth.signUp({ email, password });
+      } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: "com.hustle://auth/callback" },
+      });
 
       if (error) throw error;
-      if (session) {
-        await createUser(session.user.id, email, username, firstName, lastName);
-        router.replace("/(main)/(tabs)");
+      if (!session) {
+        Alert.alert("Please check your inbox for email verification.");
+        console.log("user registered as ", user?.id);
+        if (user) {
+          console.log("user created");
+          await createUser(user.id, email, username, firstName, lastName);
+        }
       }
     } catch (error) {
       Alert.alert("Error", (error as AuthError)?.message);

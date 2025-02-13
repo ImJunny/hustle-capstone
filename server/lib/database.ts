@@ -38,7 +38,8 @@ export async function createUser(
 ) {
   try {
     const exists = await doesUserExist(uuid);
-    if (exists) throw "User already exists...";
+    if (exists) throw "User already exists!";
+
     const { error } = await supabase.from("users").insert({
       uuid,
       created_at: new Date().toISOString(),
@@ -48,6 +49,21 @@ export async function createUser(
       username,
     });
     if (error) throw error;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
+// Confirm user after verification from email
+export async function verifyUser(uuid: string, confirmed_at: string) {
+  try {
+    const { error } = await supabase
+      .from("users")
+      .update({ confirmed_at })
+      .or(`uuid.eq${uuid}`);
+    if (error) throw error;
+    return;
   } catch (error) {
     return error;
   }

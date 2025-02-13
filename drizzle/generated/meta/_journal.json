@@ -8,6 +8,13 @@
       "when": 1739330035770,
       "tag": "0000_vengeful_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1739408712390,
+      "tag": "0001_colossal_zombie",
+      "breakpoints": true
     }
   ]
 }

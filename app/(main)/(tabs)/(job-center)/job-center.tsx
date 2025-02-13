@@ -7,7 +7,6 @@ import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import { JobsCenterHeader } from "@/components/headers/Headers";
 import { Href, Link } from "expo-router";
-import { createUser, doesUserExist } from "@/server/lib/database";
 import { useAuthInfo } from "@/contexts/AuthContext";
 
 export default function JobCenterScreen() {

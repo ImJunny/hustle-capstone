@@ -7,6 +7,11 @@
     "scheme": "exp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -21,6 +26,7 @@
       "output": "static"
     },
     "plugins": [
+      "expo-splash-screen",
       "expo-router",
       "expo-asset",
       "@react-native-google-signin/google-signin"

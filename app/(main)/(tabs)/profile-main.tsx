@@ -9,6 +9,8 @@ import { getUserData } from "@/server/lib/user";
 import { useAuthData } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { useQuery } from "@tanstack/react-query";
+import { ProfileHeader } from "@/components/headers/Headers";
+import ProfileBio from "@/components/profile/profileBio";
 
 export default function ProfileMainScreen() {
   async function handleSignout() {
@@ -43,13 +45,28 @@ export default function ProfileMainScreen() {
 
   return (
     <>
-      <EmptyHeader />
+      <ProfileHeader />
       <View>
-        <Text>User username is {data?.username}</Text>
-        <Text>User first name is {data?.first_name}</Text>
-        <Text>User last name is {data?.last_name}</Text>
-        <Button onPress={() => router.push("/settings")}>Settings</Button>
-        <Button onPress={handleSignout}>Sign out</Button>
+        <ProfileBio
+          data={{
+            uuid: "",
+            bio: "",
+            user_name: "John smith",
+            name: "",
+          }}
+        />
+        <View>
+          <Text
+            color="muted"
+            style={{
+              paddingHorizontal: 15,
+            }}
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation...
+          </Text>
+        </View>
       </View>
     </>
   );

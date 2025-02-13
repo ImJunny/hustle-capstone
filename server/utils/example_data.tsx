@@ -198,3 +198,16 @@ export const exampleMessages: TMessage[] = [
     is_job: true,
   },
 ];
+export type TProfile = {
+  uuid: string;
+  bio: string;
+  user_name: string;
+  name: string;
+};
+
+export const exampleProfile: TProfile = {
+  uuid: "kiyfkifa",
+  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
+  user_name: "@some_user",
+  name: "Kevin So",
+};

@@ -189,3 +189,56 @@ export function SearchedHeader() {
     />
   );
 }
+
+export function ProfileHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <Text weight="semibold" size="xl">
+            @johnsmith
+          </Text>
+        ),
+        right: (
+          <>
+            <View
+              style={{ gap: 12, flexDirection: "row", alignItems: "center" }}
+            >
+              <IconButton
+                name="add"
+                size="xl"
+                onPress={() => router.push("/example")}
+              />
+              <IconButton
+                name="menu-sharp"
+                size="xl"
+                onPress={() => router.push("/settings")}
+              />
+            </View>
+          </>
+        ),
+      }}
+    />
+  );
+}
+
+export function SettingsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text size="xl" weight="semibold">
+              Settings
+            </Text>
+          </View>
+        ),
+      }}
+    />
+  );
+}

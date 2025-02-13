@@ -1,10 +1,9 @@
 import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
 import React from "react";
-import { ExampleHeader } from "@/components/headers/Headers";
-import { exampleJobPosts } from "@/server/utils/example_data";
+import { IndexHeader } from "@/components/headers/Headers";
+import { exampleJobPosts, exampleHirePosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
-
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
@@ -13,7 +12,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <ExampleHeader />
+      <IndexHeader />
       <View style={{ flex: 1 }}>
         <FlatList
           data={exampleJobPosts}

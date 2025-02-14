@@ -4,32 +4,28 @@
     "slug": "hustle-capstone",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "com.hustle",
+    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true
     },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.imjunny.hustlecapstone"
-    },
+    "android": {},
     "web": {
       "bundler": "metro",
       "output": "static"
     },
     "plugins": [
-      "expo-splash-screen",
       "expo-router",
-      "expo-asset",
-      "@react-native-google-signin/google-signin"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

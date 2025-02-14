@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import "react-native-reanimated";
 import { Platform, useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
@@ -19,6 +19,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Text from "@/components/ui/Text";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -62,11 +63,11 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
               <Stack.Screen name="(main)" />
               <Stack.Screen name="(auth)" />
             </Stack>
-            <Toast config={toastConfig} />
+            <Toast config={toastConfig} type="info" visibilityTime={2200} />
           </SafeAreaView>
           <StatusBar style="auto" />
         </ThemeProvider>

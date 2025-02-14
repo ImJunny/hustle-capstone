@@ -43,10 +43,8 @@ export default function SignInScreen() {
     if (user) {
       const { username } = await getUserData(user?.id ?? "");
       Toast.show({
-        type: "info",
         text1: `Signed in as @${username}`,
         swipeable: false,
-        visibilityTime: 2000,
       });
       router.replace("/(main)/(tabs)");
     }
@@ -70,7 +68,7 @@ export default function SignInScreen() {
             placeholder="Email"
             style={styles.input}
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
             autoCapitalize="none"
           />
           <View

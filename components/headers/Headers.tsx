@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { Skeleton } from "moti/skeleton";
 
 export function ExampleHeader() {
   return (
@@ -153,7 +154,7 @@ export function SearchingHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
         ),
@@ -181,7 +182,7 @@ export function SearchedHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
         ),
@@ -190,19 +191,27 @@ export function SearchedHeader() {
   );
 }
 
-export function ProfileHeader() {
+export function ProfileHeader({
+  username,
+  isLoading,
+}: {
+  username: string;
+  isLoading: boolean;
+}) {
   return (
     <HeaderWrapper
       options={{
         left: (
-          <Text weight="semibold" size="xl">
-            @johnsmith
-          </Text>
+          <Skeleton show={isLoading} width={"60%"}>
+            <Text weight="semibold" size="xl">
+              @{username}
+            </Text>
+          </Skeleton>
         ),
         right: (
           <>
             <View
-              style={{ gap: 12, flexDirection: "row", alignItems: "center" }}
+              style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
             >
               <IconButton
                 name="add"

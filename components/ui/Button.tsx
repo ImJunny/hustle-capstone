@@ -20,6 +20,7 @@ export default function Button({
   type = "primary",
   isFullWidth,
   style,
+  disabled,
   ...props
 }: ButtonProps) {
   const themeColor = useThemeColor();
@@ -51,10 +52,12 @@ export default function Button({
   return (
     <TouchableOpacity
       {...props}
+      disabled={disabled}
       style={[
         styles.buttonContainer,
         {
-          backgroundColor,
+          opacity: disabled ? 0.5 : 1,
+          backgroundColor: backgroundColor,
           width: isFullWidth ? "100%" : "auto",
           borderColor,
           borderWidth,

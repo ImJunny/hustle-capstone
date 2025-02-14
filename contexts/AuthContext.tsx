@@ -16,15 +16,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-    }
+  async function fetchData() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    setSession(session);
+    setUser(session?.user ?? null);
+  }
 
+  useEffect(() => {
     fetchData();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(

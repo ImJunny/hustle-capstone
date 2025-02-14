@@ -65,6 +65,9 @@ dependencies:
   expo-dev-client:
     specifier: ~5.0.12
     version: 5.0.12(expo@52.0.33)
+  expo-device:
+    specifier: ^7.0.2
+    version: 7.0.2(expo@52.0.33)
   expo-font:
     specifier: ~13.0.3
     version: 13.0.3(expo@52.0.33)(react@18.3.1)
@@ -5770,6 +5773,15 @@ packages:
       expo-dev-menu-interface: 1.9.3(expo@52.0.33)
     dev: false
 
+  /expo-device@7.0.2(expo@52.0.33):
+    resolution: {integrity: sha512-0PkTixE4Qi8VQBjixnj4aw2f6vE4tUZH7GK8zHROGKlBypZKcWmsA+W/Vp3RC5AyREjX71pO/hjKTSo/vF0E2w==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 52.0.33(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(react-native-webview@13.12.5)(react-native@0.76.7)(react@18.3.1)
+      ua-parser-js: 0.7.40
+    dev: false
+
   /expo-eas-client@0.13.2:
     resolution: {integrity: sha512-2RAAGtkO9vseoJZuW4mhJkiNQ6+FfLrX66OTMq4Qj9mRKZV2Uq/ZquxUGIeJyYqBy4vNYeKbuPd2oJtsV9LBGQ==}
     dev: false
@@ -9948,6 +9960,11 @@ packages:
     resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  /ua-parser-js@0.7.40:
+    resolution: {integrity: sha512-us1E3K+3jJppDBa3Tl0L3MOJiGhe1C6P0+nIvQAFYbxlMAx0h81eOwLmU57xgqToduDDPx3y5QsdjPfDu+FgOQ==}
+    hasBin: true
+    dev: false
 
   /ua-parser-js@1.0.40:
     resolution: {integrity: sha512-z6PJ8Lml+v3ichVojCiB8toQJBuwR42ySM4ezjXIqXK3M0HczmKQ3LF4rhU55PfD99KEEXQG6yb7iOMyvYuHew==}

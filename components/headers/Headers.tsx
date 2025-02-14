@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Skeleton } from "moti/skeleton";
+import Skeleton from "../ui/Skeleton";
 
 export function ExampleHeader() {
   return (
@@ -98,7 +98,6 @@ export function EmptyHeader() {
 }
 
 export function MessagesHeader() {
-  const borderColor = useThemeColor().border;
   return (
     <View color="background">
       <HeaderWrapper

@@ -9,7 +9,7 @@ import { StyleSheet } from "react-native";
 import Icon from "@/components/ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import ScrollView from "@/components/ui/ScrollView";
-import { Skeleton } from "moti/skeleton";
+import Skeleton from "@/components/ui/Skeleton";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -61,7 +61,11 @@ export default function ProfileMainScreen() {
             </View>
           </View>
           <Skeleton show={isLoading}>
-            <Text>{data?.bio}</Text>
+            {data?.bio && data.bio.length > 0 ? (
+              <Text>{data.bio}</Text>
+            ) : (
+              <Text color="muted">Add a bio in settings.</Text>
+            )}
           </Skeleton>
         </View>
       </ScrollView>

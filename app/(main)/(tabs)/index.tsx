@@ -4,11 +4,14 @@ import React from "react";
 import { ExampleHeader } from "@/components/headers/Headers";
 import { exampleJobPosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
+import * as Device from "expo-device";
 
 export default function HomeScreen() {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 66 + 56 + statusBarHeight;
+  const statusBarMultiplier =
+    Device.brand == "google" || Device.brand == "ios" ? 0 : 1;
+  const subtractedHeight = 66 + 56 + statusBarMultiplier * statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   return (

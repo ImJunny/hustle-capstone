@@ -11,11 +11,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { TPost } from "@/server/utils/example_data";
 import ImagePlaceholder from "./ImagePlaceholder";
+import * as Device from "expo-device";
 
 function Feed({ data }: { data: TPost }) {
   const { height: totalHeight } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 66 + 56 + statusBarHeight;
+  const statusBarMultiplier =
+    Device.brand == "google" || Device.brand == "ios" ? 0 : 1;
+  const subtractedHeight = 66 + 56 + statusBarMultiplier * statusBarHeight;
   const newHeight = totalHeight - subtractedHeight;
 
   return (

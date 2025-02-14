@@ -25,9 +25,9 @@ export default function EditProfileScreen() {
     mutationKey: ["userDataMutate"],
     mutationFn: async () => {
       if (
-        data?.username === username ||
-        data?.first_name === firstName ||
-        data?.last_name === lastName ||
+        data?.username === username &&
+        data?.first_name === firstName &&
+        data?.last_name === lastName &&
         data?.bio === bio
       )
         return;

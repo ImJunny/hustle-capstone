@@ -13,11 +13,16 @@ export type ViewProps = {
 export default function ScrollView({
   style,
   color = "transparent",
+  bounces = false,
   ...otherProps
 }: ViewProps) {
   const backgroundColor = useThemeColor()[color];
 
   return (
-    <NativeScrollView style={[{ backgroundColor }, style]} {...otherProps} />
+    <NativeScrollView
+      style={[{ backgroundColor }, style]}
+      bounces={bounces}
+      {...otherProps}
+    />
   );
 }

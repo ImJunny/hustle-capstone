@@ -5,7 +5,6 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
-import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ExampleHeader() {
   return (
@@ -177,7 +176,6 @@ export function EmptyHeader() {
 }
 
 export function MessagesHeader() {
-  const borderColor = useThemeColor().border;
   return (
     <View color="background">
       <HeaderWrapper
@@ -233,7 +231,7 @@ export function SearchingHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
         ),
@@ -261,9 +259,62 @@ export function SearchedHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
+        ),
+      }}
+    />
+  );
+}
+
+export function ProfileHeader({ username }: { username: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <Text weight="semibold" size="xl">
+            @{username}
+          </Text>
+        ),
+        right: (
+          <>
+            <View
+              style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
+            >
+              <IconButton
+                name="add"
+                size="xl"
+                onPress={() => router.push("/example")}
+              />
+              <IconButton
+                name="menu-sharp"
+                size="xl"
+                onPress={() => router.push("/settings")}
+              />
+            </View>
+          </>
+        ),
+      }}
+    />
+  );
+}
+
+export function SettingsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text size="xl" weight="semibold">
+              Settings
+            </Text>
+          </View>
         ),
       }}
     />

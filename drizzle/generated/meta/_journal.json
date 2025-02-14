@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1739330035770,
+      "tag": "0000_vengeful_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1739408712390,
+      "tag": "0001_colossal_zombie",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739423783598,
+      "tag": "0002_new_black_crow",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1739424780381,
+      "tag": "0003_gigantic_revanche",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1739454795370,
+      "tag": "0004_right_nico_minoru",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "app"."users" ADD COLUMN "created_at" timestamp;

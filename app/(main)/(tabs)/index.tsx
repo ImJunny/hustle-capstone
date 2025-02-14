@@ -1,41 +1,40 @@
-import { StyleSheet, FlatList, Dimensions, StatusBar } from "react-native";
+import { FlatList, Dimensions, StatusBar } from "react-native";
 import Feed from "@/components/ui/Feed";
 import React from "react";
 import { IndexHeader } from "@/components/headers/Headers";
 import { exampleJobPosts, exampleHirePosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
+import * as Device from "expo-device";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+        
 export default function HomeScreen() {
-  const { height: totalHeight } = Dimensions.get("window");
-  const statusBarHeight = StatusBar.currentHeight || 0;
-  const subtractedHeight = 66 + 56 + statusBarHeight;
-  const newHeight = totalHeight - subtractedHeight;
+  const insets = useSafeAreaInsets();
+  const { height: windowHeight } = Dimensions.get("window");
+  const insetTop = Device.brand === "google" ? 0 : insets.top;
+  const feedHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
 
   return (
     <>
       <IndexHeader />
       <View style={{ flex: 1 }}>
         <FlatList
+          bounces={false}
           data={exampleJobPosts}
           renderItem={({ item }) => <Feed key={item.uuid} data={item} />}
           keyExtractor={(item) => item.uuid}
           pagingEnabled
-          snapToInterval={newHeight}
+          snapToInterval={feedHeight}
           snapToAlignment="end"
           decelerationRate="fast"
           showsVerticalScrollIndicator={false}
           getItemLayout={(data, index) => ({
-            length: newHeight,
-            offset: newHeight * index,
+            length: feedHeight,
+            offset: feedHeight * index,
             index,
           })}
+          snapToEnd
         />
       </View>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

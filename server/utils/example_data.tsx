@@ -46,6 +46,15 @@ export type HPost = {
     | "10+ years";
 };
 
+export type Review = {
+  uuid: string;
+  user_uuid: string;
+  description: string;
+  user_name: string;
+  rating: number;
+  date: string;
+};
+
 export const exampleJobPosts: TPost[] = [
   {
     type: "work",
@@ -294,3 +303,45 @@ export const exampleProfile: TProfile = {
   user_name: "@some_user",
   name: "Kevin So",
 };
+
+export const exampleReview: Review[] = [
+  {
+    uuid: "jhgddj",
+    user_uuid: "jhgddj",
+    description:
+      "Fantastic dining experience! The ambiance was cozy and welcoming, and the staff were exceptionally friendly and attentive. The food was flavorful and beautifully presented. My favorite dish was the truffle pasta—absolutely divine! The dessert selection was also impressive. Overall, a perfect spot for a special occasion or a casual meal. Highly recommend!",
+    user_name: "@some_user",
+    rating: 5,
+    date: "December 13, 2025",
+  },
+
+  {
+    uuid: "dwadaw",
+    user_uuid: "dwadaw",
+    description:
+      "An engrossing read from start to finish! The author's storytelling prowess shines through in this captivating novel. The characters are well-developed and relatable, and the plot twists keep you on the edge of your seat. The vivid descriptions and immersive world-building make it easy to get lost in the story. A must-read for fans of the genre!",
+    user_name: "@some_user",
+    rating: 5,
+    date: "December 25, 2025",
+  },
+
+  {
+    uuid: "asdfsaf",
+    user_uuid: "asdfsaf",
+    description:
+      "A cinematic masterpiece! The film's direction and cinematography are top-notch, and the performances by the cast are outstanding. The storyline is compelling and thought-provoking, with just the right mix of drama and action. The soundtrack perfectly complements the visuals, enhancing the overall experience. Definitely worth watching on the big screen!",
+    user_name: "@some_user",
+    rating: 5,
+    date: "December 7, 2025",
+  },
+
+  {
+    uuid: "tydwasytss",
+    user_uuid: "tydwasytss",
+    description:
+      "Excellent quality and value for money! This product exceeded my expectations in every way. It's durable, easy to use, and performs exceptionally well. The sleek design and user-friendly features make it a standout choice. The customer service was also prompt and helpful. Highly satisfied with my purchase and would recommend it to others.",
+    user_name: "@some_user",
+    date: "March 25, 2025",
+    rating: 5,
+  },
+];

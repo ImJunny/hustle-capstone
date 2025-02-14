@@ -77,6 +77,9 @@ dependencies:
   expo-linking:
     specifier: ~7.0.5
     version: 7.0.5(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
+  expo-location:
+    specifier: ^18.0.6
+    version: 18.0.6(expo@52.0.33)
   expo-navigation-bar:
     specifier: ^4.0.7
     version: 4.0.8(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
@@ -96,7 +99,7 @@ dependencies:
     specifier: ~4.0.7
     version: 4.0.8(expo@52.0.33)(react-native-web@0.19.13)(react-native@0.76.7)
   expo-updates:
-    specifier: ^0.26.17
+    specifier: ^0.26.18
     version: 0.26.18(expo@52.0.33)(react@18.3.1)
   expo-web-browser:
     specifier: ~14.0.2
@@ -5720,6 +5723,14 @@ packages:
     transitivePeerDependencies:
       - expo
       - supports-color
+    dev: false
+
+  /expo-location@18.0.6(expo@52.0.33):
+    resolution: {integrity: sha512-+yQsrvkKCCKwy3Xy5v1xcrx7hkIOclJO03itbYF4V6QOrCM6F3xHWbb8ncYOFTgz927mfo6r3Mu7RYykiMDs/g==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 52.0.33(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(react-native-webview@13.12.5)(react-native@0.76.7)(react@18.3.1)
     dev: false
 
   /expo-manifests@0.15.5(expo@52.0.33):

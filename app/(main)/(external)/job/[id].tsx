@@ -10,16 +10,20 @@ import { StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
+import { exampleJobPosts } from "@/server/utils/example_data";
 
 export default function JobPostScreen() {
-  const { id, type } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+  const job = exampleJobPosts.find((job) => job.uuid === id);
+
+  if (!job) {
+    return <Text>Job not found</Text>;
+  }
   return (
     <>
       <DetailsHeader />
       <ScrollView>
         <ImagePlaceholder width={800} height={320} />
-        <Text>Details for job with id: {id}</Text>
-        <Text>Details for job with type: {id}</Text>
         <View
           style={{
             padding: 15,
@@ -28,7 +32,7 @@ export default function JobPostScreen() {
           }}
         >
           <Text color="white" size="2xl" weight="semibold">
-            Title
+            {job.title}
           </Text>
           <View style={styles.badgeRow}>
             <Badge>
@@ -37,18 +41,18 @@ export default function JobPostScreen() {
                 size="sm"
                 weight="semibold"
               >
-                Type
+                {job.type}
               </Text>
             </Badge>
-            <Badge>(distance)</Badge>
+            <Badge>{job.distance}</Badge>
           </View>
           <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
-            (description)
+            {job.description}
           </Text>
           <View style={{ flexDirection: "row", marginVertical: 15 }}>
-            <Text color="muted-dark">Posted time_ago</Text>
+            <Text color="muted-dark">Posted {job.time_ago}</Text>
             <Text style={{ marginLeft: "auto" }} color="muted-dark">
-              Due (due_date)
+              Due {job.due_date}
             </Text>
           </View>
           <View>
@@ -74,7 +78,7 @@ export default function JobPostScreen() {
           <View style={{ flexDirection: "row", marginBottom: 15 }}>
             <View>
               <Text color="white" size="4xl" weight="semibold">
-                (Rating)/5
+                4.5/5
               </Text>
               <View style={{ flexDirection: "row", gap: 2, marginVertical: 5 }}>
                 <Icon name="star" />
@@ -83,7 +87,7 @@ export default function JobPostScreen() {
                 <Icon name="star" />
                 <Icon name="star" />
                 <View style={{ marginHorizontal: 5 }}>
-                  <Text>(Number) Reviews</Text>
+                  <Text>17 Reviews</Text>
                 </View>
               </View>
             </View>
@@ -111,14 +115,14 @@ export default function JobPostScreen() {
             />
             <View style={styles.nameContainer}>
               <Text color="white" weight="semibold">
-                @(user_name)
+                {job.user_name}
               </Text>
               <View
                 style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
               >
                 <Icon name={"star"} color="white"></Icon>
                 <Text color="white" weight="semibold">
-                  (rating)/5
+                  4.5/5
                 </Text>
               </View>
             </View>
@@ -130,7 +134,7 @@ export default function JobPostScreen() {
           </View>
           <View style={{ marginVertical: 15, marginBottom: 15 }}>
             <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
-              (employer_description)
+              {job.description}
             </Text>
           </View>
         </View>

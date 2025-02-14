@@ -51,7 +51,12 @@ export function IndexHeader() {
         ),
         center: (
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <View>
+            <View
+              style={{
+                borderBottomColor: "white",
+                borderBottomWidth: 5,
+              }}
+            >
               <Text
                 weight="bold"
                 size="xl"

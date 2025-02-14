@@ -1,10 +1,9 @@
 import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useRef, useState } from "react";
+import React from "react";
 import Badge from "./Badge";
 import IconButton from "./IconButton";
-import ImageBackgroundPlaceholder from "./ImageBackgroundPlaceholder";
 import Icon from "./Icon";
 import Button from "./Button";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,20 +11,19 @@ import { router } from "expo-router";
 import { TPost } from "@/server/utils/example_data";
 import ImagePlaceholder from "./ImagePlaceholder";
 import * as Device from "expo-device";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function Feed({ data }: { data: TPost }) {
-  const { height: totalHeight } = Dimensions.get("window");
-  const statusBarHeight = StatusBar.currentHeight || 0;
-  const statusBarMultiplier =
-    Device.brand == "google" || Device.brand == "ios" ? 0 : 1;
-  const subtractedHeight = 66 + 56 + statusBarMultiplier * statusBarHeight;
-  const newHeight = totalHeight - subtractedHeight;
+  const insets = useSafeAreaInsets();
+  const { height: windowHeight } = Dimensions.get("window");
+  const insetTop = Device.brand === "google" ? 0 : insets.top;
+  const feedHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
 
   return (
-    <View style={[styles.feedContainer, { height: newHeight }]} color="black">
+    <View style={[styles.feedContainer, { height: feedHeight }]} color="black">
       <View
         style={{
-          height: newHeight * 0.75,
+          height: feedHeight * 0.75,
         }}
       >
         <ImagePlaceholder

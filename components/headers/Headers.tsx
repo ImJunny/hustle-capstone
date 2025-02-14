@@ -5,8 +5,6 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import Skeleton from "../ui/Skeleton";
 
 export function ExampleHeader() {
   return (
@@ -190,22 +188,14 @@ export function SearchedHeader() {
   );
 }
 
-export function ProfileHeader({
-  username,
-  isLoading,
-}: {
-  username: string;
-  isLoading: boolean;
-}) {
+export function ProfileHeader({ username }: { username: string }) {
   return (
     <HeaderWrapper
       options={{
         left: (
-          <Skeleton show={isLoading} width={"60%"}>
-            <Text weight="semibold" size="xl">
-              @{username}
-            </Text>
-          </Skeleton>
+          <Text weight="semibold" size="xl">
+            @{username}
+          </Text>
         ),
         right: (
           <>

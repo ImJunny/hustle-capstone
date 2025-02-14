@@ -9,9 +9,10 @@ import { StyleSheet } from "react-native";
 import Icon from "@/components/ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import ScrollView from "@/components/ui/ScrollView";
-import Skeleton from "@/components/ui/Skeleton";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function ProfileMainScreen() {
+  const themeColor = useThemeColor();
   const { user } = useAuthData();
   const { data, error, isLoading } = useQuery({
     queryKey: ["userDataQuery", user],
@@ -26,47 +27,43 @@ export default function ProfileMainScreen() {
     );
   }
 
-  const themeColor = useThemeColor();
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
-      <ProfileHeader username={data?.username ?? ""} isLoading={isLoading} />
+      <ProfileHeader username={data?.username ?? ""} />
       <ScrollView color="base">
         <View
           style={[styles.profileCard, { borderColor: themeColor.border }]}
           color="background"
         >
           <View style={styles.profileCardTop}>
-            <Skeleton show={isLoading} radius={999}>
-              <View
-                style={{ borderRadius: 999, width: 96, height: 96 }}
-                color="muted"
-              />
-            </Skeleton>
+            <View
+              style={{ borderRadius: 999, width: 96, height: 96 }}
+              color="muted"
+            />
             <View style={styles.nameContainer}>
-              <Skeleton show={isLoading} width={"80%"}>
-                <Text color="foreground" size="2xl" weight="semibold">
-                  {data?.first_name} {data?.last_name}
+              <Text color="foreground" size="2xl" weight="semibold">
+                {data?.first_name} {data?.last_name}
+              </Text>
+              <View
+                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+              >
+                <Icon name={"star"} color="foreground" />
+                <Text color="foreground" weight="semibold">
+                  5/5 (7 Reviews)
                 </Text>
-              </Skeleton>
-              <Skeleton show={isLoading} width={"80%"}>
-                <View
-                  style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-                >
-                  <Icon name={"star"} color="foreground" />
-                  <Text color="foreground" weight="semibold">
-                    5/5 (7 Reviews)
-                  </Text>
-                </View>
-              </Skeleton>
+              </View>
             </View>
           </View>
-          <Skeleton show={isLoading}>
-            {data?.bio && data.bio.length > 0 ? (
-              <Text>{data.bio}</Text>
-            ) : (
-              <Text color="muted">Add a bio in settings.</Text>
-            )}
-          </Skeleton>
+
+          {data?.bio && data.bio.length > 0 ? (
+            <Text>{data.bio}</Text>
+          ) : (
+            <Text color="muted">Add a bio in settings.</Text>
+          )}
         </View>
       </ScrollView>
     </>

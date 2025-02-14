@@ -3,23 +3,20 @@ import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Suspense, useState } from "react";
-import { StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserData, updateUserProfile } from "@/server/lib/user";
 import Toast from "react-native-toast-message";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function EditProfileScreen() {
   const queryClient = useQueryClient();
 
   const { user } = useAuthData();
-  const { data } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["userDataQuery"],
     queryFn: () => getUserData(user?.id!),
   });
@@ -28,13 +25,19 @@ export default function EditProfileScreen() {
     mutationKey: ["userDataMutate"],
     mutationFn: async () => {
       if (
-        data.username !== username ||
-        data.first_name !== firstName ||
-        data.last_name !== lastName ||
-        data.bio !== bio
-      ) {
-        await updateUserProfile(user?.id!, username, firstName, lastName, bio);
-      }
+        data?.username === username ||
+        data?.first_name === firstName ||
+        data?.last_name === lastName ||
+        data?.bio === bio
+      )
+        return;
+      await updateUserProfile(
+        user?.id!,
+        username ?? "",
+        firstName ?? "",
+        lastName ?? "",
+        bio ?? ""
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userDataQuery"] });
@@ -53,100 +56,110 @@ export default function EditProfileScreen() {
   });
 
   const themeColor = useThemeColor();
-  const [username, setUsername] = useState(data.username!);
-  const [firstName, setFirstName] = useState(data.first_name!);
-  const [lastName, setLastName] = useState(data.last_name!);
-  const [bio, setBio] = useState(data.bio!);
+  const [username, setUsername] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
+  const [bio, setBio] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (data) {
+      setUsername(data.username);
+      setFirstName(data.first_name);
+      setLastName(data.last_name);
+      setBio(data.bio);
+    }
+  }, [data]);
+
+  if (isLoading || username === null) {
+    return <LoadingScreen backHeader />;
+  }
 
   return (
     <>
       <BackHeader />
-
       <View style={styles.container} color="background">
-        <Suspense fallback={<Text>Loading...</Text>}>
-          <View>
-            <Text style={styles.inputLabel} weight="bold" size="lg">
-              Username
-            </Text>
-            <View
+        <View>
+          <Text style={styles.inputLabel} weight="bold" size="lg">
+            Username
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              borderRadius: 6,
+              borderWidth: 1,
+              alignItems: "center",
+              paddingHorizontal: 16,
+              gap: 0,
+              borderColor: themeColor.foreground,
+            }}
+          >
+            <Input
               style={{
-                flexDirection: "row",
-                borderRadius: 6,
-                borderWidth: 1,
-                alignItems: "center",
-                paddingHorizontal: 16,
-                gap: 0,
-                borderColor: themeColor.foreground,
+                paddingHorizontal: 0,
               }}
-            >
-              <Input
-                style={{
-                  paddingHorizontal: 0,
-                }}
-                type="clear"
-                value={"@"}
-                editable={false}
-              />
-              <Input
-                style={{
-                  paddingHorizontal: 0,
-                  flex: 1,
-                }}
-                type="clear"
-                placeholder="username"
-                value={username}
-                onChangeText={(text) => setUsername(text.toLowerCase())}
-                autoCapitalize="none"
-              />
-            </View>
+              type="clear"
+              value={"@"}
+              editable={false}
+            />
+            <Input
+              style={{
+                paddingHorizontal: 0,
+                flex: 1,
+              }}
+              type="clear"
+              placeholder="username"
+              value={username ?? ""}
+              onChangeText={(text) => setUsername(text.toLowerCase())}
+              autoCapitalize="none"
+            />
           </View>
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.inputLabel} weight="bold" size="lg">
-                First name
-              </Text>
-              <Input
-                type="outline"
-                placeholder="First"
-                value={firstName}
-                onChangeText={(text) => setFirstName(text)}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.inputLabel} weight="bold" size="lg">
-                Last name
-              </Text>
-              <Input
-                type="outline"
-                placeholder="Last"
-                value={lastName}
-                onChangeText={(text) => setLastName(text)}
-              />
-            </View>
-          </View>
-          <View>
+        </View>
+        <View style={{ flexDirection: "row", gap: 12 }}>
+          <View style={{ flex: 1 }}>
             <Text style={styles.inputLabel} weight="bold" size="lg">
-              Bio
+              First name
             </Text>
             <Input
               type="outline"
-              placeholder="Describe yourself..."
-              value={bio}
-              onChangeText={(text) => setBio(text)}
-              multiline={true}
-              style={{ height: 100 }}
-              textAlignVertical="top"
+              placeholder="First"
+              value={firstName ?? ""}
+              onChangeText={(text) => setFirstName(text)}
             />
           </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.inputLabel} weight="bold" size="lg">
+              Last name
+            </Text>
+            <Input
+              type="outline"
+              placeholder="Last"
+              value={lastName ?? ""}
+              onChangeText={(text) => setLastName(text)}
+            />
+          </View>
+        </View>
+        <View>
+          <Text style={styles.inputLabel} weight="bold" size="lg">
+            Bio
+          </Text>
+          <Input
+            type="outline"
+            placeholder="Describe yourself..."
+            value={bio ?? ""}
+            onChangeText={(text) => setBio(text)}
+            multiline={true}
+            style={{ height: 100 }}
+            textAlignVertical="top"
+          />
+        </View>
 
-          <Button
-            style={{ alignSelf: "flex-end", minWidth: 120 }}
-            disabled={isPending}
-            onPress={() => mutate()}
-          >
-            {isPending ? "Saving" : "Save"}
-          </Button>
-        </Suspense>
+        <Button
+          style={{ alignSelf: "flex-end", minWidth: 120 }}
+          disabled={isPending}
+          onPress={() => mutate()}
+        >
+          {isPending ? "Saving" : "Save"}
+        </Button>
       </View>
     </>
   );

@@ -33,6 +33,64 @@ export function ExampleHeader() {
   );
 }
 
+export function IndexHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <Text
+            weight="semibold"
+            size="3xl"
+            style={{
+              fontFamily: "Lexend-bold",
+            }}
+          >
+            Hustle
+          </Text>
+        ),
+        center: (
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <View
+              style={{
+                borderBottomColor: "white",
+                borderBottomWidth: 5,
+              }}
+            >
+              <Text
+                weight="bold"
+                size="xl"
+                style={{
+                  fontFamily: "Inter-bold",
+                }}
+              >
+                Work
+              </Text>
+            </View>
+            <View>
+              <Text
+                weight="bold"
+                size="xl"
+                style={{
+                  fontFamily: "Inter-bold",
+                }}
+              >
+                Hire
+              </Text>
+            </View>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="filter"
+            size="xl"
+            onPress={() => router.push("/example")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
 export function JobsCenterHeader() {
   return (
     <HeaderWrapper
@@ -64,6 +122,28 @@ export function BackHeader() {
             size="xl"
             onPress={() => router.back()}
           />
+        ),
+      }}
+    />
+  );
+}
+export function DetailsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <IconButton
+            name="arrow-back"
+            size="xl"
+            onPress={() => router.back()}
+          />
+        ),
+        right: (
+          <View style={{ flexDirection: "row", gap: 20 }}>
+            <IconButton name="add-circle-outline" size="xl" />
+            <IconButton name="paper-plane-outline" size="xl" />
+            <IconButton name="ellipsis-vertical" size="xl" />
+          </View>
         ),
       }}
     />

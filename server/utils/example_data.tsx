@@ -24,6 +24,28 @@ export type TPost = {
   time_ago: string;
 };
 
+export type HPost = {
+  uuid: string;
+  user_uuid: string;
+  service: string;
+  description: string;
+  tags: string[];
+  distance: string;
+  status?: string;
+  due_date?: string;
+  type: "work" | "hire";
+  user_name: string;
+  time_ago: string;
+  experience:
+    | "less than 1 year"
+    | "1-2 years"
+    | "2-3 years"
+    | "3-5 years"
+    | "5-7 years"
+    | "7-10 years"
+    | "10+ years";
+};
+
 export const exampleJobPosts: TPost[] = [
   {
     type: "work",
@@ -87,6 +109,67 @@ export const exampleJobPosts: TPost[] = [
     status: "7 accepted",
     user_name: "@some_user",
     time_ago: "1 mo ago",
+  },
+];
+
+export const exampleHirePosts: HPost[] = [
+  {
+    type: "hire",
+    uuid: "jhgddf",
+    user_uuid: "jhgddj",
+    service: "Y",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    tags: ["design", "art", "media"],
+    distance: "remote",
+    due_date: "March 20",
+    status: "2  accepted",
+    user_name: "@sukmoon44",
+    time_ago: "1 hr ago",
+    experience: "1-2 years",
+  },
+  {
+    type: "work",
+    uuid: "dwadaw",
+    user_uuid: "jhgddj",
+    service: "I need help moving ASAP!",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    tags: ["transporting", "home"],
+    distance: "< 10 mi",
+    due_date: "February 7",
+    user_name: "@samdoe",
+    time_ago: "1 day ago",
+    experience: "1-2 years",
+  },
+  {
+    type: "work",
+    uuid: "asdfsaf",
+    user_uuid: "jhgddj",
+    service: "Lawn mowing needed",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    tags: ["yardwork", "home"],
+    distance: "< 5 mi",
+    due_date: "February 8",
+    user_name: "@johnsmith",
+    time_ago: "7 hrs ago",
+    experience: "1-2 years",
+  },
+  {
+    type: "work",
+    uuid: "tydwasytss",
+    user_uuid: "jhgddj",
+    service: "Painter Needed for Building Meural at XYZ",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    tags: ["art", "painting"],
+    distance: "< 15 mi",
+    due_date: "July 3",
+    status: "7 accepted",
+    user_name: "@some_user",
+    time_ago: "1 mo ago",
+    experience: "1-2 years",
   },
 ];
 

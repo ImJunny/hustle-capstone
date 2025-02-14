@@ -6,7 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser, doesUserExist } from "@/server/lib/user";
+import { createUser } from "@/server/lib/user";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
@@ -129,7 +129,7 @@ export default function SignUpScreen() {
             placeholder="Username"
             style={styles.input}
             value={username}
-            onChangeText={(text) => setUsername(text)}
+            onChangeText={(text) => setUsername(text.toLocaleLowerCase())}
             autoCapitalize="none"
           />
           <View style={{ flexDirection: "row", gap: 12 }}>

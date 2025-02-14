@@ -1,38 +1,22 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router } from "expo-router";
-import Button from "@/components/ui/Button";
-import { EmptyHeader } from "@/components/headers/Headers";
-import { supabase } from "@/server/lib/supabase";
 import { getUserData } from "@/server/lib/user";
 import { useAuthData } from "@/contexts/AuthContext";
-import Toast from "react-native-toast-message";
 import { useQuery } from "@tanstack/react-query";
 import { ProfileHeader } from "@/components/headers/Headers";
-import ProfileBio from "@/components/profile/profileBio";
+import { StyleSheet } from "react-native";
+import Icon from "@/components/ui/Icon";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import ScrollView from "@/components/ui/ScrollView";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function ProfileMainScreen() {
-  async function handleSignout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.log("Error signing out: ", error.message);
-    } else {
-      router.replace("/signin");
-      console.log("Signed out successfully");
-      Toast.show({
-        type: "info",
-        text1: `Signed out`,
-        swipeable: false,
-        visibilityTime: 2000,
-      });
-    }
-  }
-
+  const themeColor = useThemeColor();
   const { user } = useAuthData();
-  const { data, error } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUserData(user?.id ?? ""),
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["userDataQuery", user],
+    queryFn: () => getUserData(user?.id!),
   });
 
   if (error) {
@@ -43,31 +27,59 @@ export default function ProfileMainScreen() {
     );
   }
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
-      <ProfileHeader />
-      <View>
-        <ProfileBio
-          data={{
-            uuid: "",
-            bio: "",
-            user_name: "John smith",
-            name: "",
-          }}
-        />
-        <View>
-          <Text
-            color="muted"
-            style={{
-              paddingHorizontal: 15,
-            }}
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation...
-          </Text>
+      <ProfileHeader username={data?.username ?? ""} />
+      <ScrollView color="base">
+        <View
+          style={[styles.profileCard, { borderColor: themeColor.border }]}
+          color="background"
+        >
+          <View style={styles.profileCardTop}>
+            <View
+              style={{ borderRadius: 999, width: 96, height: 96 }}
+              color="muted"
+            />
+            <View style={styles.nameContainer}>
+              <Text color="foreground" size="2xl" weight="semibold">
+                {data?.first_name} {data?.last_name}
+              </Text>
+              <View
+                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+              >
+                <Icon name={"star"} color="foreground" />
+                <Text color="foreground" weight="semibold">
+                  5/5 (7 Reviews)
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {data?.bio && data.bio.length > 0 ? (
+            <Text>{data.bio}</Text>
+          ) : (
+            <Text color="muted">Add a bio in settings.</Text>
+          )}
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  profileCard: {
+    padding: 16,
+    paddingBottom: 28,
+    gap: 24,
+    borderBottomWidth: 1,
+  },
+  profileCardTop: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  nameContainer: { marginLeft: 20, gap: 4, flex: 1 },
+});

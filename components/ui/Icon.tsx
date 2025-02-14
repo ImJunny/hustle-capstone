@@ -14,9 +14,9 @@ type IconProps = {
   name: IconSymbolName;
   size?: TIconSizes;
   color?: TColors;
-  style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
   flippedX?: boolean;
+  style?: StyleProp<TextStyle>;
 };
 
 export default function Icon({
@@ -32,7 +32,7 @@ export default function Icon({
     <Ionicons
       name={name}
       style={[
-        flippedX && { transform: "scaleX(-1)" },
+        flippedX && { transform: [{ scaleX: -1 }] },
         { fontSize: IconSizes[size] },
         style,
       ]}

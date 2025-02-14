@@ -35,7 +35,7 @@ export async function createUser(
     email,
     first_name,
     last_name,
-    username,
+    username: username.toLowerCase(),
     created_at,
   });
 
@@ -49,6 +49,23 @@ export async function getUserData(uuid: string) {
     .select("*")
     .eq("uuid", uuid)
     .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Get user info
+export async function updateUserProfile(
+  uuid: string,
+  username: string,
+  first_name: string,
+  last_name: string,
+  bio: string
+) {
+  const { data, error } = await supabase
+    .from("users")
+    .upsert({ uuid, username, first_name, last_name, bio })
+    .eq("uuid", uuid);
 
   if (error) throw error;
   return data;

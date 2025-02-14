@@ -5,7 +5,6 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
-import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ExampleHeader() {
   return (
@@ -97,7 +96,6 @@ export function EmptyHeader() {
 }
 
 export function MessagesHeader() {
-  const borderColor = useThemeColor().border;
   return (
     <View color="background">
       <HeaderWrapper
@@ -153,7 +151,7 @@ export function SearchingHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
         ),
@@ -181,7 +179,7 @@ export function SearchedHeader() {
         left: (
           <IconButton
             name="arrow-back"
-            size="2xl"
+            size="xl"
             onPress={() => router.back()}
           />
         ),
@@ -190,19 +188,19 @@ export function SearchedHeader() {
   );
 }
 
-export function ProfileHeader() {
+export function ProfileHeader({ username }: { username: string }) {
   return (
     <HeaderWrapper
       options={{
         left: (
           <Text weight="semibold" size="xl">
-            @johnsmith
+            @{username}
           </Text>
         ),
         right: (
           <>
             <View
-              style={{ gap: 12, flexDirection: "row", alignItems: "center" }}
+              style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
             >
               <IconButton
                 name="add"

@@ -11,39 +11,40 @@ import {
   PaymentMethods,
   PersonalInformation,
 } from "@/components/settings/settingsComponents";
+import ScrollView from "@/components/ui/ScrollView";
 
 export default function SettingsScreen() {
   return (
     <>
       <SettingsHeader />
-
-      <View style={styles.screen} color="background">
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
-            Account
-          </Text>
+      <ScrollView color="background">
+        <View style={styles.screen} color="background">
+          <View style={styles.category}>
+            <Text size="xl" weight="semibold">
+              Account
+            </Text>
+          </View>
+          <EditProfile />
+          <PersonalInformation />
+          <PaymentMethods />
         </View>
-        <EditProfile />
-        <PersonalInformation />
-        <PaymentMethods />
-      </View>
 
-      <View style={styles.screen} color="background">
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
-            Activity
-          </Text>
+        <View style={styles.screen} color="background">
+          <View style={styles.category}>
+            <Text size="xl" weight="semibold">
+              Activity
+            </Text>
+          </View>
+          <Notification />
+          <LogOut />
         </View>
-        <Notification />
-        <LogOut />
-      </View>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     padding: 16,
   },
   category: {

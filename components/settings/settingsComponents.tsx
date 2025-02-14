@@ -4,12 +4,15 @@ import React from "react";
 import Icon from "../ui/Icon";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { supabase } from "@/server/lib/supabase";
+import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 export function EditProfile() {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => router.push("/edit-profile")}>
       <View style={[styles.entry, { borderColor }]}>
         <Icon name="person-outline" size="xl" />
         <Text style={styles.entryText}>Edit profile</Text>
@@ -61,13 +64,22 @@ export function Notification() {
 }
 
 export function LogOut() {
-  const themeColor = useThemeColor();
-  const borderColor = themeColor.border;
+  async function handleSignout() {
+    const { error } = await supabase.auth.signOut();
+    Toast.show({
+      text1: error ? "Error signing out" : "Signed out",
+      type: error ? "error" : "info",
+      swipeable: false,
+    });
+    if (error) return;
+    router.replace("/signin");
+  }
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={handleSignout}>
       <View style={styles.lastEntry}>
         <Icon name="log-out-outline" size="xl" color="red" />
-        <Text style={styles.lastText}>Log Out</Text>
+        <Text style={styles.lastText}>Log out</Text>
       </View>
     </TouchableOpacity>
   );
@@ -84,17 +96,15 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     marginRight: "auto",
   },
-  lastText: {
-    marginLeft: 12,
-    marginRight: "auto",
-    marginTop: 5,
-    padding: 15,
-    color: "red",
-  },
   lastEntry: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
+    color: "red",
+    marginTop: 10,
+  },
+  lastText: {
+    marginLeft: 12,
     color: "red",
   },
 });

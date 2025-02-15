@@ -22,6 +22,8 @@ export default function ScrollView({
     <NativeScrollView
       style={[{ backgroundColor }, style]}
       bounces={bounces}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
       {...otherProps}
     />
   );

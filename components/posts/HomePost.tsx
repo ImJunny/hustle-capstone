@@ -2,33 +2,33 @@ import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import Badge from "./Badge";
-import IconButton from "./IconButton";
-import Icon from "./Icon";
-import Button from "./Button";
+import Badge from "../ui/Badge";
+import IconButton from "../ui/IconButton";
+import Icon from "../ui/Icon";
+import Button from "../ui/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { TPost } from "@/server/utils/example_data";
-import ImagePlaceholder from "./ImagePlaceholder";
+import ImagePlaceholder from "../ui/ImagePlaceholder";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function Feed({ data }: { data: TPost }) {
+export default function HomePost({ data }: { data: TPost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
-  const feedHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
+  const postHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
 
   return (
-    <View style={[styles.feedContainer, { height: feedHeight }]} color="black">
+    <View style={[styles.container, { height: postHeight }]} color="black">
       <View
         style={{
-          height: feedHeight * 0.75,
+          height: postHeight * 0.75,
         }}
       >
         <ImagePlaceholder
-          width={800}
-          height={800}
+          width={400}
+          height={400}
           style={{ width: "100%", height: "100%" }}
         />
         <LinearGradient
@@ -141,10 +141,11 @@ function Feed({ data }: { data: TPost }) {
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
-              <Icon name={"star"} color="white"></Icon>
-              <Text color="white" weight="semibold">
-                4.5/5
-              </Text>
+              <Icon name={"star"} color="white" />
+              <Icon name={"star"} color="white" />
+              <Icon name={"star"} color="white" />
+              <Icon name={"star"} color="white" />
+              <Icon name={"star"} color="white" />
             </View>
           </View>
           <Button
@@ -161,10 +162,8 @@ function Feed({ data }: { data: TPost }) {
   );
 }
 
-export default Feed;
-
 const styles = StyleSheet.create({
-  feedContainer: {
+  container: {
     flex: 1,
   },
   textContainer: {},
@@ -195,7 +194,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 8,
   },
-  nameContainer: { marginLeft: 20 },
+  nameContainer: { marginLeft: 20, gap: 4 },
   viewButton: {
     marginLeft: "auto",
     backgroundColor: "white",

@@ -1,38 +1,61 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams, useSegments } from "expo-router";
-import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
+import { useLocalSearchParams } from "expo-router";
+import { DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Badge from "@/components/ui/Badge";
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
-import { exampleJobPosts } from "@/server/utils/example_data";
+import {
+  exampleJobPosts,
+  exampleServicePosts,
+} from "@/server/utils/example_data";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
-export default function JobPostScreen() {
+export default function PostScreen() {
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.border;
+  const { width } = Dimensions.get("window");
+
   const { id } = useLocalSearchParams();
-  const job = exampleJobPosts.find((job) => job.uuid === id);
+  const post = [...exampleJobPosts, ...exampleServicePosts].find(
+    (post) => post.uuid === id
+  );
 
-  if (!job) {
-    return <Text>Job not found</Text>;
+  if (!post) {
+    return <Text>post not found</Text>;
   }
   return (
     <>
       <DetailsHeader />
       <ScrollView>
-        <ImagePlaceholder width={800} height={320} />
+        <ImagePlaceholder
+          width={800}
+          height={800}
+          style={{ width, height: width }}
+        />
         <View
           style={{
-            padding: 15,
-            borderBottomColor: "grey",
-            borderBottomWidth: 2,
+            padding: 16,
+            borderColor,
+            borderBottomWidth: 1,
           }}
         >
-          <Text color="white" size="2xl" weight="semibold">
-            {job.title}
+          <Text
+            color="white"
+            size="2xl"
+            weight="semibold"
+            style={{ marginVertical: 4 }}
+          >
+            {post.title}
+          </Text>
+          <Text weight="semibold" size="4xl" color="white">
+            ${post.min_rate}
+            {post.max_rate && "+"}
           </Text>
           <View style={styles.badgeRow}>
             <Badge>
@@ -41,102 +64,129 @@ export default function JobPostScreen() {
                 size="sm"
                 weight="semibold"
               >
-                {job.type}
+                {post.type}
               </Text>
             </Badge>
-            <Badge>{job.distance}</Badge>
+            <Badge>{post.distance}</Badge>
+            {post.tags.map((tag, i) => (
+              <Badge key={i}>{tag}</Badge>
+            ))}
           </View>
-          <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
-            {job.description}
-          </Text>
-          <View style={{ flexDirection: "row", marginVertical: 15 }}>
-            <Text color="muted-dark">Posted {job.time_ago}</Text>
-            <Text style={{ marginLeft: "auto" }} color="muted-dark">
-              Due {job.due_date}
-            </Text>
+          <Text>{post.description}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 40,
+            }}
+          >
+            <Text color="muted">Posted {post.time_ago}</Text>
+            {post.type == "work" && (
+              <Text color="muted">Due {post.due_date}</Text>
+            )}
           </View>
-          <View>
-            <Button style={styles.pageButton}>
-              <Text color="black" weight="semibold">
-                Accept Job
-              </Text>
-            </Button>
+
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 16,
+              paddingBottom: 16,
+              width: "100%",
+              alignItems: "center",
+              marginTop: 16,
+            }}
+          >
+            <IconButton name="add-circle-outline" size="2xl" />
+            <IconButton name="chatbubble-outline" size="2xl" flippedX />
+            <IconButton name="paper-plane-outline" size="2xl" />
+            {post.type == "work" ? (
+              <Button style={styles.pageButton}>Accept job</Button>
+            ) : (
+              <Button style={styles.pageButton}>Hire service</Button>
+            )}
           </View>
         </View>
-        <View
-          style={{
-            padding: 15,
-            borderBottomColor: "grey",
-            borderBottomWidth: 2,
-          }}
-        >
-          <View style={{ marginTop: 15, marginBottom: 10 }}>
-            <Text color="white" size="md" weight="semibold">
-              Service Rating
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row", marginBottom: 15 }}>
-            <View>
-              <Text color="white" size="4xl" weight="semibold">
-                4.5/5
+        {post.type == "hire" && (
+          <View
+            style={{
+              padding: 16,
+              borderColor,
+              borderBottomWidth: 1,
+            }}
+          >
+            <View style={{ marginTop: 16, marginBottom: 10 }}>
+              <Text color="white" size="md" weight="semibold">
+                Service Rating
               </Text>
-              <View style={{ flexDirection: "row", gap: 2, marginVertical: 5 }}>
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <View style={{ marginHorizontal: 5 }}>
-                  <Text>17 Reviews</Text>
+            </View>
+            <View style={{ flexDirection: "row", marginBottom: 15 }}>
+              <View>
+                <Text color="white" size="4xl" weight="semibold">
+                  4.5/5
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 2,
+                    marginVertical: 6,
+                    alignItems: "center",
+                  }}
+                >
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Text weight="semibold" style={{ marginLeft: 4 }}>
+                    17 Reviews
+                  </Text>
                 </View>
               </View>
-            </View>
-            <View style={styles.reviewButton}>
-              <IconButton name="chevron-forward" size="2xl" />
+              <View style={styles.reviewButton}>
+                <IconButton name="chevron-forward" size="2xl" />
+              </View>
             </View>
           </View>
-        </View>
+        )}
+
         <View
           style={{
-            padding: 15,
-            borderBottomColor: "grey",
-            borderBottomWidth: 2,
+            padding: 16,
           }}
         >
-          <View style={{ marginTop: 15 }}>
-            <Text color="white" size="md" weight="semibold">
+          <View style={{ marginTop: 16 }}>
+            <Text size="md" weight="semibold">
               About the Employer
             </Text>
           </View>
           <View style={styles.bottomContainer}>
-            <View
-              style={{ borderRadius: 999, width: 40, height: 40 }}
-              color="muted"
+            <ImagePlaceholder
+              width={40}
+              height={40}
+              style={{ borderRadius: 999 }}
             />
             <View style={styles.nameContainer}>
-              <Text color="white" weight="semibold">
-                {job.user_name}
-              </Text>
+              <Text weight="semibold">{post.user_name}</Text>
               <View
                 style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
               >
-                <Icon name={"star"} color="white"></Icon>
-                <Text color="white" weight="semibold">
-                  4.5/5
-                </Text>
+                <Icon name={"star"} />
+                <Text weight="semibold">4.5/5</Text>
               </View>
             </View>
-            <Button style={styles.viewButton}>
-              <Text color="white" weight="semibold">
-                Message
-              </Text>
+            <Button style={styles.messageButton} type="variant">
+              <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
+              <Text weight="semibold">Message</Text>
             </Button>
           </View>
-          <View style={{ marginVertical: 15, marginBottom: 15 }}>
-            <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
-              {job.description}
-            </Text>
-          </View>
+
+          <Text
+            numberOfLines={3}
+            ellipsizeMode="tail"
+            style={{ marginVertical: 16, marginBottom: 16 }}
+          >
+            {post.description}
+          </Text>
         </View>
       </ScrollView>
     </>
@@ -153,9 +203,7 @@ const styles = StyleSheet.create({
   },
   pageButton: {
     marginLeft: "auto",
-    backgroundColor: "white",
-    paddingHorizontal: 30,
-    marginVertical: 15,
+    paddingHorizontal: 20,
   },
   bottomContainer: {
     flexDirection: "row",
@@ -164,10 +212,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   nameContainer: { marginLeft: 20 },
-  viewButton: {
+  messageButton: {
     marginLeft: "auto",
-    backgroundColor: "grey",
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
+    gap: 12,
   },
   reviewButton: {
     marginLeft: "auto",

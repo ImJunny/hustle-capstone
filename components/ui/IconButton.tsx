@@ -26,19 +26,12 @@ export default function IconButton({
   size = "xl",
   color = "foreground",
   flippedX,
-  style,
   hideOpacity,
   ...props
 }: IconButtonProps) {
   return (
-    <TouchableOpacity {...props} activeOpacity={hideOpacity ? 1 : 0.2}>
-      <Icon
-        size={size}
-        name={name}
-        style={style}
-        color={color}
-        flippedX={flippedX}
-      />
+    <TouchableOpacity activeOpacity={hideOpacity ? 1 : 0.2} {...props}>
+      <Icon size={size} name={name} color={color} flippedX={flippedX} />
     </TouchableOpacity>
   );
 }

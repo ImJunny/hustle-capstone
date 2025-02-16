@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textContainer: {},
-  badgeSpace: {},
   descriptionContainer: {
     flex: 1,
   },

@@ -36,6 +36,20 @@
       "when": 1739454795370,
       "tag": "0004_right_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1739656781305,
+      "tag": "0005_needy_toad_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1739656934635,
+      "tag": "0006_ambitious_puppet_master",
+      "breakpoints": true
     }
   ]
 }

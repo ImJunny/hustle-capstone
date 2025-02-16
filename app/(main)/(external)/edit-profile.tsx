@@ -4,7 +4,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

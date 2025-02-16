@@ -13,8 +13,8 @@ export default function CategoryCard({ title, style }: CategoryCardProps) {
       style={[{ marginRight: 10, borderRadius: 4, overflow: "hidden" }, style]}
     >
       <ImageBackgroundPlaceholder
-        width={90}
-        height={90}
+        width={100}
+        height={100}
         style={{
           alignItems: "center",
           justifyContent: "center",

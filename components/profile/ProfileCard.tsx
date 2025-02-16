@@ -1,24 +1,17 @@
-import { TPost } from "@/server/utils/example_data";
 import Button from "../ui/Button";
 import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
-import ProfileMiniCard from "./ProfileMiniCard";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet } from "react-native";
 import { UserData } from "@/server/lib/user";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 
 export default function ProfileCard({ data }: { data: UserData }) {
-  const themeColor = useThemeColor();
   const hasBio = data.bio!.length > 0;
 
   return (
     <>
-      <View
-        style={[styles.profileCard, { borderColor: themeColor.border }]}
-        color="background"
-      >
+      <View style={styles.profileCard} color="background">
         <View style={styles.top}>
           <View>
             <ImagePlaceholder
@@ -47,7 +40,7 @@ export default function ProfileCard({ data }: { data: UserData }) {
             </View>
             <View style={styles.buttonContainer}>
               <Button style={{ flex: 1, height: 32 }} type="variant">
-                Message
+                Edit profile
               </Button>
               <Button style={{ flex: 1, height: 32 }}>Follow</Button>
             </View>
@@ -56,9 +49,7 @@ export default function ProfileCard({ data }: { data: UserData }) {
         <Text color={hasBio ? "foreground" : "muted"} style={{ marginTop: 24 }}>
           {hasBio ? data!.bio : "Add a bio in settings."}
         </Text>
-        <ProfileMiniCard />
       </View>
-      <View style={{ height: 90 }} color="background" />
     </>
   );
 }
@@ -67,8 +58,6 @@ const styles = StyleSheet.create({
   profileCard: {
     paddingVertical: 36,
     paddingHorizontal: 16,
-    paddingBottom: 80,
-    borderBottomWidth: 1,
     borderRadius: 8,
   },
   top: {

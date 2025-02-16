@@ -7,8 +7,9 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import { CreatePostsHeader } from "@/components/headers/Headers";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Input from "@/components/ui/Input";
+import DateInput from "@/components/ui/DateInput";
+import AddImage from "@/components/AddImages";
 
 export default function PostForm() {
   return (
@@ -34,15 +35,7 @@ export default function PostForm() {
               <Text color="white" weight="semibold" size="lg">
                 Photos
               </Text>
-              <View
-                style={{ flexDirection: "row", gap: 10, marginVertical: 10 }}
-              >
-                <View style={styles.add_photo}>
-                  <Icon name="add" size="2xl" style={{ marginVertical: 34 }} />
-                </View>
-                <ImagePlaceholder width={100} height={100} />
-                <ImagePlaceholder width={100} height={100} />
-              </View>
+              <AddImage />
               <Text color="muted-dark" size="sm">
                 Add up to 8 photos in JPEG or PNG format.
               </Text>
@@ -62,7 +55,11 @@ export default function PostForm() {
               <Text color="white" weight="semibold" size="lg">
                 Desrcription
               </Text>
-              <Input style={styles.description_form} />
+              <Input
+                multiline={true}
+                textAlignVertical="top"
+                style={styles.description_form}
+              />
               <View style={{ marginTop: 10 }}>
                 <Text color="muted-dark" size="sm">
                   Please provide a description of at least 60 characters.
@@ -110,12 +107,7 @@ export default function PostForm() {
               <Text color="white" weight="semibold" size="lg">
                 Date Range
               </Text>
-              <View
-                style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
-              >
-                <Input placeholder="Today -" style={styles.date_form}></Input>
-                <IconButton name="calendar" style={{ marginLeft: "auto" }} />
-              </View>
+              <DateInput />
               <View style={{ marginTop: 10 }}>
                 <Text
                   numberOfLines={2}
@@ -179,7 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     marginTop: 10,
     textAlignVertical: "auto",
-    lineHeight: 200,
+    height: 160,
     flexWrap: "wrap",
   },
   rate_form: {
@@ -195,13 +187,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 4,
-  },
-  date_form: {
-    backgroundColor: "transparent",
-    borderColor: "white",
-    borderWidth: 1,
-    borderRadius: 0,
-    marginTop: 10,
-    width: 200,
   },
 });

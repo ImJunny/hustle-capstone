@@ -130,9 +130,10 @@ export default function HomePost({ data }: { data: TPost }) {
         </View>
 
         <View style={styles.bottomContainer}>
-          <View
-            style={{ borderRadius: 999, width: 40, height: 40 }}
-            color="muted"
+          <ImagePlaceholder
+            width={40}
+            height={40}
+            style={{ borderRadius: 999 }}
           />
           <View style={styles.nameContainer}>
             <Text color="white" weight="semibold">
@@ -146,6 +147,7 @@ export default function HomePost({ data }: { data: TPost }) {
               <Icon name={"star"} color="white" />
               <Icon name={"star"} color="white" />
               <Icon name={"star"} color="white" />
+              <Text style={{ marginLeft: 4 }}>1</Text>
             </View>
           </View>
           <Button
@@ -167,7 +169,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textContainer: {},
-  badgeSpace: {},
   descriptionContainer: {
     flex: 1,
   },

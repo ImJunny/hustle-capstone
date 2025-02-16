@@ -5,6 +5,8 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
+import { Pressable, TouchableOpacity } from "react-native";
+import Icon, { IconSymbolName } from "../ui/Icon";
 
 export function ExampleHeader() {
   return (
@@ -131,20 +133,8 @@ export function DetailsHeader() {
   return (
     <HeaderWrapper
       options={{
-        left: (
-          <IconButton
-            name="arrow-back"
-            size="xl"
-            onPress={() => router.back()}
-          />
-        ),
-        right: (
-          <View style={{ flexDirection: "row", gap: 20 }}>
-            <IconButton name="add-circle-outline" size="xl" />
-            <IconButton name="paper-plane-outline" size="xl" />
-            <IconButton name="ellipsis-vertical" size="xl" />
-          </View>
-        ),
+        left: <IconButton name="chevron-back" onPress={() => router.back()} />,
+        right: <IconButton name="ellipsis-vertical" />,
       }}
     />
   );
@@ -156,11 +146,7 @@ export function SimpleHeader({ title }: { title: string }) {
       options={{
         left: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
-            <IconButton
-              name="arrow-back"
-              size="xl"
-              onPress={() => router.back()}
-            />
+            <IconButton name="arrow-back" onPress={() => router.back()} />
             <Text size="xl" weight="semibold">
               {title}
             </Text>

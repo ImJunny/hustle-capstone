@@ -5,6 +5,7 @@ import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { UserData } from "@/server/lib/user";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { router } from "expo-router";
 
 export default function ProfileCard({ data }: { data: UserData }) {
   const hasBio = data.bio!.length > 0;
@@ -34,12 +35,16 @@ export default function ProfileCard({ data }: { data: UserData }) {
               <Icon name={"star"} color="foreground" />
               <Icon name={"star"} color="foreground" />
               <Icon name={"star-half"} color="foreground" />
-              <Text weight="semibold" size="lg">
-                (7 Reviews)
+              <Text size="lg" style={{ textDecorationLine: "underline" }}>
+                7 Reviews
               </Text>
             </View>
             <View style={styles.buttonContainer}>
-              <Button style={{ flex: 1, height: 32 }} type="variant">
+              <Button
+                style={{ flex: 1, height: 32 }}
+                type="variant"
+                onPress={() => router.push("/edit-profile")}
+              >
                 Edit profile
               </Button>
               <Button style={{ flex: 1, height: 32 }}>Follow</Button>
@@ -47,7 +52,7 @@ export default function ProfileCard({ data }: { data: UserData }) {
           </View>
         </View>
         <Text color={hasBio ? "foreground" : "muted"} style={{ marginTop: 24 }}>
-          {hasBio ? data!.bio : "Add a bio in settings."}
+          {hasBio ? data!.bio : "Add a biography in profile settings."}
         </Text>
       </View>
     </>
@@ -59,10 +64,12 @@ const styles = StyleSheet.create({
     paddingVertical: 36,
     paddingHorizontal: 16,
     borderRadius: 8,
+    minHeight: 230,
   },
   top: {
     flexDirection: "row",
     gap: 20,
+    alignItems: "flex-start",
   },
   topInnerRight: {
     gap: 4,
@@ -71,12 +78,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     gap: 8,
-    marginTop: 8,
+    marginTop: 16,
     width: "100%",
   },
   checkmark: {
     position: "absolute",
-    right: 4,
-    bottom: 4,
+    right: 2,
+    bottom: 2,
   },
 });

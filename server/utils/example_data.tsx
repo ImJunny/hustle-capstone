@@ -176,9 +176,9 @@ export const exampleHirePosts: HPost[] = [
 export const exampleServicePosts: TPost[] = [
   {
     type: "hire",
-    uuid: "jhgddj",
+    uuid: "jhgd425dj",
     user_uuid: "jhgddj",
-    title: "Design a poster",
+    title: "Digital Designer",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 75,
@@ -191,9 +191,9 @@ export const exampleServicePosts: TPost[] = [
   },
   {
     type: "hire",
-    uuid: "dwadaw",
+    uuid: "dwa6537daw",
     user_uuid: "jhgddj",
-    title: "I need help moving ASAP!",
+    title: "Mover",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 200,
@@ -204,9 +204,9 @@ export const exampleServicePosts: TPost[] = [
   },
   {
     type: "hire",
-    uuid: "asdfsaf",
+    uuid: "asd5245fsaf",
     user_uuid: "jhgddj",
-    title: "Lawn mowing needed",
+    title: "Yardwork Service",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 50,
@@ -219,9 +219,9 @@ export const exampleServicePosts: TPost[] = [
   },
   {
     type: "hire",
-    uuid: "tydwasytss",
+    uuid: "tydw737637asytss",
     user_uuid: "jhgddj",
-    title: "Painter Needed for Building Meural at XYZ",
+    title: "Painter",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     min_rate: 450,

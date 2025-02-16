@@ -36,9 +36,9 @@ export default function JobCenterScreen() {
             Activity
           </Text>
           <LinkEntry
-            iconName="heart-outline"
-            title="Liked"
-            href="/posts-list/liked"
+            iconName="add-circle-outline"
+            title="Saved"
+            href="/posts-list/saved"
           />
           <LinkEntry
             iconName="time-outline"

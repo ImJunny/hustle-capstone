@@ -133,19 +133,8 @@ export function DetailsHeader() {
   return (
     <HeaderWrapper
       options={{
-        left: (
-          <View style={{ borderRadius: 999, padding: 10 }} color="black">
-            <IconButton name="chevron-back" onPress={() => router.back()} />
-          </View>
-        ),
-        right: (
-          <View style={{ borderRadius: 999, padding: 10 }} color="black">
-            <IconButton
-              name="ellipsis-vertical"
-              onPress={() => router.back()}
-            />
-          </View>
-        ),
+        left: <IconButton name="chevron-back" onPress={() => router.back()} />,
+        right: <IconButton name="ellipsis-vertical" />,
       }}
     />
   );
@@ -157,11 +146,7 @@ export function SimpleHeader({ title }: { title: string }) {
       options={{
         left: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
-            <IconButton
-              name="arrow-back"
-              size="xl"
-              onPress={() => router.back()}
-            />
+            <IconButton name="arrow-back" onPress={() => router.back()} />
             <Text size="xl" weight="semibold">
               {title}
             </Text>

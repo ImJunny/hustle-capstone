@@ -32,7 +32,7 @@ export default function PostScreen() {
   return (
     <>
       <DetailsHeader />
-      <ScrollView>
+      <ScrollView color="background">
         <ImagePlaceholder
           width={800}
           height={800}
@@ -45,15 +45,10 @@ export default function PostScreen() {
             borderBottomWidth: 1,
           }}
         >
-          <Text
-            color="white"
-            size="2xl"
-            weight="semibold"
-            style={{ marginVertical: 4 }}
-          >
+          <Text size="2xl" weight="semibold" style={{ marginVertical: 4 }}>
             {post.title}
           </Text>
-          <Text weight="semibold" size="4xl" color="white">
+          <Text weight="semibold" size="4xl">
             ${post.min_rate}
             {post.max_rate && "+"}
           </Text>
@@ -115,13 +110,13 @@ export default function PostScreen() {
             }}
           >
             <View style={{ marginTop: 16, marginBottom: 10 }}>
-              <Text color="white" size="md" weight="semibold">
+              <Text size="md" weight="semibold">
                 Service Rating
               </Text>
             </View>
             <View style={{ flexDirection: "row", marginBottom: 15 }}>
               <View>
-                <Text color="white" size="3xl" weight="semibold">
+                <Text size="3xl" weight="semibold">
                   4.5 out of 5
                 </Text>
                 <View

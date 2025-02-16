@@ -46,7 +46,9 @@ export default function Post({ data, style }: JobPostProps) {
                 <Icon name="star" />
                 <Icon name="star-half" />
                 <Icon name="star-outline" />
-                <Text style={{ marginLeft: 2 }}>2</Text>
+                <Text style={{ marginLeft: 2 }} size="sm">
+                  2
+                </Text>
               </View>
             )}
 

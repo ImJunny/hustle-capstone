@@ -33,12 +33,20 @@ export default function Post({ data, style }: JobPostProps) {
             {data.type == "work" ? (
               <Text size="sm">Due {data.due_date}</Text>
             ) : (
-              <View style={{ flexDirection: "row", marginTop: 4, gap: 4 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginTop: 4,
+                  gap: 4,
+                  alignItems: "center",
+                }}
+              >
                 <Icon name="star" />
                 <Icon name="star" />
                 <Icon name="star" />
                 <Icon name="star-half" />
                 <Icon name="star-outline" />
+                <Text style={{ marginLeft: 2 }}>2</Text>
               </View>
             )}
 

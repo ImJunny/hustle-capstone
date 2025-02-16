@@ -121,8 +121,8 @@ export default function PostScreen() {
             </View>
             <View style={{ flexDirection: "row", marginBottom: 15 }}>
               <View>
-                <Text color="white" size="4xl" weight="semibold">
-                  4.5/5
+                <Text color="white" size="3xl" weight="semibold">
+                  4.5 out of 5
                 </Text>
                 <View
                   style={{
@@ -137,7 +137,12 @@ export default function PostScreen() {
                   <Icon name="star" />
                   <Icon name="star" />
                   <Icon name="star-half" />
-                  <Text weight="semibold" style={{ marginLeft: 4 }}>
+                  <Text
+                    weight="semibold"
+                    style={{
+                      marginLeft: 4,
+                    }}
+                  >
                     17 Reviews
                   </Text>
                 </View>
@@ -180,6 +185,7 @@ export default function PostScreen() {
                 <Icon name={"star"} />
                 <Icon name={"star"} />
                 <Icon name={"star"} />
+                <Text style={{ marginLeft: 4 }}>1</Text>
               </View>
             </View>
             <Button style={styles.messageButton} type="variant">
@@ -221,7 +227,7 @@ const styles = StyleSheet.create({
   nameContainer: { marginLeft: 20 },
   messageButton: {
     marginLeft: "auto",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     gap: 12,
   },
   reviewButton: {

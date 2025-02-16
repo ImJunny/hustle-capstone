@@ -35,7 +35,7 @@ export default function ProfileCard({ data }: { data: UserData }) {
               <Icon name={"star"} color="foreground" />
               <Icon name={"star"} color="foreground" />
               <Icon name={"star-half"} color="foreground" />
-              <Text weight="semibold" size="lg">
+              <Text size="lg" style={{ textDecorationLine: "underline" }}>
                 7 Reviews
               </Text>
             </View>
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   top: {
     flexDirection: "row",
     gap: 20,
+    alignItems: "flex-start",
   },
   topInnerRight: {
     gap: 4,
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     gap: 8,
-    marginTop: 8,
+    marginTop: 16,
     width: "100%",
   },
   checkmark: {

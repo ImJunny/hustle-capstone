@@ -7,6 +7,7 @@ import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import { JobsCenterHeader } from "@/components/headers/Headers";
 import { Href, Link } from "expo-router";
+import { router } from "expo-router";
 
 export default function JobCenterScreen() {
   return (
@@ -27,7 +28,11 @@ export default function JobCenterScreen() {
             title="Hiring"
             href="/posts-list/hiring"
           />
-          <Button isFullWidth style={{ marginTop: 16 }}>
+          <Button
+            isFullWidth
+            style={{ marginTop: 16 }}
+            onPress={() => router.push("/(main)/(external)/create-post")}
+          >
             Create a post
           </Button>
         </View>

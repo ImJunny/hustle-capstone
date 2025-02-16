@@ -6,7 +6,7 @@ import { exampleJobPosts, exampleHirePosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-        
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");

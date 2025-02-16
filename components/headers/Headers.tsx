@@ -320,3 +320,32 @@ export function SettingsHeader() {
     />
   );
 }
+export function CreatePostsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text size="xl" weight="semibold">
+              Create a Job
+            </Text>
+          </View>
+        ),
+        right: (
+          <View style={{ gap: 12, alignItems: "center" }}>
+            <IconButton
+              name="help-circle-outline"
+              size="xl"
+              onPress={() => router.push("/example")}
+            />
+          </View>
+        ),
+      }}
+    />
+  );
+}

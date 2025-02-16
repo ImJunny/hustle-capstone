@@ -65,18 +65,17 @@ export default function ExploreScreen() {
             </View>
           </View>
           <ScrollView
-            style={{ paddingLeft: 16, position: "absolute", bottom: 0 }}
-            horizontal={true}
+            style={{
+              paddingHorizontal: 16,
+              position: "absolute",
+              bottom: 0,
+              gap: 16,
+            }}
+            horizontal
             showsHorizontalScrollIndicator={false}
           >
             {categories.map((category, i) => (
-              <CategoryCard
-                key={i}
-                title={category.title}
-                style={{
-                  paddingRight: i != categories.length - 1 ? 0 : 16,
-                }}
-              />
+              <CategoryCard key={i} title={category.title} />
             ))}
           </ScrollView>
         </View>

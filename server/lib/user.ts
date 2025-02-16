@@ -1,4 +1,6 @@
+import { InferSelectModel } from "drizzle-orm";
 import { supabase } from "./supabase";
+import { Database } from "./types";
 
 /*
   Supabase calls for user-related data. Always throw the destructured
@@ -53,6 +55,7 @@ export async function getUserData(uuid: string) {
   if (error) throw error;
   return data;
 }
+export type UserData = Database["app"]["Tables"]["users"]["Row"];
 
 // Get user info
 export async function updateUserProfile(

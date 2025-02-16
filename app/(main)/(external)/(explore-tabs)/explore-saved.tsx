@@ -1,8 +1,5 @@
-import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router, withLayoutContext } from "expo-router";
-import { StyleSheet } from "react-native";
 import SavedSuggestion from "@/components/explore/SavedSuggestion";
 
 const saves = [

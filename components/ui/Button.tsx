@@ -58,7 +58,7 @@ export default function Button({
         {
           opacity: disabled ? 0.5 : 1,
           backgroundColor: backgroundColor,
-          width: isFullWidth ? "100%" : "auto",
+          alignSelf: isFullWidth ? "stretch" : "auto",
           borderColor,
           borderWidth,
         },

@@ -1,4 +1,10 @@
-import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  StatusBar,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -142,9 +148,13 @@ function Feed({ data }: { data: TPost }) {
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <Icon name={"star"} color="white"></Icon>
-              <Text color="white" weight="semibold">
-                4.5/5
-              </Text>
+              <TouchableOpacity
+                onPress={() => router.push(`/service-reviews/${data.uuid}`)}
+              >
+                <Text color="white" weight="semibold">
+                  4.5/5
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
           <Button

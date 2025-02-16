@@ -2,9 +2,10 @@ import React from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
+import { Linking } from "react-native";
 
 export function ExampleHeader() {
   return (
@@ -212,6 +213,7 @@ export function ExploreHeader() {
           <Input
             placeholder="Search users, services, jobs..."
             style={{ width: "100%" }}
+            onFocus={() => Linking.openURL("myapp://explore-recent")}
           />
         ),
       }}
@@ -313,6 +315,27 @@ export function SettingsHeader() {
             />
             <Text size="xl" weight="semibold">
               Settings
+            </Text>
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
+export function ReviewHeader({ username }: { username: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text weight="semibold" size="xl">
+              Reviews for @{username}
             </Text>
           </View>
         ),

@@ -136,7 +136,7 @@ export default function PostScreen() {
                   <Icon name="star" />
                   <Icon name="star" />
                   <Icon name="star" />
-                  <Icon name="star" />
+                  <Icon name="star-half" />
                   <Text weight="semibold" style={{ marginLeft: 4 }}>
                     17 Reviews
                   </Text>
@@ -168,10 +168,18 @@ export default function PostScreen() {
             <View style={styles.nameContainer}>
               <Text weight="semibold">{post.user_name}</Text>
               <View
-                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+                style={{
+                  flexDirection: "row",
+                  gap: 4,
+                  alignItems: "center",
+                  marginTop: 4,
+                }}
               >
                 <Icon name={"star"} />
-                <Text weight="semibold">4.5/5</Text>
+                <Icon name={"star"} />
+                <Icon name={"star"} />
+                <Icon name={"star"} />
+                <Icon name={"star"} />
               </View>
             </View>
             <Button style={styles.messageButton} type="variant">
@@ -181,7 +189,6 @@ export default function PostScreen() {
           </View>
 
           <Text
-            numberOfLines={3}
             ellipsizeMode="tail"
             style={{ marginVertical: 16, marginBottom: 16 }}
           >

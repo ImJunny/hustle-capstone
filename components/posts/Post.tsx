@@ -7,6 +7,7 @@ import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TPost } from "@/server/utils/example_data";
+import Icon from "../ui/Icon";
 
 export type JobPostProps = {
   data: TPost;
@@ -29,9 +30,17 @@ export default function Post({ data, style }: JobPostProps) {
             <Text weight="semibold" numberOfLines={1}>
               {data.title}
             </Text>
-            <Text size="sm">
-              {data.type == "work" ? `Due ${data.due_date}` : data.user_name}
-            </Text>
+            {data.type == "work" ? (
+              <Text size="sm">Due {data.due_date}</Text>
+            ) : (
+              <View style={{ flexDirection: "row", marginTop: 4, gap: 4 }}>
+                <Icon name="star" />
+                <Icon name="star" />
+                <Icon name="star" />
+                <Icon name="star-half" />
+                <Icon name="star-outline" />
+              </View>
+            )}
 
             <Text weight="semibold" size="2xl" style={{ marginTop: 4 }}>
               ${data.min_rate}

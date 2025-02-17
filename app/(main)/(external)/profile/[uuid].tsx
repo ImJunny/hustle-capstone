@@ -12,7 +12,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import {
   exampleJobPosts,
   exampleServicePosts,
-} from "@/server/utils/example_data";
+} from "@/server/utils/example-data";
 import ProfileCard from "@/components/profile/ProfileCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";

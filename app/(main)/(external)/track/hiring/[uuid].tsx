@@ -17,7 +17,7 @@ import IconButton from "@/components/ui/IconButton";
 import {
   exampleJobPosts,
   exampleServicePosts,
-} from "@/server/utils/example_data";
+} from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";

@@ -14,7 +14,7 @@ import Icon from "../ui/Icon";
 import Button from "../ui/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { TPost } from "@/server/utils/example_data";
+import { TPost } from "@/server/utils/example-data";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

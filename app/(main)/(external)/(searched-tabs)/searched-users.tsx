@@ -1,5 +1,5 @@
 import React from "react";
-import { exampleMessages } from "@/server/utils/example_data";
+import { exampleMessages } from "@/server/utils/example-data";
 import Message from "@/components/messages/Message";
 import ScrollView from "@/components/ui/ScrollView";
 import ExploreMiniHeader from "@/components/explore/ExploreMiniHeader";

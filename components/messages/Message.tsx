@@ -4,7 +4,7 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TMessage } from "@/server/utils/example_data";
+import { TMessage } from "@/server/utils/example-data";
 
 type MessageProps = {
   data: TMessage;

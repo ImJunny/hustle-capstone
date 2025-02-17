@@ -5,7 +5,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TPost } from "@/server/utils/example_data";
+import { TPost } from "@/server/utils/example-data";
 import Icon from "../ui/Icon";
 
 export type TrackWorkPostProps = {

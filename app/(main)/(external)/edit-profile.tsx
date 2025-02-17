@@ -3,7 +3,7 @@ import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { Image, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,11 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as ImagePicker from "expo-image-picker";
+import Icon from "@/components/ui/Icon";
+import Amplify from "aws-amplify";
 
+Amplify.configure({});
 // form schema for input validation
 const schema = z.object({
   username: z.string().min(1, "Username cannot be empty."),
@@ -38,7 +42,7 @@ export default function EditProfileScreen() {
   // fetch initial user data
   const queryClient = useQueryClient();
   const { user } = useAuthData();
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userDataQuery"],
     queryFn: () => getUserData(user?.id!),
   });
@@ -94,14 +98,74 @@ export default function EditProfileScreen() {
     mutate();
   }
 
-  if (isLoading || !formReady) {
-    return <LoadingScreen backHeader />;
+  const [selectedImage, setSelectedImage] = useState<string | undefined>();
+
+  async function pickImage() {
+    console.log("clicked");
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+      aspect: [1, 1],
+    });
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      const file = await fetch(result.assets[0].uri);
+      const fileBlob = file.blob();
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: result.assets[0].fileName,
+        Body: fileBlob,
+        ContentType: result.assets[0].type,
+      };
+      // const command = new PutObjectCommand(params);
+      // try {
+      //   await s3.send(command);
+      //   console.log("uploaded");
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      // console.log(result);
+    }
   }
 
+  if (!formReady) {
+    return <LoadingScreen backHeader />;
+  }
   return (
     <>
       <BackHeader />
       <View style={styles.container} color="background">
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
+            <Image
+              source={
+                selectedImage
+                  ? { uri: selectedImage }
+                  : require("@/assets/images/default-avatar-icon.jpg")
+              }
+              width={90}
+              height={90}
+              style={{ borderRadius: 999, width: 90, height: 90 }}
+            />
+
+            <View
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 999,
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                bottom: 0,
+                right: 0,
+              }}
+              color="background-variant"
+            >
+              <Icon name="camera-outline" size="lg" />
+            </View>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.inputEntry}>
           <Text weight="bold" size="lg">
             Username

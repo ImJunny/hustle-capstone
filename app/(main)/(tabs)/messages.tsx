@@ -4,7 +4,7 @@ import Input from "@/components/ui/Input";
 import Message from "@/components/messages/Message";
 import { MessagesHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { exampleMessages } from "@/server/utils/example_data";
+import { exampleMessages } from "@/server/utils/example-data";
 
 export default function MessagesScreen() {
   return (

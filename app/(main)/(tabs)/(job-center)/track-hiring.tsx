@@ -10,7 +10,13 @@ export default function TrackHiringScreen() {
       <SimpleHeader title="Track hiring" />
       <ScrollView>
         {samplePosts.map((post, i) => (
-          <TrackHirePost key={i} data={post} style={{ borderBottomWidth: 1 }} />
+          <TrackHirePost
+            key={i}
+            data={post}
+            style={{
+              borderBottomWidth: 1,
+            }}
+          />
         ))}
       </ScrollView>
     </>

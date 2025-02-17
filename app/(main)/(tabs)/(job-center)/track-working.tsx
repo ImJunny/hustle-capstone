@@ -10,7 +10,13 @@ export default function TrackWorkingScreen() {
       <SimpleHeader title="Track working" />
       <ScrollView>
         {samplePosts.map((post, i) => (
-          <TrackWorkPost key={i} data={post} style={{ borderBottomWidth: 1 }} />
+          <TrackWorkPost
+            key={i}
+            data={post}
+            style={{
+              borderBottomWidth: 1,
+            }}
+          />
         ))}
       </ScrollView>
     </>

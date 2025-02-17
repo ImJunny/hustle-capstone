@@ -7,7 +7,13 @@ export default function PostList({ data }: { data: TPost[] }) {
   return (
     <ScrollView>
       {data.map((post, i) => (
-        <Post key={i} data={post} />
+        <Post
+          key={i}
+          data={post}
+          style={{
+            borderBottomWidth: 1,
+          }}
+        />
       ))}
     </ScrollView>
   );

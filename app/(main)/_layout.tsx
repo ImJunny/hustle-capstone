@@ -13,6 +13,18 @@ export default function Layout() {
         name="(external)/job/[id]"
         options={{ animation: "fade_from_bottom" }}
       />
+      <Stack.Screen
+        name="(external)/track/working/[uuid]"
+        options={{ animation: "fade_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(external)/track/hiring/[uuid]"
+        options={{ animation: "fade_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(external)/edit-profile"
+        options={{ animation: "none" }}
+      />
     </Stack>
   );
 }

@@ -12,7 +12,7 @@ export type TPost = {
   user_uuid: string;
   title: string;
   description: string;
-  min_rate: number;
+  min_rate?: number;
   max_rate?: number;
   tags: string[];
   distance: string;
@@ -27,23 +27,17 @@ export type TPost = {
 export type HPost = {
   uuid: string;
   user_uuid: string;
-  service: string;
+  title: string;
   description: string;
+  min_rate?: number;
+  max_rate?: number;
   tags: string[];
   distance: string;
   status?: string;
-  due_date?: string;
   type: "work" | "hire";
+  comments?: number;
   user_name: string;
   time_ago: string;
-  experience:
-    | "less than 1 year"
-    | "1-2 years"
-    | "2-3 years"
-    | "3-5 years"
-    | "5-7 years"
-    | "7-10 years"
-    | "10+ years";
 };
 
 export const exampleJobPosts: TPost[] = [
@@ -115,61 +109,55 @@ export const exampleJobPosts: TPost[] = [
 export const exampleHirePosts: HPost[] = [
   {
     type: "hire",
-    uuid: "jhgddf",
+    uuid: "jhgddk",
     user_uuid: "jhgddj",
-    service: "Y",
+    title: "Artist (10+ Years)",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     tags: ["design", "art", "media"],
     distance: "remote",
-    due_date: "March 20",
+    comments: 4,
     status: "2  accepted",
     user_name: "@sukmoon44",
     time_ago: "1 hr ago",
-    experience: "1-2 years",
   },
   {
     type: "work",
-    uuid: "dwadaw",
+    uuid: "dwadax",
     user_uuid: "jhgddj",
-    service: "I need help moving ASAP!",
+    title: "Moving (2-3 years)",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     tags: ["transporting", "home"],
     distance: "< 10 mi",
-    due_date: "February 7",
     user_name: "@samdoe",
     time_ago: "1 day ago",
-    experience: "1-2 years",
   },
   {
     type: "work",
-    uuid: "asdfsaf",
+    uuid: "asdfsag",
     user_uuid: "jhgddj",
-    service: "Lawn mowing needed",
+    title: "Yardowrk Service (<1 year)",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     tags: ["yardwork", "home"],
     distance: "< 5 mi",
-    due_date: "February 8",
+    comments: 1,
     user_name: "@johnsmith",
     time_ago: "7 hrs ago",
-    experience: "1-2 years",
   },
   {
     type: "work",
-    uuid: "tydwasytss",
+    uuid: "tydwasytst",
     user_uuid: "jhgddj",
-    service: "Painter Needed for Building Meural at XYZ",
+    title: "Painting Service (5-7 years)",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     tags: ["art", "painting"],
     distance: "< 15 mi",
-    due_date: "July 3",
     status: "7 accepted",
     user_name: "@some_user",
     time_ago: "1 mo ago",
-    experience: "1-2 years",
   },
 ];
 

@@ -5,6 +5,13 @@ import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
+import { TouchableOpacity } from "react-native";
+
+interface IndexHeaderProps {
+  onShowWork: () => void;
+  onShowHire: () => void;
+  showFeed: boolean;
+}
 
 export function ExampleHeader() {
   return (
@@ -33,7 +40,11 @@ export function ExampleHeader() {
   );
 }
 
-export function IndexHeader() {
+export function IndexHeader({
+  onShowWork,
+  onShowHire,
+  showFeed,
+}: IndexHeaderProps) {
   return (
     <HeaderWrapper
       options={{
@@ -50,32 +61,47 @@ export function IndexHeader() {
         ),
         center: (
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <View
-              style={{
-                borderBottomColor: "white",
-                borderBottomWidth: 5,
-              }}
-            >
-              <Text
-                weight="bold"
-                size="xl"
-                style={{
-                  fontFamily: "Inter-bold",
-                }}
-              >
-                Work
-              </Text>
+            <View>
+              <TouchableOpacity onPress={onShowWork}>
+                <Text
+                  weight="bold"
+                  size="xl"
+                  color="muted-dark"
+                  style={
+                    showFeed
+                      ? {
+                          fontFamily: "Inter-bold",
+                          borderBottomColor: "white",
+                          borderBottomWidth: 5,
+                          color: "white",
+                        }
+                      : { fontFamily: "Inter-bold" }
+                  }
+                >
+                  Work
+                </Text>
+              </TouchableOpacity>
             </View>
             <View>
-              <Text
-                weight="bold"
-                size="xl"
-                style={{
-                  fontFamily: "Inter-bold",
-                }}
-              >
-                Hire
-              </Text>
+              <TouchableOpacity onPress={onShowHire}>
+                <Text
+                  weight="bold"
+                  size="xl"
+                  color="muted-dark"
+                  style={
+                    !showFeed
+                      ? {
+                          fontFamily: "Inter-bold",
+                          borderBottomColor: "white",
+                          borderBottomWidth: 5,
+                          color: "white",
+                        }
+                      : { fontFamily: "Inter-bold" }
+                  }
+                >
+                  Hire
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         ),

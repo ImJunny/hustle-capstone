@@ -1,12 +1,12 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Badge from "@/components/ui/Badge";
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, Pressable, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
@@ -159,37 +159,40 @@ export default function PostScreen() {
               About the Employer
             </Text>
           </View>
-          <View style={styles.bottomContainer}>
-            <ImagePlaceholder
-              width={40}
-              height={40}
-              style={{ borderRadius: 999 }}
-            />
-            <View style={styles.nameContainer}>
-              <Text weight="semibold">{post.user_name}</Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 4,
-                  alignItems: "center",
-                  marginTop: 4,
-                }}
-              >
-                <Icon name={"star"} />
-                <Icon name={"star"} />
-                <Icon name={"star"} />
-                <Icon name={"star"} />
-                <Icon name={"star"} />
-                <Text style={{ marginLeft: 4 }} size="sm">
-                  1
-                </Text>
+          <Pressable onPress={() => router.push(`/profile/user`)}>
+            <View style={styles.bottomContainer}>
+              <ImagePlaceholder
+                width={40}
+                height={40}
+                style={{ borderRadius: 999 }}
+              />
+              <View style={styles.nameContainer}>
+                <Text weight="semibold">{post.user_name}</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 4,
+                    alignItems: "center",
+                    marginTop: 4,
+                  }}
+                >
+                  <Icon name={"star"} />
+                  <Icon name={"star"} />
+                  <Icon name={"star"} />
+                  <Icon name={"star"} />
+                  <Icon name={"star"} />
+                  <Text style={{ marginLeft: 4 }} size="sm">
+                    1
+                  </Text>
+                </View>
               </View>
+
+              <Button style={styles.messageButton} type="variant">
+                <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
+                <Text weight="semibold">Message</Text>
+              </Button>
             </View>
-            <Button style={styles.messageButton} type="variant">
-              <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
-              <Text weight="semibold">Message</Text>
-            </Button>
-          </View>
+          </Pressable>
 
           <Text
             ellipsizeMode="tail"

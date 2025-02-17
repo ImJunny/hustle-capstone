@@ -15,14 +15,18 @@ export default function Layout() {
       />
       <Stack.Screen
         name="(external)/track/working/[uuid]"
-        options={{ animation: "fade_from_bottom" }}
+        options={{ animation: "none" }}
       />
       <Stack.Screen
         name="(external)/track/hiring/[uuid]"
-        options={{ animation: "fade_from_bottom" }}
+        options={{ animation: "none" }}
       />
       <Stack.Screen
         name="(external)/edit-profile"
+        options={{ animation: "none" }}
+      />
+      <Stack.Screen
+        name="(external)/profile/[uuid]"
         options={{ animation: "none" }}
       />
     </Stack>

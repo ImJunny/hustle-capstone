@@ -5,8 +5,9 @@ import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { UserData } from "@/server/lib/user";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { router } from "expo-router";
 
-export default function ProfileCard({ data }: { data: UserData }) {
+export default function ProfileSelfCard({ data }: { data: UserData }) {
   const hasBio = data.bio!.length > 0;
 
   return (
@@ -42,9 +43,9 @@ export default function ProfileCard({ data }: { data: UserData }) {
               <Button
                 style={{ flex: 1, height: 32 }}
                 type="variant"
-                onPress={() => {}}
+                onPress={() => router.push("/edit-profile")}
               >
-                Message
+                Edit profile
               </Button>
               <Button style={{ flex: 1, height: 32 }}>Follow</Button>
             </View>

@@ -9,7 +9,6 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
 import { getUserData } from "@/server/lib/user";
 import { AuthError } from "@supabase/supabase-js";
-import { useQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
@@ -19,12 +18,30 @@ import {
   StyleSheet,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+
+// form schema for input validation
+const schema = z.object({
+  email: z.string().email("Must be an email."),
+  password: z.string(),
+});
+type FormData = z.infer<typeof schema>;
 
 export default function SignInScreen() {
+  // declare form properties
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
   const themeColor = useThemeColor();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(true);
 
   async function signInWithEmail() {
@@ -36,8 +53,8 @@ export default function SignInScreen() {
       data: { user },
       error,
     } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: getValues("email"),
+      password: getValues("password"),
     });
     if (error) {
       Alert.alert("Error", (error as AuthError).message);
@@ -72,40 +89,58 @@ export default function SignInScreen() {
           Hustle
         </Text>
         <View style={styles.formContainer}>
-          <Input
-            placeholder="Email"
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
-            autoCapitalize="none"
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: themeColor["background-variant"],
-              borderRadius: 6,
-            }}
-          >
-            <Input
-              placeholder="Password"
-              style={{ flexGrow: 1 }}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              autoCapitalize="none"
-              secureTextEntry={passwordHidden}
+          <View style={styles.inputEntry}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Email"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
             />
-            <IconButton
-              style={{ paddingHorizontal: 12 }}
-              name={passwordHidden ? "eye-outline" : "eye"}
-              onPress={() => setPasswordHidden(!passwordHidden)}
-              hideOpacity
+            {errors.email && <Text color="red">{errors.email.message}</Text>}
+          </View>
+          <View style={styles.inputEntry}>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: themeColor["background-variant"],
+                    borderRadius: 6,
+                  }}
+                >
+                  <Input
+                    placeholder="Password"
+                    style={{ flexGrow: 1 }}
+                    value={value}
+                    onChangeText={onChange}
+                    autoCapitalize="none"
+                    secureTextEntry={passwordHidden}
+                  />
+                  <IconButton
+                    style={{ paddingHorizontal: 12 }}
+                    name={passwordHidden ? "eye-outline" : "eye"}
+                    onPress={() => setPasswordHidden(!passwordHidden)}
+                    hideOpacity
+                  />
+                </View>
+              )}
             />
+            {errors.password && (
+              <Text color="red">{errors.password.message}</Text>
+            )}
           </View>
 
           <Button
             isFullWidth
-            onPress={() => signInWithEmail()}
+            onPress={handleSubmit(signInWithEmail)}
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign in"}
@@ -167,5 +202,8 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 0,
     right: 0,
+  },
+  inputEntry: {
+    gap: 4,
   },
 });

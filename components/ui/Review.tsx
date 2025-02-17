@@ -12,7 +12,10 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import { getUserData } from "@/server/lib/user";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
-export default function Review() {
+interface ReviewProps {
+  displayImage: "user" | "service" | "none";
+}
+export default function Review({ displayImage }: ReviewProps) {
   const { id } = useLocalSearchParams();
   const review = exampleReview.find((review) => review.uuid === id);
   const themeColor = useThemeColor();
@@ -62,7 +65,15 @@ export default function Review() {
               <Text style={styles.ratingText}>4.5/5</Text>
             </View>
           </View>
-          <ImagePlaceholder width={100} height={100} style={styles.imgStyle} />
+          <View>
+            {displayImage === "user" && (
+              <ImagePlaceholder
+                width={100}
+                height={100}
+                style={styles.imgStyle}
+              />
+            )}
+          </View>
         </View>
 
         <View style={styles.descriptionContainer}>

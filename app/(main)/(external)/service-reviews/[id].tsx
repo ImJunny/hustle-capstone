@@ -6,7 +6,7 @@ import Review from "@/components/ui/Review";
 export default function ReviewScreen() {
   return (
     <View>
-      <Review />
+      <Review displayImage={"user"} />
       <Text>ReviewScreen</Text>
     </View>
   );

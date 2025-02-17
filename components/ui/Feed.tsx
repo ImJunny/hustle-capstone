@@ -148,13 +148,10 @@ function Feed({ data }: { data: TPost }) {
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <Icon name={"star"} color="white"></Icon>
-              <TouchableOpacity
-                onPress={() => router.push(`/service-reviews/${data.uuid}`)}
-              >
-                <Text color="white" weight="semibold">
-                  4.5/5
-                </Text>
-              </TouchableOpacity>
+
+              <Text color="white" weight="semibold">
+                4.5/5
+              </Text>
             </View>
           </View>
           <Button

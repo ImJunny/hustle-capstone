@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import View from "./ui/View";
-import { Image, StyleSheet, ScrollView, Alert } from "react-native";
+import View from "./View";
+import { Image, StyleSheet, ScrollView, Alert, Pressable } from "react-native";
 import { launchImageLibrary } from "react-native-image-picker";
-import IconButton from "./ui/IconButton";
-import ImagePlaceholder from "./ui/ImagePlaceholder";
+import IconButton from "./IconButton";
+import ImagePlaceholder from "./ImagePlaceholder";
 
 const AddImage = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -30,25 +30,14 @@ const AddImage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.add_photo}>
-        <IconButton
-          onPress={pickImage}
-          name="add"
-          size="2xl"
-          style={{ marginVertical: 34 }}
-        />
-      </View>
-      <ScrollView
-        horizontal={true}
-        contentContainerStyle={styles.imageContainer}
-      >
-        <ImagePlaceholder width={100} height={100} />
-        <ImagePlaceholder width={100} height={100} />
-        <ImagePlaceholder width={100} height={100} />
+      <View style={styles.imageContainer}>
+        <Pressable onPress={pickImage} style={styles.add_photo}>
+          <IconButton name="add" size="2xl" />
+        </Pressable>
         {images.map((imageUri, index) => (
           <Image key={index} source={{ uri: imageUri }} style={styles.image} />
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -60,20 +49,22 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     gap: 10,
   },
   add_photo: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     backgroundColor: "grey",
     alignItems: "center",
+    justifyContent: "center",
   },
   imageContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
+    width: "100%",
   },
 });
 

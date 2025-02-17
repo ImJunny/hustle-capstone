@@ -180,7 +180,9 @@ export default function PostScreen() {
                 <Icon name={"star"} />
                 <Icon name={"star"} />
                 <Icon name={"star"} />
-                <Text style={{ marginLeft: 4 }}>1</Text>
+                <Text style={{ marginLeft: 4 }} size="sm">
+                  1
+                </Text>
               </View>
             </View>
             <Button style={styles.messageButton} type="variant">

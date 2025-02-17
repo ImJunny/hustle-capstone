@@ -12,7 +12,12 @@ import { AuthError } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+} from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function SignInScreen() {
@@ -51,7 +56,10 @@ export default function SignInScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <View style={styles.container}>
         <Text
           size="4xl"
@@ -129,7 +137,7 @@ export default function SignInScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

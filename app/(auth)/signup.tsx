@@ -11,7 +11,13 @@ import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { Alert, AppState, StyleSheet } from "react-native";
+import {
+  Alert,
+  AppState,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+} from "react-native";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -105,7 +111,10 @@ export default function SignUpScreen() {
   // }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <View style={styles.container}>
         <Text
           size="4xl"
@@ -196,7 +205,7 @@ export default function SignUpScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

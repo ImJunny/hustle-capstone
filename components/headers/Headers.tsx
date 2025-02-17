@@ -318,17 +318,8 @@ export function CreatePostsHeader() {
               onPress={() => router.back()}
             />
             <Text size="xl" weight="semibold">
-              Create a Job
+              Create a post
             </Text>
-          </View>
-        ),
-        right: (
-          <View style={{ gap: 12, alignItems: "center" }}>
-            <IconButton
-              name="help-circle-outline"
-              size="xl"
-              onPress={() => router.push("/example")}
-            />
           </View>
         ),
       }}

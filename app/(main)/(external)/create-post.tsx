@@ -32,7 +32,7 @@ export default function PostForm() {
               </Text>
 
               <View style={{ marginTop: 10, flexDirection: "row", gap: 16 }}>
-                <Button type="outline" style={{ flex: 1 }}>
+                <Button type="primary" style={{ flex: 1 }}>
                   Job
                 </Button>
                 <Button type="secondary" style={{ flex: 1 }}>

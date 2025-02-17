@@ -49,7 +49,7 @@ export default function Review() {
       >
         <View style={styles.bottomContainer}>
           <View style={styles.nameContainer}>
-            <Text color="white" weight="semibold">
+            <Text color="white" weight="semibold" size="sm">
               {review.user_name} | {review.date}
             </Text>
 
@@ -62,7 +62,7 @@ export default function Review() {
               <Text style={styles.ratingText}>4.5/5</Text>
             </View>
           </View>
-          <ImagePlaceholder width={116} height={116} style={styles.imgStyle} />
+          <ImagePlaceholder width={100} height={100} style={styles.imgStyle} />
         </View>
 
         <View style={styles.descriptionContainer}>

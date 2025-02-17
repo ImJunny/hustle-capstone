@@ -17,14 +17,10 @@ export default function TrackWorkPost({ data, style }: TrackWorkPostProps) {
   const borderColor = themeColor.border;
 
   return (
-    <Link href={`/job/${data.uuid}`} asChild>
+    <Link href={`/track/working/${data.uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
-          <ImagePlaceholder
-            width={90}
-            height={90}
-            style={{ borderRadius: 4 }}
-          />
+          <ImagePlaceholder width={80} height={80} />
           <View style={styles.entryContent}>
             <Text weight="semibold" numberOfLines={1}>
               {data.title}

@@ -29,13 +29,6 @@ export default function JobCenterScreen() {
             title="Hiring"
             href="/track-hiring"
           />
-          <Button
-            isFullWidth
-            style={{ marginTop: 16 }}
-            onPress={() => router.push("/(main)/(external)/create-post")}
-          >
-            Create a post
-          </Button>
         </View>
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
@@ -51,6 +44,13 @@ export default function JobCenterScreen() {
             title="Recently viewed"
             href="/recently-viewed"
           />
+          <Button
+            isFullWidth
+            style={{ marginTop: 16 }}
+            onPress={() => router.push("/(main)/(external)/create-post")}
+          >
+            Create a post
+          </Button>
         </View>
       </View>
     </>

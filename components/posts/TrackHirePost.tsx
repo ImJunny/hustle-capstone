@@ -17,7 +17,7 @@ export default function TrackHirePost({ data, style }: TrackHirePostProps) {
   const borderColor = themeColor.border;
 
   return (
-    <Link href={`/job/${data.uuid}`} asChild>
+    <Link href={`/track/hiring/${data.uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <ImagePlaceholder

@@ -93,7 +93,7 @@ export const exampleJobPosts: TPost[] = [
     status: "7 accepted",
     user_name: "@some_user",
     time_ago: "1 mo ago",
-    progress: "overdue",
+    progress: "paid",
   },
   {
     type: "work",

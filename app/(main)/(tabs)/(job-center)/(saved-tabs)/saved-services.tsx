@@ -1,0 +1,6 @@
+import PostList from "@/components/posts/PostList";
+import { exampleServicePosts } from "@/server/utils/example_data";
+
+export default function SavedJobsScreen() {
+  return <PostList data={exampleServicePosts} />;
+}

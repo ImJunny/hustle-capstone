@@ -4,7 +4,7 @@ import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
-import View from "../ui/View";
+import View, { ViewProps } from "../ui/View";
 import { Pressable, TouchableOpacity } from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
 
@@ -140,9 +140,15 @@ export function DetailsHeader() {
   );
 }
 
-export function SimpleHeader({ title }: { title: string }) {
+export function SimpleHeader({
+  title,
+  style,
+}: {
+  title: string;
+} & ViewProps) {
   return (
     <HeaderWrapper
+      style={style}
       options={{
         left: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
@@ -306,7 +312,7 @@ export function SettingsHeader() {
     />
   );
 }
-export function CreatePostsHeader() {
+export function CreatePostHeader() {
   return (
     <HeaderWrapper
       options={{

@@ -5,7 +5,7 @@ import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
-import { CreatePostsHeader } from "@/components/headers/Headers";
+import { CreatePostHeader } from "@/components/headers/Headers";
 import Input from "@/components/ui/Input";
 import DateInput from "@/components/ui/DateInput";
 import AddImage from "@/components/ui/AddImages";
@@ -14,7 +14,7 @@ import Separator from "@/components/ui/Separator";
 export default function PostForm() {
   return (
     <>
-      <CreatePostsHeader />
+      <CreatePostHeader />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

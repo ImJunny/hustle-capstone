@@ -1,9 +1,6 @@
-import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
 import React from "react";
-import { router, Stack, withLayoutContext } from "expo-router";
-import { StyleSheet } from "react-native";
-import { EmptyHeader, SearchingHeader } from "@/components/headers/Headers";
+import { withLayoutContext } from "expo-router";
+import { SearchingHeader } from "@/components/headers/Headers";
 
 import {
   createMaterialTopTabNavigator,

@@ -18,16 +18,8 @@ export default function JobCenterScreen() {
           <Text size="xl" weight="semibold">
             Tracking
           </Text>
-          <LinkEntry
-            iconName="briefcase-outline"
-            title="Working"
-            href="/posts-list/working"
-          />
-          <LinkEntry
-            iconName="calendar-outline"
-            title="Hiring"
-            href="/posts-list/hiring"
-          />
+          <LinkEntry iconName="briefcase-outline" title="Working" href={"/"} />
+          <LinkEntry iconName="calendar-outline" title="Hiring" href={"/"} />
           <Button
             isFullWidth
             style={{ marginTop: 16 }}
@@ -43,12 +35,12 @@ export default function JobCenterScreen() {
           <LinkEntry
             iconName="add-circle-outline"
             title="Saved"
-            href="/posts-list/saved"
+            href="/saved-jobs"
           />
           <LinkEntry
             iconName="time-outline"
             title="Recently viewed"
-            href="/posts-list/recently-viewed"
+            href="/recently-viewed"
           />
         </View>
       </View>

@@ -18,8 +18,17 @@ export default function JobCenterScreen() {
           <Text size="xl" weight="semibold">
             Tracking
           </Text>
-          <LinkEntry iconName="briefcase-outline" title="Working" href={"/"} />
-          <LinkEntry iconName="calendar-outline" title="Hiring" href={"/"} />
+          <LinkEntry
+            iconName="briefcase-outline"
+            title="Working"
+            href="/track-working"
+            active_count={2}
+          />
+          <LinkEntry
+            iconName="calendar-outline"
+            title="Hiring"
+            href="/track-hiring"
+          />
           <Button
             isFullWidth
             style={{ marginTop: 16 }}
@@ -52,8 +61,9 @@ type LinkEntryProps = {
   iconName: IconSymbolName;
   title: string;
   href: Href;
+  active_count?: number;
 };
-function LinkEntry({ iconName, title, href }: LinkEntryProps) {
+function LinkEntry({ iconName, title, href, active_count }: LinkEntryProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
@@ -63,6 +73,12 @@ function LinkEntry({ iconName, title, href }: LinkEntryProps) {
         <View style={[styles.entry, { borderColor }]}>
           <Icon name={iconName} size="xl" />
           <Text style={styles.entryText}>{title}</Text>
+          {active_count && (
+            <Text color="green" weight="semibold" style={{ marginRight: 12 }}>
+              • {active_count} active
+            </Text>
+          )}
+
           <Icon name="chevron-forward" size="xl" />
         </View>
       </TouchableOpacity>

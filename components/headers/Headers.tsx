@@ -4,7 +4,7 @@ import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
-import View from "../ui/View";
+import View, { ViewProps } from "../ui/View";
 import { Pressable, TouchableOpacity } from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
 
@@ -23,13 +23,7 @@ export function ExampleHeader() {
             Hustle
           </Text>
         ),
-        right: (
-          <IconButton
-            name="filter"
-            size="xl"
-            onPress={() => router.push("/example")}
-          />
-        ),
+        right: <IconButton name="filter" size="xl" />,
       }}
     />
   );
@@ -81,13 +75,7 @@ export function IndexHeader() {
             </View>
           </View>
         ),
-        right: (
-          <IconButton
-            name="filter"
-            size="xl"
-            onPress={() => router.push("/example")}
-          />
-        ),
+        right: <IconButton name="filter" size="xl" />,
       }}
     />
   );
@@ -102,13 +90,7 @@ export function JobsCenterHeader() {
             Job Center
           </Text>
         ),
-        right: (
-          <IconButton
-            name="notifications-outline"
-            size="xl"
-            onPress={() => router.push("/example")}
-          />
-        ),
+        right: <IconButton name="notifications-outline" size="xl" />,
       }}
     />
   );
@@ -140,9 +122,15 @@ export function DetailsHeader() {
   );
 }
 
-export function SimpleHeader({ title }: { title: string }) {
+export function SimpleHeader({
+  title,
+  style,
+}: {
+  title: string;
+} & ViewProps) {
   return (
     <HeaderWrapper
+      style={style}
       options={{
         left: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
@@ -221,13 +209,7 @@ export function SearchingHeader() {
             onPress={() => router.back()}
           />
         ),
-        right: (
-          <IconButton
-            name="ellipsis-vertical"
-            size="xl"
-            onPress={() => router.push("/example")}
-          />
-        ),
+        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );
@@ -254,7 +236,7 @@ export function SearchedHeader() {
   );
 }
 
-export function ProfileHeader({ username }: { username: string }) {
+export function ProfileSelfHeader({ username }: { username: string }) {
   return (
     <HeaderWrapper
       options={{
@@ -268,11 +250,7 @@ export function ProfileHeader({ username }: { username: string }) {
             <View
               style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
             >
-              <IconButton
-                name="add"
-                size="xl"
-                onPress={() => router.push("/example")}
-              />
+              <IconButton name="add" size="xl" onPress={() => {}} />
               <IconButton
                 name="menu-sharp"
                 size="xl"
@@ -281,6 +259,24 @@ export function ProfileHeader({ username }: { username: string }) {
             </View>
           </>
         ),
+      }}
+    />
+  );
+}
+
+export function ProfileHeader({ username }: { username: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              @{username}
+            </Text>
+          </View>
+        ),
+        right: <IconButton name="ellipsis-vertical" />,
       }}
     />
   );
@@ -306,7 +302,7 @@ export function SettingsHeader() {
     />
   );
 }
-export function CreatePostsHeader() {
+export function CreatePostHeader() {
   return (
     <HeaderWrapper
       options={{
@@ -318,17 +314,8 @@ export function CreatePostsHeader() {
               onPress={() => router.back()}
             />
             <Text size="xl" weight="semibold">
-              Create a Job
+              Create a post
             </Text>
-          </View>
-        ),
-        right: (
-          <View style={{ gap: 12, alignItems: "center" }}>
-            <IconButton
-              name="help-circle-outline"
-              size="xl"
-              onPress={() => router.push("/example")}
-            />
           </View>
         ),
       }}

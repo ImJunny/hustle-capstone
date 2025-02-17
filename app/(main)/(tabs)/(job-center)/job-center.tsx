@@ -21,20 +21,14 @@ export default function JobCenterScreen() {
           <LinkEntry
             iconName="briefcase-outline"
             title="Working"
-            href="/posts-list/working"
+            href="/track-working"
+            active_count={2}
           />
           <LinkEntry
             iconName="calendar-outline"
             title="Hiring"
-            href="/posts-list/hiring"
+            href="/track-hiring"
           />
-          <Button
-            isFullWidth
-            style={{ marginTop: 16 }}
-            onPress={() => router.push("/(main)/(external)/create-post")}
-          >
-            Create a post
-          </Button>
         </View>
         <View style={styles.category}>
           <Text size="xl" weight="semibold">
@@ -43,13 +37,20 @@ export default function JobCenterScreen() {
           <LinkEntry
             iconName="add-circle-outline"
             title="Saved"
-            href="/posts-list/saved"
+            href="/saved-jobs"
           />
           <LinkEntry
             iconName="time-outline"
             title="Recently viewed"
-            href="/posts-list/recently-viewed"
+            href="/recently-viewed"
           />
+          <Button
+            isFullWidth
+            style={{ marginTop: 16 }}
+            onPress={() => router.push("/(main)/(external)/create-post")}
+          >
+            Create a post
+          </Button>
         </View>
       </View>
     </>
@@ -60,8 +61,9 @@ type LinkEntryProps = {
   iconName: IconSymbolName;
   title: string;
   href: Href;
+  active_count?: number;
 };
-function LinkEntry({ iconName, title, href }: LinkEntryProps) {
+function LinkEntry({ iconName, title, href, active_count }: LinkEntryProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
@@ -71,6 +73,12 @@ function LinkEntry({ iconName, title, href }: LinkEntryProps) {
         <View style={[styles.entry, { borderColor }]}>
           <Icon name={iconName} size="xl" />
           <Text style={styles.entryText}>{title}</Text>
+          {active_count && (
+            <Text color="green" weight="semibold" style={{ marginRight: 12 }}>
+              • {active_count} active
+            </Text>
+          )}
+
           <Icon name="chevron-forward" size="xl" />
         </View>
       </TouchableOpacity>

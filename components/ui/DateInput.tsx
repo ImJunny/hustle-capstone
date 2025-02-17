@@ -3,14 +3,16 @@ import Input from "@/components/ui/Input";
 import View from "@/components/ui/View";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "./Icon";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useThemeColor } from "@/hooks/useThemeColor";
+// import DateTimePickerModal from "react-native-modal-datetime-picker";
+// import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
-const DateInput = () => {
+export default function DateInput() {
   const today = new Date().toLocaleDateString();
   const [date, setDate] = useState<string>("");
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
-  const [placeholder, setPlaceholder] = useState<string>(`Today - ${today}`);
+  const [placeholder, setPlaceholder] = useState<string>(`${today}`);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -26,9 +28,11 @@ const DateInput = () => {
     hideDatePicker();
   };
 
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.foreground;
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { borderColor }]}>
         <Input
           placeholder={placeholder}
           value={date}
@@ -39,15 +43,15 @@ const DateInput = () => {
           <Icon name="calendar" size="xl" color="white" />
         </TouchableOpacity>
       </View>
-      <DateTimePickerModal
+      {/* <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
-      />
+      /> */}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -58,10 +62,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderRadius: 0,
+    borderRadius: 6,
     gap: 10,
-    backgroundColor: "transparent",
-    borderColor: "white",
     marginTop: 10,
     width: 200,
   },
@@ -73,5 +75,3 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
-
-export default DateInput;

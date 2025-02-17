@@ -1,4 +1,10 @@
-import { StyleSheet, Dimensions, StatusBar, Platform } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  StatusBar,
+  Platform,
+  Pressable,
+} from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
@@ -129,36 +135,40 @@ export default function HomePost({ data }: { data: TPost }) {
           </View>
         </View>
 
-        <View style={styles.bottomContainer}>
-          <ImagePlaceholder
-            width={40}
-            height={40}
-            style={{ borderRadius: 999 }}
-          />
-          <View style={styles.nameContainer}>
-            <Text color="white" weight="semibold">
-              {data.user_name}
-            </Text>
-            <View
-              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-            >
-              <Icon name={"star"} color="white" />
-              <Icon name={"star"} color="white" />
-              <Icon name={"star"} color="white" />
-              <Icon name={"star"} color="white" />
-              <Icon name={"star"} color="white" />
-              <Text style={{ marginLeft: 4 }}>1</Text>
+        <Pressable onPress={() => router.push(`/profile/${data.user_name}`)}>
+          <View style={styles.bottomContainer}>
+            <ImagePlaceholder
+              width={40}
+              height={40}
+              style={{ borderRadius: 999 }}
+            />
+            <View style={styles.nameContainer}>
+              <Text color="white" weight="semibold">
+                {data.user_name}
+              </Text>
+              <View
+                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+              >
+                <Icon name={"star"} color="white" />
+                <Icon name={"star"} color="white" />
+                <Icon name={"star"} color="white" />
+                <Icon name={"star"} color="white" />
+                <Icon name={"star"} color="white" />
+                <Text style={{ marginLeft: 4 }} size="sm">
+                  1
+                </Text>
+              </View>
             </View>
+            <Button
+              style={styles.viewButton}
+              onPress={() => router.push(`/job/${data.uuid}`)}
+            >
+              <Text color="black" weight="semibold">
+                View
+              </Text>
+            </Button>
           </View>
-          <Button
-            style={styles.viewButton}
-            onPress={() => router.push(`/job/${data.uuid}`)}
-          >
-            <Text color="black" weight="semibold">
-              View
-            </Text>
-          </Button>
-        </View>
+        </Pressable>
       </View>
     </View>
   );

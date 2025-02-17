@@ -1,8 +1,8 @@
-import { FlatList, Dimensions, StatusBar } from "react-native";
+import { FlatList, Dimensions } from "react-native";
 import HomePost from "@/components/posts/HomePost";
 import React from "react";
 import { IndexHeader } from "@/components/headers/Headers";
-import { exampleJobPosts, exampleHirePosts } from "@/server/utils/example_data";
+import { exampleJobPosts } from "@/server/utils/example_data";
 import View from "@/components/ui/View";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

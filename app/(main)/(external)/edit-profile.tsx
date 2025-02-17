@@ -2,7 +2,6 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
@@ -11,33 +10,69 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserData, updateUserProfile } from "@/server/lib/user";
 import Toast from "react-native-toast-message";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// form schema for input validation
+const schema = z.object({
+  username: z.string().min(1, "Username cannot be empty."),
+  firstname: z.string().min(1, "First name cannot be empty."),
+  lastname: z.string().min(1, "Last name cannot be empty."),
+  bio: z.string().optional(),
+});
+type FormData = z.infer<typeof schema>;
 
 export default function EditProfileScreen() {
-  const queryClient = useQueryClient();
+  // declare form properties
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    getValues,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
+  // fetch initial user data
+  const queryClient = useQueryClient();
   const { user } = useAuthData();
   const { data, isLoading } = useQuery({
     queryKey: ["userDataQuery"],
     queryFn: () => getUserData(user?.id!),
   });
 
+  // update form with fetched data
+  const [formReady, setformReady] = useState(false);
+  useEffect(() => {
+    if (data) {
+      setValue("username", data.username ?? "");
+      setValue("firstname", data.first_name ?? "");
+      setValue("lastname", data.last_name ?? "");
+      setValue("bio", data.bio ?? "");
+      setformReady(true);
+    }
+  }, [data, setValue]);
+
+  // mutation to update user data when form submits
   const { mutate, isPending } = useMutation({
     mutationKey: ["userDataMutate"],
     mutationFn: async () => {
+      const formData = getValues();
       if (
-        data?.username === username &&
-        data?.first_name === firstName &&
-        data?.last_name === lastName &&
-        data?.bio === bio
+        data?.username !== formData.username ||
+        data?.first_name !== formData.firstname ||
+        data?.last_name !== formData.lastname ||
+        data?.bio !== formData.bio
       )
-        return;
-      await updateUserProfile(
-        user?.id!,
-        username ?? "",
-        firstName ?? "",
-        lastName ?? "",
-        bio ?? ""
-      );
+        await updateUserProfile(
+          user?.id!,
+          formData.username,
+          formData.firstname,
+          formData.lastname,
+          formData.bio ?? ""
+        );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userDataQuery"] });
@@ -55,22 +90,11 @@ export default function EditProfileScreen() {
     },
   });
 
-  const themeColor = useThemeColor();
-  const [username, setUsername] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState<string | null>(null);
-  const [lastName, setLastName] = useState<string | null>(null);
-  const [bio, setBio] = useState<string | null>(null);
+  function onSubmit() {
+    mutate();
+  }
 
-  useEffect(() => {
-    if (data) {
-      setUsername(data.username);
-      setFirstName(data.first_name);
-      setLastName(data.last_name);
-      setBio(data.bio);
-    }
-  }, [data]);
-
-  if (isLoading || username === null) {
+  if (isLoading || !formReady) {
     return <LoadingScreen backHeader />;
   }
 
@@ -78,85 +102,95 @@ export default function EditProfileScreen() {
     <>
       <BackHeader />
       <View style={styles.container} color="background">
-        <View>
-          <Text style={styles.inputLabel} weight="bold" size="lg">
+        <View style={styles.inputEntry}>
+          <Text weight="bold" size="lg">
             Username
           </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              borderRadius: 6,
-              borderWidth: 1,
-              alignItems: "center",
-              paddingHorizontal: 16,
-              gap: 0,
-              borderColor: themeColor.foreground,
-            }}
-          >
-            <Input
-              style={{
-                paddingHorizontal: 0,
-              }}
-              type="clear"
-              value={"@"}
-              editable={false}
-            />
-            <Input
-              style={{
-                paddingHorizontal: 0,
-                flex: 1,
-              }}
-              type="clear"
-              placeholder="username"
-              value={username ?? ""}
-              onChangeText={(text) => setUsername(text.toLowerCase())}
-              autoCapitalize="none"
-            />
-          </View>
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                type="outline"
+                placeholder="username"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          {errors.username && (
+            <Text color="red">{errors.username.message}</Text>
+          )}
         </View>
+
         <View style={{ flexDirection: "row", gap: 12 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.inputLabel} weight="bold" size="lg">
+          <View style={[styles.inputEntry, { flex: 1 }]}>
+            <Text weight="bold" size="lg">
               First name
             </Text>
-            <Input
-              type="outline"
-              placeholder="First"
-              value={firstName ?? ""}
-              onChangeText={(text) => setFirstName(text)}
+            <Controller
+              control={control}
+              name="firstname"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  type="outline"
+                  placeholder="First"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
             />
+            {errors.firstname && (
+              <Text color="red">{errors.firstname.message}</Text>
+            )}
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.inputLabel} weight="bold" size="lg">
+          <View style={[styles.inputEntry, { flex: 1 }]}>
+            <Text weight="bold" size="lg">
               Last name
             </Text>
-            <Input
-              type="outline"
-              placeholder="Last"
-              value={lastName ?? ""}
-              onChangeText={(text) => setLastName(text)}
+            <Controller
+              control={control}
+              name="lastname"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  type="outline"
+                  placeholder="Last"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
             />
+            {errors.lastname && (
+              <Text color="red">{errors.lastname.message}</Text>
+            )}
           </View>
         </View>
-        <View>
-          <Text style={styles.inputLabel} weight="bold" size="lg">
+
+        <View style={styles.inputEntry}>
+          <Text weight="bold" size="lg">
             Bio
           </Text>
-          <Input
-            type="outline"
-            placeholder="Describe yourself..."
-            value={bio ?? ""}
-            onChangeText={(text) => setBio(text)}
-            multiline={true}
-            style={{ height: 100 }}
-            textAlignVertical="top"
+          <Controller
+            control={control}
+            name="bio"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                type="outline"
+                placeholder="Optional biography"
+                value={value}
+                onChangeText={onChange}
+                multiline={true}
+                style={{ height: 100 }}
+                textAlignVertical="top"
+              />
+            )}
           />
         </View>
 
         <Button
           style={{ alignSelf: "flex-end", minWidth: 120 }}
           disabled={isPending}
-          onPress={() => mutate()}
+          onPress={handleSubmit(onSubmit)}
         >
           {isPending ? "Saving" : "Save"}
         </Button>
@@ -171,28 +205,7 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  formContainer: {
-    gap: 12,
-  },
-  inputLabel: {
-    marginBottom: 4,
-  },
-  input: {
-    width: "100%",
-  },
-  separatorContainer: {
-    justifyContent: "center",
-  },
-  separatorText: {
-    textAlign: "center",
-    alignSelf: "center",
-    paddingHorizontal: 12,
-  },
-  bottomText: {
-    textAlign: "center",
-    position: "absolute",
-    bottom: 16,
-    left: 0,
-    right: 0,
+  inputEntry: {
+    gap: 4,
   },
 });

@@ -4,6 +4,7 @@ import React from "react";
 import { getUserData, UserData } from "@/server/lib/user";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
+import { ProfileHeader } from "@/components/headers/Headers";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -12,10 +13,9 @@ import {
   exampleJobPosts,
   exampleServicePosts,
 } from "@/server/utils/example_data";
-import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
+import ProfileCard from "@/components/profile/ProfileCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
-import { ProfileSelfHeader } from "@/components/headers/Headers";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -38,9 +38,9 @@ export default function ProfileMainScreen() {
 
   return (
     <>
-      <ProfileSelfHeader username={data?.username ?? ""} />
+      <ProfileHeader username={data?.username ?? ""} />
       <ScrollView color="background">
-        <ProfileSelfCard data={data as UserData} />
+        <ProfileCard data={data as UserData} />
         <View style={styles.contentContainer}>
           <ProfileSection title="Job posts" posts={[exampleJobPosts[0]]} />
           <ProfileSection title="Services" posts={[exampleServicePosts[0]]} />

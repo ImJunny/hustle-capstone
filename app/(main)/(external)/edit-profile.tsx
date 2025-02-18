@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
@@ -15,9 +16,15 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "@/components/ui/Icon";
-import Amplify from "aws-amplify";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
-Amplify.configure({});
+const s3 = new S3Client({
+  credentials: {
+    accessKeyId: process.env.EXPO_PUBLIC_AWS_ACCESS_KEY as string,
+    secretAccessKey: process.env.EXPO_PUBLIC_AWS_SECRET_ACCESS_KEY as string,
+  },
+  region: process.env.EXPO_PUBLIC_AWS_REGION as string,
+});
 // form schema for input validation
 const schema = z.object({
   username: z.string().min(1, "Username cannot be empty."),
@@ -110,21 +117,20 @@ export default function EditProfileScreen() {
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
       const file = await fetch(result.assets[0].uri);
-      const fileBlob = file.blob();
+      const fileBlob = await file.blob();
       const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.EXPO_PUBLIC_AWS_BUCKET_NAME,
         Key: result.assets[0].fileName,
         Body: fileBlob,
         ContentType: result.assets[0].type,
       };
-      // const command = new PutObjectCommand(params);
-      // try {
-      //   await s3.send(command);
-      //   console.log("uploaded");
-      // } catch (error) {
-      //   console.log(error);
-      // }
-      // console.log(result);
+      try {
+        const command = new PutObjectCommand(params); // Create the PutObjectCommand
+        console.log("Image uploaded successfully:");
+        await s3.send(command);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   }
 

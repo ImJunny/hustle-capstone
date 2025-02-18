@@ -2,7 +2,7 @@ import React from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import Input from "../ui/Input";
 import View, { ViewProps } from "../ui/View";
 import { Pressable, TouchableOpacity } from "react-native";
@@ -186,6 +186,7 @@ export function ExploreHeader() {
           <Input
             placeholder="Search users, services, jobs..."
             style={{ width: "100%" }}
+            onFocus={() => {}}
           />
         ),
       }}
@@ -302,6 +303,7 @@ export function SettingsHeader() {
     />
   );
 }
+
 export function CreatePostHeader() {
   return (
     <HeaderWrapper
@@ -315,6 +317,27 @@ export function CreatePostHeader() {
             />
             <Text size="xl" weight="semibold">
               Create a post
+            </Text>
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
+export function ReviewHeader({ username }: { username: string }) {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Text weight="semibold" size="xl">
+              Reviews for @{username}
             </Text>
           </View>
         ),

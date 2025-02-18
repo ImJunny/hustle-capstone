@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Dimensions,
-  StatusBar,
-  Platform,
-  Pressable,
-} from "react-native";
+import { StyleSheet, Dimensions, Pressable } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";

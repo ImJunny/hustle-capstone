@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router } from "expo-router";
 import Input from "../ui/Input";
 import View from "../ui/View";
-import { TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 
 interface IndexHeaderProps {
-  onShowWork: () => void;
-  onShowHire: () => void;
-  showFeed: boolean;
+  index: number;
+  setIndex: (index: number) => void;
 }
 
 export function ExampleHeader() {
@@ -40,11 +39,7 @@ export function ExampleHeader() {
   );
 }
 
-export function IndexHeader({
-  onShowWork,
-  onShowHire,
-  showFeed,
-}: IndexHeaderProps) {
+export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
   return (
     <HeaderWrapper
       options={{
@@ -62,46 +57,26 @@ export function IndexHeader({
         center: (
           <View style={{ flexDirection: "row", gap: 10 }}>
             <View>
-              <TouchableOpacity onPress={onShowWork}>
-                <Text
-                  weight="bold"
-                  size="xl"
-                  color="muted-dark"
-                  style={
-                    showFeed
-                      ? {
-                          fontFamily: "Inter-bold",
-                          borderBottomColor: "white",
-                          borderBottomWidth: 5,
-                          color: "white",
-                        }
-                      : { fontFamily: "Inter-bold" }
-                  }
-                >
-                  Work
-                </Text>
-              </TouchableOpacity>
+              <Text
+                weight="bold"
+                size="xl"
+                color="muted-dark"
+                style={[styles.tabText, index === 0 && styles.activeTabText]}
+                onPress={() => setIndex(0)}
+              >
+                Work
+              </Text>
             </View>
             <View>
-              <TouchableOpacity onPress={onShowHire}>
-                <Text
-                  weight="bold"
-                  size="xl"
-                  color="muted-dark"
-                  style={
-                    !showFeed
-                      ? {
-                          fontFamily: "Inter-bold",
-                          borderBottomColor: "white",
-                          borderBottomWidth: 5,
-                          color: "white",
-                        }
-                      : { fontFamily: "Inter-bold" }
-                  }
-                >
-                  Hire
-                </Text>
-              </TouchableOpacity>
+              <Text
+                weight="bold"
+                size="xl"
+                color="muted-dark"
+                style={[styles.tabText, index === 1 && styles.activeTabText]}
+                onPress={() => setIndex(1)}
+              >
+                Hire
+              </Text>
             </View>
           </View>
         ),
@@ -346,3 +321,15 @@ export function SettingsHeader() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  tabText: {
+    fontFamily: "Inter-bold",
+  },
+  activeTabText: {
+    fontFamily: "Inter-bold",
+    borderBottomColor: "white",
+    borderBottomWidth: 5,
+    color: "white",
+  },
+});

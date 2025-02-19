@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import View from "@/components/ui/View";
 import { Image } from "expo-image";
 import { Dispatch, SetStateAction } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
@@ -82,21 +82,25 @@ export default function ImageEditor({
   }
 
   return (
-    <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
-      <Image
-        source={
-          imageUri
-            ? {
-                uri: imageUri,
-              }
-            : require("@/assets/images/default-avatar-icon.jpg")
-        }
-        style={styles.image}
-      />
-      <View style={styles.cameraIconCircle} color="background-variant">
-        <Icon name="camera-outline" size="lg" />
-      </View>
-    </TouchableOpacity>
+    <View style={{}}>
+      <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
+        <Image
+          source={
+            imageUri
+              ? {
+                  uri: imageUri,
+                }
+              : require("@/assets/images/default-avatar-icon.jpg")
+          }
+          style={styles.image}
+        />
+      </TouchableOpacity>
+      <Pressable onPress={pickImage}>
+        <View style={styles.cameraIconCircle} color="background-variant">
+          <Icon name="camera-outline" size="lg" />
+        </View>
+      </Pressable>
+    </View>
   );
 }
 

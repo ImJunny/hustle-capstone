@@ -45,12 +45,7 @@ export default function SaveButton({
           bio ?? ""
         );
       }
-      if (isNewImage) {
-        console.log("uploading new image");
-        await updateUserImage(data!.uuid, imageUri);
-      } else {
-        console.log("did not upload");
-      }
+      if (isNewImage) await updateUserImage(data!.uuid, imageUri);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userDataQuery"] });

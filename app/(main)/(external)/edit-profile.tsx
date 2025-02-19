@@ -39,10 +39,10 @@ export default function EditProfileScreen() {
   const [formReady, setformReady] = useState(false);
   useEffect(() => {
     if (data) {
-      setValue("username", data.username ?? "");
-      setValue("firstname", data.first_name ?? "");
-      setValue("lastname", data.last_name ?? "");
-      setValue("bio", data.bio ?? "");
+      setValue("username", data.username!);
+      setValue("firstname", data.first_name!);
+      setValue("lastname", data.last_name!);
+      setValue("bio", data.bio!);
       setImageUri(
         data.avatar_url
           ? `${data?.avatar_url}?t=${new Date().getTime()}`

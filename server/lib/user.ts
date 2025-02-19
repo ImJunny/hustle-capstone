@@ -97,7 +97,7 @@ export async function updateUserImage(
       .from("users")
       .upsert({
         uuid,
-        avatar_url: image_uri,
+        avatar_url: `${process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL}/${uuid}`,
       })
       .eq("uuid", uuid);
     if (error) throw error;
@@ -110,8 +110,7 @@ export async function updateUserProfile(
   username: string,
   first_name: string,
   last_name: string,
-  bio: string,
-  image_uri?: string | null
+  bio: string
 ) {
   const { data, error } = await supabase
     .from("users")
@@ -121,7 +120,6 @@ export async function updateUserProfile(
       first_name,
       last_name,
       bio,
-      image_uri,
     })
     .eq("uuid", uuid);
 

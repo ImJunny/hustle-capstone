@@ -97,7 +97,9 @@ export async function updateUserImage(
       .from("users")
       .upsert({
         uuid,
-        avatar_url: `${process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL}/${uuid}`,
+        avatar_url: `${
+          process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+        }/${uuid}?=${new Date().getTime()}`,
       })
       .eq("uuid", uuid);
     if (error) throw error;

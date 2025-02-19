@@ -16,7 +16,7 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
             source={
               data.avatar_url
                 ? {
-                    uri: `${data.avatar_url}?=${new Date().getTime()}`,
+                    uri: data.avatar_url,
                   }
                 : require("@/assets/images/default-avatar-icon.jpg")
             }

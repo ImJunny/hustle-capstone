@@ -88,7 +88,7 @@ export default function ImageEditor({
           source={
             imageUri
               ? {
-                  uri: imageUri,
+                  uri: `${imageUri}?=${new Date().getTime()}`,
                 }
               : require("@/assets/images/default-avatar-icon.jpg")
           }

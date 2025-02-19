@@ -11,7 +11,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import {
   exampleJobPosts,
   exampleServicePosts,
-} from "@/server/utils/example_data";
+} from "@/server/utils/example-data";
 import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";

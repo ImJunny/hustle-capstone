@@ -1,5 +1,5 @@
 import React from "react";
-import { exampleJobPosts } from "@/server/utils/example_data";
+import { exampleJobPosts } from "@/server/utils/example-data";
 import Post from "@/components/posts/Post";
 import ScrollView from "@/components/ui/ScrollView";
 import ExploreMiniHeader from "@/components/explore/ExploreMiniHeader";

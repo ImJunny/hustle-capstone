@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import "react-native-get-random-values";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
@@ -6,95 +6,54 @@ import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserData, updateUserProfile } from "@/server/lib/user";
-import Toast from "react-native-toast-message";
+import { useQuery } from "@tanstack/react-query";
+import { getUserData } from "@/server/lib/user";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-// form schema for input validation
-const schema = z.object({
-  username: z.string().min(1, "Username cannot be empty."),
-  firstname: z.string().min(1, "First name cannot be empty."),
-  lastname: z.string().min(1, "Last name cannot be empty."),
-  bio: z.string().optional(),
-});
-type FormData = z.infer<typeof schema>;
+import SaveButton from "@/components/settings/edit-profile/SaveButton";
+import { EditProfileSchema } from "@/zod/schemas";
+import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
 
 export default function EditProfileScreen() {
-  // declare form properties
+  // Declare form properties
   const {
     control,
-    handleSubmit,
     formState: { errors },
     setValue,
     getValues,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    handleSubmit,
+  } = useForm<z.infer<typeof EditProfileSchema>>({
+    resolver: zodResolver(EditProfileSchema),
   });
 
-  // fetch initial user data
-  const queryClient = useQueryClient();
+  // Fetch initial user data
   const { user } = useAuthData();
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userDataQuery"],
     queryFn: () => getUserData(user?.id!),
   });
 
-  // update form with fetched data
+  // Update form with fetched data
   const [formReady, setformReady] = useState(false);
   useEffect(() => {
     if (data) {
-      setValue("username", data.username ?? "");
-      setValue("firstname", data.first_name ?? "");
-      setValue("lastname", data.last_name ?? "");
-      setValue("bio", data.bio ?? "");
+      setValue("username", data.username!);
+      setValue("firstname", data.first_name!);
+      setValue("lastname", data.last_name!);
+      setValue("bio", data.bio! ?? "");
+      setImageUri(data.avatar_url ?? undefined);
       setformReady(true);
     }
   }, [data, setValue]);
 
-  // mutation to update user data when form submits
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["userDataMutate"],
-    mutationFn: async () => {
-      const formData = getValues();
-      if (
-        data?.username !== formData.username ||
-        data?.first_name !== formData.firstname ||
-        data?.last_name !== formData.lastname ||
-        data?.bio !== formData.bio
-      )
-        await updateUserProfile(
-          user?.id!,
-          formData.username,
-          formData.firstname,
-          formData.lastname,
-          formData.bio ?? ""
-        );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userDataQuery"] });
-      Toast.show({
-        text1: "Profile saved",
-        swipeable: false,
-      });
-    },
-    onError: () => {
-      Toast.show({
-        text1: "Error in saving profile",
-        type: "error",
-        swipeable: false,
-      });
-    },
-  });
+  // State to display current image on page
+  const [imageUri, setImageUri] = useState<string | undefined>(undefined);
+  // State to determines whether image should be updated
+  const [isNewImage, setIsNewImage] = useState<boolean>(false);
 
-  function onSubmit() {
-    mutate();
-  }
-
-  if (isLoading || !formReady) {
+  if (!formReady) {
     return <LoadingScreen backHeader />;
   }
 
@@ -102,6 +61,15 @@ export default function EditProfileScreen() {
     <>
       <BackHeader />
       <View style={styles.container} color="background">
+        <View style={{ alignItems: "center" }}>
+          <ImageEditor
+            avatarUrl={data?.avatar_url ?? null}
+            imageUri={imageUri}
+            setImageUri={setImageUri}
+            setIsNewImage={setIsNewImage}
+          />
+        </View>
+
         <View style={styles.inputEntry}>
           <Text weight="bold" size="lg">
             Username
@@ -187,13 +155,13 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        <Button
-          style={{ alignSelf: "flex-end", minWidth: 120 }}
-          disabled={isPending}
-          onPress={handleSubmit(onSubmit)}
-        >
-          {isPending ? "Saving" : "Save"}
-        </Button>
+        <SaveButton
+          data={data}
+          getValues={getValues}
+          handleSubmit={handleSubmit}
+          imageUri={imageUri}
+          isNewImage={isNewImage}
+        />
       </View>
     </>
   );

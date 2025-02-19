@@ -13,7 +13,7 @@ import IconButton from "@/components/ui/IconButton";
 import {
   exampleJobPosts,
   exampleServicePosts,
-} from "@/server/utils/example_data";
+} from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function PostScreen() {

@@ -2,7 +2,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { TPost } from "@/server/utils/example_data";
+import { TPost } from "@/server/utils/example-data";
 import Post from "../posts/Post";
 
 export default function ProfileSection({

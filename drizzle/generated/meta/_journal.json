@@ -50,6 +50,13 @@
       "when": 1739656934635,
       "tag": "0006_ambitious_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1739885927693,
+      "tag": "0007_blue_leo",
+      "breakpoints": true
     }
   ]
 }

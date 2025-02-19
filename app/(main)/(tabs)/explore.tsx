@@ -9,7 +9,7 @@ import {
   categories,
   exampleJobPosts,
   exampleServicePosts,
-} from "@/server/utils/example_data";
+} from "@/server/utils/example-data";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";

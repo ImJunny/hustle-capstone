@@ -1,11 +1,4 @@
-import {
-  integer,
-  pgSchema,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { pgSchema, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const app_schema = pgSchema("app");
 
@@ -17,4 +10,5 @@ export const users = app_schema.table("users", {
   last_name: text("last_name"),
   created_at: timestamp("created_at"),
   bio: text("bio"),
+  avatar_url: text("avatar_url"),
 });

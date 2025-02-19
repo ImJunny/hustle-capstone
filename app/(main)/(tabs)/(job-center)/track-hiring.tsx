@@ -1,7 +1,7 @@
 import { SimpleHeader } from "@/components/headers/Headers";
 import TrackHirePost from "@/components/posts/TrackHirePost";
 import ScrollView from "@/components/ui/ScrollView";
-import { exampleJobPosts } from "@/server/utils/example_data";
+import { exampleJobPosts } from "@/server/utils/example-data";
 
 export default function TrackHiringScreen() {
   const samplePosts = exampleJobPosts;

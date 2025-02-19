@@ -19,7 +19,6 @@ export default function ProfileCard({ data }: { data: UserData }) {
               height={96}
               style={{ borderRadius: 999 }}
             />
-            <Icon name="checkmark-circle" size="xl" style={styles.checkmark} />
           </View>
 
           <View style={styles.topInnerRight}>
@@ -79,10 +78,5 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
     width: "100%",
-  },
-  checkmark: {
-    position: "absolute",
-    right: 2,
-    bottom: 2,
   },
 });

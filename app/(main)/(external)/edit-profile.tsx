@@ -42,12 +42,8 @@ export default function EditProfileScreen() {
       setValue("username", data.username!);
       setValue("firstname", data.first_name!);
       setValue("lastname", data.last_name!);
-      setValue("bio", data.bio!);
-      setImageUri(
-        data.avatar_url
-          ? `${data?.avatar_url}?t=${new Date().getTime()}`
-          : undefined
-      );
+      setValue("bio", data.bio! ?? "");
+      setImageUri(data.avatar_url ?? undefined);
       setformReady(true);
     }
   }, [data, setValue]);

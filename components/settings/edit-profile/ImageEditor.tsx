@@ -32,11 +32,10 @@ export default function ImageEditor({
     if (!result.canceled) {
       let compressedImageUri = await compressImage(result.assets[0].uri);
       setImageUri(compressedImageUri);
-      let oldHash = await getImageHashes(avatarUrl!);
+      let oldHash;
+      if (avatarUrl) oldHash = await getImageHashes(avatarUrl!);
       let newHash = await getImageHashes(compressedImageUri);
       if (oldHash !== newHash) setIsNewImage(true);
-      console.log(oldHash);
-      console.log(newHash);
     }
   }
 

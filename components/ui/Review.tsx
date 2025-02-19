@@ -4,7 +4,7 @@ import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
 import Icon from "@/components/ui/Icon";
-import { exampleReview } from "@/server/utils/example_data";
+import { exampleReview } from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";

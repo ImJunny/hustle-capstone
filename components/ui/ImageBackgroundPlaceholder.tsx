@@ -2,6 +2,8 @@ import { ImageBackground, ImageBackgroundProps } from "react-native";
 import View from "./View";
 
 type ImageBackgroundPlaceholderProps = {
+  width?: number;
+  height?: number;
   dark?: boolean;
 } & ImageBackgroundProps;
 

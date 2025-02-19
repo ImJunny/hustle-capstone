@@ -4,8 +4,8 @@ import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { UserData } from "@/server/lib/user";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { router } from "expo-router";
+import { Image } from "expo-image";
 
 export default function ProfileSelfCard({ data }: { data: UserData }) {
   const hasBio = data.bio!.length > 0;
@@ -15,10 +15,15 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
       <View style={styles.profileCard} color="background">
         <View style={styles.top}>
           <View>
-            <ImagePlaceholder
-              width={96}
-              height={96}
-              style={{ borderRadius: 999 }}
+            <Image
+              source={
+                data.avatar_url
+                  ? {
+                      uri: `${data?.avatar_url}?t=${new Date().getTime()}`,
+                    }
+                  : require("@/assets/images/default-avatar-icon.jpg")
+              }
+              style={{ borderRadius: 999, width: 96, height: 96 }}
             />
             <Icon name="checkmark-circle" size="xl" style={styles.checkmark} />
           </View>

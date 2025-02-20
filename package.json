@@ -11,7 +11,7 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "generate": "drizzle-kit generate",
-    "migrate": "tsx drizzle/migrate.ts"
+    "migrate": "tsx app/api/migrate+api.ts"
   },
   "jest": {
     "preset": "jest-expo"
@@ -34,6 +34,7 @@
     "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^5.66.0",
     "aws-sdk": "^2.1692.0",
+    "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
     "expo": "~52.0.28",
     "expo-asset": "~11.0.3",

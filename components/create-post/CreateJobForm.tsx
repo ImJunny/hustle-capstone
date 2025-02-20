@@ -28,8 +28,8 @@ export default function CreateJobForm() {
     resolver: zodResolver(CreateJobSchema),
   });
 
+  const minRate = watch("min_rate");
   const locationType = watch("location_type");
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
   return (
     <View style={{ gap: 60 }}>
       <View>
@@ -103,11 +103,13 @@ export default function CreateJobForm() {
                     value !== undefined && value !== null ? String(value) : ""
                   }
                   onChangeText={(text) => {
-                    if (/^\d*\.?\d{0,2}$/.test(text)) {
-                      onChange(text === "" ? "" : parseFloat(text));
+                    if (text === "") {
+                      onChange(undefined);
+                    } else if (/^\d*$/.test(text)) {
+                      onChange(parseInt(text, 10));
                     }
                   }}
-                  keyboardType="decimal-pad"
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -128,11 +130,13 @@ export default function CreateJobForm() {
                     value !== undefined && value !== null ? String(value) : ""
                   }
                   onChangeText={(text) => {
-                    if (/^\d*\.?\d{0,2}$/.test(text)) {
-                      onChange(text === "" ? "" : parseFloat(text));
+                    if (text === "") {
+                      onChange(undefined);
+                    } else if (/^\d*$/.test(text)) {
+                      onChange(parseInt(text, 10));
                     }
                   }}
-                  keyboardType="decimal-pad"
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -197,21 +201,17 @@ export default function CreateJobForm() {
         </View>
       )}
 
-      <DateTimePickerModal
-        mode="date"
-        isVisible={datePickerVisible}
-        onConfirm={(date) => console.log(date)}
-        onCancel={() => setDatePickerVisible(false)}
-      />
       <View>
         <Text weight="semibold" size="lg">
           Due date
         </Text>
-        <DateInput />
-        <Text color="muted" size="sm" style={{ marginTop: 10 }}>
-          This indicates the date range for when the job can be completed. You
-          cannot make the due date earlier after a worker is approved.
-        </Text>
+        <DateInput setValue={setValue} />
+        <BottomMessage
+          field="due_date"
+          defaultMessage="This indicates the end-of-day deadline for the job. You cannot make
+          the due date earlier after a worker is approved."
+          hasError
+        />
       </View>
 
       <View>
@@ -220,8 +220,8 @@ export default function CreateJobForm() {
         </Text>
         <AddImage />
         <Text color="muted" size="sm">
-          Add up to 8 photos in JPEG or PNG format. If you do not provide any
-          images, a placeholder gradient will be displayed.
+          Add up to 6 photos. If you do not provide any images, a placeholder
+          gradient will be displayed.
         </Text>
       </View>
 
@@ -231,7 +231,7 @@ export default function CreateJobForm() {
         </Text>
         <Input type="outline" style={styles.text_form} />
         <Text color="muted" size="sm" style={{ marginTop: 10 }}>
-          This helps describe the job and narrows down search results.
+          Add up to 3 tags. This helps others find your post.
         </Text>
       </View>
 

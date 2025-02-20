@@ -3,17 +3,27 @@ import Input from "@/components/ui/Input";
 import View from "@/components/ui/View";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "../ui/Icon";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { UseFormSetValue } from "react-hook-form";
+import { CreateJobSchema } from "@/zod/zod-schemas";
+import { z } from "zod";
 
-export default function DateInput() {
-  const today = new Date().toLocaleDateString();
-  const [date, setDate] = useState<string>("");
+type DateInputProps = {
+  setValue: UseFormSetValue<z.infer<typeof CreateJobSchema>>;
+};
+export default function DateInput({ setValue }: DateInputProps) {
+  const [date, setDate] = useState<string>();
   const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
 
   const handleConfirm = (selectedDate: Date) => {
     const currentDate = selectedDate || new Date();
-    setDate(currentDate.toLocaleDateString());
+    const formattedDate = currentDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    setDate(formattedDate);
+    setValue("due_date", currentDate);
     setDatePickerVisible(false);
   };
 
@@ -37,6 +47,7 @@ export default function DateInput() {
         mode="date"
         onConfirm={handleConfirm}
         onCancel={() => setDatePickerVisible(false)}
+        minimumDate={new Date()}
       />
     </View>
   );

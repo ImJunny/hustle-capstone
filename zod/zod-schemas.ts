@@ -18,11 +18,16 @@ export const CreateJobSchema = z
     max_rate: z.number().optional(),
     location_type: z.enum(["local", "remote"]),
     location_address: z.string().optional(),
-    // due_date: z.date(),
-    // tags: z.array(z.enum(tagTypes)),
+    due_date: z.date().refine((data) => !isNaN(data.getTime()), {
+      message: "Due date is required.",
+    }),
+    tags: z.array(z.enum(tagTypes)).optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.max_rate && data.min_rate > data.max_rate) {
+    if (
+      (data.max_rate && data.min_rate >= data.max_rate) ||
+      data.max_rate === 0
+    ) {
       ctx.addIssue({
         code: "custom",
         path: ["min_rate"],

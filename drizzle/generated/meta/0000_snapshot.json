@@ -1,5 +1,5 @@
 {
-  "id": "d6fab305-199d-40cd-850c-e1c97b3bf1cb",
+  "id": "6c3dfc8c-e9a7-482b-b262-89d9e1b75fc7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -13,6 +13,12 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true
+        },
+        "worker_uuid": {
+          "name": "worker_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "job_post_uuid": {
           "name": "job_post_uuid",
@@ -29,6 +35,20 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "initiated_jobs_worker_uuid_users_uuid_fk": {
+          "name": "initiated_jobs_worker_uuid_users_uuid_fk",
+          "tableFrom": "initiated_jobs",
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "worker_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "initiated_jobs_job_post_uuid_job_posts_uuid_fk": {
           "name": "initiated_jobs_job_post_uuid_job_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
@@ -86,37 +106,37 @@
           "name": "user_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "min_rate": {
           "name": "min_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "max_rate": {
           "name": "max_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "location_type": {
           "name": "location_type",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "location_address": {
           "name": "location_address",
@@ -128,7 +148,7 @@
           "name": "due_date",
           "type": "date",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "status_type_id": {
           "name": "status_type_id",
@@ -210,7 +230,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -243,13 +263,19 @@
           "name": "tag_type_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "post_uuid": {
-          "name": "post_uuid",
+        "job_post_uuid": {
+          "name": "job_post_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "service_post_uuid": {
+          "name": "service_post_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -268,13 +294,27 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "post_tags_post_uuid_posts_uuid_fk": {
-          "name": "post_tags_post_uuid_posts_uuid_fk",
+        "post_tags_job_post_uuid_job_posts_uuid_fk": {
+          "name": "post_tags_job_post_uuid_job_posts_uuid_fk",
           "tableFrom": "post_tags",
-          "tableTo": "posts",
+          "tableTo": "job_posts",
           "schemaTo": "app",
           "columnsFrom": [
-            "post_uuid"
+            "job_post_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "post_tags_service_post_uuid_service_posts_uuid_fk": {
+          "name": "post_tags_service_post_uuid_service_posts_uuid_fk",
+          "tableFrom": "post_tags",
+          "tableTo": "service_posts",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "service_post_uuid"
           ],
           "columnsTo": [
             "uuid"
@@ -294,41 +334,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "app.posts": {
-      "name": "posts",
-      "schema": "app",
-      "columns": {
-        "uuid": {
-          "name": "uuid",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "typeEnum": {
-          "name": "typeEnum",
-          "type": "post_types",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
+      "checkConstraints": {
+        "only_one_post_reference": {
+          "name": "only_one_post_reference",
+          "value": "(job_post_uuid IS NOT NULL AND service_post_uuid IS NULL) OR \n        (job_post_uuid IS NULL AND service_post_uuid IS NOT NULL)"
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "posts_uuid_unique": {
-          "name": "posts_uuid_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "uuid"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "app.progress_types": {
@@ -345,7 +356,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -370,37 +381,37 @@
           "name": "user_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "min_rate": {
           "name": "min_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "max_rate": {
           "name": "max_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "location_type": {
           "name": "location_type",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -448,7 +459,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -473,7 +484,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -506,31 +517,31 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "username": {
           "name": "username",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "first_name": {
           "name": "first_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "last_name": {
           "name": "last_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "bio": {
           "name": "bio",
@@ -562,16 +573,7 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {
-    "public.post_types": {
-      "name": "post_types",
-      "schema": "public",
-      "values": [
-        "job",
-        "service"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {
     "app": "app"
   },

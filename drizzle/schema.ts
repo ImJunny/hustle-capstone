@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+  check,
   date,
   integer,
   numeric,
@@ -23,15 +25,6 @@ export const users = app_schema.table("users", {
   created_at: timestamp("created_at"),
   bio: text("bio"),
   avatar_url: text("avatar_url"),
-});
-
-export const postTypeEnum = pgEnum("post_types", ["job", "service"]);
-export const posts = app_schema.table("posts", {
-  uuid: uuid("uuid").primaryKey().unique(),
-  poster_uuid: uuid("poster_uuid").references(() => users.uuid, {
-    onDelete: "cascade",
-  }),
-  typeEnum: pgEnum("post_types", ["job", "service"])(),
 });
 
 export const job_posts = app_schema.table("job_posts", {
@@ -65,15 +58,29 @@ export const service_posts = app_schema.table("service_posts", {
   location_type: text("location_type"),
 });
 
-export const post_tags = app_schema.table("post_tags", {
-  uuid: uuid("uuid").primaryKey().unique(),
-  tag_type_id: integer("tag_type_id").references(() => tag_types.id, {
-    onDelete: "cascade",
-  }),
-  post_uuid: uuid("post_uuid").references(() => posts.uuid, {
-    onDelete: "cascade",
-  }),
-});
+export const post_tags = app_schema.table(
+  "post_tags",
+  {
+    uuid: uuid("uuid").primaryKey().unique(),
+    tag_type_id: integer("tag_type_id").references(() => tag_types.id, {
+      onDelete: "cascade",
+    }),
+    job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+      onDelete: "cascade",
+    }),
+    service_post_uuid: uuid("service_post_uuid").references(
+      () => service_posts.uuid,
+      { onDelete: "cascade" }
+    ),
+  },
+  () => [
+    check(
+      "only_one_post_reference",
+      sql`(job_post_uuid IS NOT NULL AND service_post_uuid IS NULL) OR 
+        (job_post_uuid IS NULL AND service_post_uuid IS NOT NULL)`
+    ),
+  ]
+);
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {
   uuid: uuid("uuid").primaryKey().unique(),

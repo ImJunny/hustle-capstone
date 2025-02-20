@@ -1,0 +1,26 @@
+ALTER TABLE "app"."job_posts" ALTER COLUMN "user_uuid" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "title" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "description" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "min_rate" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "max_rate" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "location_type" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."job_posts" ALTER COLUMN "due_date" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."location_types" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."post_tags" ALTER COLUMN "tag_type_id" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."post_tags" ALTER COLUMN "post_uuid" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."posts" ALTER COLUMN "poster_uuid" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."posts" ALTER COLUMN "typeEnum" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."progress_types" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "user_uuid" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "title" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "description" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "min_rate" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "max_rate" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."service_posts" ALTER COLUMN "location_type" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."status_types" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."tag_types" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."users" ALTER COLUMN "email" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."users" ALTER COLUMN "username" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."users" ALTER COLUMN "first_name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."users" ALTER COLUMN "last_name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."users" ALTER COLUMN "created_at" DROP NOT NULL;

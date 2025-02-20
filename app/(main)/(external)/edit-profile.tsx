@@ -13,7 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SaveButton from "@/components/settings/edit-profile/SaveButton";
-import { EditProfileSchema } from "@/zod/schemas";
+import { EditProfileSchema } from "@/zod/zod-schemas";
 import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
 
 export default function EditProfileScreen() {

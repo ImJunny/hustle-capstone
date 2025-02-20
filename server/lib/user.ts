@@ -1,7 +1,6 @@
 import { supabase } from "./supabase";
 import { Database } from "./types";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import * as ImageManipulator from "expo-image-manipulator";
 
 /*
   Supabase calls for user-related data. Always throw the destructured

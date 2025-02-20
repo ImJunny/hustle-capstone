@@ -4,7 +4,7 @@ import {
   updateUserProfile,
   UserData,
 } from "@/server/lib/user";
-import { EditProfileSchema } from "@/zod/schemas";
+import { EditProfileSchema } from "@/zod/zod-schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UseFormGetValues, UseFormHandleSubmit } from "react-hook-form";
 import Toast from "react-native-toast-message";

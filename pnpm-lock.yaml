@@ -24,8 +24,8 @@ dependencies:
     specifier: ^2.1.1
     version: 2.1.1(react-native@0.76.7)
   '@react-native-community/datetimepicker':
-    specifier: ^8.3.0
-    version: 8.3.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
+    specifier: ^8.2.0
+    version: 8.2.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
   '@react-native-google-signin/google-signin':
     specifier: ^13.1.0
     version: 13.1.0(expo@52.0.33)(react-dom@18.3.1)(react-native@0.76.7)(react@18.3.1)
@@ -160,7 +160,7 @@ dependencies:
     version: 8.1.0(react-native@0.76.7)(react@18.3.1)
   react-native-modal-datetime-picker:
     specifier: ^18.0.0
-    version: 18.0.0(@react-native-community/datetimepicker@8.3.0)(react-native@0.76.7)
+    version: 18.0.0(@react-native-community/datetimepicker@8.2.0)(react-native@0.76.7)
   react-native-reanimated:
     specifier: ~3.16.7
     version: 3.16.7(@babel/core@7.26.8)(react-native@0.76.7)(react@18.3.1)
@@ -3796,8 +3796,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@react-native-community/datetimepicker@8.3.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1):
-    resolution: {integrity: sha512-K/KgaJbLtjMpx4PaG4efrVIcSe6+DbLufeX1lwPB5YY8i3sq9dOh6WcAcMTLbaRTUpurebQTkl7puHPFm9GalA==}
+  /@react-native-community/datetimepicker@8.2.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1):
+    resolution: {integrity: sha512-qrUPhiBvKGuG9Y+vOqsc56RPFcHa1SU2qbAMT0hfGkoFIj3FodE0VuPVrEa8fgy7kcD5NQmkZIKgHOBLV0+hWg==}
     peerDependencies:
       expo: '>=50.0.0'
       react: '*'
@@ -9998,13 +9998,13 @@ packages:
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(@types/react@18.3.18)(react@18.3.1)
     dev: false
 
-  /react-native-modal-datetime-picker@18.0.0(@react-native-community/datetimepicker@8.3.0)(react-native@0.76.7):
+  /react-native-modal-datetime-picker@18.0.0(@react-native-community/datetimepicker@8.2.0)(react-native@0.76.7):
     resolution: {integrity: sha512-0jdvhhraZQlRACwr7pM6vmZ2kxgzJ4CpnmV6J3TVA6MrXMXK6Zo/upRBKkRp0+fTOiKuNblzesA2U59rYo6SGA==}
     peerDependencies:
       '@react-native-community/datetimepicker': '>=6.7.0'
       react-native: '>=0.65.0'
     dependencies:
-      '@react-native-community/datetimepicker': 8.3.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
+      '@react-native-community/datetimepicker': 8.2.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
       prop-types: 15.8.1
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8)(@types/react@18.3.18)(react@18.3.1)
     dev: false

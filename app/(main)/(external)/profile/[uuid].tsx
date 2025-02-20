@@ -17,7 +17,7 @@ import ProfileCard from "@/components/profile/ProfileCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 
-export default function ProfileMainScreen() {
+export default function ProfileScreen() {
   const { user } = useAuthData();
   const { data, error, isLoading } = useQuery({
     queryKey: ["userDataQuery", user],

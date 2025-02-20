@@ -8,7 +8,6 @@ export default function ChatScreen() {
   return (
     <View>
       <Text>A chat room</Text>
-      <Button onPress={() => router.push("/profile")}>Go to a profile</Button>
     </View>
   );
 }

@@ -1,0 +1,299 @@
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
+import Input from "../ui/Input";
+import Text from "../ui/Text";
+import View from "../ui/View";
+import Button from "../ui/Button";
+import IconButton from "../ui/IconButton";
+import DateInput from "./DateInput";
+import AddImage from "../ui/AddImages";
+import { Controller, useForm } from "react-hook-form";
+import { CreateJobSchema } from "@/zod/zod-schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import RadioButton from "../ui/RadioButton";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useState } from "react";
+
+export default function CreateJobForm() {
+  // Declare form properties
+  const {
+    control,
+    formState: { errors },
+    setValue,
+    getValues,
+    handleSubmit,
+    watch,
+  } = useForm<z.infer<typeof CreateJobSchema>>({
+    resolver: zodResolver(CreateJobSchema),
+  });
+
+  const locationType = watch("location_type");
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  return (
+    <View style={{ gap: 60 }}>
+      <View>
+        <Text weight="semibold" size="lg">
+          Title
+        </Text>
+        <Controller
+          control={control}
+          name="title"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              style={styles.text_form}
+              type="outline"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        <BottomMessage
+          field="title"
+          defaultMessage="Please provide a title of at least 10 characters."
+          hasError
+        />
+      </View>
+
+      <View>
+        <Text weight="semibold" size="lg">
+          Description
+        </Text>
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              style={styles.description_form}
+              type="outline"
+              value={value}
+              onChangeText={onChange}
+              multiline={true}
+              textAlignVertical="top"
+            />
+          )}
+        />
+        <BottomMessage
+          field="description"
+          defaultMessage="Description must be at least 40 characters."
+          hasError
+        />
+      </View>
+
+      <View>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+            alignItems: "center",
+          }}
+        >
+          <View>
+            <Text weight="semibold" size="lg">
+              Min rate ($)
+            </Text>
+            <Controller
+              control={control}
+              name="min_rate"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  style={styles.rate_form}
+                  type="outline"
+                  value={
+                    value !== undefined && value !== null ? String(value) : ""
+                  }
+                  onChangeText={(text) => {
+                    if (/^\d*\.?\d{0,2}$/.test(text)) {
+                      onChange(text === "" ? "" : parseFloat(text));
+                    }
+                  }}
+                  keyboardType="decimal-pad"
+                />
+              )}
+            />
+          </View>
+          <Text>-</Text>
+          <View>
+            <Text weight="semibold" size="lg">
+              Max rate ($)
+            </Text>
+            <Controller
+              control={control}
+              name="max_rate"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  style={styles.rate_form}
+                  type="outline"
+                  value={
+                    value !== undefined && value !== null ? String(value) : ""
+                  }
+                  onChangeText={(text) => {
+                    if (/^\d*\.?\d{0,2}$/.test(text)) {
+                      onChange(text === "" ? "" : parseFloat(text));
+                    }
+                  }}
+                  keyboardType="decimal-pad"
+                />
+              )}
+            />
+          </View>
+        </View>
+        <BottomMessage
+          field="min_rate"
+          defaultMessage="The rate cannot be changed after a worker has been approved."
+          hasError
+        />
+      </View>
+
+      <View>
+        <Text weight="semibold" size="lg">
+          Location type
+        </Text>
+        <Controller
+          name="location_type"
+          control={control}
+          defaultValue="remote"
+          render={({ field: { value, onChange } }) => (
+            <View style={{ marginTop: 10, flexDirection: "row", gap: 16 }}>
+              <RadioButton
+                label={"Remote"}
+                selected={value}
+                value="remote"
+                onPress={onChange}
+              />
+              <RadioButton
+                label={"Local"}
+                selected={value}
+                value="local"
+                onPress={onChange}
+              />
+            </View>
+          )}
+        />
+      </View>
+
+      {locationType === "local" && (
+        <View>
+          <Text weight="semibold" size="lg">
+            Location address
+          </Text>
+          <Controller
+            control={control}
+            name="location_address"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                style={styles.text_form}
+                type="outline"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          <BottomMessage
+            field="location_address"
+            defaultMessage="This address will be hidden to everyone except the approved worker."
+            hasError
+          />
+        </View>
+      )}
+
+      <DateTimePickerModal
+        mode="date"
+        isVisible={datePickerVisible}
+        onConfirm={(date) => console.log(date)}
+        onCancel={() => setDatePickerVisible(false)}
+      />
+      <View>
+        <Text weight="semibold" size="lg">
+          Due date
+        </Text>
+        <DateInput />
+        <Text color="muted" size="sm" style={{ marginTop: 10 }}>
+          This indicates the date range for when the job can be completed. You
+          cannot make the due date earlier after a worker is approved.
+        </Text>
+      </View>
+
+      <View>
+        <Text weight="semibold" size="lg">
+          Photos
+        </Text>
+        <AddImage />
+        <Text color="muted" size="sm">
+          Add up to 8 photos in JPEG or PNG format. If you do not provide any
+          images, a placeholder gradient will be displayed.
+        </Text>
+      </View>
+
+      <View>
+        <Text weight="semibold" size="lg">
+          Tags
+        </Text>
+        <Input type="outline" style={styles.text_form} />
+        <Text color="muted" size="sm" style={{ marginTop: 10 }}>
+          This helps describe the job and narrows down search results.
+        </Text>
+      </View>
+
+      <Button
+        style={{ marginLeft: "auto" }}
+        onPress={handleSubmit(() => {
+          console.log(getValues());
+        })}
+      >
+        Post job
+      </Button>
+    </View>
+  );
+
+  function BottomMessage({
+    field,
+    defaultMessage,
+    hasError,
+  }: {
+    field: keyof z.infer<typeof CreateJobSchema>;
+    defaultMessage: string;
+    hasError?: boolean;
+  }) {
+    if (hasError)
+      return (
+        <Text
+          color={errors[field] ? "red" : "muted"}
+          size="sm"
+          style={{ marginTop: 10 }}
+        >
+          {errors[field] ? errors[field].message : defaultMessage}
+        </Text>
+      );
+    return (
+      <Text color="muted" size="sm" style={{ marginTop: 10 }}>
+        {defaultMessage}
+      </Text>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  add_photo: {
+    width: 80,
+    height: 80,
+    backgroundColor: "grey",
+    alignItems: "center",
+  },
+  text_form: {
+    marginTop: 10,
+  },
+  description_form: {
+    marginTop: 10,
+    textAlignVertical: "auto",
+    height: 160,
+    flexWrap: "wrap",
+  },
+  rate_form: {
+    marginTop: 10,
+    width: 120,
+  },
+});

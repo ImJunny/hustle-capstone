@@ -2,53 +2,42 @@ import React, { useState } from "react";
 import Input from "@/components/ui/Input";
 import View from "@/components/ui/View";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import Icon from "./Icon";
+import Icon from "../ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
-// import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function DateInput() {
   const today = new Date().toLocaleDateString();
   const [date, setDate] = useState<string>("");
-  const [isDatePickerVisible, setDatePickerVisibility] =
-    useState<boolean>(false);
-  const [placeholder, setPlaceholder] = useState<string>(`${today}`);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
+  const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
 
   const handleConfirm = (selectedDate: Date) => {
     const currentDate = selectedDate || new Date();
     setDate(currentDate.toLocaleDateString());
-    hideDatePicker();
+    setDatePickerVisible(false);
   };
 
-  const themeColor = useThemeColor();
-  const borderColor = themeColor.foreground;
   return (
     <View style={styles.container}>
-      <View style={[styles.inputContainer, { borderColor }]}>
+      <TouchableOpacity
+        onPress={() => setDatePickerVisible(true)}
+        style={styles.inputContainer}
+      >
         <Input
-          placeholder={placeholder}
+          placeholder="Pick a date"
           value={date}
           style={styles.textInput}
           editable={false}
+          type="outline"
         />
-        <TouchableOpacity onPress={showDatePicker} style={styles.iconContainer}>
-          <Icon name="calendar" size="xl" color="white" />
-        </TouchableOpacity>
-      </View>
-      {/* <DateTimePickerModal
+        <Icon name="calendar" size="xl" color="white" style={styles.calendar} />
+      </TouchableOpacity>
+      <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      /> */}
+        onCancel={() => setDatePickerVisible(false)}
+      />
     </View>
   );
 }
@@ -65,13 +54,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 10,
     marginTop: 10,
-    width: 200,
+    width: 250,
   },
   textInput: {
     flex: 1,
-    backgroundColor: "transparent",
   },
-  iconContainer: {
-    padding: 5,
-  },
+  calendar: { position: "absolute", right: 6 },
 });

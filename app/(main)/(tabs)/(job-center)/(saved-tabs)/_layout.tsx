@@ -1,14 +1,6 @@
-import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
 import React from "react";
-import { router, Stack, withLayoutContext } from "expo-router";
-import { StyleSheet } from "react-native";
-import {
-  BackHeader,
-  EmptyHeader,
-  SearchedHeader,
-  SimpleHeader,
-} from "@/components/headers/Headers";
+import { withLayoutContext } from "expo-router";
+import { SimpleHeader } from "@/components/headers/Headers";
 
 import {
   createMaterialTopTabNavigator,
@@ -16,7 +8,6 @@ import {
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import Icon from "@/components/ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { FontSizes } from "@/constants/Sizes";
 

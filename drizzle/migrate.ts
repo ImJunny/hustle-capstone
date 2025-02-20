@@ -7,11 +7,12 @@ import {
   status_types,
   tag_types,
 } from "@/drizzle/schema";
-
-export const tagTypes = ["home", "tech", "art", "gaming", "other"];
-export const locationTypes = ["remote", "local"];
-export const statusTypes = ["open", "initiated", "complete"];
-export const progressTypes = ["accepted", "in progress", "complete"];
+import {
+  locationTypes,
+  progressTypes,
+  statusTypes,
+  tagTypes,
+} from "@/server/lib/db-types";
 
 type Tables = Extract<keyof Database["app"]["Tables"], `${string}_types`>;
 export async function insertTypes(table_name: Tables, type: string) {

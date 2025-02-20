@@ -1,1 +1,0 @@
-ALTER TABLE "app"."users" DROP COLUMN "count";

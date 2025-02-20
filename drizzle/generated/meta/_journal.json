@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1739330035770,
-      "tag": "0000_vengeful_skullbuster",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1739408712390,
-      "tag": "0001_colossal_zombie",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1739423783598,
-      "tag": "0002_new_black_crow",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1739424780381,
-      "tag": "0003_gigantic_revanche",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1739454795370,
-      "tag": "0004_right_nico_minoru",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1739656781305,
-      "tag": "0005_needy_toad_men",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1739656934635,
-      "tag": "0006_ambitious_puppet_master",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1739885927693,
-      "tag": "0007_blue_leo",
+      "when": 1740010151247,
+      "tag": "0000_real_bulldozer",
       "breakpoints": true
     }
   ]

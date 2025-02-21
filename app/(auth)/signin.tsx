@@ -6,9 +6,9 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, User } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -19,6 +19,7 @@ import Toast from "react-native-toast-message";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { trpc } from "@/server/lib/trpc-client";
 
 // form schema for input validation
 const schema = z.object({
@@ -42,6 +43,23 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordHidden, setPasswordHidden] = useState(true);
 
+  const [user, setUser] = useState<User | undefined>(undefined);
+
+  const { data } = trpc.user.get_user_data.useQuery(
+    { uuid: user?.id ?? "" },
+    { enabled: !!user }
+  );
+
+  useEffect(() => {
+    if (data?.username) {
+      router.replace("/(main)/(tabs)");
+      Toast.show({
+        text1: `Signed in as @${data?.username}`,
+        swipeable: false,
+      });
+    }
+  }, [data]);
+
   async function signInWithEmail() {
     if (isLoading) return;
 
@@ -59,13 +77,8 @@ export default function SignInScreen() {
       setIsLoading(false);
       return;
     }
-
     if (user) {
-      Toast.show({
-        text1: `Signed in as @test`,
-        swipeable: false,
-      });
-      router.replace("/(main)/(tabs)");
+      setUser(user);
     }
   }
 

@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
@@ -15,19 +15,13 @@ import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { trpc } from "@/server/lib/trpc-client";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
-  const { data, error, isLoading } = useQuery<UserData>({
-    queryKey: ["getUserData", user?.id], // Ensure proper caching
-    queryFn: async () =>
-      axios
-        .get("/user/getUserData", {
-          params: { uuid: user?.id }, // Pass uuid as query parameter
-        })
-        .then((res) => res.data), // Return only data
+  if (!user?.id) return;
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
+    uuid: user.id,
   });
 
   if (error) {

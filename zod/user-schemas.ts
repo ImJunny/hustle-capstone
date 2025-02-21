@@ -10,7 +10,6 @@ export const CreateUserSchema = z.object({
   username: z.string(),
   first_name: z.string(),
   last_name: z.string(),
-  created_at: z.string(),
 });
 
 export const UpdateUserProfileSchema = z.object({

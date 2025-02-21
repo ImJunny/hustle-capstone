@@ -5,7 +5,6 @@ import { uploadImage } from "./s3-actions";
 
 // Create user
 export async function createUser(
-  db: Database,
   uuid: string,
   email: string,
   username: string,
@@ -20,6 +19,7 @@ export async function createUser(
       first_name,
       last_name,
     });
+    return first_name;
   } catch (error) {
     console.log(error);
     throw new Error("Failed to create user.");
@@ -27,14 +27,12 @@ export async function createUser(
 }
 
 // Get user data
-export async function getUserData(db: Database, uuid: string) {
+export async function getUserData(uuid: string) {
   try {
-    const result = await db
-      .select()
-      .from(users)
-      .where(eq(users.uuid, uuid))
-      .limit(1);
-    return result[0];
+    const result = await db.query.users.findFirst({
+      where: eq(users.uuid, uuid),
+    });
+    return result;
   } catch (error) {
     console.log(error);
     throw new Error("Error fetching user data.");
@@ -51,6 +49,7 @@ export async function updateUserProfile(
   bio: string
 ) {
   try {
+    console.log(uuid);
     await db
       .update(users)
       .set({
@@ -60,6 +59,11 @@ export async function updateUserProfile(
         bio,
       })
       .where(eq(users.uuid, uuid));
+    const first = await db.query.users.findFirst({
+      columns: { first_name: true },
+      where: eq(users.uuid, uuid),
+    });
+    console.log(first_name, first);
   } catch (error) {
     throw new Error("Error updating profile.");
   }

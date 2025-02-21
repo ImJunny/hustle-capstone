@@ -1,9 +1,6 @@
 import Button from "@/components/ui/Button";
-import {
-  updateUserImage,
-  updateUserProfile,
-  UserData,
-} from "@/server/utils/user";
+import { UserData } from "@/server/actions/user-actions";
+import { trpc } from "@/server/lib/trpc-client";
 import { EditProfileSchema } from "@/zod/zod-schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UseFormGetValues, UseFormHandleSubmit } from "react-hook-form";
@@ -24,52 +21,54 @@ export default function SaveButton({
   imageUri,
   isNewImage,
 }: SaveButtonProps) {
-  const queryClient = useQueryClient();
+  const utils = trpc.useUtils();
 
-  // Mutation to update user data when form submits
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["userDataMutate"],
-    mutationFn: async () => {
-      const { username, firstname, lastname, bio } = getValues();
-      // Update input values to database only if they are different
-      if (
-        ![data?.username, data?.first_name, data?.last_name, data?.bio].every(
-          (value, i) => value == [username, firstname, lastname, bio][i]
-        )
-      ) {
-        await updateUserProfile(
-          data!.uuid,
-          username,
-          firstname,
-          lastname,
-          bio ?? ""
-        );
-      }
-      if (isNewImage) await updateUserImage(data!.uuid, imageUri);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userDataQuery"] });
+  const { mutate: updateProfile, isLoading } =
+    trpc.user.update_user_profile.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: "Profile saved",
+          swipeable: false,
+        });
+        utils.user.get_user_data.invalidate();
+      },
+      onError: () =>
+        Toast.show({
+          text1: "Error in saving profile",
+          type: "error",
+          swipeable: false,
+        }),
+    });
+
+  function submit() {
+    const { username, firstname, lastname, bio } = getValues();
+    if (
+      ![data?.username, data?.first_name, data?.last_name, data?.bio].every(
+        (value, i) => value == [username, firstname, lastname, bio][i]
+      )
+    ) {
+      updateProfile({
+        uuid: data!.uuid,
+        username,
+        first_name: firstname,
+        last_name: lastname,
+        bio: bio ?? "",
+      });
+    } else {
       Toast.show({
-        text1: "Profile saved",
+        text1: "No changes were made.",
         swipeable: false,
       });
-    },
-    onError: () => {
-      Toast.show({
-        text1: "Error in saving profile",
-        type: "error",
-        swipeable: false,
-      });
-    },
-  });
+    }
+  }
 
   return (
     <Button
       style={{ alignSelf: "flex-end", minWidth: 120 }}
-      disabled={isPending}
-      onPress={handleSubmit(() => mutate())}
+      disabled={isLoading}
+      onPress={handleSubmit(submit)}
     >
-      {isPending ? "Saving" : "Save"}
+      {isLoading ? "Saving" : "Save"}
     </Button>
   );
 }

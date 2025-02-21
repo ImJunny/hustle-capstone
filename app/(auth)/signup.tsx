@@ -5,9 +5,11 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { createUser } from "@/server/actions/user-actions";
 import { supabase } from "@/server/lib/supabase";
+import { trpc } from "@/server/lib/trpc-client";
 import { AuthError } from "@supabase/supabase-js";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -37,20 +39,9 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(true);
 
-  const { mutate: testRoute } = useMutation({
-    mutationKey: ["testRoute"],
-    mutationFn: async () => {
-      await axios.get("http://192.168.1.91/user/test", {
-        params: {
-          uuid: "duahwudhwa",
-          email,
-          first_name: firstName,
-          last_name: lastName,
-          username: username,
-          created_at: new Date(),
-        },
-      });
-    },
+  const createUserMutation = trpc.user.create_user.useMutation({
+    onSuccess: () => router.push("/(main)/(tabs)"),
+    onError: () => console.log("Error creating"),
   });
 
   // temporary sign up function; unsafe
@@ -71,19 +62,12 @@ export default function SignUpScreen() {
       if (error) throw error;
       if (session) {
         if (user) {
-          useQuery({
-            queryKey: ["createUser"],
-            queryFn: async () => {
-              await axios.post("/user/createUser", {
-                uuid: user.id,
-                email,
-                first_name: firstName,
-                last_name: lastName,
-                username: username,
-                created_at: user?.created_at,
-              });
-              router.replace("/(main)/(tabs)");
-            },
+          createUserMutation.mutate({
+            uuid: user.id,
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            username,
           });
         }
       }
@@ -99,10 +83,6 @@ export default function SignUpScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Button isFullWidth onPress={() => testRoute()} disabled={isLoading}>
-        Test
-      </Button>
-
       <View style={styles.container}>
         <Text
           size="4xl"

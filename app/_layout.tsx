@@ -18,6 +18,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient, trpc, trpcClient } from "@/server/lib/trpc-client";
+import superjson from "superjson";
+import { httpBatchLink } from "@trpc/client";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,27 +51,29 @@ export default function RootLayout() {
     return null;
   }
 
-  const queryClient = new QueryClient();
   /* 
     ThemeProvider sets theme colors of the app, but this is not the main
     colors used. The relevant colors can be found in the constants folder.
   */
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
-              <Stack.Screen name="(main)" />
-              <Stack.Screen name="(auth)" />
-            </Stack>
-            <Toast config={toastConfig} type="info" visibilityTime={2200} />
-          </SafeAreaView>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <SafeAreaView style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
+                <Stack.Screen name="(main)" />
+                <Stack.Screen name="(auth)" />
+              </Stack>
+              <Toast config={toastConfig} type="info" visibilityTime={2200} />
+            </SafeAreaView>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }

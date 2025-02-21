@@ -1,5 +1,5 @@
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { db } from "@/drizzle/db";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { db } from "./db";
 
 import {
   location_types,
@@ -7,11 +7,12 @@ import {
   status_types,
   tag_types,
 } from "@/drizzle/schema";
-
-export const tagTypes = ["home", "tech", "art", "gaming", "other"] as const;
-export const locationTypes = ["remote", "local"] as const;
-export const statusTypes = ["open", "initiated", "complete"] as const;
-export const progressTypes = ["accepted", "in progress", "complete"] as const;
+import {
+  locationTypes,
+  progressTypes,
+  statusTypes,
+  tagTypes,
+} from "./db-types";
 
 export async function insertTypes(table_name: any, type: string) {
   await db

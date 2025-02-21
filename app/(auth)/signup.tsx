@@ -1,14 +1,14 @@
 import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
-import SafeAreaView from "@/components/ui/SafeAreaView";
 import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser } from "@/server/utils/user";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
@@ -54,17 +54,21 @@ export default function SignUpScreen() {
 
       if (error) throw error;
       if (session) {
-        console.log("user registered as ", user?.id);
         if (user) {
-          await createUser(
-            user.id,
-            email,
-            username,
-            firstName,
-            lastName,
-            new Date(user.created_at).toISOString()
-          );
-          router.replace("/(main)/(tabs)");
+          useQuery({
+            queryKey: ["createUser"],
+            queryFn: async () => {
+              await axios.post("/user/createUser", {
+                uuid: user.id,
+                email,
+                first_name: firstName,
+                last_name: lastName,
+                username: username,
+                created_at: user?.created_at,
+              });
+              router.replace("/(main)/(tabs)");
+            },
+          });
         }
       }
     } catch (error) {
@@ -73,42 +77,6 @@ export default function SignUpScreen() {
       setIsLoading(false);
     }
   }
-
-  // async function signUpWithEmail() {
-  //   if (isLoading) return;
-
-  //   setIsLoading(true);
-  //   try {
-  //     const {
-  //       data: { session, user },
-  //       error,
-  //     } = await supabase.auth.signUp({
-  //       email,
-  //       password,
-  //       options: { emailRedirectTo: "com.hustle://auth/callback" },
-  //     });
-
-  //     if (error) throw error;
-  //     if (!session) {
-  //       Alert.alert("Please check your inbox for email verification.");
-  //       console.log("user registered as ", user?.id);
-  //       if (user) {
-  //         await createUser(
-  //           user.id,
-  //           email,
-  //           username,
-  //           firstName,
-  //           lastName,
-  //           new Date(user.created_at).toISOString()
-  //         );
-  //       }
-  //     }
-  //   } catch (error) {
-  //     Alert.alert("Error", (error as AuthError)?.message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
 
   return (
     <KeyboardAvoidingView

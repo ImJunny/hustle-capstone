@@ -10,7 +10,8 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "generate": "drizzle-kit generate",
-    "migrate": "tsx drizzle/migrate.ts"
+    "migrate": "tsx drizzle/migrate.ts",
+    "server": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --require tsconfig-paths/register server/lib/server.ts"
   },
   "jest": {
     "preset": "jest-expo"
@@ -22,7 +23,6 @@
     "@gorhom/bottom-sheet": "^5.1.1",
     "@hookform/resolvers": "^4.1.0",
     "@react-native-async-storage/async-storage": "^2.1.1",
-    "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-google-signin/google-signin": "^13.1.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/elements": "^2.2.5",
@@ -31,14 +31,13 @@
     "@react-navigation/stack": "^7.1.1",
     "@rneui/themed": "4.0.0-rc.8",
     "@supabase/supabase-js": "^2.48.1",
-    "@tanstack/react-query": "^5.66.0",
-    "@trpc/client": "^10.45.2",
-    "@trpc/react-query": "^10.45.2",
-    "@trpc/server": "^10.45.2",
+    "@tanstack/react-query": "^5.66.8",
+    "@types/pg": "^8.11.11",
     "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.3",
+    "drizzle-orm": "^0.33.0",
     "expo": "~52.0.28",
     "expo-asset": "~11.0.3",
     "expo-auth-session": "~6.0.3",
@@ -64,6 +63,7 @@
     "expo-updates": "^0.26.17",
     "expo-web-browser": "~14.0.2",
     "express": "^4.21.2",
+    "pg": "^8.13.3",
     "postgres": "^3.4.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -84,6 +84,8 @@
     "react-native-webview": "13.12.5",
     "supabase": "2.12.1",
     "superjson": "^2.2.2",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },

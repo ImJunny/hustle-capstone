@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import { Platform, useColorScheme } from "react-native";
 import * as SystemUI from "expo-system-ui";
@@ -17,8 +17,7 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
-import { trpcClient, queryClient, trpc } from "../server/lib/trpcClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -49,28 +48,27 @@ export default function RootLayout() {
     return null;
   }
 
+  const queryClient = new QueryClient();
   /* 
     ThemeProvider sets theme colors of the app, but this is not the main
     colors used. The relevant colors can be found in the constants folder.
   */
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <SafeAreaView style={{ flex: 1 }}>
-              <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
-                <Stack.Screen name="(main)" />
-                <Stack.Screen name="(auth)" />
-              </Stack>
-              <Toast config={toastConfig} type="info" visibilityTime={2200} />
-            </SafeAreaView>
-            <StatusBar style="auto" />
-          </ThemeProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
+              <Stack.Screen name="(main)" />
+              <Stack.Screen name="(auth)" />
+            </Stack>
+            <Toast config={toastConfig} type="info" visibilityTime={2200} />
+          </SafeAreaView>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

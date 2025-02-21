@@ -89,14 +89,14 @@ export const post_tags = app_schema.table(
       () => service_posts.uuid,
       { onDelete: "cascade" }
     ),
-  },
-  () => [
-    check(
-      "only_one_post_reference",
-      sql`(job_post_uuid IS NOT NULL AND service_post_uuid IS NULL) OR 
-        (job_post_uuid IS NULL AND service_post_uuid IS NOT NULL)`
-    ),
-  ]
+  }
+  // () => [
+  //   check(
+  //     "only_one_post_reference",
+  //     sql`(job_post_uuid IS NOT NULL AND service_post_uuid IS NULL) OR
+  //       (job_post_uuid IS NULL AND service_post_uuid IS NOT NULL)`
+  //   ),
+  // ]
 );
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {

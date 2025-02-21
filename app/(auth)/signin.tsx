@@ -1,13 +1,11 @@
 import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
-import SafeAreaView from "@/components/ui/SafeAreaView";
 import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
-import { getUserData } from "@/server/utils/user";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -63,9 +61,8 @@ export default function SignInScreen() {
     }
 
     if (user) {
-      const { username } = await getUserData(user?.id ?? "");
       Toast.show({
-        text1: `Signed in as @${username}`,
+        text1: `Signed in as @test`,
         swipeable: false,
       });
       router.replace("/(main)/(tabs)");

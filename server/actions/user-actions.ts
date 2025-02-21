@@ -1,26 +1,11 @@
-import { db } from "@/drizzle/db";
-import { users } from "@/drizzle/schema";
+import { Database, db } from "../../drizzle/db";
+import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 
-// Check if user exists
-export async function doesUserExist(uuid: string) {
-  try {
-    const result = await db.query.users.findFirst({
-      columns: {
-        uuid: true,
-      },
-      where: () => eq(users.uuid, uuid),
-    });
-    if (result) return true;
-    return false;
-  } catch (error) {
-    throw new Error("Error checking if user exists.");
-  }
-}
-
-// Create user if they don't exist
+// Create user
 export async function createUser(
+  db: Database,
   uuid: string,
   email: string,
   username: string,
@@ -28,8 +13,6 @@ export async function createUser(
   last_name: string
 ) {
   try {
-    const userExists = await doesUserExist(uuid);
-    if (userExists) throw new Error("User already exists.");
     await db.insert(users).values({
       uuid,
       email,
@@ -38,27 +21,22 @@ export async function createUser(
       last_name,
     });
   } catch (error) {
+    console.log(error);
     throw new Error("Failed to create user.");
   }
 }
 
 // Get user data
-export async function getUserData(uuid: string) {
+export async function getUserData(db: Database, uuid: string) {
   try {
-    const result = await db.query.users.findFirst({
-      columns: {
-        uuid: true,
-        username: true,
-        first_name: true,
-        last_name: true,
-        email: true,
-        bio: true,
-        avatar_url: true,
-      },
-      where: () => eq(users.uuid, uuid),
-    });
-    return result;
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.uuid, uuid))
+      .limit(1);
+    return result[0];
   } catch (error) {
+    console.log(error);
     throw new Error("Error fetching user data.");
   }
 }
@@ -88,7 +66,12 @@ export async function updateUserProfile(
 }
 
 // Update user avatar while uploading to s3; the image is the same name as the user's uuid
-export async function updateUserAvatar(uuid: string, image_uri: string) {
+export async function updateUserAvatar(
+  db: Database,
+  uuid: string,
+  image_uri: string
+) {
+  console.log("updating image");
   try {
     if (image_uri) {
       uploadImage(image_uri, uuid);

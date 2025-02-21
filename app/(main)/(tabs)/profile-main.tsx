@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
@@ -14,13 +14,38 @@ import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
-import { trpc } from "@/server/lib/trpcClient";
 import { UserData } from "@/server/actions/user-actions";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function ProfileMainScreen() {
+  const {
+    data: ad,
+    error: e,
+    isLoading: l,
+  } = useQuery({
+    queryKey: ["a"],
+    queryFn: async () => {
+      const response = await axios.get("http://192.168.1.91:3000/test", {
+        params: { b: "bro" },
+      });
+      return response.data; // Ensure we return only the response data
+    },
+  });
+
+  useEffect(() => {
+    // console.log({ ad, isLoading, error });
+  }, [ad, e, l]);
+
   const { user } = useAuthData();
-  const { data, error, isLoading } = trpc.user.getUserData.useQuery({
-    uuid: user!.id,
+  const { data, error, isLoading } = useQuery<UserData>({
+    queryKey: ["getUserData", user?.id], // Ensure proper caching
+    queryFn: async () =>
+      axios
+        .get("http://localhost:3000/user/getUserData", {
+          params: { uuid: user?.id }, // Pass uuid as query parameter
+        })
+        .then((res) => res.data), // Return only data
   });
 
   if (error) {

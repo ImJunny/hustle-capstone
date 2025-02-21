@@ -19,30 +19,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export default function ProfileMainScreen() {
-  const {
-    data: ad,
-    error: e,
-    isLoading: l,
-  } = useQuery({
-    queryKey: ["a"],
-    queryFn: async () => {
-      const response = await axios.get("http://192.168.1.91:3000/test", {
-        params: { b: "bro" },
-      });
-      return response.data; // Ensure we return only the response data
-    },
-  });
-
-  useEffect(() => {
-    // console.log({ ad, isLoading, error });
-  }, [ad, e, l]);
-
   const { user } = useAuthData();
   const { data, error, isLoading } = useQuery<UserData>({
     queryKey: ["getUserData", user?.id], // Ensure proper caching
     queryFn: async () =>
       axios
-        .get("http://localhost:3000/user/getUserData", {
+        .get("/user/getUserData", {
           params: { uuid: user?.id }, // Pass uuid as query parameter
         })
         .then((res) => res.data), // Return only data

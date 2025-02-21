@@ -7,7 +7,7 @@ import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -36,6 +36,22 @@ export default function SignUpScreen() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(true);
+
+  const { mutate: testRoute } = useMutation({
+    mutationKey: ["testRoute"],
+    mutationFn: async () => {
+      await axios.get("http://192.168.1.91/user/test", {
+        params: {
+          uuid: "duahwudhwa",
+          email,
+          first_name: firstName,
+          last_name: lastName,
+          username: username,
+          created_at: new Date(),
+        },
+      });
+    },
+  });
 
   // temporary sign up function; unsafe
   async function signUpWithEmail() {
@@ -83,6 +99,10 @@ export default function SignUpScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <Button isFullWidth onPress={() => testRoute()} disabled={isLoading}>
+        Test
+      </Button>
+
       <View style={styles.container}>
         <Text
           size="4xl"

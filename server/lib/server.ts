@@ -29,18 +29,19 @@ app.post("/user/updateProfile", async (req, res) => {
 
 app.post("/user/createUser", async (req, res) => {
   const { uuid, username, first_name, last_name, email } = req.body;
-  try {
-    await db.insert(users).values({
-      uuid,
-      email,
-      username: username.toLowerCase(),
-      first_name,
-      last_name,
-    });
-    res.status(200).json({ message: "Profile updated successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error updating profile" });
-  }
+  console.log(req.body);
+  // try {
+  //   await db.insert(users).values({
+  //     uuid,
+  //     email,
+  //     username: username.toLowerCase(),
+  //     first_name,
+  //     last_name,
+  //   });
+  //   res.status(200).json({ message: "Profile updated successfully" });
+  // } catch (error) {
+  //   res.status(500).json({ error: "Error updating profile" });
+  // }
 });
 
 app.get("/user/getUserData", async (req: Request, res: Response) => {

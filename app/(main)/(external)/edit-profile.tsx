@@ -7,7 +7,6 @@ import { StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
-import { getUserData } from "@/server/lib/user";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -15,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import SaveButton from "@/components/settings/edit-profile/SaveButton";
 import { EditProfileSchema } from "@/zod/zod-schemas";
 import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
+import { trpc, trpcClient } from "@/server/lib/trpcClient";
 
 export default function EditProfileScreen() {
   // Declare form properties
@@ -30,10 +30,7 @@ export default function EditProfileScreen() {
 
   // Fetch initial user data
   const { user } = useAuthData();
-  const { data } = useQuery({
-    queryKey: ["userDataQuery"],
-    queryFn: () => getUserData(user?.id!),
-  });
+  const { data } = trpc.user.getUserData.useQuery({ uuid: user!.id });
 
   // Update form with fetched data
   const [formReady, setformReady] = useState(false);

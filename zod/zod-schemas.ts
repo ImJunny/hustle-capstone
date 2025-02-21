@@ -1,4 +1,4 @@
-import { tagTypes } from "@/server/lib/db-types";
+import { tagTypes } from "@/drizzle/db-types";
 import { z } from "zod";
 
 export const EditProfileSchema = z.object({

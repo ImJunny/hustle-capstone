@@ -1,21 +1,19 @@
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { db } from "@/drizzle/db";
-import { Database } from "@/server/lib/types";
+
 import {
   location_types,
   progress_types,
   status_types,
   tag_types,
 } from "@/drizzle/schema";
-import {
-  locationTypes,
-  progressTypes,
-  statusTypes,
-  tagTypes,
-} from "@/server/lib/db-types";
 
-type Tables = Extract<keyof Database["app"]["Tables"], `${string}_types`>;
-export async function insertTypes(table_name: Tables, type: string) {
+export const tagTypes = ["home", "tech", "art", "gaming", "other"] as const;
+export const locationTypes = ["remote", "local"] as const;
+export const statusTypes = ["open", "initiated", "complete"] as const;
+export const progressTypes = ["accepted", "in progress", "complete"] as const;
+
+export async function insertTypes(table_name: any, type: string) {
   await db
     .insert(table_name as any)
     .values({ name: type })

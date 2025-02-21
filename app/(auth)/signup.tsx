@@ -6,7 +6,7 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser } from "@/server/lib/user";
+import { createUser } from "@/server/utils/user";
 import { supabase } from "@/server/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";

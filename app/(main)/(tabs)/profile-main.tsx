@@ -1,9 +1,7 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { getUserData, UserData } from "@/server/lib/user";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -16,12 +14,13 @@ import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
+import { trpc } from "@/server/lib/trpcClient";
+import { UserData } from "@/server/actions/user-actions";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["userDataQuery", user],
-    queryFn: () => getUserData(user?.id!),
+  const { data, error, isLoading } = trpc.user.getUserData.useQuery({
+    uuid: user!.id,
   });
 
   if (error) {

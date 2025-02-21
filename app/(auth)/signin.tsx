@@ -7,7 +7,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
-import { getUserData } from "@/server/lib/user";
+import { getUserData } from "@/server/utils/user";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
 import { useState } from "react";

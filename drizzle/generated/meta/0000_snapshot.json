@@ -1,5 +1,5 @@
 {
-  "id": "6c3dfc8c-e9a7-482b-b262-89d9e1b75fc7",
+  "id": "8f6d5386-1831-4bba-88bb-2119ecd3c2c4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -12,25 +12,33 @@
           "name": "uuid",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "worker_uuid": {
           "name": "worker_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "job_post_uuid": {
           "name": "job_post_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "progress_type_id": {
-          "name": "progress_type_id",
-          "type": "integer",
+        "progress_type": {
+          "name": "progress_type",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -63,16 +71,16 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "initiated_jobs_progress_type_id_progress_types_id_fk": {
-          "name": "initiated_jobs_progress_type_id_progress_types_id_fk",
+        "initiated_jobs_progress_type_progress_types_name_fk": {
+          "name": "initiated_jobs_progress_type_progress_types_name_fk",
           "tableFrom": "initiated_jobs",
           "tableTo": "progress_types",
           "schemaTo": "app",
           "columnsFrom": [
-            "progress_type_id"
+            "progress_type"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -100,31 +108,32 @@
           "name": "uuid",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "min_rate": {
           "name": "min_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "max_rate": {
           "name": "max_rate",
@@ -134,9 +143,9 @@
         },
         "location_type": {
           "name": "location_type",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "location_address": {
           "name": "location_address",
@@ -148,13 +157,20 @@
           "name": "due_date",
           "type": "date",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "status_type_id": {
-          "name": "status_type_id",
-          "type": "integer",
+        "status_type": {
+          "name": "status_type",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -173,8 +189,8 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "job_posts_location_type_location_types_id_fk": {
-          "name": "job_posts_location_type_location_types_id_fk",
+        "job_posts_location_type_location_types_name_fk": {
+          "name": "job_posts_location_type_location_types_name_fk",
           "tableFrom": "job_posts",
           "tableTo": "location_types",
           "schemaTo": "app",
@@ -182,21 +198,21 @@
             "location_type"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "job_posts_status_type_id_status_types_id_fk": {
-          "name": "job_posts_status_type_id_status_types_id_fk",
+        "job_posts_status_type_status_types_name_fk": {
+          "name": "job_posts_status_type_status_types_name_fk",
           "tableFrom": "job_posts",
           "tableTo": "status_types",
           "schemaTo": "app",
           "columnsFrom": [
-            "status_type_id"
+            "status_type"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "set null",
           "onUpdate": "no action"
@@ -230,7 +246,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -257,13 +273,14 @@
           "name": "uuid",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
-        "tag_type_id": {
-          "name": "tag_type_id",
-          "type": "integer",
+        "tag_type": {
+          "name": "tag_type",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "job_post_uuid": {
           "name": "job_post_uuid",
@@ -280,16 +297,16 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "post_tags_tag_type_id_tag_types_id_fk": {
-          "name": "post_tags_tag_type_id_tag_types_id_fk",
+        "post_tags_tag_type_tag_types_name_fk": {
+          "name": "post_tags_tag_type_tag_types_name_fk",
           "tableFrom": "post_tags",
           "tableTo": "tag_types",
           "schemaTo": "app",
           "columnsFrom": [
-            "tag_type_id"
+            "tag_type"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -356,13 +373,21 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "progress_types_name_unique": {
+          "name": "progress_types_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -375,31 +400,32 @@
           "name": "uuid",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "min_rate": {
           "name": "min_rate",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "max_rate": {
           "name": "max_rate",
@@ -411,7 +437,14 @@
           "name": "location_type",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -428,6 +461,20 @@
             "uuid"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "service_posts_location_type_location_types_name_fk": {
+          "name": "service_posts_location_type_location_types_name_fk",
+          "tableFrom": "service_posts",
+          "tableTo": "location_types",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "location_type"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -459,13 +506,21 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "status_types_name_unique": {
+          "name": "status_types_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -484,7 +539,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -517,31 +572,32 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "username": {
           "name": "username",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "first_name": {
           "name": "first_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "last_name": {
           "name": "last_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         },
         "bio": {
           "name": "bio",

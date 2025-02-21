@@ -3,7 +3,7 @@ import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { UserData } from "@/server/lib/user";
+import { UserData } from "@/server/utils/user";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 
 export default function ProfileCard({ data }: { data: UserData }) {

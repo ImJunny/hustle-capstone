@@ -3,7 +3,7 @@ import {
   updateUserImage,
   updateUserProfile,
   UserData,
-} from "@/server/lib/user";
+} from "@/server/utils/user";
 import { EditProfileSchema } from "@/zod/zod-schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UseFormGetValues, UseFormHandleSubmit } from "react-hook-form";

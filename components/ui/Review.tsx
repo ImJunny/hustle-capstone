@@ -9,7 +9,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import { getUserData } from "@/server/lib/user";
+import { getUserData } from "@/server/utils/user";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
 interface ReviewProps {

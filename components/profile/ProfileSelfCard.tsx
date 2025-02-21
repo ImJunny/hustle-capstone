@@ -3,9 +3,9 @@ import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { UserData } from "@/server/lib/user";
 import { router } from "expo-router";
 import { Image } from "expo-image";
+import { UserData } from "@/server/actions/user-actions";
 
 export default function ProfileSelfCard({ data }: { data: UserData }) {
   return (
@@ -14,7 +14,7 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
         <View>
           <Image
             source={
-              data.avatar_url
+              data?.avatar_url
                 ? {
                     uri: data.avatar_url,
                   }
@@ -50,8 +50,11 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
           </View>
         </View>
       </View>
-      <Text color={data.bio ? "foreground" : "muted"} style={{ marginTop: 24 }}>
-        {data.bio ? data!.bio : "Add a biography in profile settings."}
+      <Text
+        color={data?.bio ? "foreground" : "muted"}
+        style={{ marginTop: 24 }}
+      >
+        {data?.bio ? data!.bio : "Add a biography in profile settings."}
       </Text>
     </View>
   );

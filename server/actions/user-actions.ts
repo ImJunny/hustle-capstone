@@ -44,9 +44,21 @@ export async function updateUserProfile(
   username: string,
   first_name: string,
   last_name: string,
-  bio: string
+  bio: string,
+  image_buffer: ArrayBuffer | null
 ) {
   try {
+    if (image_buffer) {
+      uploadImage(uuid, image_buffer);
+      await db
+        .update(users)
+        .set({
+          avatar_url: `${
+            process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+          }/${uuid}?=${new Date().getTime()}`,
+        })
+        .where(eq(users.uuid, uuid));
+    }
     await db
       .update(users)
       .set({
@@ -58,25 +70,5 @@ export async function updateUserProfile(
       .where(eq(users.uuid, uuid));
   } catch (error) {
     throw new Error("Error updating profile.");
-  }
-}
-
-// Update user avatar while uploading to s3; the image is the same name as the user's uuid
-export async function updateUserAvatar(
-  uuid: string,
-  image_buffer: ArrayBuffer
-) {
-  try {
-    uploadImage(uuid, image_buffer);
-    await db
-      .update(users)
-      .set({
-        avatar_url: `${
-          process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
-        }/${uuid}?=${new Date().getTime()}`,
-      })
-      .where(eq(users.uuid, uuid));
-  } catch (error) {
-    throw new Error("Error updating user avatar");
   }
 }

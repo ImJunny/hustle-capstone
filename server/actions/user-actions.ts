@@ -1,4 +1,4 @@
-import { Database, db } from "../../drizzle/db";
+import { db } from "../../drizzle/db";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
@@ -29,10 +29,8 @@ export async function createUser(
 // Get user data
 export async function getUserData(uuid: string) {
   try {
-    const result = await db.query.users.findFirst({
-      where: eq(users.uuid, uuid),
-    });
-    return result;
+    const result = await db.select().from(users).where(eq(users.uuid, uuid));
+    return result[0];
   } catch (error) {
     console.log(error);
     throw new Error("Error fetching user data.");
@@ -49,7 +47,6 @@ export async function updateUserProfile(
   bio: string
 ) {
   try {
-    console.log(uuid);
     await db
       .update(users)
       .set({
@@ -59,11 +56,6 @@ export async function updateUserProfile(
         bio,
       })
       .where(eq(users.uuid, uuid));
-    const first = await db.query.users.findFirst({
-      columns: { first_name: true },
-      where: eq(users.uuid, uuid),
-    });
-    console.log(first_name, first);
   } catch (error) {
     throw new Error("Error updating profile.");
   }
@@ -71,23 +63,19 @@ export async function updateUserProfile(
 
 // Update user avatar while uploading to s3; the image is the same name as the user's uuid
 export async function updateUserAvatar(
-  db: Database,
   uuid: string,
-  image_uri: string
+  image_buffer: ArrayBuffer
 ) {
-  console.log("updating image");
   try {
-    if (image_uri) {
-      uploadImage(image_uri, uuid);
-      await db
-        .update(users)
-        .set({
-          avatar_url: `${
-            process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
-          }/${uuid}?=${new Date().getTime()}`,
-        })
-        .where(eq(users.uuid, uuid));
-    }
+    uploadImage(uuid, image_buffer);
+    await db
+      .update(users)
+      .set({
+        avatar_url: `${
+          process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+        }/${uuid}?=${new Date().getTime()}`,
+      })
+      .where(eq(users.uuid, uuid));
   } catch (error) {
     throw new Error("Error updating user avatar");
   }

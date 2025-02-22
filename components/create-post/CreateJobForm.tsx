@@ -1,9 +1,8 @@
-import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import Input from "../ui/Input";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import Button from "../ui/Button";
-import IconButton from "../ui/IconButton";
 import DateInput from "./DateInput";
 import AddImage from "../ui/AddImages";
 import { Controller, useForm } from "react-hook-form";
@@ -11,9 +10,6 @@ import { CreateJobSchema } from "@/zod/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useState } from "react";
 
 export default function CreateJobForm() {
   // Declare form properties

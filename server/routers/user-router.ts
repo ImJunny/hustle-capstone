@@ -1,13 +1,12 @@
-import { db } from "@/drizzle/db";
 import { createTRPCRouter, publicProcedure } from "../lib/trpc";
-import { users } from "@/drizzle/schema";
 import {
   createUser,
   getUserData,
+  updateUserAvatar,
   updateUserProfile,
 } from "../actions/user-actions";
-import { z } from "zod";
-import { UpdateUserProfileSchema } from "@/zod/user-schemas";
+import { DIRTY, z } from "zod";
+import { uploadImage } from "../actions/s3-actions";
 
 export const userRouter = createTRPCRouter({
   create_user: publicProcedure
@@ -49,7 +48,6 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      console.log("updating");
       const result = await updateUserProfile(
         input.uuid,
         input.username,
@@ -58,5 +56,16 @@ export const userRouter = createTRPCRouter({
         input.bio
       );
       return result;
+    }),
+
+  update_user_avatar: publicProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+        image_buffer: z.any(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const result = await updateUserAvatar(input.uuid, input.image_buffer);
     }),
 });

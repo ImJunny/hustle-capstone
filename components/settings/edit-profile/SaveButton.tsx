@@ -1,11 +1,12 @@
 import Button from "@/components/ui/Button";
-import { UserData } from "@/server/actions/user-actions";
+import { updateUserAvatar, UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { EditProfileSchema } from "@/zod/zod-schemas";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseFormGetValues, UseFormHandleSubmit } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
+import { Buffer } from "buffer";
 
 type SaveButtonProps = {
   data: UserData | undefined;
@@ -23,43 +24,54 @@ export default function SaveButton({
 }: SaveButtonProps) {
   const utils = trpc.useUtils();
 
-  const { mutate: updateProfile, isLoading } =
-    trpc.user.update_user_profile.useMutation({
-      onSuccess: () => {
-        Toast.show({
-          text1: "Profile saved",
-          swipeable: false,
-        });
-        utils.user.get_user_data.invalidate();
-      },
-      onError: () =>
-        Toast.show({
-          text1: "Error in saving profile",
-          type: "error",
-          swipeable: false,
-        }),
-    });
-
-  function submit() {
-    const { username, firstname, lastname, bio } = getValues();
-    if (
-      ![data?.username, data?.first_name, data?.last_name, data?.bio].every(
-        (value, i) => value == [username, firstname, lastname, bio][i]
-      )
-    ) {
-      updateProfile({
+  const { mutate: performUpdates, isLoading } = useMutation({
+    mutationFn: async () => {
+      const { username, firstname, lastname, bio } = getValues();
+      await updateProfile({
         uuid: data!.uuid,
         username,
         first_name: firstname,
         last_name: lastname,
         bio: bio ?? "",
       });
-    } else {
+      if (isNewImage && imageUri) {
+        const file = await fetch(imageUri);
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        await updateAvatar({
+          uuid: data!.uuid,
+          image_buffer: buffer,
+        });
+      }
+    },
+    onSuccess: async () => {
+      await utils.user.invalidate();
       Toast.show({
-        text1: "No changes were made.",
+        text1: "Profile saved",
         swipeable: false,
       });
-    }
+    },
+    onError: () => {
+      Toast.show({
+        text1: "Error in saving profile",
+        type: "error",
+        swipeable: false,
+      });
+    },
+  });
+
+  const { mutate: updateProfile } = trpc.user.update_user_profile.useMutation();
+  const { mutate: updateAvatar } = trpc.user.update_user_avatar.useMutation();
+
+  async function submit() {
+    const { username, firstname, lastname, bio } = getValues();
+    if (
+      ![data?.username, data?.first_name, data?.last_name, data?.bio].every(
+        (value, i) => value == [username, firstname, lastname, bio][i]
+      ) ||
+      isNewImage
+    )
+      await performUpdates();
   }
 
   return (

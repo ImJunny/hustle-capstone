@@ -40,7 +40,7 @@ export default function ProfileMainScreen() {
     <>
       <ProfileSelfHeader username={data?.username ?? ""} />
       <ScrollView color="background">
-        <ProfileSelfCard data={data as UserData} />
+        <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
           <ProfileSection title="Job posts" posts={[exampleJobPosts[0]]} />
           <ProfileSection title="Services" posts={[exampleServicePosts[0]]} />

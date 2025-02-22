@@ -26,10 +26,7 @@ export const users = app_schema.table("users", {
 });
 
 export const job_posts = app_schema.table("job_posts", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .unique()
-    .default(sql`uuid_generate_v4()`),
+  id: serial("id").primaryKey(),
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, {
       onDelete: "cascade",
@@ -51,10 +48,7 @@ export const job_posts = app_schema.table("job_posts", {
 });
 
 export const service_posts = app_schema.table("service_posts", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .unique()
-    .default(sql`uuid_generate_v4()`),
+  id: serial("id").primaryKey(),
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, {
       onDelete: "cascade",
@@ -73,20 +67,17 @@ export const service_posts = app_schema.table("service_posts", {
 export const post_tags = app_schema.table(
   "post_tags",
   {
-    uuid: uuid("uuid")
-      .primaryKey()
-      .unique()
-      .default(sql`uuid_generate_v4()`),
+    id: serial("id").primaryKey(),
     tag_type: text("tag_type")
       .references(() => tag_types.name, {
         onDelete: "cascade",
       })
       .notNull(),
-    job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+    job_post_id: serial("job_post_id").references(() => job_posts.id, {
       onDelete: "cascade",
     }),
-    service_post_uuid: uuid("service_post_uuid").references(
-      () => service_posts.uuid,
+    service_post_id: serial("service_post_id").references(
+      () => service_posts.id,
       { onDelete: "cascade" }
     ),
   }
@@ -100,15 +91,12 @@ export const post_tags = app_schema.table(
 );
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .unique()
-    .default(sql`uuid_generate_v4()`),
-  worker: uuid("worker_uuid")
+  id: serial("id").primaryKey(),
+  worker_uuid: uuid("worker_uuid")
     .references(() => users.uuid)
     .notNull(),
-  job_post_uuid: uuid("job_post_uuid")
-    .references(() => job_posts.uuid)
+  job_post_id: serial("job_post_id")
+    .references(() => job_posts.id)
     .notNull(),
   progress_type: text("progress_type")
     .references(() => progress_types.name)

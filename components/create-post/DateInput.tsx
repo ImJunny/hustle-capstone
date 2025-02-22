@@ -7,12 +7,14 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { UseFormSetValue } from "react-hook-form";
 import { CreateJobSchema } from "@/zod/zod-schemas";
 import { z } from "zod";
+import DatePicker from "react-native-date-picker";
 
 type DateInputProps = {
   setValue: UseFormSetValue<z.infer<typeof CreateJobSchema>>;
 };
 export default function DateInput({ setValue }: DateInputProps) {
-  const [date, setDate] = useState<string>();
+  const [date, setDate] = useState<Date>(new Date());
+  const [formattedDate, setFormattedDate] = useState<string>();
   const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
 
   const handleConfirm = (selectedDate: Date) => {
@@ -22,7 +24,8 @@ export default function DateInput({ setValue }: DateInputProps) {
       month: "long",
       day: "numeric",
     });
-    setDate(formattedDate);
+    setDate(selectedDate);
+    setFormattedDate(formattedDate);
     setValue("due_date", currentDate);
     setDatePickerVisible(false);
   };
@@ -35,20 +38,28 @@ export default function DateInput({ setValue }: DateInputProps) {
       >
         <Input
           placeholder="Pick a date"
-          value={date}
+          value={formattedDate}
           style={styles.textInput}
           editable={false}
           type="outline"
         />
         <Icon name="calendar" size="xl" color="white" style={styles.calendar} />
       </TouchableOpacity>
-      <DateTimePickerModal
+      {/* <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
         onCancel={() => setDatePickerVisible(false)}
         minimumDate={new Date()}
-      />
+      /> */}
+      {/* <DatePicker
+        modal
+        open={isDatePickerVisible}
+        date={date}
+        onConfirm={handleConfirm}
+        onCancel={() => setDatePickerVisible(false)}
+        minimumDate={new Date()}
+      /> */}
     </View>
   );
 }

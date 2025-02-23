@@ -2,6 +2,7 @@ import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
 import { AppRouter } from "./root";
 import { QueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
+import { supabase } from "./supabase";
 
 export const trpc = createTRPCReact<AppRouter>();
 
@@ -15,6 +16,15 @@ export const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
       url: `${LOCAL_IP}/trpc`,
+      async headers() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        console.log("request sent");
+        return {
+          authorization: `Bearer ${session?.access_token}`,
+        };
+      },
     }),
   ],
 });

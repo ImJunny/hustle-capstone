@@ -1,4 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "../lib/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "../lib/trpc";
 import {
   createUser,
   getUserData,
@@ -28,7 +32,7 @@ export const userRouter = createTRPCRouter({
       return result;
     }),
 
-  get_user_data: publicProcedure
+  get_user_data: protectedProcedure
     .input(z.object({ uuid: z.string() }))
     .query(async ({ input }) => {
       const result = await getUserData(input.uuid);

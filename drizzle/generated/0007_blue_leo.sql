@@ -1,1 +1,0 @@
-ALTER TABLE "app"."users" ADD COLUMN "avatar_url" text;

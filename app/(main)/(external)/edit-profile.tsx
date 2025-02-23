@@ -7,14 +7,15 @@ import { StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
-import { getUserData } from "@/server/lib/user";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SaveButton from "@/components/settings/edit-profile/SaveButton";
-import { EditProfileSchema } from "@/zod/schemas";
+import { EditProfileSchema } from "@/zod/zod-schemas";
 import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
+import { UserData } from "@/server/actions/user-actions";
+import { trpc } from "@/server/lib/trpc-client";
 
 export default function EditProfileScreen() {
   // Declare form properties
@@ -30,10 +31,8 @@ export default function EditProfileScreen() {
 
   // Fetch initial user data
   const { user } = useAuthData();
-  const { data } = useQuery({
-    queryKey: ["userDataQuery"],
-    queryFn: () => getUserData(user?.id!),
-  });
+  if (!user?.id) return;
+  const { data } = trpc.user.get_user_data.useQuery({ uuid: user.id });
 
   // Update form with fetched data
   const [formReady, setformReady] = useState(false);
@@ -53,7 +52,7 @@ export default function EditProfileScreen() {
   // State to determines whether image should be updated
   const [isNewImage, setIsNewImage] = useState<boolean>(false);
 
-  if (!formReady) {
+  if (!formReady || !data) {
     return <LoadingScreen backHeader />;
   }
 
@@ -156,7 +155,7 @@ export default function EditProfileScreen() {
         </View>
 
         <SaveButton
-          data={data}
+          data={data as unknown as UserData}
           getValues={getValues}
           handleSubmit={handleSubmit}
           imageUri={imageUri}

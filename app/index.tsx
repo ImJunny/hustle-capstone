@@ -34,7 +34,6 @@ export default function RootIndex() {
   }, []);
 
   if (loading) return null;
-
   if (session) return <Redirect href="/(main)/(tabs)" />;
   else return <Redirect href="/signin" />;
 }

@@ -1,1 +1,0 @@
-ALTER TABLE "app"."users" ADD COLUMN "count" integer;

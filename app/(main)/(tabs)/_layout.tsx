@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import Icon from "@/components/ui/Icon";
-import TabBar from "@/components/navigation/TabBar";
+import TabBar from "@/components/ui/TabBar";
 
 /* 
   Tab bar elements are based off files in the (tabs) directory. 

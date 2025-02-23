@@ -1,9 +1,7 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { getUserData, UserData } from "@/server/lib/user";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingScreen from "@/components/ui/LoadingScreen";
@@ -16,12 +14,14 @@ import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
+import { UserData } from "@/server/actions/user-actions";
+import { trpc } from "@/server/lib/trpc-client";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["userDataQuery", user],
-    queryFn: () => getUserData(user?.id!),
+  if (!user?.id) return;
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
+    uuid: user.id,
   });
 
   if (error) {
@@ -40,7 +40,7 @@ export default function ProfileMainScreen() {
     <>
       <ProfileSelfHeader username={data?.username ?? ""} />
       <ScrollView color="background">
-        <ProfileSelfCard data={data as UserData} />
+        <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
           <ProfileSection title="Job posts" posts={[exampleJobPosts[0]]} />
           <ProfileSection title="Services" posts={[exampleServicePosts[0]]} />

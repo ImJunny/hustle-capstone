@@ -27,8 +27,8 @@ export default function HomePost({ data }: { data: TPost }) {
         }}
       >
         <ImagePlaceholder
-          width={400}
-          height={400}
+          width={800}
+          height={800}
           style={{ width: "100%", height: "100%" }}
         />
         <LinearGradient

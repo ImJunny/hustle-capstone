@@ -9,7 +9,7 @@ const port = 4000;
 
 // Enable CORS for Expo
 app.use(cors());
-app.use(express.json()); // Ensure JSON parsing
+app.use(express.json({ limit: "10mb" })); // Ensure JSON parsing
 
 // Set up tRPC with Express
 app.use(

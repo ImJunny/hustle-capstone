@@ -20,6 +20,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { trpc } from "@/server/lib/trpc-client";
+import GoogleButton from "@/components/auth/GoogleButton";
 
 // form schema for input validation
 const schema = z.object({
@@ -75,7 +76,6 @@ export default function SignInScreen() {
     if (error) {
       Alert.alert("Error", (error as AuthError).message);
       setIsLoading(false);
-      return;
     }
     if (user) {
       setUser(user);
@@ -167,10 +167,7 @@ export default function SignInScreen() {
               OR
             </Text>
           </View>
-          <Button type="outline" isFullWidth style={{ gap: 10 }}>
-            <IconButton name="logo-google" />
-            Continue with Google
-          </Button>
+          <GoogleButton />
           <Text color="muted" style={{ textAlign: "center" }}>
             Forgot password?
           </Text>

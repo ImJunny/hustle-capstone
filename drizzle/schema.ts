@@ -17,9 +17,9 @@ export const app_schema = pgSchema("app");
 export const users = app_schema.table("users", {
   uuid: uuid("uuid").primaryKey().unique(),
   email: text("email").notNull(),
-  username: varchar("username").notNull(),
-  first_name: text("first_name").notNull(),
-  last_name: text("last_name").notNull(),
+  username: varchar("username"),
+  first_name: text("first_name"),
+  last_name: text("last_name"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   bio: text("bio"),
   avatar_url: text("avatar_url"),

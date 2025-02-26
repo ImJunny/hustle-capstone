@@ -8,6 +8,13 @@
       "when": 1740173804194,
       "tag": "0000_premium_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1740526860146,
+      "tag": "0001_low_warbound",
+      "breakpoints": true
     }
   ]
 }

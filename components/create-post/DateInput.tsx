@@ -3,7 +3,6 @@ import Input from "@/components/ui/Input";
 import View from "@/components/ui/View";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "../ui/Icon";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { UseFormSetValue } from "react-hook-form";
 import { CreateJobSchema } from "@/zod/zod-schemas";
 import { z } from "zod";
@@ -45,21 +44,15 @@ export default function DateInput({ setValue }: DateInputProps) {
         />
         <Icon name="calendar" size="xl" color="white" style={styles.calendar} />
       </TouchableOpacity>
-      {/* <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleConfirm}
-        onCancel={() => setDatePickerVisible(false)}
-        minimumDate={new Date()}
-      /> */}
-      {/* <DatePicker
+      <DatePicker
         modal
+        mode="date"
         open={isDatePickerVisible}
         date={date}
         onConfirm={handleConfirm}
         onCancel={() => setDatePickerVisible(false)}
         minimumDate={new Date()}
-      /> */}
+      />
     </View>
   );
 }

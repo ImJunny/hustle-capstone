@@ -3,16 +3,45 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
+import {
+  DateOfBirthFormType,
+  useOnboardingFormsContext,
+} from "@/contexts/OnboardingFormsContext";
 import { router } from "expo-router";
 import { useState } from "react";
+import { UseFormSetValue } from "react-hook-form";
 import { Dimensions, StyleSheet, useColorScheme } from "react-native";
 import DatePicker from "react-native-date-picker";
 
-export default function DateOfBirth() {
-  const [date, setDate] = useState(new Date());
+export default function DateOfBirth({
+  setValue,
+}: {
+  setValue: UseFormSetValue<DateOfBirthFormType>;
+}) {
+  const { setSelectedDate, dateErrors } = useOnboardingFormsContext();
+  const [date, setDate] = useState<Date>(new Date());
+  const [formattedDate, setFormattedDate] = useState<string>(
+    date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  );
   const theme = useColorScheme() ?? "light";
+
+  const handleDateChange = (selectedDate: Date) => {
+    setDate(selectedDate);
+    setSelectedDate(selectedDate);
+    const formatted = selectedDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    setFormattedDate(formatted);
+  };
+
   return (
-    <View style={[styles.page]} color="background">
+    <View style={[styles.page]}>
       <View>
         <Text size="3xl" weight="semibold" style={{ marginTop: 16 }}>
           What is your date of birth?
@@ -20,17 +49,20 @@ export default function DateOfBirth() {
         <Text>
           In order to use Hustle, you must be at least 16 years of age.
         </Text>
+        <Input
+          type="line"
+          editable={false}
+          value={formattedDate}
+          style={{ marginTop: 16 }}
+        />
       </View>
-      <Input
-        type="line"
-        editable={false}
-        value={date.toLocaleDateString()}
-        style={{ marginTop: 16 }}
-      />
+      <Text style={{ marginTop: 4 }} color="red">
+        {dateErrors.date_of_birth?.message}
+      </Text>
       <View style={{ flex: 1, alignItems: "center", marginTop: 52 }}>
         <DatePicker
           date={date}
-          onDateChange={setDate}
+          onDateChange={handleDateChange}
           mode="date"
           maximumDate={new Date()}
           theme={theme}

@@ -5,7 +5,7 @@ import OnboardingNextButton from "@/components/onboarding/OnboardingNextButton";
 import OnboardingSteps from "@/components/onboarding/OnboardingSteps";
 
 // Define the onboarding steps in order
-const steps = ["first-name", "date-of-birth", "username", "profile-image"];
+const steps = ["date-of-birth", "first-name", "username", "profile-image"];
 
 export default function Layout() {
   const segments = useSegments();

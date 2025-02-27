@@ -16,7 +16,7 @@ export default function GoogleSignInButton() {
   const [isLoading, setIsLoading] = useState(false);
   const createUserMutation = trpc.user.create_user.useMutation({
     onSuccess: () => {
-      router.replace("/onboarding/first-name");
+      router.replace("/onboarding/date-of-birth");
       Toast.show({
         text1: `Successfully signed in`,
         swipeable: false,

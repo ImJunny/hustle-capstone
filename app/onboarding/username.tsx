@@ -8,9 +8,12 @@ export default function Username() {
     <View style={[styles.page]} color="background">
       <View>
         <Text size="3xl" weight="semibold" style={{ marginTop: 16 }}>
-          Make a username
+          Create a username
         </Text>
-        <Text>This helps identify your account.</Text>
+        <Text>
+          This helps identify your account. All usernames are lowercase for easy
+          identification.
+        </Text>
       </View>
       <Input type="line" placeholder="Username" style={{ marginTop: 16 }} />
     </View>

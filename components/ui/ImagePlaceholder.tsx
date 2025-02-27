@@ -1,6 +1,5 @@
 import { Image, ImageProps } from "react-native";
 import View, { ViewProps } from "./View";
-import { useState } from "react";
 
 type ImagePlaceholderProps = {
   width?: number;
@@ -14,16 +13,10 @@ export default function ImagePlaceholder({
   height = 200,
   isDark,
 }: ImagePlaceholderProps & ViewProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
   return (
     <View style={[{ width, height, overflow: "hidden" }, style]}>
       <Image
-        onLoad={handleImageLoad}
+        fadeDuration={175}
         source={{
           uri: `https://picsum.photos/${width}/${height}?${Math.random()}`,
         }}

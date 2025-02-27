@@ -17,10 +17,8 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, trpc, trpcClient } from "@/server/lib/trpc-client";
-import superjson from "superjson";
-import { httpBatchLink } from "@trpc/client";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

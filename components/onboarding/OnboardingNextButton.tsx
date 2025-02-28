@@ -10,7 +10,7 @@ import { useAuthData } from "@/contexts/AuthContext";
 // Type for component
 type OnboardingNextButtonProps = {
   currentStep: (typeof onboardingSteps)[number];
-  nextStep: string | null;
+  nextStep: (typeof onboardingSteps)[number] | null;
   currentIndex: number;
 };
 
@@ -21,14 +21,28 @@ export default function OnboardingNextButton({
   currentIndex,
 }: OnboardingNextButtonProps) {
   // Update mutations
-  const { mutate: updateDateOfBirth } =
-    trpc.onboarding.update_onboarding_date_of_birth.useMutation();
-  const { mutate: updateFirstName } =
-    trpc.onboarding.update_onboarding_first_name.useMutation();
-  const { mutate: updateUsername } =
-    trpc.onboarding.update_onboarding_username.useMutation();
+  const { mutate: updateDateOfBirth, isLoading: dateLoading } =
+    trpc.onboarding.update_onboarding_date_of_birth.useMutation({
+      onSuccess: handleRedirect,
+    });
+  const { mutate: updateFirstName, isLoading: firstNameLoading } =
+    trpc.onboarding.update_onboarding_first_name.useMutation({
+      onSuccess: handleRedirect,
+    });
+  const { mutate: updateUsername, isLoading: usernameLoading } =
+    trpc.onboarding.update_onboarding_username.useMutation({
+      onSuccess: () => {
+        handleRedirect();
+        clearErrors("username");
+      },
+      onError: () => {
+        setError("username", { message: "Username already taken." });
+      },
+    });
   const { mutate: updateProfileImage } =
-    trpc.onboarding.update_onboarding_profile_image.useMutation();
+    trpc.onboarding.update_onboarding_profile_image.useMutation({
+      onSuccess: handleRedirect,
+    });
 
   // Use context values to edit the form
   const {
@@ -36,8 +50,10 @@ export default function OnboardingNextButton({
     watch,
     getValues,
     setError,
+    formState: { errors },
+    clearErrors,
   }: UseFormReturn<OnboardingFormType> = useFormContext();
-  const { date_of_birth, first_name, username, image_buffer } = getValues();
+  const isLoading = dateLoading || firstNameLoading || usernameLoading;
   const { user } = useAuthData();
 
   // Declare form field names to trigger validity check
@@ -47,13 +63,14 @@ export default function OnboardingNextButton({
   // Watch field inputs for realtime validation
   const fieldValue = watch(currentField);
   useEffect(() => {
-    if (fieldValue !== undefined) {
+    if (fieldValue !== undefined || currentStep !== "profile-image") {
       trigger(currentField); // Validate whenever value changes
     }
   }, [fieldValue, currentField, trigger]);
 
   // Handle button click according to current form
   async function handleNext() {
+    const { date_of_birth, first_name, username, image_buffer } = getValues();
     const isValid = await trigger(currentField);
     if (!isValid || !user) return;
 
@@ -78,17 +95,21 @@ export default function OnboardingNextButton({
         image_buffer,
       });
     }
+  }
 
+  function handleRedirect() {
     if (nextStep) {
       router.push(`/onboarding/${nextStep}` as any);
     } else {
-      router.push("/(main)/(tabs)"); // Last step
+      router.push("/(main)/(tabs)");
+      const utils = trpc.useUtils();
+      utils.user.get_user_data.invalidate();
     }
   }
 
   // Render component
   return (
-    <Button style={styles.button} onPress={handleNext}>
+    <Button style={styles.button} onPress={handleNext} disabled={isLoading}>
       {currentStep !== "profile-image" ? "Next" : "Complete profile"}
     </Button>
   );

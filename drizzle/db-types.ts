@@ -7,4 +7,5 @@ export const onboardingPhaseTypes = [
   "first name",
   "username",
   "profile image",
+  "completed",
 ];

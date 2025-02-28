@@ -13,6 +13,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import Text from "../ui/Text";
 import { useFormContext, UseFormReturn } from "react-hook-form";
 import { OnboardingFormType } from "@/contexts/OnboardingFormsContext";
+import { Buffer } from "buffer";
 
 // Component that allows user to edit their image
 export default function OnboardingImageEditor() {
@@ -56,25 +57,27 @@ export default function OnboardingImageEditor() {
 
   const { width } = Dimensions.get("window");
   return (
-    <View style={{}}>
-      <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
-        <Image
-          source={
-            imageUri
-              ? {
-                  uri: imageUri,
-                }
-              : require("@/assets/images/default-avatar-icon.jpg")
-          }
-          style={{
-            borderRadius: 999,
-            width: width * 0.75,
-            height: width * 0.75,
-          }}
-        />
-      </TouchableOpacity>
-      <View style={styles.cameraIconCircle} color="background-variant">
-        <Icon name="camera-outline" size="2xl" />
+    <View>
+      <View>
+        <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
+          <Image
+            source={
+              imageUri
+                ? {
+                    uri: imageUri,
+                  }
+                : require("@/assets/images/default-avatar-icon.jpg")
+            }
+            style={{
+              borderRadius: 999,
+              width: width * 0.75,
+              height: width * 0.75,
+            }}
+          />
+        </TouchableOpacity>
+        <View style={styles.cameraIconCircle} color="background-variant">
+          <Icon name="camera-outline" size="2xl" />
+        </View>
       </View>
       {imageUri && (
         <Text

@@ -24,7 +24,7 @@ export default function Layout() {
   // Find the next step, if available
   const nextStep =
     currentIndex !== -1 && currentIndex < onboardingSteps.length - 1
-      ? onboardingSteps[currentIndex + 1]
+      ? (onboardingSteps[currentIndex + 1] as (typeof onboardingSteps)[number])
       : null;
 
   return (
@@ -34,8 +34,8 @@ export default function Layout() {
         <Stack
           screenOptions={{ animation: "ios_from_right", headerShown: false }}
         >
-          <Stack.Screen name="first-name" />
           <Stack.Screen name="date-of-birth" />
+          <Stack.Screen name="first-name" />
           <Stack.Screen name="username" />
           <Stack.Screen name="profile-image" />
         </Stack>

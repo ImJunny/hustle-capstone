@@ -1,6 +1,7 @@
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
+import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { StyleSheet } from "react-native";
 
@@ -9,6 +10,7 @@ export default function Username() {
     control,
     formState: { errors },
   } = useFormContext();
+
   return (
     <View style={[styles.page]} color="background">
       <View>

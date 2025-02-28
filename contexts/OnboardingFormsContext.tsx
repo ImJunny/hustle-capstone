@@ -4,6 +4,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -42,5 +43,6 @@ export function OnboardingFormsProvider({ children }: { children: ReactNode }) {
   const formMethods = useForm<OnboardingFormType>({
     resolver: zodResolver(OnboardingFormSchema),
   });
+
   return <FormProvider {...formMethods}>{children}</FormProvider>;
 }

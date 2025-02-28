@@ -12,11 +12,12 @@ export default function RootIndex() {
 
   useEffect(() => {
     async function checkSession() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      setSession(sessionData.session);
-      setUser(sessionData.session!.user);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session);
 
-      if (sessionData.session) {
+      if (session) {
         const { data: user, error } = await supabase.auth.getUser();
         if (!user || error) {
           await supabase.auth.signOut();
@@ -37,16 +38,15 @@ export default function RootIndex() {
     });
   }, []);
 
-  const [user, setUser] = useState<User | undefined>();
-  const { data: userData, isLoading } = trpc.user.get_user_data.useQuery(
+  const { data: userData, isFetching } = trpc.user.get_user_data.useQuery(
     {
-      uuid: user?.id ?? "",
+      uuid: session?.user.id ?? "",
     },
-    { enabled: !!user }
+    { enabled: !!session?.user }
   );
 
-  if (loading || isLoading) return <LoadingScreen />;
-  if (user) {
+  if (loading || isFetching) return <LoadingScreen />;
+  if (session?.user) {
     if (
       userData?.onboarding_phase == null ||
       userData?.onboarding_phase === "date of birth"

@@ -23,17 +23,24 @@ export async function doesUserExist(uuid: string) {
 export async function createUser(uuid: string, email: string) {
   try {
     const exists = await doesUserExist(uuid);
-    if (exists) return;
+    if (exists) {
+      const result = await db
+        .select({ onboarding_phase: users.onboarding_phase })
+        .from(users)
+        .where(eq(users.uuid, uuid));
+      return result[0];
+    }
     await db.insert(users).values({
       uuid,
       email,
-      onboarding_phase: "date_of_birth",
+      onboarding_phase: "date of birth",
     });
   } catch (error) {
     console.log(error);
     throw new Error("Failed to create user.");
   }
 }
+export type createUserReturn = Awaited<ReturnType<typeof createUser>>;
 
 // Get user data
 export async function getUserData(uuid: string) {

@@ -10,7 +10,7 @@ export const createTRPCContext = async ({ req }: { req: Request }) => {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
   // Extract access token from Authorization header
   const accessToken = req.headers["authorization"]?.replace("Bearer ", "");
-  console.log("request received");
+
   const {
     data: { user },
   } = await supabase.auth.getUser(accessToken);

@@ -1,6 +1,6 @@
 import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and, ne, ilike } from "drizzle-orm";
 import { uploadImage } from "./s3-actions";
 
 // Update onboarding date of birth
@@ -47,7 +47,7 @@ export async function updateOnboardingUsername(uuid: string, username: string) {
     const result = await db
       .select()
       .from(users)
-      .where(eq(users.username, username));
+      .where(ilike(users.username, username));
 
     if (result.length > 0 && result[0].uuid !== uuid) {
       throw new Error("Username already taken.");

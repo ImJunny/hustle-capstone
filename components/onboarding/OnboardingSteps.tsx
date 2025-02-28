@@ -5,9 +5,5 @@ export default function OnboardingSteps({
 }: {
   stepNumber: number;
 }) {
-  return (
-    <Text weight="semibold" style={{ marginTop: 32 }}>
-      Step {stepNumber} of 4
-    </Text>
-  );
+  return <Text weight="semibold">Step {stepNumber} of 4</Text>;
 }

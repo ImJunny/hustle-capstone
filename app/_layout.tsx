@@ -62,7 +62,7 @@ export default function RootLayout() {
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
             <SafeAreaView style={{ flex: 1 }}>
-              <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
+              <Stack screenOptions={{ headerShown: false, animation: "none" }}>
                 <Stack.Screen name="(main)" />
                 <Stack.Screen name="(auth)" />
               </Stack>

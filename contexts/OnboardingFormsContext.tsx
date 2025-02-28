@@ -27,7 +27,13 @@ const OnboardingFormSchema = z.object({
     }
   ),
   first_name: z.string().min(1, "First name is required."),
-  username: z.string().min(1, "Username is required."),
+  username: z
+    .string()
+    .min(1, "Username is required.")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username must contain only letters, numbers, and underscores."
+    ),
   image_buffer: z.any(),
 });
 export type OnboardingFormType = z.infer<typeof OnboardingFormSchema>;

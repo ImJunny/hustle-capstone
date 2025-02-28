@@ -7,6 +7,7 @@ import { trpc } from "@/server/lib/trpc-client";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { User } from "@supabase/supabase-js";
+import { createUserReturn } from "@/server/actions/user-actions";
 
 export default function GoogleSignInButton() {
   GoogleSignin.configure({
@@ -15,8 +16,21 @@ export default function GoogleSignInButton() {
 
   const [isLoading, setIsLoading] = useState(false);
   const createUserMutation = trpc.user.create_user.useMutation({
-    onSuccess: () => {
-      router.replace("/onboarding/date-of-birth");
+    onSuccess: async (data: createUserReturn) => {
+      if (
+        data?.onboarding_phase == null ||
+        data?.onboarding_phase === "date of birth"
+      )
+        router.replace("/onboarding/date-of-birth");
+      else if (data?.onboarding_phase === "first name")
+        router.replace("/onboarding/first-name");
+      else if (data?.onboarding_phase === "username")
+        router.replace("/onboarding/username");
+      else if (data?.onboarding_phase === "profile image")
+        router.replace("/onboarding/profile-image");
+      else if (data?.onboarding_phase === "completed")
+        router.replace("/(main)/(tabs)");
+
       Toast.show({
         text1: `Successfully signed in`,
         swipeable: false,
@@ -28,8 +42,6 @@ export default function GoogleSignInButton() {
         type: "error",
         swipeable: false,
       });
-    },
-    onSettled: () => {
       setIsLoading(false);
     },
   });
@@ -54,8 +66,9 @@ export default function GoogleSignInButton() {
           email: user.email,
         });
       }
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   return (

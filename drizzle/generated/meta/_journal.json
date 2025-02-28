@@ -15,6 +15,13 @@
       "when": 1740526860146,
       "tag": "0001_low_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740702473573,
+      "tag": "0002_wandering_captain_britain",
+      "breakpoints": true
     }
   ]
 }

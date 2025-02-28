@@ -2,12 +2,13 @@ import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { StyleSheet } from "react-native";
-import { Controller } from "react-hook-form";
-import { useOnboardingFormsContext } from "@/contexts/OnboardingFormsContext";
+import { Controller, useFormContext } from "react-hook-form";
 
 export default function FirstName() {
-  const { firstNameControl: control, firstNameErrors: errors } =
-    useOnboardingFormsContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <View style={[styles.page]} color="background">
@@ -35,7 +36,7 @@ export default function FirstName() {
         />
 
         <Text color="red">
-          {errors.first_name && errors.first_name.message}
+          {errors.first_name && (errors.first_name.message as string)}
         </Text>
       </View>
     </View>

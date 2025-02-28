@@ -30,7 +30,11 @@ export default function ImageEditor({
       aspect: [1, 1],
     });
     if (!result.canceled) {
-      let compressedImageUri = await compressImage(result.assets[0].uri);
+      let compressedImageUri = await compressImage(
+        result.assets[0].uri,
+        128,
+        128
+      );
       setImageUri(compressedImageUri);
       let oldHash;
       if (avatarUrl) oldHash = await getImageHashes(avatarUrl!);
@@ -40,10 +44,10 @@ export default function ImageEditor({
   }
 
   // Function that compresses image and updates imageUri
-  async function compressImage(uri: string) {
+  async function compressImage(uri: string, width: number, height: number) {
     const resizedImage = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize: { width: 128, height: 128 } }],
+      [{ resize: { width, height } }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
     return resizedImage.uri;

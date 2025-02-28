@@ -1,9 +1,14 @@
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
+import { Controller, useFormContext } from "react-hook-form";
 import { StyleSheet } from "react-native";
 
 export default function Username() {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
   return (
     <View style={[styles.page]} color="background">
       <View>
@@ -15,7 +20,22 @@ export default function Username() {
           identification.
         </Text>
       </View>
-      <Input type="line" placeholder="Username" style={{ marginTop: 16 }} />
+      <Controller
+        control={control}
+        name="username"
+        render={({ field: { onChange, value } }) => (
+          <Input
+            style={{ marginTop: 16 }}
+            type="line"
+            placeholder="Username"
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
+      />
+      <Text color="red">
+        {errors.username && (errors.username.message as string)}
+      </Text>
     </View>
   );
 }

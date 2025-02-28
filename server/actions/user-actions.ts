@@ -27,6 +27,7 @@ export async function createUser(uuid: string, email: string) {
     await db.insert(users).values({
       uuid,
       email,
+      onboarding_phase: "date_of_birth",
     });
   } catch (error) {
     console.log(error);

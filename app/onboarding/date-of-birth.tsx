@@ -3,35 +3,28 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import {
-  DateOfBirthFormType,
-  useOnboardingFormsContext,
-} from "@/contexts/OnboardingFormsContext";
-import { router } from "expo-router";
-import { useState } from "react";
-import { UseFormSetValue } from "react-hook-form";
-import { Dimensions, StyleSheet, useColorScheme } from "react-native";
+import { OnboardingContext } from "@/contexts/OnboardingFormsContext";
+import { useContext, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { StyleSheet, useColorScheme } from "react-native";
 import DatePicker from "react-native-date-picker";
 
-export default function DateOfBirth({
-  setValue,
-}: {
-  setValue: UseFormSetValue<DateOfBirthFormType>;
-}) {
-  const { setSelectedDate, dateErrors } = useOnboardingFormsContext();
+export default function DateOfBirth() {
+  const {
+    setValue,
+    formState: { errors },
+  } = useFormContext();
+
   const [date, setDate] = useState<Date>(new Date());
-  const [formattedDate, setFormattedDate] = useState<string>(
-    date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  );
+  const [formattedDate, setFormattedDate] = useState<string>();
   const theme = useColorScheme() ?? "light";
 
   const handleDateChange = (selectedDate: Date) => {
     setDate(selectedDate);
-    setSelectedDate(selectedDate);
+
+    // ✅ Update react-hook-form with the new date
+    setValue("date_of_birth", selectedDate);
+
     const formatted = selectedDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -57,8 +50,9 @@ export default function DateOfBirth({
         />
       </View>
       <Text style={{ marginTop: 4 }} color="red">
-        {dateErrors.date_of_birth?.message}
+        {errors.date_of_birth && (errors.date_of_birth.message as string)}
       </Text>
+
       <View style={{ flex: 1, alignItems: "center", marginTop: 52 }}>
         <DatePicker
           date={date}

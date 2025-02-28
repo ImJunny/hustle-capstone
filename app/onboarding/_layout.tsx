@@ -5,19 +5,26 @@ import OnboardingNextButton from "@/components/onboarding/OnboardingNextButton";
 import OnboardingSteps from "@/components/onboarding/OnboardingSteps";
 
 // Define the onboarding steps in order
-const steps = ["date-of-birth", "first-name", "username", "profile-image"];
+export const onboardingSteps = [
+  "date-of-birth",
+  "first-name",
+  "username",
+  "profile-image",
+] as const;
 
 export default function Layout() {
   const segments = useSegments();
-  const currentStep = segments[segments.length - 1]; // Get current screen name
+  const currentStep = segments[
+    segments.length - 1
+  ] as (typeof onboardingSteps)[number]; // Get current screen name
 
   // Get the index of the current step in the list
-  const currentIndex = steps.indexOf(currentStep);
+  const currentIndex = onboardingSteps.indexOf(currentStep);
 
   // Find the next step, if available
   const nextStep =
-    currentIndex !== -1 && currentIndex < steps.length - 1
-      ? steps[currentIndex + 1]
+    currentIndex !== -1 && currentIndex < onboardingSteps.length - 1
+      ? onboardingSteps[currentIndex + 1]
       : null;
 
   return (
@@ -33,7 +40,11 @@ export default function Layout() {
           <Stack.Screen name="profile-image" />
         </Stack>
 
-        <OnboardingNextButton currentStep={currentStep} nextStep={nextStep} />
+        <OnboardingNextButton
+          currentStep={currentStep}
+          nextStep={nextStep}
+          currentIndex={currentIndex}
+        />
       </View>
     </OnboardingFormsProvider>
   );

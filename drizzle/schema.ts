@@ -23,6 +23,10 @@ export const users = app_schema.table("users", {
   created_at: timestamp("created_at").notNull().defaultNow(),
   bio: text("bio"),
   avatar_url: text("avatar_url"),
+  date_of_birth: date("date_of_birth"),
+  onboarding_phase: text("onboarding_phase").references(
+    () => onboarding_phase_types.name
+  ),
 });
 
 export const job_posts = app_schema.table("job_posts", {
@@ -124,3 +128,11 @@ export const progress_types = app_schema.table("progress_types", {
   id: serial("id").primaryKey(),
   name: text("name").unique().notNull(),
 });
+
+export const onboarding_phase_types = app_schema.table(
+  "onboarding_phase_types",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").unique().notNull(),
+  }
+);

@@ -1,8 +1,4 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "../lib/trpc";
+import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   createUser,
   getUserData,
@@ -11,7 +7,7 @@ import {
 import { z } from "zod";
 
 export const userRouter = createTRPCRouter({
-  create_user: publicProcedure
+  create_user: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
@@ -30,7 +26,7 @@ export const userRouter = createTRPCRouter({
       return result;
     }),
 
-  update_user_profile: publicProcedure
+  update_user_profile: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),

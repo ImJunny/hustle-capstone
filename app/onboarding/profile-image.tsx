@@ -1,3 +1,4 @@
+import OnboardingImageEditor from "@/components/onboarding/OnboardingImageEditor";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
@@ -14,14 +15,7 @@ export default function ProfileImage() {
         <Text>Choose any image for your profile.</Text>
       </View>
       <View style={{ alignItems: "center", marginTop: 50 }}>
-        <View
-          style={{
-            borderRadius: 999,
-            width: width * 0.75,
-            height: width * 0.75,
-          }}
-          color="background-variant"
-        />
+        <OnboardingImageEditor />
       </View>
     </View>
   );

@@ -34,7 +34,6 @@ export default function GoogleSignInButton() {
     },
   });
 
-  const [user, setUser] = useState<User | undefined>(undefined);
   async function signInWithGoogle() {
     setIsLoading(true);
 
@@ -50,7 +49,6 @@ export default function GoogleSignInButton() {
         token: data.idToken ?? "",
       });
       if (user && user.email) {
-        setUser(user);
         createUserMutation.mutate({
           uuid: user.id,
           email: user.email,

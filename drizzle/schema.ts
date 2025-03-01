@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   check,
   date,
-  numeric,
+  integer,
   pgSchema,
   serial,
   text,
@@ -38,8 +38,8 @@ export const job_posts = app_schema.table("job_posts", {
     .notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  min_rate: numeric("min_rate").notNull(),
-  max_rate: numeric("max_rate"),
+  min_rate: integer("min_rate").notNull(),
+  max_rate: integer("max_rate"),
   location_type: text("location_type")
     .references(() => location_types.name)
     .notNull(),
@@ -60,8 +60,8 @@ export const service_posts = app_schema.table("service_posts", {
     .notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  min_rate: numeric("min_rate").notNull(),
-  max_rate: numeric("max_rate"),
+  min_rate: integer("min_rate").notNull(),
+  max_rate: integer("max_rate"),
   location_type: text("location_type")
     .references(() => location_types.name)
     .notNull(),

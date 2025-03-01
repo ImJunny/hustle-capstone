@@ -3,7 +3,6 @@ import { Session, User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "../server/lib/supabase";
 import { trpc } from "@/server/lib/trpc-client";
-import Text from "@/components/ui/Text";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function RootIndex() {

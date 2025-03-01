@@ -4,27 +4,30 @@ import Text from "../ui/Text";
 import View from "../ui/View";
 import Button from "../ui/Button";
 import DateInput from "./DateInput";
-import AddImage from "../ui/AddImages";
 import { Controller, useForm } from "react-hook-form";
 import { CreateJobSchema } from "@/zod/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
+import { useState } from "react";
+import CreatePostImagePicker from "./CreatePostImagePicker";
+import CreateJobSubmitButton from "./CreateJobSubmitButton";
 
 export default function CreateJobForm() {
+  const [submitted, setSubmitted] = useState(false);
   // Declare form properties
   const {
     control,
     formState: { errors },
     setValue,
-    getValues,
     handleSubmit,
     watch,
+    getValues,
   } = useForm<z.infer<typeof CreateJobSchema>>({
     resolver: zodResolver(CreateJobSchema),
+    mode: submitted ? "onChange" : "onSubmit",
   });
 
-  const minRate = watch("min_rate");
   const locationType = watch("location_type");
   return (
     <View style={{ gap: 60 }}>
@@ -214,11 +217,13 @@ export default function CreateJobForm() {
         <Text weight="semibold" size="lg">
           Photos
         </Text>
-        <AddImage />
-        <Text color="muted" size="sm">
-          Add up to 6 photos. If you do not provide any images, a placeholder
-          gradient will be displayed.
-        </Text>
+        <CreatePostImagePicker setValue={setValue} />
+        <BottomMessage
+          field="images"
+          defaultMessage="Add up to 6 photos. If you do not provide any images, a placeholder
+          gradient will be displayed."
+          hasError
+        />
       </View>
 
       <View>
@@ -231,14 +236,7 @@ export default function CreateJobForm() {
         </Text>
       </View>
 
-      <Button
-        style={{ marginLeft: "auto" }}
-        onPress={handleSubmit(() => {
-          console.log(getValues());
-        })}
-      >
-        Post job
-      </Button>
+      <CreateJobSubmitButton handleSubmit={handleSubmit} />
     </View>
   );
 
@@ -284,9 +282,9 @@ const styles = StyleSheet.create({
   },
   description_form: {
     marginTop: 10,
-    textAlignVertical: "auto",
     height: 160,
     flexWrap: "wrap",
+    paddingVertical: 10,
   },
   rate_form: {
     marginTop: 10,

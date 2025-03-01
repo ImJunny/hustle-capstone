@@ -18,10 +18,9 @@ export const CreateJobSchema = z
     max_rate: z.number().optional(),
     location_type: z.enum(["local", "remote"]),
     location_address: z.string().optional(),
-    due_date: z.date().refine((data) => !isNaN(data.getTime()), {
-      message: "Due date is required.",
-    }),
+    due_date: z.coerce.date({ message: "Due date is required." }),
     tags: z.array(z.enum(tagTypes)).optional(),
+    images: z.array(z.any()).min(1, "Must include at least one image."),
   })
   .superRefine((data, ctx) => {
     if (

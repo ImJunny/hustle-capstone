@@ -1,24 +1,18 @@
 import React, { useState } from "react";
-import View from "./View";
-import {
-  Image,
-  StyleSheet,
-  Alert,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
-import IconButton from "./IconButton";
-import ImagePlaceholder from "./ImagePlaceholder";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as FileSystem from "expo-file-system";
-import * as Crypto from "expo-crypto";
-import Icon from "./Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import ScrollView from "./ScrollView";
+import View from "../ui/View";
+import Icon from "../ui/Icon";
+import { UseFormSetValue, UseFormTrigger } from "react-hook-form";
+import { CreateJobSchema } from "@/zod/zod-schemas";
+import { z } from "zod";
+import { ImageManipulator } from "expo-image-manipulator";
 
-function AddImage() {
+type CreatePostImagePickerProps = {
+  setValue: UseFormSetValue<z.infer<typeof CreateJobSchema>>;
+};
+function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
   const themeColor = useThemeColor();
 
   const [images, setImages] = useState<string[]>([]);
@@ -30,8 +24,20 @@ function AddImage() {
       aspect: [1, 1],
     });
     if (!result.canceled) {
-      setImages((prevImages) => [...prevImages, result.assets[0].uri]);
+      setImages([...images, result.assets[0].uri]);
+      setValue("images", [...images, result.assets[0].uri], {
+        shouldValidate: true,
+      });
     }
+  }
+
+  async function compressImage(uri: string, width: number, height: number) {
+    const resizedImage = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width, height } }],
+      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return resizedImage.uri;
   }
 
   async function deleteImage(index: number) {
@@ -75,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     gap: 10,
-    marginVertical: 10,
+    marginTop: 10,
   },
   image: {
     width: 90,
@@ -105,4 +111,4 @@ const styles = StyleSheet.create({
   deleteIcon: {},
 });
 
-export default AddImage;
+export default CreatePostImagePicker;

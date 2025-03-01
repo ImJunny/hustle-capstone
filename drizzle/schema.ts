@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import {
-  check,
   date,
   integer,
   pgSchema,
@@ -30,7 +29,9 @@ export const users = app_schema.table("users", {
 });
 
 export const job_posts = app_schema.table("job_posts", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, {
       onDelete: "cascade",
@@ -52,7 +53,9 @@ export const job_posts = app_schema.table("job_posts", {
 });
 
 export const service_posts = app_schema.table("service_posts", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, {
       onDelete: "cascade",
@@ -68,39 +71,29 @@ export const service_posts = app_schema.table("service_posts", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const post_tags = app_schema.table(
-  "post_tags",
-  {
-    id: serial("id").primaryKey(),
-    tag_type: text("tag_type")
-      .references(() => tag_types.name, {
-        onDelete: "cascade",
-      })
-      .notNull(),
-    job_post_id: serial("job_post_id").references(() => job_posts.id, {
+export const post_tags = app_schema.table("post_tags", {
+  id: serial("id").primaryKey(),
+  tag_type: text("tag_type")
+    .references(() => tag_types.name, {
       onDelete: "cascade",
-    }),
-    service_post_id: serial("service_post_id").references(
-      () => service_posts.id,
-      { onDelete: "cascade" }
-    ),
-  }
-  // () => [
-  //   check(
-  //     "only_one_post_reference",
-  //     sql`(job_post_uuid IS NOT NULL AND service_post_uuid IS NULL) OR
-  //       (job_post_uuid IS NULL AND service_post_uuid IS NOT NULL)`
-  //   ),
-  // ]
-);
+    })
+    .notNull(),
+  job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+    onDelete: "cascade",
+  }),
+  service_post_uuid: uuid("service_post_uuid").references(
+    () => service_posts.uuid,
+    { onDelete: "cascade" }
+  ),
+});
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {
   id: serial("id").primaryKey(),
   worker_uuid: uuid("worker_uuid")
     .references(() => users.uuid)
     .notNull(),
-  job_post_id: serial("job_post_id")
-    .references(() => job_posts.id)
+  job_post_uuid: uuid("job_post_uuid")
+    .references(() => job_posts.uuid)
     .notNull(),
   progress_type: text("progress_type")
     .references(() => progress_types.name)

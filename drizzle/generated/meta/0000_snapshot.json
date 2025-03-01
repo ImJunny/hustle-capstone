@@ -1,5 +1,5 @@
 {
-  "id": "5cad99ca-b990-41b2-9277-26d4de3ad754",
+  "id": "1e890fe2-7b53-457d-849c-403fc29be8d4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,9 +20,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "job_post_id": {
-          "name": "job_post_id",
-          "type": "serial",
+        "job_post_uuid": {
+          "name": "job_post_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -56,16 +56,16 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "initiated_jobs_job_post_id_job_posts_id_fk": {
-          "name": "initiated_jobs_job_post_id_job_posts_id_fk",
+        "initiated_jobs_job_post_uuid_job_posts_uuid_fk": {
+          "name": "initiated_jobs_job_post_uuid_job_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
           "tableTo": "job_posts",
           "schemaTo": "app",
           "columnsFrom": [
-            "job_post_id"
+            "job_post_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -95,11 +95,12 @@
       "name": "job_posts",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
@@ -121,13 +122,13 @@
         },
         "min_rate": {
           "name": "min_rate",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "max_rate": {
           "name": "max_rate",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -247,6 +248,39 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "app.onboarding_phase_types": {
+      "name": "onboarding_phase_types",
+      "schema": "app",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "onboarding_phase_types_name_unique": {
+          "name": "onboarding_phase_types_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "app.post_tags": {
       "name": "post_tags",
       "schema": "app",
@@ -263,17 +297,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "job_post_id": {
-          "name": "job_post_id",
-          "type": "serial",
+        "job_post_uuid": {
+          "name": "job_post_uuid",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "service_post_id": {
-          "name": "service_post_id",
-          "type": "serial",
+        "service_post_uuid": {
+          "name": "service_post_uuid",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -292,30 +326,30 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "post_tags_job_post_id_job_posts_id_fk": {
-          "name": "post_tags_job_post_id_job_posts_id_fk",
+        "post_tags_job_post_uuid_job_posts_uuid_fk": {
+          "name": "post_tags_job_post_uuid_job_posts_uuid_fk",
           "tableFrom": "post_tags",
           "tableTo": "job_posts",
           "schemaTo": "app",
           "columnsFrom": [
-            "job_post_id"
+            "job_post_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "post_tags_service_post_id_service_posts_id_fk": {
-          "name": "post_tags_service_post_id_service_posts_id_fk",
+        "post_tags_service_post_uuid_service_posts_uuid_fk": {
+          "name": "post_tags_service_post_uuid_service_posts_uuid_fk",
           "tableFrom": "post_tags",
           "tableTo": "service_posts",
           "schemaTo": "app",
           "columnsFrom": [
-            "service_post_id"
+            "service_post_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -364,11 +398,12 @@
       "name": "service_posts",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
@@ -390,13 +425,13 @@
         },
         "min_rate": {
           "name": "min_rate",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "max_rate": {
           "name": "max_rate",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -537,19 +572,19 @@
           "name": "username",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "first_name": {
           "name": "first_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "last_name": {
           "name": "last_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -569,10 +604,37 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "date_of_birth": {
+          "name": "date_of_birth",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "onboarding_phase": {
+          "name": "onboarding_phase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_onboarding_phase_onboarding_phase_types_name_fk": {
+          "name": "users_onboarding_phase_onboarding_phase_types_name_fk",
+          "tableFrom": "users",
+          "tableTo": "onboarding_phase_types",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "onboarding_phase"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_uuid_unique": {

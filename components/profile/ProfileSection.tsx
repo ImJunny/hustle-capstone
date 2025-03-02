@@ -4,13 +4,14 @@ import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { TPost } from "@/server/utils/example-data";
 import Post from "../posts/Post";
+import { UserJobPost } from "@/server/actions/post-actions";
 
 export default function ProfileSection({
   title,
   posts,
 }: {
   title: string;
-  posts: TPost[];
+  posts: UserJobPost[];
 }) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;

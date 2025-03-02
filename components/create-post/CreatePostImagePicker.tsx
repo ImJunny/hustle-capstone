@@ -31,15 +31,6 @@ function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
     }
   }
 
-  async function compressImage(uri: string, width: number, height: number) {
-    const resizedImage = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width, height } }],
-      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-    );
-    return resizedImage.uri;
-  }
-
   async function deleteImage(index: number) {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   }

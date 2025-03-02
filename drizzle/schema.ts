@@ -101,6 +101,18 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const post_images = app_schema.table("post_images", {
+  id: serial("id").primaryKey(),
+  image_url: text("image_url").notNull(),
+  job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+    onDelete: "cascade",
+  }),
+  service_post_uuid: uuid("service_post_uuid").references(
+    () => service_posts.uuid,
+    { onDelete: "cascade" }
+  ),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

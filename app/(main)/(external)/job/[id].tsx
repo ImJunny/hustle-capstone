@@ -10,11 +10,11 @@ import { Dimensions, Pressable, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { trpc } from "@/server/lib/trpc-client";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import { format, formatDistanceToNow, isThisYear } from "date-fns";
+import { Image } from "expo-image";
 
 export default function PostScreen() {
   const themeColor = useThemeColor();
@@ -22,21 +22,36 @@ export default function PostScreen() {
   const { width } = Dimensions.get("window");
 
   const { id } = useLocalSearchParams();
-  const post = [...exampleJobPosts, ...exampleServicePosts].find(
-    (post) => post.uuid === id
-  );
+  const { data, isLoading } = trpc.post.get_post_info.useQuery({
+    uuid: id as string,
+    type: "work",
+  });
 
-  if (!post) {
-    return <Text>post not found</Text>;
+  if (isLoading) {
+    return <LoadingScreen color="background" />;
+  } else if (!data) {
+    return (
+      <View>
+        <Text>Post not found.</Text>
+      </View>
+    );
   }
+  const formattedDueDate = isThisYear(new Date(data.due_date))
+    ? format(new Date(data.due_date), "MMMM d")
+    : format(new Date(data.due_date), "MMMM d, yyyy");
+  const createdAgo = formatDistanceToNow(new Date(data.created_at), {
+    addSuffix: true,
+  });
+
   return (
     <>
       <DetailsHeader />
       <ScrollView color="background">
-        <ImagePlaceholder
-          width={800}
-          height={800}
+        <Image
           style={{ width, height: width }}
+          source={{
+            uri: data.post_images[0].image_url,
+          }}
         />
         <View
           style={{
@@ -46,11 +61,11 @@ export default function PostScreen() {
           }}
         >
           <Text size="2xl" weight="semibold" style={{ marginVertical: 4 }}>
-            {post.title}
+            {data.title}
           </Text>
           <Text weight="semibold" size="4xl">
-            ${post.min_rate}
-            {post.max_rate && "+"}
+            ${data.min_rate}
+            {data.max_rate && "+"}
           </Text>
           <View style={styles.badgeRow}>
             <Badge>
@@ -59,15 +74,20 @@ export default function PostScreen() {
                 size="sm"
                 weight="semibold"
               >
-                {post.type}
+                {data.type}
               </Text>
             </Badge>
-            <Badge>{post.distance}</Badge>
-            {post.tags.map((tag, i) => (
-              <Badge key={i}>{tag}</Badge>
-            ))}
+            <Badge>
+              {data.location_type === "remote"
+                ? "Remote"
+                : "IMPLEMENT DISTANCE"}
+            </Badge>
+            {data.post_tags.length > 0 &&
+              data.post_tags.map((tag, i) => (
+                <Badge key={i}>{tag.tag_name}</Badge>
+              ))}
           </View>
-          <Text>{post.description}</Text>
+          <Text>{data.description}</Text>
           <View
             style={{
               flexDirection: "row",
@@ -75,9 +95,9 @@ export default function PostScreen() {
               marginTop: 40,
             }}
           >
-            <Text color="muted">Posted {post.time_ago}</Text>
-            {post.type == "work" && (
-              <Text color="muted">Due {post.due_date}</Text>
+            <Text color="muted">Posted {createdAgo}</Text>
+            {data.type == "work" && (
+              <Text color="muted">Due {formattedDueDate}</Text>
             )}
           </View>
 
@@ -94,14 +114,14 @@ export default function PostScreen() {
             <IconButton name="add-circle-outline" size="2xl" />
             <IconButton name="chatbubble-outline" size="2xl" flippedX />
             <IconButton name="paper-plane-outline" size="2xl" />
-            {post.type == "work" ? (
+            {data.type == "work" ? (
               <Button style={styles.pageButton}>Accept job</Button>
             ) : (
               <Button style={styles.pageButton}>Hire service</Button>
             )}
           </View>
         </View>
-        {post.type == "hire" && (
+        {data.type == "hire" && (
           <View
             style={{
               padding: 16,
@@ -167,7 +187,7 @@ export default function PostScreen() {
                 style={{ borderRadius: 999 }}
               />
               <View style={styles.nameContainer}>
-                <Text weight="semibold">{post.user_name}</Text>
+                <Text weight="semibold">{data.user_username}</Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -194,12 +214,14 @@ export default function PostScreen() {
             </View>
           </Pressable>
 
-          <Text
-            ellipsizeMode="tail"
-            style={{ marginVertical: 16, marginBottom: 16 }}
-          >
-            {post.description}
-          </Text>
+          {data.user_bio && (
+            <Text
+              ellipsizeMode="tail"
+              style={{ marginVertical: 16, marginBottom: 16 }}
+            >
+              {data.user_bio}
+            </Text>
+          )}
         </View>
       </ScrollView>
     </>

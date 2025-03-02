@@ -1,11 +1,9 @@
 import OnboardingImageEditor from "@/components/onboarding/OnboardingImageEditor";
-import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function ProfileImage() {
-  const { width } = Dimensions.get("window");
   return (
     <View style={[styles.page]} color="background">
       <View>

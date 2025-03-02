@@ -64,6 +64,7 @@ export default function OnboardingNextButton({
   // Watch field inputs for validation
   const fieldValue = watch(currentField);
   useEffect(() => {
+    if (currentStep === "profile-image") return;
     if (fieldValue !== undefined && fieldValue !== null) trigger(currentField);
   }, [fieldValue]);
 

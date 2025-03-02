@@ -21,7 +21,7 @@ export default function CreateJobSubmitButton({
         text1: "Successfully posted job",
         swipeable: false,
       });
-      // router.replace("/(main)/(tabs)");
+      router.replace("/(main)/(tabs)");
     },
     onError: () => {
       Toast.show({
@@ -49,10 +49,9 @@ export default function CreateJobSubmitButton({
       location_address,
       due_date,
     } = data;
-    let newImages = ["test"];
-    // let newImages = await Promise.all(
-    //   data.images.map(async (imageUri) => await createBuffer(imageUri))
-    // );
+    let newImages = await Promise.all(
+      data.images.map(async (imageUri) => await createBuffer(imageUri))
+    );
     createPost({
       uuid: user.id,
       title,

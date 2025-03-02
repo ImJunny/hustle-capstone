@@ -8,30 +8,37 @@ import { Link } from "expo-router";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TPost } from "@/server/utils/example-data";
 import Icon from "../ui/Icon";
+import { UserJobPost } from "@/server/actions/post-actions";
+import { Image } from "expo-image";
+import { format, isThisYear } from "date-fns";
 
-export type JobPostProps = {
-  data: TPost;
+type PostProps = {
+  data: UserJobPost;
 } & ViewProps;
 
-export default function Post({ data, style }: JobPostProps) {
+export default function Post({ data, style }: PostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const formattedDueDate = isThisYear(new Date(data.due_date))
+    ? format(new Date(data.due_date), "MMMM d")
+    : format(new Date(data.due_date), "MMMM d, yyyy");
 
   return (
     <Link href={`/job/${data.uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
-          <ImagePlaceholder
-            width={116}
-            height={116}
-            style={{ borderRadius: 4 }}
+          <Image
+            style={{ width: 116, height: 116, borderRadius: 4 }}
+            source={{
+              uri: `https://hustle-images-bucket.s3.us-east-2.amazonaws.com/${data.uuid}-0`,
+            }}
           />
           <View style={styles.entryContent}>
             <Text weight="semibold" numberOfLines={1}>
               {data.title}
             </Text>
             {data.type == "work" ? (
-              <Text size="sm">Due {data.due_date}</Text>
+              <Text size="sm">Due {formattedDueDate}</Text>
             ) : (
               <View
                 style={{
@@ -67,14 +74,14 @@ export default function Post({ data, style }: JobPostProps) {
                   {data.type}
                 </Text>
               </Badge>
-              <Badge>{data.distance}</Badge>
-              <Badge>{data.tags[0]}</Badge>
+              {/* <Badge>{data.distance}</Badge>
+              <Badge>{data.tags[0]}</Badge> */}
             </View>
-            {data.status && (
+            {/* {data.status && (
               <Text weight="semibold" color="muted" size="sm">
                 {data.status}
               </Text>
-            )}
+            )} */}
           </View>
         </View>
       </TouchableOpacity>

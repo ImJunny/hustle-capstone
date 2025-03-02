@@ -5,6 +5,7 @@ import {
   createServicePost,
   getPostDetailsInfo,
   getPostInfo,
+  getPostsByKeyword,
   getUserPostUUIDs,
 } from "../actions/post-actions";
 
@@ -90,5 +91,14 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getPostDetailsInfo(input.uuid, input.type);
+    }),
+  get_posts_by_keyword: protectedProcedure
+    .input(
+      z.object({
+        keyword: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getPostsByKeyword(input.keyword);
     }),
 });

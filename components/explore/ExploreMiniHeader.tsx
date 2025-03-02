@@ -1,10 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import Text from "../ui/Text";
 import Icon from "../ui/Icon";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ExploreMiniHeader() {
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.border;
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderColor }]}>
       <View style={styles.spacing}>
         <Icon name="heart-sharp" size="lg" />
       </View>
@@ -41,8 +44,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     paddingVertical: 12,
-    borderWidth: 1,
-    borderBottomColor: "#272727",
+    borderBottomWidth: 1,
   },
   spacing: {
     padding: 5,

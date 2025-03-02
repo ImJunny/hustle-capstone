@@ -1,5 +1,5 @@
 import React from "react";
-import { withLayoutContext } from "expo-router";
+import { useLocalSearchParams, withLayoutContext } from "expo-router";
 import { SearchingHeader } from "@/components/headers/Headers";
 
 import {
@@ -7,7 +7,13 @@ import {
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import {
+  ParamListBase,
+  TabNavigationState,
+  useTheme,
+} from "@react-navigation/native";
+import { FontSizes } from "@/constants/Sizes";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -19,15 +25,27 @@ export const MaterialTopTabs = withLayoutContext<
 >(Navigator);
 
 export default function Layout() {
+  const themeColor = useThemeColor();
+
   return (
     <>
       <SearchingHeader />
       <>
         <MaterialTopTabs
           screenOptions={{
-            tabBarActiveTintColor: "#C2C2C2",
-            tabBarLabelStyle: { fontWeight: "bold", fontSize: 16 },
-            tabBarIndicatorStyle: { backgroundColor: "#FFFFFF", height: 3 },
+            tabBarStyle: {
+              backgroundColor: themeColor.background,
+              borderBottomWidth: 1,
+              borderColor: themeColor.border,
+            },
+            tabBarLabelStyle: {
+              fontFamily: "Inter-semibold",
+              fontSize: FontSizes.lg,
+            },
+            tabBarIndicatorStyle: {
+              backgroundColor: themeColor.foreground,
+              height: 3,
+            },
           }}
         >
           <MaterialTopTabs.Screen

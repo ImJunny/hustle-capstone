@@ -6,7 +6,7 @@ import {
   service_posts,
   users,
 } from "../../drizzle/schema";
-import { eq } from "drizzle-orm/sql";
+import { eq, ilike, or } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
 
@@ -122,7 +122,6 @@ export async function getUserPostUUIDs(uuid: string, type: "work" | "hire") {
       ...post,
       type,
     }));
-    console.log(result);
     return result;
   } catch (error) {
     console.log(error);
@@ -294,3 +293,33 @@ export async function getPostDetailsInfo(uuid: string, type: string) {
   }
 }
 export type PostDetailsInfo = Awaited<ReturnType<typeof getPostDetailsInfo>>;
+
+// Get posts by keyword and type
+export async function getPostsByKeyword(keyword: string) {
+  try {
+    let jobPosts = await db
+      .select({ uuid: job_posts.uuid })
+      .from(job_posts)
+      .where(
+        or(
+          ilike(job_posts.title, `%${keyword}%`),
+          ilike(job_posts.description, `%${keyword}%`)
+        )
+      );
+    jobPosts = jobPosts.map((post) => ({ ...post, type: "work" }));
+    let servicePosts = await db
+      .select({ uuid: service_posts.uuid })
+      .from(service_posts)
+      .where(
+        or(
+          ilike(service_posts.title, `%${keyword}%`),
+          ilike(service_posts.description, `%${keyword}%`)
+        )
+      );
+    servicePosts = servicePosts.map((post) => ({ ...post, type: "hire" }));
+    return [...jobPosts, ...servicePosts];
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get posts by keyword.");
+  }
+}

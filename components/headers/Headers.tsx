@@ -2,11 +2,14 @@ import React from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
-import { router, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import Input from "../ui/Input";
 import View, { ViewProps } from "../ui/View";
-import { Pressable, TouchableOpacity } from "react-native";
+import { Pressable, TouchableOpacity, ViewStyle } from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
+import { useState } from "react";
+import { useEffect } from "react";
+import { trpc } from "@/server/lib/trpc-client";
 
 export function ExampleHeader() {
   return (
@@ -168,7 +171,7 @@ export function MessagesHeader() {
         options={{
           center: (
             <Input
-              placeholder="Search users, services, jobs..."
+              placeholder="Search users, jobs, services..."
               style={{ width: "100%" }}
             />
           ),
@@ -186,12 +189,12 @@ export function ExploreHeader() {
           <Pressable
             style={{ width: "100%" }}
             onPress={() => {
-              console.log("test");
+              router.push("/explore-recent");
             }}
           >
             <Input
               editable={false}
-              placeholder="Search users, services, jobs..."
+              placeholder="Search users, jobs, services..."
               style={{ width: "100%" }}
               onFocus={() => {}}
             />
@@ -202,43 +205,84 @@ export function ExploreHeader() {
   );
 }
 export function SearchingHeader() {
+  const { text } = useLocalSearchParams();
+  const [value, setValue] = useState(text as string);
+
+  async function handleSearch() {
+    router.replace(`/search/${value}`);
+  }
   return (
     <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
       options={{
         center: (
-          <Input
-            placeholder="Search users, jobs, messages, etc..."
-            style={{ width: "80%" }}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Input
+              placeholder="Search users, jobs, services..."
+              style={{ flex: 1 }}
+              autoFocus
+              value={value}
+              onChangeText={(value) => setValue(value)}
+              onSubmitEditing={handleSearch}
+            />
+            <IconButton name="ellipsis-vertical" size="xl" />
+          </View>
         ),
-        left: (
-          <IconButton
-            name="arrow-back"
-            size="xl"
-            onPress={() => router.back()}
-          />
-        ),
-        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );
 }
-export function SearchedHeader() {
+export function SearchedHeader({
+  text,
+  style,
+}: {
+  text: string;
+  style?: ViewStyle;
+}) {
   return (
     <HeaderWrapper
+      style={style}
       options={{
         center: (
-          <Input
-            placeholder="Searched"
-            style={{ width: "90%", marginLeft: 50 }}
-          />
-        ),
-        left: (
-          <IconButton
-            name="arrow-back"
-            size="xl"
-            onPress={() => router.back()}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              gap: 12,
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => {
+                router.replace(`/explore-recent?text=${text}`);
+              }}
+            >
+              <Input
+                value={text}
+                editable={false}
+                placeholder="Search users, jobs, services..."
+                style={{ width: "100%" }}
+              />
+            </Pressable>
+          </View>
         ),
       }}
     />

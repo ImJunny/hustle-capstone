@@ -19,10 +19,10 @@ export default function ProfileSection({
 
   const { data: posts, isLoading } = trpc.post.get_user_post_uuids.useQuery({
     uuid: userUUID,
-    type: "work",
+    type: type,
   });
   if (isLoading) return;
-  else if (!posts) return;
+  else if (!posts || posts.length === 0) return;
   return (
     <View style={[styles.sectionContainer, { borderColor }]} color="background">
       <Text

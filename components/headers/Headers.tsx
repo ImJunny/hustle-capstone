@@ -183,11 +183,19 @@ export function ExploreHeader() {
     <HeaderWrapper
       options={{
         center: (
-          <Input
-            placeholder="Search users, services, jobs..."
+          <Pressable
             style={{ width: "100%" }}
-            onFocus={() => {}}
-          />
+            onPress={() => {
+              console.log("test");
+            }}
+          >
+            <Input
+              editable={false}
+              placeholder="Search users, services, jobs..."
+              style={{ width: "100%" }}
+              onFocus={() => {}}
+            />
+          </Pressable>
         ),
       }}
     />

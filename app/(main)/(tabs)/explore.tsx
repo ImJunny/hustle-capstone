@@ -91,7 +91,7 @@ export default function ExploreScreen() {
           >
             Jobs you might like
           </Text>
-          {exampleJobPosts.map((post, i) => (
+          {/* {exampleJobPosts.map((post, i) => (
             <Post
               key={i}
               data={post}
@@ -100,13 +100,13 @@ export default function ExploreScreen() {
                 borderBottomWidth: 1,
               }}
             />
-          ))}
+          ))} */}
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Services suggested for you
           </Text>
-          {exampleServicePosts.map((post, i) => (
+          {/* {exampleServicePosts.map((post, i) => (
             <Post
               key={i}
               data={post}
@@ -115,7 +115,7 @@ export default function ExploreScreen() {
                 borderBottomWidth: i != exampleServicePosts.length - 1 ? 1 : 0,
               }}
             />
-          ))}
+          ))} */}
         </View>
       </ScrollView>
     </>

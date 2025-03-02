@@ -32,7 +32,11 @@ export default function Post({ uuid, type, style }: PostProps) {
   if (!data) return;
   return (
     <Link
-      href={`/${data.type === "work" ? "job" : "service"}/${data.uuid}` as any}
+      href={
+        `/${data.type === "work" ? "job" : "service"}/${
+          data.uuid
+        }?type=${type}` as any
+      }
       asChild
     >
       <TouchableOpacity activeOpacity={0.65}>
@@ -84,8 +88,12 @@ export default function Post({ uuid, type, style }: PostProps) {
                   {data.type}
                 </Text>
               </Badge>
-              {/* <Badge>{data.distance}</Badge>
-              <Badge>{data.tags[0]}</Badge> */}
+              <Badge>
+                {data.location_type === "remote"
+                  ? "remote"
+                  : "IMPLEMENT DISTANCE"}
+              </Badge>
+              {/* <Badge>{data.tags[0]}</Badge> */}
             </View>
             {/* {data.status && (
               <Text weight="semibold" color="muted" size="sm">

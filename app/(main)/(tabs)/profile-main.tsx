@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useState } from "react";
 import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
@@ -38,6 +38,11 @@ export default function ProfileMainScreen() {
         <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
           <ProfileSection title="Job posts" type="work" userUUID={user.id} />
+          <ProfileSection
+            title="Services posts"
+            type="hire"
+            userUUID={user.id}
+          />
           <TouchableOpacity style={styles.completedContainer}>
             <Text size="xl" weight="semibold">
               Completed • 5

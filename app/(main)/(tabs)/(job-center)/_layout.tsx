@@ -7,7 +7,7 @@ export default function JobCenterLayout() {
       <Stack.Screen name="job-center" />
       <Stack.Screen
         name="track-working"
-        options={{ animation: "ios_from_right" }}
+        options={{ animation: "fade_from_bottom" }}
       />
       <Stack.Screen
         name="track-hiring"

@@ -55,6 +55,47 @@ export async function createJobPost(
   }
 }
 
+// Create job post
+export async function createServicePost(
+  uuid: string,
+  title: string,
+  description: string,
+  min_rate: number,
+  max_rate: number | undefined,
+  location_type: "local" | "remote",
+  location_address: string | undefined,
+  image_buffers: any[]
+) {
+  try {
+    const post_uuid = uuidv4();
+    await db.insert(service_posts).values({
+      uuid: post_uuid,
+      user_uuid: uuid,
+      title,
+      description,
+      min_rate,
+      max_rate,
+      location_type,
+      location_address,
+    });
+
+    await Promise.all(
+      image_buffers.map(async (image, index) => {
+        await uploadImage(`${post_uuid}-${index}`, image);
+        await db.insert(post_images).values({
+          image_url: `${
+            process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+          }/${post_uuid}-${index}?=${new Date().getTime()}`,
+          service_post_uuid: post_uuid,
+        });
+      })
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to create service post.");
+  }
+}
+
 // Get user job posts
 export async function getUserPostUUIDs(uuid: string, type: "work" | "hire") {
   try {
@@ -81,6 +122,7 @@ export async function getUserPostUUIDs(uuid: string, type: "work" | "hire") {
       ...post,
       type,
     }));
+    console.log(result);
     return result;
   } catch (error) {
     console.log(error);
@@ -103,6 +145,7 @@ export async function getPostInfo(uuid: string, type: "work" | "hire") {
           due_date: job_posts.due_date,
           min_rate: job_posts.min_rate,
           max_rate: job_posts.max_rate,
+          location_type: job_posts.location_type,
         })
         .from(job_posts)
         .where(eq(job_posts.uuid, uuid))
@@ -115,6 +158,7 @@ export async function getPostInfo(uuid: string, type: "work" | "hire") {
           title: service_posts.title,
           min_rate: service_posts.min_rate,
           max_rate: service_posts.max_rate,
+          location_type: service_posts.location_type,
         })
         .from(service_posts)
         .where(eq(service_posts.uuid, uuid))
@@ -194,10 +238,13 @@ export async function getPostDetailsInfo(uuid: string, type: string) {
   try {
     const post = await db
       .select()
-      .from(job_posts)
+      .from(type === "work" ? job_posts : service_posts)
       .where(eq(type === "work" ? job_posts.uuid : service_posts.uuid, uuid));
     const poster_uuid = post[0].user_uuid;
-
+    const due_date =
+      type === "work"
+        ? (post[0] as typeof job_posts.$inferSelect).due_date
+        : null;
     const postTags = await db
       .select({
         tag_name: post_tags.tag_type,
@@ -238,11 +285,12 @@ export async function getPostDetailsInfo(uuid: string, type: string) {
       post_images: postImages,
       ...posterInfo[0],
       type,
+      due_date,
     };
     return result;
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to get post info.");
+    throw new Error("Failed to get post details info.");
   }
 }
 export type PostDetailsInfo = Awaited<ReturnType<typeof getPostDetailsInfo>>;

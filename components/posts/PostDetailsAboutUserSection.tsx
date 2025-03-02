@@ -1,23 +1,20 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { router, useLocalSearchParams } from "expo-router";
-import { DetailsHeader } from "@/components/headers/Headers";
-import ScrollView from "@/components/ui/ScrollView";
+import { router } from "expo-router";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { Pressable, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { PostDetailsInfo, PostInfo } from "@/server/actions/post-actions";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
 
-type PostDetailsDescriptionSectionProps = {
+type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
 };
 
-export default function PostDetailsEmployerSection({
+export default function PostDetailsAboutUserSection({
   data,
-}: PostDetailsDescriptionSectionProps) {
+}: PostDetailsAboutUserProps) {
   return (
     <View
       style={{
@@ -26,7 +23,7 @@ export default function PostDetailsEmployerSection({
     >
       <View style={{ marginTop: 16 }}>
         <Text size="md" weight="semibold">
-          About the Employer
+          About the user
         </Text>
       </View>
       <Pressable onPress={() => router.push(`/profile/user`)}>
@@ -37,7 +34,7 @@ export default function PostDetailsEmployerSection({
             style={{ borderRadius: 999 }}
           />
           <View style={styles.nameContainer}>
-            <Text weight="semibold">{data.user_username}</Text>
+            <Text weight="semibold">@{data.user_username}</Text>
             <View
               style={{
                 flexDirection: "row",

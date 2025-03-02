@@ -68,6 +68,7 @@ export const service_posts = app_schema.table("service_posts", {
   location_type: text("location_type")
     .references(() => location_types.name)
     .notNull(),
+  location_address: text("location_address"),
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 

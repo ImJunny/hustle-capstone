@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, formatDistanceToNow, isThisYear } from "date-fns";
-import { PostDetailsInfo, PostInfo } from "@/server/actions/post-actions";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
 
 type PostDetailsDescriptionSectionProps = {
   data: PostDetailsInfo;
@@ -18,9 +18,11 @@ export default function PostDetailsDescriptionSection({
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
-  const formattedDueDate = isThisYear(new Date(data.due_date))
-    ? format(new Date(data.due_date), "MMMM d")
-    : format(new Date(data.due_date), "MMMM d, yyyy");
+  let formattedDueDate = null;
+  if (data.due_date)
+    formattedDueDate = isThisYear(new Date(data.due_date))
+      ? format(new Date(data.due_date), "MMMM d")
+      : format(new Date(data.due_date), "MMMM d, yyyy");
   const createdAgo = formatDistanceToNow(new Date(data.created_at), {
     addSuffix: true,
   });

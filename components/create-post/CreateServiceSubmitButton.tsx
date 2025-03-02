@@ -1,6 +1,6 @@
 import { z } from "zod";
 import Button from "../ui/Button";
-import { CreateJobSchema } from "@/zod/zod-schemas";
+import { CreateServiceSchema } from "@/zod/zod-schemas";
 import { UseFormHandleSubmit } from "react-hook-form";
 import { Buffer } from "buffer";
 import { trpc } from "@/server/lib/trpc-client";
@@ -8,25 +8,25 @@ import { useAuthData } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 
-type CreateJobSubmitButtonProps = {
-  handleSubmit: UseFormHandleSubmit<z.infer<typeof CreateJobSchema>>;
+type CreateServiceSubmitButtonProps = {
+  handleSubmit: UseFormHandleSubmit<z.infer<typeof CreateServiceSchema>>;
 };
-export default function CreateJobSubmitButton({
+export default function CreateServiceSubmitButton({
   handleSubmit,
-}: CreateJobSubmitButtonProps) {
+}: CreateServiceSubmitButtonProps) {
   const { user } = useAuthData();
   const { mutate: createPost, isLoading } =
-    trpc.post.create_job_post.useMutation({
+    trpc.post.create_service_post.useMutation({
       onSuccess: () => {
         Toast.show({
-          text1: "Successfully posted job",
+          text1: "Successfully posted service",
           swipeable: false,
         });
         router.replace("/(main)/(tabs)");
       },
       onError: () => {
         Toast.show({
-          text1: "Error posting job",
+          text1: "Error posting service",
           type: "error",
           swipeable: false,
         });
@@ -39,7 +39,7 @@ export default function CreateJobSubmitButton({
     return buffer;
   }
 
-  async function submitForm(data: z.infer<typeof CreateJobSchema>) {
+  async function submitForm(data: z.infer<typeof CreateServiceSchema>) {
     if (!user) return;
     const {
       title,
@@ -48,7 +48,6 @@ export default function CreateJobSubmitButton({
       max_rate,
       location_type,
       location_address,
-      due_date,
     } = data;
     let newImages = await Promise.all(
       data.images.map(async (imageUri) => await createBuffer(imageUri))
@@ -61,7 +60,6 @@ export default function CreateJobSubmitButton({
       max_rate,
       location_type,
       location_address,
-      due_date,
       image_buffers: newImages,
     });
   }
@@ -72,7 +70,7 @@ export default function CreateJobSubmitButton({
       onPress={handleSubmit(submitForm)}
       disabled={isLoading}
     >
-      Post job
+      Post service
     </Button>
   );
 }

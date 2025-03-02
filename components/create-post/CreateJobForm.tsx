@@ -14,7 +14,6 @@ import CreatePostImagePicker from "./CreatePostImagePicker";
 import CreateJobSubmitButton from "./CreateJobSubmitButton";
 
 export default function CreateJobForm() {
-  const [submitted, setSubmitted] = useState(false);
   // Declare form properties
   const {
     control,
@@ -22,10 +21,8 @@ export default function CreateJobForm() {
     setValue,
     handleSubmit,
     watch,
-    getValues,
   } = useForm<z.infer<typeof CreateJobSchema>>({
     resolver: zodResolver(CreateJobSchema),
-    mode: submitted ? "onChange" : "onSubmit",
   });
 
   const locationType = watch("location_type");
@@ -207,8 +204,7 @@ export default function CreateJobForm() {
         <DateInput setValue={setValue} />
         <BottomMessage
           field="due_date"
-          defaultMessage="This indicates the end-of-day deadline for the job. You cannot make
-          the due date earlier after a worker is approved."
+          defaultMessage="This indicates the end-of-day deadline for the job. You cannot make the due date earlier after a worker is approved."
           hasError
         />
       </View>
@@ -220,8 +216,7 @@ export default function CreateJobForm() {
         <CreatePostImagePicker setValue={setValue} />
         <BottomMessage
           field="images"
-          defaultMessage="Add up to 6 photos. If you do not provide any images, a placeholder
-          gradient will be displayed."
+          defaultMessage="Add up to 6 photos."
           hasError
         />
       </View>

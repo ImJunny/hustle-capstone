@@ -4,13 +4,14 @@ import * as ImagePicker from "expo-image-picker";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View from "../ui/View";
 import Icon from "../ui/Icon";
-import { UseFormSetValue, UseFormTrigger } from "react-hook-form";
-import { CreateJobSchema } from "@/zod/zod-schemas";
+import { UseFormSetValue } from "react-hook-form";
+import { CreateJobSchema, CreateServiceSchema } from "@/zod/zod-schemas";
 import { z } from "zod";
-import { ImageManipulator } from "expo-image-manipulator";
 
 type CreatePostImagePickerProps = {
-  setValue: UseFormSetValue<z.infer<typeof CreateJobSchema>>;
+  setValue:
+    | UseFormSetValue<z.infer<typeof CreateJobSchema>>
+    | UseFormSetValue<z.infer<typeof CreateServiceSchema>>;
 };
 function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
   const themeColor = useThemeColor();
@@ -25,9 +26,13 @@ function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
     });
     if (!result.canceled) {
       setImages([...images, result.assets[0].uri]);
-      setValue("images", [...images, result.assets[0].uri], {
-        shouldValidate: true,
-      });
+      (setValue as UseFormSetValue<z.infer<typeof CreateJobSchema>>)(
+        "images",
+        [...images, result.assets[0].uri],
+        {
+          shouldValidate: true,
+        }
+      );
     }
   }
 

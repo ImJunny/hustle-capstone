@@ -4,21 +4,27 @@ import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { Dimensions } from "react-native";
+import { Dimensions, FlatList } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Image } from "expo-image";
 import PostDetailsDescriptionSection from "./PostDetailsDescriptionSection";
-import PostDetailsEmployerSection from "./PostDetailsEmployerSection";
-import { PostDetailsInfo, PostInfo } from "@/server/actions/post-actions";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
 import PostDetailsReviewsSection from "./PostDetailsReviewsSection";
+import PostDetailsAboutUserSection from "./PostDetailsAboutUserSection";
 
-export default function PostDetails({ uuid }: { uuid: string }) {
+export default function PostDetails({
+  uuid,
+  type,
+}: {
+  uuid: string;
+  type: "work" | "hire";
+}) {
   const { width } = Dimensions.get("window");
 
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
-    type: "work",
+    type,
   });
 
   if (isLoading) {
@@ -35,17 +41,30 @@ export default function PostDetails({ uuid }: { uuid: string }) {
     <>
       <DetailsHeader />
       <ScrollView color="background">
-        <Image
-          style={{ width, height: width }}
-          source={{
-            uri: data.post_images[0].image_url,
-          }}
-        />
+        <ScrollView
+          horizontal
+          pagingEnabled
+          snapToInterval={width}
+          snapToAlignment="center"
+          decelerationRate="fast"
+          showsHorizontalScrollIndicator={false}
+        >
+          {data.post_images.map((image, i) => (
+            <Image
+              key={i}
+              style={{ width, height: width }}
+              source={{ uri: image.image_url }}
+            />
+          ))}
+        </ScrollView>
+
         <PostDetailsDescriptionSection
           data={data as unknown as PostDetailsInfo}
         />
         {data.type === "hire" && <PostDetailsReviewsSection />}
-        <PostDetailsEmployerSection data={data as unknown as PostDetailsInfo} />
+        <PostDetailsAboutUserSection
+          data={data as unknown as PostDetailsInfo}
+        />
       </ScrollView>
     </>
   );

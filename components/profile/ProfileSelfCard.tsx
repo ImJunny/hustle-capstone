@@ -64,8 +64,6 @@ const styles = StyleSheet.create({
   profileCard: {
     paddingVertical: 36,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    minHeight: 230,
   },
   top: {
     flexDirection: "row",

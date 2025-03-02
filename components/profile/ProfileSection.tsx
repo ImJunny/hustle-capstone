@@ -2,20 +2,27 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { TPost } from "@/server/utils/example-data";
 import Post from "../posts/Post";
-import { UserJobPost } from "@/server/actions/post-actions";
+import { trpc } from "@/server/lib/trpc-client";
 
 export default function ProfileSection({
   title,
-  posts,
+  type,
+  userUUID,
 }: {
   title: string;
-  posts: UserJobPost[];
+  type: "work" | "hire";
+  userUUID: string;
 }) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
+  const { data: posts, isLoading } = trpc.post.get_user_post_uuids.useQuery({
+    uuid: userUUID,
+    type: "work",
+  });
+  if (isLoading) return;
+  else if (!posts) return;
   return (
     <View style={[styles.sectionContainer, { borderColor }]} color="background">
       <Text
@@ -28,10 +35,11 @@ export default function ProfileSection({
       >
         {title} • {posts.length}
       </Text>
-      {posts.map((data, i) => (
+      {posts.map((post, i) => (
         <Post
           key={i}
-          data={data}
+          uuid={post.uuid}
+          type={type}
           style={{
             borderTopWidth: 1,
             borderColor,

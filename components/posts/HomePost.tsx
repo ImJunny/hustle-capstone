@@ -155,7 +155,7 @@ export default function HomePost({ data }: { data: TPost }) {
             </View>
             <Button
               style={styles.viewButton}
-              onPress={() => router.push(`/job/${data.uuid}`)}
+              onPress={() => router.push(`/post/${data.uuid}`)}
             >
               <Text color="black" weight="semibold">
                 View

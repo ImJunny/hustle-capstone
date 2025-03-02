@@ -9,13 +9,6 @@ export default function Layout() {
         name="(external)/settings"
         options={{ animation: "ios_from_right" }}
       />
-      <Stack.Screen
-        name="(external)/job/[id]"
-        options={{
-          animation: "fade_from_bottom",
-          presentation: "transparentModal",
-        }}
-      />
     </Stack>
   );
 }

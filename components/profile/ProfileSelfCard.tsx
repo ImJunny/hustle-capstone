@@ -46,7 +46,7 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
             >
               Edit profile
             </Button>
-            <Button style={{ flex: 1, height: 32 }}>Follow</Button>
+            <Button style={{ flex: 1, height: 32 }}>Share</Button>
           </View>
         </View>
       </View>

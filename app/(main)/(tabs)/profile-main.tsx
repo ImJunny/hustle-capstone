@@ -5,18 +5,12 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
 import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
-import { UserJobPost } from "@/server/actions/post-actions";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -24,11 +18,6 @@ export default function ProfileMainScreen() {
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
     uuid: user.id,
   });
-
-  const { data: jobPosts, isLoading: jobPostsLoading } =
-    trpc.post.get_user_job_posts.useQuery({
-      uuid: user.id,
-    });
 
   if (error) {
     return (
@@ -38,7 +27,7 @@ export default function ProfileMainScreen() {
     );
   }
 
-  if (isLoading || jobPostsLoading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
@@ -48,11 +37,7 @@ export default function ProfileMainScreen() {
       <ScrollView color="background">
         <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
-          <ProfileSection
-            title="Job posts"
-            posts={jobPosts as unknown as UserJobPost[]}
-          />
-          {/* <ProfileSection title="Services" posts={[exampleServicePosts[0]]} /> */}
+          <ProfileSection title="Job posts" type="work" userUUID={user.id} />
           <TouchableOpacity style={styles.completedContainer}>
             <Text size="xl" weight="semibold">
               Completed • 5

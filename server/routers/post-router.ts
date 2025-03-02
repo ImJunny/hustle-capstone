@@ -2,8 +2,9 @@ import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import { z } from "zod";
 import {
   createJobPost,
+  getPostDetailsInfo,
   getPostInfo,
-  getUserJobPosts,
+  getUserPostUUIDs,
 } from "../actions/post-actions";
 
 export const postRouter = createTRPCRouter({
@@ -35,14 +36,15 @@ export const postRouter = createTRPCRouter({
         input.image_buffers
       );
     }),
-  get_user_job_posts: protectedProcedure
+  get_user_post_uuids: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
+        type: z.enum(["work", "hire"]),
       })
     )
     .query(async ({ input }) => {
-      return await getUserJobPosts(input.uuid);
+      return await getUserPostUUIDs(input.uuid, input.type);
     }),
   get_post_info: protectedProcedure
     .input(
@@ -53,5 +55,15 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getPostInfo(input.uuid, input.type);
+    }),
+  get_post_details_info: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+        type: z.enum(["work", "hire"]),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getPostDetailsInfo(input.uuid, input.type);
     }),
 });

@@ -5,26 +5,36 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import Badge from "../ui/Badge";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TPost } from "@/server/utils/example-data";
 import Icon from "../ui/Icon";
-import { UserJobPost } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
+import { trpc } from "@/server/lib/trpc-client";
 
 type PostProps = {
-  data: UserJobPost;
+  uuid: string;
+  type: "work" | "hire";
 } & ViewProps;
 
-export default function Post({ data, style }: PostProps) {
+export default function Post({ uuid, type, style }: PostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const formattedDueDate = isThisYear(new Date(data.due_date))
-    ? format(new Date(data.due_date), "MMMM d")
-    : format(new Date(data.due_date), "MMMM d, yyyy");
+  const { data } = trpc.post.get_post_info.useQuery({
+    uuid,
+    type,
+  });
+  const formattedDueDate =
+    type === "work" && data?.due_date
+      ? isThisYear(new Date(data.due_date))
+        ? format(new Date(data.due_date), "MMMM d")
+        : format(new Date(data.due_date), "MMMM d, yyyy")
+      : "";
 
+  if (!data) return;
   return (
-    <Link href={`/job/${data.uuid}`} asChild>
+    <Link
+      href={`/${data.type === "work" ? "job" : "service"}/${data.uuid}` as any}
+      asChild
+    >
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <Image

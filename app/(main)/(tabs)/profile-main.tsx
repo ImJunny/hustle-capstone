@@ -12,6 +12,7 @@ import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
+import Button from "@/components/ui/Button";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -37,6 +38,27 @@ export default function ProfileMainScreen() {
   if (isLoading || postsLoading) {
     return <LoadingScreen />;
   }
+  if (!posts || posts.length === 0) {
+    return (
+      <>
+        <ProfileSelfHeader username={data?.username ?? ""} />
+        <ProfileSelfCard data={data as unknown as UserData} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <Text weight="semibold" size="2xl">
+            No data to show
+          </Text>
+          <Text>Create a post or complete jobs</Text>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
@@ -44,22 +66,27 @@ export default function ProfileMainScreen() {
       <ScrollView color="background">
         <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
-          <ProfileSection
-            title="Job posts"
-            type="work"
-            posts={jobPosts as unknown as Post[]}
-          />
-          <ProfileSection
-            title="Services posts"
-            type="hire"
-            posts={servicePosts as unknown as Post[]}
-          />
-          <TouchableOpacity style={styles.completedContainer}>
+          {jobPosts && jobPosts.length > 0 && (
+            <ProfileSection
+              title="Jobs I need help with"
+              type="work"
+              posts={jobPosts as unknown as Post[]}
+            />
+          )}
+          {servicePosts && servicePosts.length > 0 && (
+            <ProfileSection
+              title="Services I provide"
+              type="hire"
+              posts={servicePosts as unknown as Post[]}
+            />
+          )}
+
+          {/* <TouchableOpacity style={styles.completedContainer}>
             <Text size="xl" weight="semibold">
-              Completed • 5
+              Completed • 0
             </Text>
             <Icon name="chevron-forward" size="xl" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ScrollView>
     </>

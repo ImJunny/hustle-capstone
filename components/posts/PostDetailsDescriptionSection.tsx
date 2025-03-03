@@ -82,8 +82,7 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 10,
-    marginBottom: 8,
+    marginVertical: 12,
     gap: 8,
   },
   datesRow: {

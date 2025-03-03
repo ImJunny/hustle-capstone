@@ -61,14 +61,13 @@ export default function PostDetailsAboutUserSection({
         </View>
       </Pressable>
 
-      {data.user_bio && (
-        <Text
-          ellipsizeMode="tail"
-          style={{ marginVertical: 16, marginBottom: 16 }}
-        >
-          {data.user_bio}
-        </Text>
-      )}
+      <Text
+        ellipsizeMode="tail"
+        style={{ marginVertical: 16, marginBottom: 16 }}
+        color={data.user_bio ? "foreground" : "muted"}
+      >
+        {data.user_bio ?? "No bio provided"}
+      </Text>
     </View>
   );
 }

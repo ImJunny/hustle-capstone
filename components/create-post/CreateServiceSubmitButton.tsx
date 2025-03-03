@@ -15,23 +15,24 @@ export default function CreateServiceSubmitButton({
   handleSubmit,
 }: CreateServiceSubmitButtonProps) {
   const { user } = useAuthData();
-  const { mutate: createPost, isLoading } =
-    trpc.post.create_service_post.useMutation({
-      onSuccess: () => {
-        Toast.show({
-          text1: "Successfully posted service",
-          swipeable: false,
-        });
-        router.replace("/(main)/(tabs)");
-      },
-      onError: () => {
-        Toast.show({
-          text1: "Error posting service",
-          type: "error",
-          swipeable: false,
-        });
-      },
-    });
+  const utils = trpc.useUtils();
+  const { mutate: createPost, isLoading } = trpc.post.create_post.useMutation({
+    onSuccess: async () => {
+      Toast.show({
+        text1: "Successfully posted service",
+        swipeable: false,
+      });
+      await utils.post.invalidate();
+      router.replace("/(main)/(tabs)");
+    },
+    onError: () => {
+      Toast.show({
+        text1: "Error posting service",
+        type: "error",
+        swipeable: false,
+      });
+    },
+  });
   async function createBuffer(imageUri: string) {
     const file = await fetch(imageUri);
     const arrayBuffer = await file.arrayBuffer();
@@ -54,6 +55,7 @@ export default function CreateServiceSubmitButton({
     );
     createPost({
       uuid: user.id,
+      type: "hire",
       title,
       description,
       min_rate,
@@ -61,6 +63,7 @@ export default function CreateServiceSubmitButton({
       location_type,
       location_address,
       image_buffers: newImages,
+      due_date: null,
     });
   }
 

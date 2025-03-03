@@ -1,1 +1,0 @@
-ALTER TABLE "app"."service_posts" ADD COLUMN "location_address" text;

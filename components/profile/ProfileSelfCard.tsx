@@ -6,10 +6,13 @@ import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { UserData } from "@/server/actions/user-actions";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ProfileSelfCard({ data }: { data: UserData }) {
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.border;
   return (
-    <View style={styles.profileCard} color="background">
+    <View style={[styles.profileCard, { borderColor }]} color="background">
       <View style={styles.top}>
         <View>
           <Image
@@ -64,6 +67,8 @@ const styles = StyleSheet.create({
   profileCard: {
     paddingVertical: 36,
     paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    marginBottom: 16,
   },
   top: {
     flexDirection: "row",

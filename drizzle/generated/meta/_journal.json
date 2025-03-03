@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1740865040489,
-      "tag": "0000_windy_the_order",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1740873806254,
-      "tag": "0001_gigantic_otto_octavius",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1740887682145,
-      "tag": "0002_hot_speed",
+      "when": 1740964528549,
+      "tag": "0000_flowery_james_howlett",
       "breakpoints": true
     }
   ]

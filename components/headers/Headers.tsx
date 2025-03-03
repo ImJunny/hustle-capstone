@@ -10,6 +10,7 @@ import Icon, { IconSymbolName } from "../ui/Icon";
 import { useState } from "react";
 import { useEffect } from "react";
 import { trpc } from "@/server/lib/trpc-client";
+import { LinearGradient } from "expo-linear-gradient";
 
 export function ExampleHeader() {
   return (
@@ -303,7 +304,11 @@ export function ProfileSelfHeader({ username }: { username: string }) {
             <View
               style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
             >
-              <IconButton name="add" size="xl" onPress={() => {}} />
+              <IconButton
+                name="add"
+                size="xl"
+                onPress={() => router.push("/create-post")}
+              />
               <IconButton
                 name="menu-sharp"
                 size="xl"

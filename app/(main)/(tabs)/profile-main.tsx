@@ -11,6 +11,7 @@ import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
+import { Post } from "@/server/actions/post-actions";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -18,6 +19,12 @@ export default function ProfileMainScreen() {
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
     uuid: user.id,
   });
+  const { data: posts, isLoading: postsLoading } =
+    trpc.post.get_user_posts.useQuery({
+      uuid: user.id,
+    });
+  const jobPosts = posts?.filter((post) => post.type === "work");
+  const servicePosts = posts?.filter((post) => post.type === "hire");
 
   if (error) {
     return (
@@ -27,7 +34,7 @@ export default function ProfileMainScreen() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || postsLoading) {
     return <LoadingScreen />;
   }
 
@@ -37,11 +44,15 @@ export default function ProfileMainScreen() {
       <ScrollView color="background">
         <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
-          <ProfileSection title="Job posts" type="work" userUUID={user.id} />
+          <ProfileSection
+            title="Job posts"
+            type="work"
+            posts={jobPosts as unknown as Post[]}
+          />
           <ProfileSection
             title="Services posts"
             type="hire"
-            userUUID={user.id}
+            posts={servicePosts as unknown as Post[]}
           />
           <TouchableOpacity style={styles.completedContainer}>
             <Text size="xl" weight="semibold">

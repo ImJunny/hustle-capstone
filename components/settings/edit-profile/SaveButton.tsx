@@ -26,12 +26,12 @@ export default function SaveButton({
 
   const { mutate: updateProfile, isLoading } =
     trpc.user.update_user_profile.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         Toast.show({
           text1: "Profile saved",
           swipeable: false,
         });
-        utils.user.get_user_data.invalidate();
+        await utils.user.get_user_data.invalidate();
       },
       onError: () => {
         Toast.show({

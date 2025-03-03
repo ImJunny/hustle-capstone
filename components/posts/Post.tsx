@@ -8,20 +8,17 @@ import { Link } from "expo-router";
 import Icon from "../ui/Icon";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
-import { trpc } from "@/server/lib/trpc-client";
+import { Post as TPost } from "@/server/actions/post-actions";
 
 type PostProps = {
-  uuid: string;
   type: "work" | "hire";
+  data: TPost;
 } & ViewProps;
 
-export default function Post({ uuid, type, style }: PostProps) {
+export default function Post({ type, data, style }: PostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const { data } = trpc.post.get_post_info.useQuery({
-    uuid,
-    type,
-  });
+
   const formattedDueDate =
     type === "work" && data?.due_date
       ? isThisYear(new Date(data.due_date))

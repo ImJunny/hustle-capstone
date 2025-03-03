@@ -16,13 +16,6 @@ import {
   tagTypes,
 } from "./db-types";
 
-export async function insertTypes(table_name: any, type: string) {
-  await db
-    .insert(table_name as any)
-    .values({ name: type })
-    .onConflictDoNothing();
-}
-
 export async function runMigrations() {
   try {
     console.log("running migrations...");

@@ -15,23 +15,24 @@ export default function CreateJobSubmitButton({
   handleSubmit,
 }: CreateJobSubmitButtonProps) {
   const { user } = useAuthData();
-  const { mutate: createPost, isLoading } =
-    trpc.post.create_job_post.useMutation({
-      onSuccess: () => {
-        Toast.show({
-          text1: "Successfully posted job",
-          swipeable: false,
-        });
-        router.replace("/(main)/(tabs)");
-      },
-      onError: () => {
-        Toast.show({
-          text1: "Error posting job",
-          type: "error",
-          swipeable: false,
-        });
-      },
-    });
+  const utils = trpc.useUtils();
+  const { mutate: createPost, isLoading } = trpc.post.create_post.useMutation({
+    onSuccess: async () => {
+      Toast.show({
+        text1: "Successfully posted job",
+        swipeable: false,
+      });
+      await utils.post.invalidate();
+      router.replace("/(main)/(tabs)");
+    },
+    onError: () => {
+      Toast.show({
+        text1: "Error posting job",
+        type: "error",
+        swipeable: false,
+      });
+    },
+  });
   async function createBuffer(imageUri: string) {
     const file = await fetch(imageUri);
     const arrayBuffer = await file.arrayBuffer();
@@ -55,6 +56,7 @@ export default function CreateJobSubmitButton({
     );
     createPost({
       uuid: user.id,
+      type: "work",
       title,
       description,
       min_rate,

@@ -21,6 +21,7 @@ export default function OnboardingNextButton({
   nextStep,
   currentIndex,
 }: OnboardingNextButtonProps) {
+  const utils = trpc.useUtils();
   // Update mutations
   const { mutate: updateDateOfBirth, isLoading: dateLoading } =
     trpc.onboarding.update_onboarding_date_of_birth.useMutation({
@@ -107,7 +108,7 @@ export default function OnboardingNextButton({
       router.push(`/onboarding/${nextStep}` as any);
     } else {
       router.push("/(main)/(tabs)");
-      const utils = trpc.useUtils();
+
       await utils.user.get_user_data.invalidate();
     }
   }

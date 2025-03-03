@@ -1,10 +1,9 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
-import { DetailsHeader } from "@/components/headers/Headers";
+import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { Dimensions, FlatList } from "react-native";
+import { Dimensions, FlatList, StyleSheet } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Image } from "expo-image";
@@ -24,14 +23,19 @@ export default function PostDetails({
 
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
-    type,
   });
 
   if (isLoading) {
-    return <LoadingScreen color="background" />;
+    return (
+      <View style={{ flex: 1 }}>
+        <BackHeader />
+        <LoadingScreen color="background" />
+      </View>
+    );
   } else if (!data) {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
+        <BackHeader />
         <Text>Post not found.</Text>
       </View>
     );

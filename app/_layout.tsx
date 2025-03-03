@@ -19,6 +19,7 @@ import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, trpc, trpcClient } from "@/server/lib/trpc-client";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -58,18 +59,29 @@ export default function RootLayout() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          <GestureHandlerRootView
+            style={{
+              flex: 1,
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+            }}
           >
-            <SafeAreaView style={{ flex: 1 }}>
-              <Stack screenOptions={{ headerShown: false, animation: "none" }}>
-                <Stack.Screen name="(main)" />
-                <Stack.Screen name="(auth)" />
-              </Stack>
-              <Toast config={toastConfig} type="info" visibilityTime={2200} />
-            </SafeAreaView>
-            <StatusBar style="auto" />
-          </ThemeProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <SafeAreaView style={{ flex: 1 }}>
+                <Stack
+                  screenOptions={{ headerShown: false, animation: "none" }}
+                >
+                  <Stack.Screen name="(main)" />
+                  <Stack.Screen name="(auth)" />
+                </Stack>
+                <Toast config={toastConfig} type="info" visibilityTime={2200} />
+              </SafeAreaView>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </GestureHandlerRootView>
         </AuthProvider>
       </QueryClientProvider>
     </trpc.Provider>

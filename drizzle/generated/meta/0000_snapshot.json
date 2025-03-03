@@ -1,5 +1,5 @@
 {
-  "id": "1e890fe2-7b53-457d-849c-403fc29be8d4",
+  "id": "97bdf3c4-d232-4c52-9e4a-ca456e6879fb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,18 +26,18 @@
           "primaryKey": false,
           "notNull": true
         },
-        "progress_type": {
-          "name": "progress_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "progress_type": {
+          "name": "progress_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -56,10 +56,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "initiated_jobs_job_post_uuid_job_posts_uuid_fk": {
-          "name": "initiated_jobs_job_post_uuid_job_posts_uuid_fk",
+        "initiated_jobs_job_post_uuid_posts_uuid_fk": {
+          "name": "initiated_jobs_job_post_uuid_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "job_posts",
+          "tableTo": "posts",
           "schemaTo": "app",
           "columnsFrom": [
             "job_post_uuid"
@@ -82,130 +82,6 @@
             "name"
           ],
           "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "app.job_posts": {
-      "name": "job_posts",
-      "schema": "app",
-      "columns": {
-        "uuid": {
-          "name": "uuid",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "uuid_generate_v4()"
-        },
-        "user_uuid": {
-          "name": "user_uuid",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "min_rate": {
-          "name": "min_rate",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "max_rate": {
-          "name": "max_rate",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "location_type": {
-          "name": "location_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "location_address": {
-          "name": "location_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "due_date": {
-          "name": "due_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status_type": {
-          "name": "status_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "job_posts_user_uuid_users_uuid_fk": {
-          "name": "job_posts_user_uuid_users_uuid_fk",
-          "tableFrom": "job_posts",
-          "tableTo": "users",
-          "schemaTo": "app",
-          "columnsFrom": [
-            "user_uuid"
-          ],
-          "columnsTo": [
-            "uuid"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "job_posts_location_type_location_types_name_fk": {
-          "name": "job_posts_location_type_location_types_name_fk",
-          "tableFrom": "job_posts",
-          "tableTo": "location_types",
-          "schemaTo": "app",
-          "columnsFrom": [
-            "location_type"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "job_posts_status_type_status_types_name_fk": {
-          "name": "job_posts_status_type_status_types_name_fk",
-          "tableFrom": "job_posts",
-          "tableTo": "status_types",
-          "schemaTo": "app",
-          "columnsFrom": [
-            "status_type"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -281,6 +157,52 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "app.post_images": {
+      "name": "post_images",
+      "schema": "app",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "post_images_post_uuid_posts_uuid_fk": {
+          "name": "post_images_post_uuid_posts_uuid_fk",
+          "tableFrom": "post_images",
+          "tableTo": "posts",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "app.post_tags": {
       "name": "post_tags",
       "schema": "app",
@@ -297,14 +219,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "job_post_uuid": {
-          "name": "job_post_uuid",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "service_post_uuid": {
-          "name": "service_post_uuid",
+        "post_uuid": {
+          "name": "post_uuid",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -326,27 +242,13 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "post_tags_job_post_uuid_job_posts_uuid_fk": {
-          "name": "post_tags_job_post_uuid_job_posts_uuid_fk",
+        "post_tags_post_uuid_posts_uuid_fk": {
+          "name": "post_tags_post_uuid_posts_uuid_fk",
           "tableFrom": "post_tags",
-          "tableTo": "job_posts",
+          "tableTo": "posts",
           "schemaTo": "app",
           "columnsFrom": [
-            "job_post_uuid"
-          ],
-          "columnsTo": [
-            "uuid"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "post_tags_service_post_uuid_service_posts_uuid_fk": {
-          "name": "post_tags_service_post_uuid_service_posts_uuid_fk",
-          "tableFrom": "post_tags",
-          "tableTo": "service_posts",
-          "schemaTo": "app",
-          "columnsFrom": [
-            "service_post_uuid"
+            "post_uuid"
           ],
           "columnsTo": [
             "uuid"
@@ -361,41 +263,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "app.progress_types": {
-      "name": "progress_types",
-      "schema": "app",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "progress_types_name_unique": {
-          "name": "progress_types_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "app.service_posts": {
-      "name": "service_posts",
+    "app.posts": {
+      "name": "posts",
       "schema": "app",
       "columns": {
         "uuid": {
@@ -435,11 +304,23 @@
           "primaryKey": false,
           "notNull": false
         },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "location_type": {
           "name": "location_type",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "location_address": {
+          "name": "location_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -447,13 +328,25 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_type": {
+          "name": "status_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "service_posts_user_uuid_users_uuid_fk": {
-          "name": "service_posts_user_uuid_users_uuid_fk",
-          "tableFrom": "service_posts",
+        "posts_user_uuid_users_uuid_fk": {
+          "name": "posts_user_uuid_users_uuid_fk",
+          "tableFrom": "posts",
           "tableTo": "users",
           "schemaTo": "app",
           "columnsFrom": [
@@ -465,9 +358,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "service_posts_location_type_location_types_name_fk": {
-          "name": "service_posts_location_type_location_types_name_fk",
-          "tableFrom": "service_posts",
+        "posts_location_type_location_types_name_fk": {
+          "name": "posts_location_type_location_types_name_fk",
+          "tableFrom": "posts",
           "tableTo": "location_types",
           "schemaTo": "app",
           "columnsFrom": [
@@ -478,10 +371,57 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "posts_status_type_status_types_name_fk": {
+          "name": "posts_status_type_status_types_name_fk",
+          "tableFrom": "posts",
+          "tableTo": "status_types",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "status_type"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "app.progress_types": {
+      "name": "progress_types",
+      "schema": "app",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "progress_types_name_unique": {
+          "name": "progress_types_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   date,
   integer,
+  pgEnum,
   pgSchema,
   serial,
   text,
@@ -28,7 +29,7 @@ export const users = app_schema.table("users", {
   ),
 });
 
-export const job_posts = app_schema.table("job_posts", {
+export const posts = app_schema.table("posts", {
   uuid: uuid("uuid")
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
@@ -41,35 +42,16 @@ export const job_posts = app_schema.table("job_posts", {
   description: text("description").notNull(),
   min_rate: integer("min_rate").notNull(),
   max_rate: integer("max_rate"),
+  type: text("type", { enum: ["work", "hire"] }).notNull(),
   location_type: text("location_type")
     .references(() => location_types.name)
     .notNull(),
   location_address: text("location_address"),
-  due_date: date("due_date").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  due_date: date("due_date"),
   status_type: text("status_type").references(() => status_types.name, {
     onDelete: "set null",
   }),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const service_posts = app_schema.table("service_posts", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .default(sql`uuid_generate_v4()`),
-  user_uuid: uuid("user_uuid")
-    .references(() => users.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  min_rate: integer("min_rate").notNull(),
-  max_rate: integer("max_rate"),
-  location_type: text("location_type")
-    .references(() => location_types.name)
-    .notNull(),
-  location_address: text("location_address"),
-  created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const post_tags = app_schema.table("post_tags", {
@@ -79,13 +61,9 @@ export const post_tags = app_schema.table("post_tags", {
       onDelete: "cascade",
     })
     .notNull(),
-  job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+  post_uuid: uuid("post_uuid").references(() => posts.uuid, {
     onDelete: "cascade",
   }),
-  service_post_uuid: uuid("service_post_uuid").references(
-    () => service_posts.uuid,
-    { onDelete: "cascade" }
-  ),
 });
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {
@@ -94,24 +72,18 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
     .references(() => users.uuid)
     .notNull(),
   job_post_uuid: uuid("job_post_uuid")
-    .references(() => job_posts.uuid)
-    .notNull(),
-  progress_type: text("progress_type")
-    .references(() => progress_types.name)
+    .references(() => posts.uuid)
     .notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  progress_type: text("progress_type").references(() => progress_types.name),
 });
 
 export const post_images = app_schema.table("post_images", {
   id: serial("id").primaryKey(),
   image_url: text("image_url").notNull(),
-  job_post_uuid: uuid("job_post_uuid").references(() => job_posts.uuid, {
+  post_uuid: uuid("post_uuid").references(() => posts.uuid, {
     onDelete: "cascade",
   }),
-  service_post_uuid: uuid("service_post_uuid").references(
-    () => service_posts.uuid,
-    { onDelete: "cascade" }
-  ),
 });
 
 // TABLES FOR TYPES

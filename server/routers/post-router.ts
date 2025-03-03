@@ -1,32 +1,32 @@
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import { z } from "zod";
 import {
-  createJobPost,
-  createServicePost,
+  createPost,
   getPostDetailsInfo,
-  getPostInfo,
   getPostsByKeyword,
-  getUserPostUUIDs,
+  getUserPosts,
 } from "../actions/post-actions";
 
 export const postRouter = createTRPCRouter({
-  create_job_post: protectedProcedure
+  create_post: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
+        type: z.enum(["work", "hire"]),
         title: z.string(),
         description: z.string(),
         min_rate: z.number(),
         max_rate: z.number().optional(),
         location_type: z.enum(["local", "remote"]),
         location_address: z.string().optional(),
-        due_date: z.coerce.date(),
+        due_date: z.coerce.date().nullable(),
         image_buffers: z.array(z.any()),
       })
     )
     .mutation(async ({ input }) => {
-      await createJobPost(
+      await createPost(
         input.uuid,
+        input.type,
         input.title,
         input.description,
         input.min_rate,
@@ -37,60 +37,23 @@ export const postRouter = createTRPCRouter({
         input.image_buffers
       );
     }),
-  create_service_post: protectedProcedure
+  get_user_posts: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
-        title: z.string(),
-        description: z.string(),
-        min_rate: z.number(),
-        max_rate: z.number().optional(),
-        location_type: z.enum(["local", "remote"]),
-        location_address: z.string().optional(),
-        image_buffers: z.array(z.any()),
-      })
-    )
-    .mutation(async ({ input }) => {
-      await createServicePost(
-        input.uuid,
-        input.title,
-        input.description,
-        input.min_rate,
-        input.max_rate,
-        input.location_type,
-        input.location_address,
-        input.image_buffers
-      );
-    }),
-  get_user_post_uuids: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-        type: z.enum(["work", "hire"]),
       })
     )
     .query(async ({ input }) => {
-      return await getUserPostUUIDs(input.uuid, input.type);
-    }),
-  get_post_info: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-        type: z.enum(["work", "hire"]),
-      })
-    )
-    .query(async ({ input }) => {
-      return await getPostInfo(input.uuid, input.type);
+      return await getUserPosts(input.uuid);
     }),
   get_post_details_info: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
-        type: z.enum(["work", "hire"]),
       })
     )
     .query(async ({ input }) => {
-      return await getPostDetailsInfo(input.uuid, input.type);
+      return await getPostDetailsInfo(input.uuid);
     }),
   get_posts_by_keyword: protectedProcedure
     .input(

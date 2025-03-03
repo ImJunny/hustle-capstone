@@ -29,13 +29,6 @@ export default function TrackWorkingDetailsScreen() {
   const { width } = Dimensions.get("window");
 
   const { uuid } = useLocalSearchParams();
-  const post = [...exampleJobPosts, ...exampleServicePosts].find(
-    (post) => post.uuid === uuid
-  );
-
-  if (!post) {
-    return <Text>post not found</Text>;
-  }
 
   const progressDescription =
     "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";

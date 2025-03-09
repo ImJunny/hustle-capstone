@@ -86,6 +86,25 @@ export const post_images = app_schema.table("post_images", {
   }),
 });
 
+export const reviews = app_schema.table("reviews", {
+  id: serial("id").primaryKey(),
+  type: text("type", { enum: ["work", "hire"] }).notNull(),
+  reviewer_uuid: uuid("reviewer_uuid").references(() => users.uuid),
+  reviewee_uuid: uuid("reviewee_uuid").references(() => users.uuid),
+  job_post_uuid: uuid("job_uuid").references(() => posts.uuid, {
+    onDelete: "cascade",
+  }),
+  service_post_uuid: uuid("service_uuid").references(() => posts.uuid, {
+    onDelete: "cascade",
+  }),
+});
+
+export const transactions = app_schema.table("transactions", {
+  id: serial("id").primaryKey(),
+  user_uuid: uuid("user_uuid").references(() => users.uuid),
+  post_uuid: uuid("post_uuid").references(() => posts.uuid),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

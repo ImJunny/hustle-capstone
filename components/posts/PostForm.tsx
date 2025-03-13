@@ -2,27 +2,29 @@ import { StyleSheet } from "react-native";
 import Input from "../ui/Input";
 import Text from "../ui/Text";
 import View from "../ui/View";
-import DateInput from "./DateInput";
-import { Controller, useForm } from "react-hook-form";
-import { CreateServiceSchema } from "@/zod/zod-schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
-import CreatePostImagePicker from "./CreatePostImagePicker";
-import CreateJobSubmitButton from "./CreateJobSubmitButton";
-import CreateServiceSubmitButton from "./CreateServiceSubmitButton";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { PostImagePicker } from "./PostImagePicker";
+import PostDateInput from "./PostDateInput";
+import { CreatePostSchema } from "@/zod/zod-schemas";
+import { useEffect, useState } from "react";
 
-export default function CreateServiceForm() {
+type PostFormProps = {
+  data?: PostDetailsInfo;
+  isEditing?: boolean;
+};
+
+export default function PostForm({ data, isEditing }: PostFormProps) {
   // Declare form properties
   const {
     control,
     formState: { errors },
     setValue,
-    handleSubmit,
     watch,
-  } = useForm<z.infer<typeof CreateServiceSchema>>({
-    resolver: zodResolver(CreateServiceSchema),
-  });
+    getValues,
+  } = useFormContext<z.infer<typeof CreatePostSchema>>();
 
   const locationType = watch("location_type");
   return (
@@ -139,7 +141,7 @@ export default function CreateServiceForm() {
         </View>
         <BottomMessage
           field="min_rate"
-          defaultMessage="The rate cannot be changed after you have been hired."
+          defaultMessage="The rate cannot be changed after a worker has been approved."
           hasError
         />
       </View>
@@ -196,11 +198,25 @@ export default function CreateServiceForm() {
         </View>
       )}
 
+      {getValues("type") === "work" && (
+        <View>
+          <Text weight="semibold" size="lg">
+            Due date
+          </Text>
+          <PostDateInput setValue={setValue} />
+          <BottomMessage
+            field="due_date"
+            defaultMessage="This indicates the end-of-day deadline for the job. You cannot make the due date earlier after a worker is approved."
+            hasError
+          />
+        </View>
+      )}
+
       <View>
         <Text weight="semibold" size="lg">
           Photos
         </Text>
-        <CreatePostImagePicker setValue={setValue} />
+        <PostImagePicker />
         <BottomMessage
           field="images"
           defaultMessage="Add up to 6 photos."
@@ -218,7 +234,7 @@ export default function CreateServiceForm() {
         </Text>
       </View>
 
-      <CreateServiceSubmitButton handleSubmit={handleSubmit} />
+      {/* <PostSubmitButton handleSubmit={handleSubmit} /> */}
     </View>
   );
 
@@ -227,7 +243,7 @@ export default function CreateServiceForm() {
     defaultMessage,
     hasError,
   }: {
-    field: keyof z.infer<typeof CreateServiceSchema>;
+    field: keyof z.infer<typeof CreatePostSchema>;
     defaultMessage: string;
     hasError?: boolean;
   }) {
@@ -272,4 +288,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 120,
   },
+  footer: {
+    position: "absolute",
+    width: "100%",
+    bottom: 0,
+  },
+  button: {},
 });

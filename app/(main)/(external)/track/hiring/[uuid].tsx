@@ -1,35 +1,18 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
-import {
-  BackHeader,
-  DetailsHeader,
-  SimpleHeader,
-} from "@/components/headers/Headers";
+import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import Badge from "@/components/ui/Badge";
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import IconButton from "@/components/ui/IconButton";
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
 
 export default function TrackWorkingDetailsScreen() {
-  const themeColor = useThemeColor();
-  const borderColor = themeColor.border;
-  const { width } = Dimensions.get("window");
-
-  const { uuid } = useLocalSearchParams();
-
   const progressDescription =
     "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
   return (

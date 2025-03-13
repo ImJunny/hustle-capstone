@@ -54,7 +54,7 @@ export default function PostDetailsDescriptionSection({
       </View>
       <Text>{data.description}</Text>
       <View style={styles.datesRow}>
-        <Text color="muted">Posted {createdAgo}</Text>
+        <Text color="muted">{createdAgo}</Text>
         {data.type == "work" && (
           <Text color="muted">Due {formattedDueDate}</Text>
         )}

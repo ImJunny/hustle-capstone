@@ -1,6 +1,6 @@
 import { db } from "../../drizzle/db";
 import { post_images, post_tags, users, posts } from "../../drizzle/schema";
-import { eq, ilike, or, asc } from "drizzle-orm/sql";
+import { eq, ilike, or, asc, desc } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
 
@@ -51,6 +51,53 @@ export async function createPost(
   }
 }
 
+// Update post
+export async function updatePost(
+  uuid: string,
+  title: string,
+  description: string,
+  min_rate: number,
+  max_rate: number | undefined,
+  location_type: "local" | "remote",
+  location_address: string | undefined,
+  due_date: Date | null,
+  image_buffers: any[] | null
+) {
+  try {
+    await db
+      .update(posts)
+      .set({
+        title,
+        description,
+        min_rate,
+        max_rate,
+        due_date: due_date?.toDateString(),
+        location_type,
+        location_address,
+        created_at: new Date(),
+      })
+      .where(eq(posts.uuid, uuid));
+
+    if (image_buffers) {
+      await db.delete(post_images).where(eq(post_images.post_uuid, uuid));
+      await Promise.all(
+        image_buffers.map(async (image, index) => {
+          await uploadImage(`${uuid}-${index}`, image);
+          await db.insert(post_images).values({
+            image_url: `${
+              process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+            }/${uuid}-${index}?=${new Date().getTime()}`,
+            post_uuid: uuid,
+          });
+        })
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to save post.");
+  }
+}
+
 // Get user job posts
 export async function getUserPosts(uuid: string) {
   try {
@@ -65,7 +112,8 @@ export async function getUserPosts(uuid: string) {
         location_type: posts.location_type,
       })
       .from(posts)
-      .where(eq(posts.user_uuid, uuid));
+      .where(eq(posts.user_uuid, uuid))
+      .orderBy(desc(posts.created_at));
 
     result = await Promise.all(
       result.map(async (post) => {
@@ -81,7 +129,7 @@ export async function getUserPosts(uuid: string) {
     return result as Post[];
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to get user job posts uuids.");
+    throw new Error("Failed to get user job posts.");
   }
 }
 export type Post = {

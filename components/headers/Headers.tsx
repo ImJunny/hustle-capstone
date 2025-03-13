@@ -1,16 +1,25 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import Input from "../ui/Input";
 import View, { ViewProps } from "../ui/View";
-import { Pressable, TouchableOpacity, ViewStyle } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
 import { useState } from "react";
 import { useEffect } from "react";
 import { trpc } from "@/server/lib/trpc-client";
 import { LinearGradient } from "expo-linear-gradient";
+import Button from "../ui/Button";
+import { useFormContext } from "react-hook-form";
+import z from "zod";
+import { CreatePostSchema } from "@/zod/zod-schemas";
 
 export function ExampleHeader() {
   return (
@@ -115,12 +124,33 @@ export function BackHeader() {
     />
   );
 }
-export function DetailsHeader() {
+export function DetailsHeader({
+  uuid,
+  isSelf,
+}: {
+  uuid: string;
+  isSelf?: boolean;
+}) {
   return (
     <HeaderWrapper
       options={{
         left: <IconButton name="chevron-back" onPress={() => router.back()} />,
-        right: <IconButton name="ellipsis-vertical" />,
+        right: (
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 18,
+            }}
+          >
+            {isSelf && (
+              <IconButton
+                name="create-outline"
+                onPress={() => router.push(`/edit-post/${uuid}` as any)}
+              />
+            )}
+            <IconButton name="ellipsis-vertical" />
+          </View>
+        ),
       }}
     />
   );
@@ -362,6 +392,60 @@ export function SettingsHeader() {
 }
 
 export function CreatePostHeader() {
+  const styles = StyleSheet.create({
+    button: {
+      height: 40,
+      width: 90,
+    },
+  });
+
+  const { setValue } = useFormContext<z.infer<typeof CreatePostSchema>>();
+  const [type, setType] = useState<"work" | "hire">("work");
+
+  useEffect(() => {
+    setValue("type", type);
+  }, [type]);
+
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View
+            style={{
+              gap: 16,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                style={styles.button}
+                type={type === "work" ? "primary" : "secondary"}
+                onPress={() => setType("work")}
+              >
+                Job
+              </Button>
+              <Button
+                style={styles.button}
+                type={type === "hire" ? "primary" : "secondary"}
+                onPress={() => setType("hire")}
+              >
+                Service
+              </Button>
+            </View>
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
+export function EditPostHeader({ type }: { type?: "work" | "hire" }) {
   return (
     <HeaderWrapper
       options={{
@@ -373,10 +457,11 @@ export function CreatePostHeader() {
               onPress={() => router.back()}
             />
             <Text size="xl" weight="semibold">
-              Create a post
+              Edit {type === "work" ? "job" : "service"}
             </Text>
           </View>
         ),
+        right: <IconButton name="trash-outline" size="xl" />,
       }}
     />
   );

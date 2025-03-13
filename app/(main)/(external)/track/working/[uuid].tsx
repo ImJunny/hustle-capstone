@@ -2,18 +2,12 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import {
-  BackHeader,
-  DetailsHeader,
-  SimpleHeader,
-} from "@/components/headers/Headers";
+import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import Badge from "@/components/ui/Badge";
 import { Dimensions, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import IconButton from "@/components/ui/IconButton";
 import {
   exampleJobPosts,
   exampleServicePosts,
@@ -25,8 +19,6 @@ import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimat
 
 export default function TrackWorkingDetailsScreen() {
   const themeColor = useThemeColor();
-  const borderColor = themeColor.border;
-  const { width } = Dimensions.get("window");
 
   const { uuid } = useLocalSearchParams();
   const post = [...exampleJobPosts, ...exampleServicePosts].find(

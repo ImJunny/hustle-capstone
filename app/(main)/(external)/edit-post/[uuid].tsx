@@ -3,18 +3,25 @@ import View from "@/components/ui/View";
 import React from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { CreatePostHeader } from "@/components/headers/Headers";
+import { CreatePostHeader, EditPostHeader } from "@/components/headers/Headers";
 import PostForm from "@/components/posts/PostForm";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { CreatePostProvider } from "@/contexts/CreatePostContext";
 import PostSubmitButton from "@/components/posts/PostSubmitButton";
+import { useLocalSearchParams } from "expo-router";
+import { trpc } from "@/server/lib/trpc-client";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
 
 export default function CreatePostForm() {
+  const { uuid } = useLocalSearchParams();
+  const { data } = trpc.post.get_post_details_info.useQuery({
+    uuid: uuid as string,
+  });
   const themeColor = useThemeColor();
 
   return (
-    <CreatePostProvider>
-      <CreatePostHeader />
+    <CreatePostProvider data={data as unknown as PostDetailsInfo}>
+      <EditPostHeader />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -30,7 +37,7 @@ export default function CreatePostForm() {
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
-        <PostSubmitButton />
+        <PostSubmitButton uuid={uuid as string} isEditing />
       </View>
     </CreatePostProvider>
   );

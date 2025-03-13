@@ -11,6 +11,7 @@ import PostDetailsDescriptionSection from "./PostDetailsDescriptionSection";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import PostDetailsReviewsSection from "./PostDetailsReviewsSection";
 import PostDetailsAboutUserSection from "./PostDetailsAboutUserSection";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function PostDetails({
   uuid,
@@ -20,7 +21,7 @@ export default function PostDetails({
   type: "work" | "hire";
 }) {
   const { width } = Dimensions.get("window");
-
+  const { user } = useAuthData();
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
   });
@@ -43,7 +44,7 @@ export default function PostDetails({
 
   return (
     <>
-      <DetailsHeader />
+      <DetailsHeader uuid={data.uuid} isSelf={data.user_uuid === user?.id} />
       <ScrollView color="background">
         <ScrollView
           horizontal

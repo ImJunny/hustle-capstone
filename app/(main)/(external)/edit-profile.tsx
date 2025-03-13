@@ -6,17 +6,23 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SaveButton from "@/components/settings/edit-profile/SaveButton";
-import { EditProfileSchema } from "@/zod/zod-schemas";
 import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Platform } from "react-native";
+
+// Declare schema
+const EditProfileSchema = z.object({
+  username: z.string().min(1, "Username cannot be empty."),
+  firstname: z.string().min(1, "First name cannot be empty."),
+  lastname: z.string().min(1, "Last name cannot be empty."),
+  bio: z.string().optional(),
+});
 
 export default function EditProfileScreen() {
   // Declare form properties

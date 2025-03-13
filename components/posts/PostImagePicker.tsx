@@ -4,19 +4,18 @@ import * as ImagePicker from "expo-image-picker";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View from "../ui/View";
 import Icon from "../ui/Icon";
-import { UseFormSetValue } from "react-hook-form";
-import { CreateJobSchema, CreateServiceSchema } from "@/zod/zod-schemas";
+import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { CreatePostSchema } from "@/zod/zod-schemas";
+import { useCreatePostContext } from "@/contexts/CreatePostContext";
 
-type CreatePostImagePickerProps = {
-  setValue:
-    | UseFormSetValue<z.infer<typeof CreateJobSchema>>
-    | UseFormSetValue<z.infer<typeof CreateServiceSchema>>;
-};
-function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
+export function PostImagePicker() {
+  const { setIsNewImages } = useCreatePostContext();
   const themeColor = useThemeColor();
-
-  const [images, setImages] = useState<string[]>([]);
+  const { setValue, getValues } =
+    useFormContext<z.infer<typeof CreatePostSchema>>();
+  const { images: formImages } = getValues();
+  const [images, setImages] = useState<string[]>(formImages ?? []);
 
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -25,19 +24,22 @@ function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
       aspect: [1, 1],
     });
     if (!result.canceled) {
-      setImages([...images, result.assets[0].uri]);
-      (setValue as UseFormSetValue<z.infer<typeof CreateJobSchema>>)(
-        "images",
-        [...images, result.assets[0].uri],
-        {
-          shouldValidate: true,
-        }
-      );
+      const newImages = [...images, result.assets[0].uri];
+      setImages(newImages);
+      setValue("images", newImages, {
+        shouldValidate: true,
+      });
+      setIsNewImages(true);
     }
   }
 
   async function deleteImage(index: number) {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setImages((prevImages) => {
+      const updatedImages = prevImages.filter((_, i) => i !== index);
+      setValue("images", updatedImages, { shouldValidate: true });
+      return updatedImages;
+    });
+    setIsNewImages(true);
   }
 
   return (
@@ -45,10 +47,7 @@ function CreatePostImagePicker({ setValue }: CreatePostImagePickerProps) {
       <View style={styles.imageContainer}>
         {images.map((imageUri, index) => (
           <View key={index}>
-            <Image
-              source={{ uri: `${imageUri}?=${new Date().getTime()}` }}
-              style={styles.image}
-            />
+            <Image source={{ uri: imageUri }} style={styles.image} />
             <TouchableOpacity
               style={[
                 styles.deleteContainer,
@@ -106,5 +105,3 @@ const styles = StyleSheet.create({
   },
   deleteIcon: {},
 });
-
-export default CreatePostImagePicker;

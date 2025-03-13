@@ -58,8 +58,7 @@ export type UserData = Awaited<ReturnType<typeof getUserData>>;
 export async function updateUserProfile(
   uuid: string,
   username: string,
-  first_name: string,
-  last_name: string,
+  display_name: string,
   bio: string,
   image_buffer: ArrayBuffer | null
 ) {
@@ -79,8 +78,7 @@ export async function updateUserProfile(
       .update(users)
       .set({
         username,
-        first_name,
-        last_name,
+        display_name,
         bio,
       })
       .where(eq(users.uuid, uuid));

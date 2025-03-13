@@ -5,7 +5,7 @@ import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions, FlatList, StyleSheet } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import PostDetailsDescriptionSection from "./PostDetailsDescriptionSection";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
@@ -30,7 +30,7 @@ export default function PostDetails({
     return (
       <View style={{ flex: 1 }}>
         <BackHeader />
-        <LoadingScreen color="background" />
+        <LoadingView color="background" />
       </View>
     );
   } else if (!data) {

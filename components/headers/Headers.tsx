@@ -134,7 +134,7 @@ export function DetailsHeader({
   return (
     <HeaderWrapper
       options={{
-        left: <IconButton name="chevron-back" onPress={() => router.back()} />,
+        left: <IconButton name="arrow-back" onPress={() => router.back()} />,
         right: (
           <View
             style={{
@@ -142,13 +142,14 @@ export function DetailsHeader({
               gap: 18,
             }}
           >
-            {isSelf && (
+            {isSelf ? (
               <IconButton
                 name="create-outline"
                 onPress={() => router.push(`/edit-post/${uuid}` as any)}
               />
+            ) : (
+              <IconButton name="ellipsis-vertical" />
             )}
-            <IconButton name="ellipsis-vertical" />
           </View>
         ),
       }}
@@ -461,7 +462,7 @@ export function EditPostHeader({ type }: { type?: "work" | "hire" }) {
             </Text>
           </View>
         ),
-        right: <IconButton name="trash-outline" size="xl" />,
+        right: <IconButton name="trash-outline" />,
       }}
     />
   );

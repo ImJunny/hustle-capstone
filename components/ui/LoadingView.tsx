@@ -3,7 +3,7 @@ import View from "./View";
 import { BackHeader } from "../headers/Headers";
 import { TColors } from "@/constants/Colors";
 
-export default function LoadingScreen({
+export default function LoadingView({
   backHeader,
   color,
 }: {

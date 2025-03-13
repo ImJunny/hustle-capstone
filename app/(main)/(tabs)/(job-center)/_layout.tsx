@@ -7,11 +7,11 @@ export default function JobCenterLayout() {
       <Stack.Screen name="job-center" />
       <Stack.Screen
         name="track-working"
-        options={{ animation: "fade_from_bottom" }}
+        options={{ animation: "ios_from_right" }}
       />
       <Stack.Screen
         name="track-hiring"
-        options={{ animation: "fade_from_bottom" }}
+        options={{ animation: "ios_from_right" }}
       />
       <Stack.Screen name="(saved-tabs)" />
       <Stack.Screen name="recently-viewed" />

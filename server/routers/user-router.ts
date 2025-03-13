@@ -31,8 +31,7 @@ export const userRouter = createTRPCRouter({
       z.object({
         uuid: z.string(),
         username: z.string(),
-        first_name: z.string(),
-        last_name: z.string(),
+        display_name: z.string(),
         bio: z.string(),
         image_buffer: z.any(),
       })
@@ -41,8 +40,7 @@ export const userRouter = createTRPCRouter({
       const result = await updateUserProfile(
         input.uuid,
         input.username,
-        input.first_name,
-        input.last_name,
+        input.display_name,
         input.bio,
         input.image_buffer
       );

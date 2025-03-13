@@ -1,10 +1,7 @@
-import Button from "@/components/ui/Button";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { OnboardingContext } from "@/contexts/OnboardingFormsContext";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { StyleSheet, useColorScheme } from "react-native";
 import DatePicker from "react-native-date-picker";
@@ -22,7 +19,6 @@ export default function DateOfBirth() {
   const handleDateChange = (selectedDate: Date) => {
     setDate(selectedDate);
 
-    // ✅ Update react-hook-form with the new date
     setValue("date_of_birth", selectedDate);
 
     const formatted = selectedDate.toLocaleDateString("en-US", {

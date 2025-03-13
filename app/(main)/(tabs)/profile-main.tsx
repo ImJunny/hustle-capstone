@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import Icon from "@/components/ui/Icon";
@@ -36,7 +36,7 @@ export default function ProfileMainScreen() {
   }
 
   if (isLoading || postsLoading) {
-    return <LoadingScreen />;
+    return <LoadingView />;
   }
   if (!posts || posts.length === 0) {
     return (

@@ -24,6 +24,8 @@ export default function PostSubmitButton({
   const { handleSubmit, getValues, setValue } =
     useFormContext<z.infer<typeof CreatePostSchema>>();
 
+  const [submitting, setSubmitting] = useState(false);
+
   const { mutate: createPost, isLoading: createLoading } =
     trpc.post.create_post.useMutation({
       onSuccess: async () => {
@@ -40,6 +42,9 @@ export default function PostSubmitButton({
           type: "error",
           swipeable: false,
         });
+      },
+      onSettled: () => {
+        setSubmitting(false);
       },
     });
 
@@ -60,6 +65,9 @@ export default function PostSubmitButton({
           swipeable: false,
         });
       },
+      onSettled: () => {
+        setSubmitting(false);
+      },
     });
 
   async function createBuffer(imageUri: string) {
@@ -78,6 +86,7 @@ export default function PostSubmitButton({
 
   async function submitForm(data: z.infer<typeof CreatePostSchema>) {
     if (!user) return;
+    setSubmitting(true);
     const {
       type,
       title,
@@ -127,7 +136,7 @@ export default function PostSubmitButton({
       onPress={() => {
         handleSubmit(submitForm)();
       }}
-      disabled={createLoading || updateLoading}
+      disabled={createLoading || updateLoading || submitting}
     >
       {isEditing ? "Save changes" : "Create post"}
     </Button>

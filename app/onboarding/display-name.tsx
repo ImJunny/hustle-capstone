@@ -4,7 +4,7 @@ import View from "@/components/ui/View";
 import { StyleSheet } from "react-native";
 import { Controller, useFormContext } from "react-hook-form";
 
-export default function FirstName() {
+export default function DisplayName() {
   const {
     control,
     formState: { errors },
@@ -14,21 +14,19 @@ export default function FirstName() {
     <View style={[styles.page]} color="background">
       <View>
         <Text size="3xl" weight="semibold" style={{ marginTop: 16 }}>
-          What is your first name?
+          Create a display name.
         </Text>
-        <Text>
-          We'd like to get to know you! This also helps others know who you are.
-        </Text>
+        <Text>This also helps others know who you are.</Text>
       </View>
       <View style={{ gap: 4 }}>
         <Controller
           control={control}
-          name="first_name"
+          name="display_name"
           render={({ field: { onChange, value } }) => (
             <Input
               style={{ marginTop: 16 }}
               type="line"
-              placeholder="First name"
+              placeholder="Display name"
               value={value}
               onChangeText={onChange}
             />
@@ -36,7 +34,7 @@ export default function FirstName() {
         />
 
         <Text color="red">
-          {errors.first_name && (errors.first_name.message as string)}
+          {errors.display_name && (errors.display_name.message as string)}
         </Text>
       </View>
     </View>

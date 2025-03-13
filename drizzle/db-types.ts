@@ -4,8 +4,8 @@ export const statusTypes = ["closed", "open", "initiated", "complete"] as const;
 export const progressTypes = ["accepted", "in progress", "complete"] as const;
 export const onboardingPhaseTypes = [
   "date of birth",
-  "first name",
   "username",
+  "display name",
   "profile image",
   "completed",
 ];

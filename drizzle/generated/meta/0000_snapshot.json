@@ -1,5 +1,5 @@
 {
-  "id": "97bdf3c4-d232-4c52-9e4a-ca456e6879fb",
+  "id": "1fc80328-5026-484d-805f-64e934b8e56e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -426,6 +426,112 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "app.reviews": {
+      "name": "reviews",
+      "schema": "app",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reviewer_uuid": {
+          "name": "reviewer_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewee_uuid": {
+          "name": "reviewee_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "job_uuid": {
+          "name": "job_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_uuid": {
+          "name": "service_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reviews_reviewer_uuid_users_uuid_fk": {
+          "name": "reviews_reviewer_uuid_users_uuid_fk",
+          "tableFrom": "reviews",
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "reviewer_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "reviews_reviewee_uuid_users_uuid_fk": {
+          "name": "reviews_reviewee_uuid_users_uuid_fk",
+          "tableFrom": "reviews",
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "reviewee_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "reviews_job_uuid_posts_uuid_fk": {
+          "name": "reviews_job_uuid_posts_uuid_fk",
+          "tableFrom": "reviews",
+          "tableTo": "posts",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "job_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "reviews_service_uuid_posts_uuid_fk": {
+          "name": "reviews_service_uuid_posts_uuid_fk",
+          "tableFrom": "reviews",
+          "tableTo": "posts",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "service_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "app.status_types": {
       "name": "status_types",
       "schema": "app",
@@ -492,6 +598,66 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "app.transactions": {
+      "name": "transactions",
+      "schema": "app",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_uuid": {
+          "name": "user_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactions_user_uuid_users_uuid_fk": {
+          "name": "transactions_user_uuid_users_uuid_fk",
+          "tableFrom": "transactions",
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "user_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_post_uuid_posts_uuid_fk": {
+          "name": "transactions_post_uuid_posts_uuid_fk",
+          "tableFrom": "transactions",
+          "tableTo": "posts",
+          "schemaTo": "app",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "app.users": {
       "name": "users",
       "schema": "app",
@@ -514,14 +680,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_name": {
-          "name": "last_name",
+        "display_name": {
+          "name": "display_name",
           "type": "text",
           "primaryKey": false,
           "notNull": false

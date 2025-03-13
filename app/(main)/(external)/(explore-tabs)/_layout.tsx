@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocalSearchParams, withLayoutContext } from "expo-router";
+import { router, useLocalSearchParams, withLayoutContext } from "expo-router";
 import { SearchingHeader } from "@/components/headers/Headers";
 
 import {

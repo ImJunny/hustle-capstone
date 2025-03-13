@@ -13,8 +13,8 @@ import { trpc } from "@/server/lib/trpc-client";
 // Define the onboarding steps in order
 export const onboardingSteps = [
   "date-of-birth",
-  "first-name",
   "username",
+  "display-name",
   "profile-image",
 ] as const;
 
@@ -62,8 +62,8 @@ export default function Layout() {
           screenOptions={{ animation: "ios_from_right", headerShown: false }}
         >
           <Stack.Screen name="date-of-birth" />
-          <Stack.Screen name="first-name" />
           <Stack.Screen name="username" />
+          <Stack.Screen name="display-name" />
           <Stack.Screen name="profile-image" />
         </Stack>
 

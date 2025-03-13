@@ -1,7 +1,7 @@
 import ExploreMiniHeader from "@/components/explore/ExploreMiniHeader";
 import { SearchedHeader } from "@/components/headers/Headers";
 import Post from "@/components/posts/Post";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
@@ -42,7 +42,7 @@ export default function SearchedPage() {
         }}
       />
       {isLoading ? (
-        <LoadingScreen />
+        <LoadingView />
       ) : !data || data.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

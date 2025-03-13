@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +19,7 @@ import { Platform } from "react-native";
 // Declare schema
 const EditProfileSchema = z.object({
   username: z.string().min(1, "Username cannot be empty."),
-  firstname: z.string().min(1, "First name cannot be empty."),
-  lastname: z.string().min(1, "Last name cannot be empty."),
+  display_name: z.string().min(1, "Display name cannot be empty."),
   bio: z.string().optional(),
 });
 
@@ -46,8 +45,7 @@ export default function EditProfileScreen() {
   useEffect(() => {
     if (data) {
       setValue("username", data.username!);
-      setValue("firstname", data.first_name!);
-      setValue("lastname", data.last_name!);
+      setValue("display_name", data.display_name!);
       setValue("bio", data.bio! ?? "");
       setImageUri(data.avatar_url ?? undefined);
       setformReady(true);
@@ -60,7 +58,7 @@ export default function EditProfileScreen() {
   const [isNewImage, setIsNewImage] = useState<boolean>(false);
 
   if (!formReady || !data) {
-    return <LoadingScreen backHeader />;
+    return <LoadingView backHeader />;
   }
 
   return (
@@ -88,12 +86,7 @@ export default function EditProfileScreen() {
               control={control}
               name="username"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  type="outline"
-                  placeholder="username"
-                  value={value}
-                  onChangeText={onChange}
-                />
+                <Input type="outline" value={value} onChangeText={onChange} />
               )}
             />
             {errors.username && (
@@ -101,47 +94,20 @@ export default function EditProfileScreen() {
             )}
           </View>
 
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <View style={[styles.inputEntry, { flex: 1 }]}>
-              <Text weight="bold" size="lg">
-                First name
-              </Text>
-              <Controller
-                control={control}
-                name="firstname"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    type="outline"
-                    placeholder="First"
-                    value={value}
-                    onChangeText={onChange}
-                  />
-                )}
-              />
-              {errors.firstname && (
-                <Text color="red">{errors.firstname.message}</Text>
+          <View style={styles.inputEntry}>
+            <Text weight="bold" size="lg">
+              Display name
+            </Text>
+            <Controller
+              control={control}
+              name="display_name"
+              render={({ field: { onChange, value } }) => (
+                <Input type="outline" value={value} onChangeText={onChange} />
               )}
-            </View>
-            <View style={[styles.inputEntry, { flex: 1 }]}>
-              <Text weight="bold" size="lg">
-                Last name
-              </Text>
-              <Controller
-                control={control}
-                name="lastname"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    type="outline"
-                    placeholder="Last"
-                    value={value}
-                    onChangeText={onChange}
-                  />
-                )}
-              />
-              {errors.lastname && (
-                <Text color="red">{errors.lastname.message}</Text>
-              )}
-            </View>
+            />
+            {errors.display_name && (
+              <Text color="red">{errors.display_name.message}</Text>
+            )}
           </View>
 
           <View style={styles.inputEntry}>

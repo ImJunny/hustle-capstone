@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import { z } from "zod";
 import {
   updateOnboardingDateOfBirth,
-  updateOnboardingFirstName,
+  updateOnboardingDisplayName,
   updateOnboardingProfileImage,
   updateOnboardingUsername,
 } from "../actions/onboarding-actions";
@@ -19,15 +19,15 @@ export const onboardingRouter = createTRPCRouter({
       await updateOnboardingDateOfBirth(input.uuid, input.date_of_birth);
     }),
 
-  update_onboarding_first_name: protectedProcedure
+  update_onboarding_display_name: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
-        first_name: z.string(),
+        display_name: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      await updateOnboardingFirstName(input.uuid, input.first_name);
+      await updateOnboardingDisplayName(input.uuid, input.display_name);
     }),
 
   update_onboarding_username: protectedProcedure

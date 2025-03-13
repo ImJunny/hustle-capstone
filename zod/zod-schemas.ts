@@ -3,8 +3,7 @@ import { z } from "zod";
 
 export const EditProfileSchema = z.object({
   username: z.string().min(1, "Username cannot be empty."),
-  firstname: z.string().min(1, "First name cannot be empty."),
-  lastname: z.string().min(1, "Last name cannot be empty."),
+  display_name: z.string().min(1, "Display name cannot be empty."),
   bio: z.string().optional(),
 });
 
@@ -23,7 +22,6 @@ export const OnboardingFormSchema = z.object({
       message: "Must be at least 16 years of age.",
     }
   ),
-  first_name: z.string().min(1, "First name is required."),
   username: z
     .string()
     .min(1, "Username is required.")
@@ -31,6 +29,7 @@ export const OnboardingFormSchema = z.object({
       /^[a-zA-Z0-9_]+$/,
       "Username must contain only letters, numbers, and underscores."
     ),
+  display_name: z.string().min(1, "First name is required."),
   image_buffer: z.any(),
 });
 

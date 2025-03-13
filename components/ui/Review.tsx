@@ -8,7 +8,7 @@ import { exampleReview } from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 // import { getUserData } from "@/server/utils/user";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
@@ -35,7 +35,7 @@ export default function Review({ displayImage }: ReviewProps) {
   // }
 
   // if (isLoading) {
-  //   return <LoadingScreen />;
+  //   return <LoadingView />;
   // }
 
   // if (!review) {

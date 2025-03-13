@@ -13,31 +13,12 @@ export async function updateOnboardingDateOfBirth(
       .update(users)
       .set({
         date_of_birth: date_of_birth.toDateString(),
-        onboarding_phase: "first name",
-      })
-      .where(eq(users.uuid, uuid));
-  } catch (error) {
-    console.log(error);
-    throw new Error("Failed to update date of birth.");
-  }
-}
-
-// Update onboarding first name
-export async function updateOnboardingFirstName(
-  uuid: string,
-  first_name: string
-) {
-  try {
-    await db
-      .update(users)
-      .set({
-        first_name,
         onboarding_phase: "username",
       })
       .where(eq(users.uuid, uuid));
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to update first name.");
+    throw new Error("Failed to update date of birth.");
   }
 }
 
@@ -57,12 +38,31 @@ export async function updateOnboardingUsername(uuid: string, username: string) {
       .update(users)
       .set({
         username,
-        onboarding_phase: "profile image",
+        onboarding_phase: "display name",
       })
       .where(eq(users.uuid, uuid));
   } catch (error) {
     console.log(error);
     throw new Error("Failed to update username.");
+  }
+}
+
+// Update onboarding display name
+export async function updateOnboardingDisplayName(
+  uuid: string,
+  display_name: string
+) {
+  try {
+    await db
+      .update(users)
+      .set({
+        display_name,
+        onboarding_phase: "profile image",
+      })
+      .where(eq(users.uuid, uuid));
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to update display name.");
   }
 }
 

@@ -62,9 +62,6 @@ export default function RootLayout() {
           <GestureHandlerRootView
             style={{
               flex: 1,
-              position: "absolute",
-              width: "100%",
-              height: "100%",
             }}
           >
             <ThemeProvider

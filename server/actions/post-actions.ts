@@ -1,6 +1,6 @@
 import { db } from "../../drizzle/db";
 import { post_images, post_tags, users, posts } from "../../drizzle/schema";
-import { eq, ilike, or, asc, desc } from "drizzle-orm/sql";
+import { eq, ilike, or, asc, desc, not, and, ne } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
 
@@ -112,7 +112,7 @@ export async function getUserPosts(uuid: string) {
         location_type: posts.location_type,
       })
       .from(posts)
-      .where(eq(posts.user_uuid, uuid))
+      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "hidden")))
       .orderBy(desc(posts.created_at));
 
     result = await Promise.all(
@@ -214,5 +214,20 @@ export async function getPostsByKeyword(keyword: string) {
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get posts by keyword.");
+  }
+}
+
+// Delete post by uuid; this is a soft delete
+export async function deletePost(uuid: string) {
+  try {
+    await db
+      .update(posts)
+      .set({
+        status_type: "hidden",
+      })
+      .where(eq(posts.uuid, uuid));
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to delete post.");
   }
 }

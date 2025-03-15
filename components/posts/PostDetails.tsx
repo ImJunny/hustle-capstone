@@ -1,9 +1,9 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { Dimensions, FlatList, StyleSheet } from "react-native";
+import { Dimensions } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
@@ -12,20 +12,25 @@ import { PostDetailsInfo } from "@/server/actions/post-actions";
 import PostDetailsReviewsSection from "./PostDetailsReviewsSection";
 import PostDetailsAboutUserSection from "./PostDetailsAboutUserSection";
 import { useAuthData } from "@/contexts/AuthContext";
+import BottomSheet from "@gorhom/bottom-sheet";
+import PostDetailsSheet from "./PostDetailsSheet";
+import PostDetailsDeleteModal from "./PostDetailsDeleteModal";
 
-export default function PostDetails({
-  uuid,
-  type,
-}: {
-  uuid: string;
-  type: "work" | "hire";
-}) {
+// Component that renders post details by uuid; parent of sheet and modal
+export default function PostDetails({ uuid }: { uuid: string }) {
   const { width } = Dimensions.get("window");
   const { user } = useAuthData();
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
   });
 
+  // Sheet ref to open/close
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Modal state to open/close
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Fallback renders
   if (isLoading) {
     return (
       <View style={{ flex: 1 }}>
@@ -35,7 +40,7 @@ export default function PostDetails({
     );
   } else if (!data) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <BackHeader />
         <Text>Post not found.</Text>
       </View>
@@ -44,7 +49,7 @@ export default function PostDetails({
 
   return (
     <>
-      <DetailsHeader uuid={data.uuid} isSelf={data.user_uuid === user?.id} />
+      <DetailsHeader sheetRef={bottomSheetRef} />
       <ScrollView color="background">
         <ScrollView
           horizontal
@@ -71,6 +76,19 @@ export default function PostDetails({
           data={data as unknown as PostDetailsInfo}
         />
       </ScrollView>
+
+      <PostDetailsSheet
+        isSelf={data.user_uuid === user?.id}
+        uuid={uuid}
+        sheetRef={bottomSheetRef}
+        setModalOpen={setModalOpen}
+      />
+
+      <PostDetailsDeleteModal
+        uuid={uuid}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
     </>
   );
 }

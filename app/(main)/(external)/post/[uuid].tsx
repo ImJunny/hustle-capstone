@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import PostDetails from "@/components/posts/PostDetails";
 
 export default function PostScreen() {
-  const { uuid, type } = useLocalSearchParams();
+  const { uuid } = useLocalSearchParams();
 
-  return <PostDetails uuid={uuid as string} type={type as "work" | "hire"} />;
+  return <PostDetails uuid={uuid as string} />;
 }

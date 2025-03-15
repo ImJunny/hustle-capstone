@@ -1,3 +1,4 @@
+import React, { ForwardedRef } from "react";
 import { StyleSheet, TextInput, TextInputProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -10,12 +11,10 @@ export type InputProps = {
   placeholder?: string;
 } & TextInputProps;
 
-export default function Input({
-  style,
-  type = "default",
-  placeholder,
-  ...props
-}: InputProps) {
+function Input(
+  { style, type = "default", placeholder, ...props }: InputProps,
+  ref: ForwardedRef<TextInput>
+) {
   const themeColor = useThemeColor();
   const backgroundColor =
     type === "default" ? themeColor["background-variant"] : "transparent";
@@ -34,6 +33,7 @@ export default function Input({
 
   return (
     <TextInput
+      ref={ref} // Pass the ref down to the TextInput component
       placeholder={placeholder}
       style={[
         {
@@ -57,6 +57,8 @@ export default function Input({
     />
   );
 }
+
+export default React.forwardRef(Input);
 
 const styles = StyleSheet.create({
   inputContainer: {

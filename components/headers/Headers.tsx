@@ -20,6 +20,7 @@ import Button from "../ui/Button";
 import { useFormContext } from "react-hook-form";
 import z from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 export function ExampleHeader() {
   return (
@@ -125,11 +126,9 @@ export function BackHeader() {
   );
 }
 export function DetailsHeader({
-  uuid,
-  isSelf,
+  sheetRef,
 }: {
-  uuid: string;
-  isSelf?: boolean;
+  sheetRef: React.RefObject<BottomSheetMethods>;
 }) {
   return (
     <HeaderWrapper
@@ -142,14 +141,10 @@ export function DetailsHeader({
               gap: 18,
             }}
           >
-            {isSelf ? (
-              <IconButton
-                name="create-outline"
-                onPress={() => router.push(`/edit-post/${uuid}` as any)}
-              />
-            ) : (
-              <IconButton name="ellipsis-vertical" />
-            )}
+            <IconButton
+              name="ellipsis-vertical"
+              onPress={() => sheetRef.current?.expand()}
+            />
           </View>
         ),
       }}
@@ -441,28 +436,6 @@ export function CreatePostHeader() {
             </View>
           </View>
         ),
-      }}
-    />
-  );
-}
-
-export function EditPostHeader({ type }: { type?: "work" | "hire" }) {
-  return (
-    <HeaderWrapper
-      options={{
-        left: (
-          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
-            <IconButton
-              name="arrow-back"
-              size="xl"
-              onPress={() => router.back()}
-            />
-            <Text size="xl" weight="semibold">
-              Edit {type === "work" ? "job" : "service"}
-            </Text>
-          </View>
-        ),
-        right: <IconButton name="trash-outline" />,
       }}
     />
   );

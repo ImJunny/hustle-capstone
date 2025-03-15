@@ -1,18 +1,15 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState } from "react";
 import { useAuthData } from "@/contexts/AuthContext";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
 import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
-import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
-import Button from "@/components/ui/Button";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();

@@ -7,12 +7,11 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { trpc } from "@/server/lib/trpc-client";
 import { useLocalSearchParams } from "expo-router";
-import BottomSheet from "@gorhom/bottom-sheet";
-import { useCallback } from "react";
-import { useRef } from "react";
-import Button from "@/components/ui/Button";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Post as TPost } from "@/server/actions/post-actions";
+import "react-native-reanimated";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useRef } from "react";
+import FilterSheet from "@/components/explore/FilterSheet";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
@@ -20,19 +19,8 @@ export default function SearchedPage() {
     keyword: keyword as string,
   });
 
-  const bottomSheetRef = useRef<BottomSheetMethods>(null);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
-
-  function openBottomSheet() {
-    if (bottomSheetRef.current) {
-      console.log("Opening BottomSheet");
-      bottomSheetRef.current.expand(); // Expand the sheet when button is pressed
-    }
-  }
-
+  // Sheet ref to open/close
+  const filterSheetRef = useRef<BottomSheet>(null);
   return (
     <>
       <SearchedHeader
@@ -51,32 +39,16 @@ export default function SearchedPage() {
         </View>
       ) : (
         <>
-          <ExploreMiniHeader />
+          <ExploreMiniHeader filterSheetRef={filterSheetRef} />
           <ScrollView>
             {data.map((post, i) => (
               <Post key={i} data={post as TPost} type={post.type} />
             ))}
           </ScrollView>
-          {/* <BottomSheet
-            ref={bottomSheetRef}
-            index={0}
-            snapPoints={["25%", "50%", "90%"]}
-            onChange={handleSheetChanges}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text>Test</Text>
-            </View>
-          </BottomSheet>
-
-          <Button onPress={openBottomSheet}>Open</Button> */}
         </>
       )}
+
+      <FilterSheet sheetRef={filterSheetRef} />
     </>
   );
 }

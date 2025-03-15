@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import { z } from "zod";
 import {
   createPost,
+  deletePost,
   getPostDetailsInfo,
   getPostsByKeyword,
   getUserPosts,
@@ -91,5 +92,14 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getPostsByKeyword(input.keyword);
+    }),
+  delete_post: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await deletePost(input.uuid);
     }),
 });

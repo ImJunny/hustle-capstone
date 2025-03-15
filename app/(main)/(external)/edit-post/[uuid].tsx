@@ -3,7 +3,7 @@ import View from "@/components/ui/View";
 import React from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { CreatePostHeader, EditPostHeader } from "@/components/headers/Headers";
+import { SimpleHeader } from "@/components/headers/Headers";
 import PostForm from "@/components/posts/PostForm";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { CreatePostProvider } from "@/contexts/CreatePostContext";
@@ -21,7 +21,7 @@ export default function CreatePostForm() {
 
   return (
     <CreatePostProvider data={data as unknown as PostDetailsInfo}>
-      <EditPostHeader />
+      <SimpleHeader title="Edit header" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

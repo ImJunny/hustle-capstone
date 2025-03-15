@@ -28,14 +28,7 @@ export default function Post({ type, data, style }: PostProps) {
 
   if (!data) return;
   return (
-    <Link
-      href={
-        `/${data.type === "work" ? "job" : "service"}/${
-          data.uuid
-        }?type=${type}` as any
-      }
-      asChild
-    >
+    <Link href={`/post/${data.uuid}` as any} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <Image

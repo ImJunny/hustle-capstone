@@ -1,6 +1,18 @@
 import { db } from "../../drizzle/db";
 import { post_images, post_tags, users, posts } from "../../drizzle/schema";
-import { eq, ilike, or, asc, desc, not, and, ne } from "drizzle-orm/sql";
+import {
+  eq,
+  ilike,
+  or,
+  asc,
+  desc,
+  not,
+  and,
+  ne,
+  gt,
+  gte,
+  lte,
+} from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
 
@@ -190,10 +202,16 @@ export async function getPostDetailsInfo(uuid: string) {
 }
 export type PostDetailsInfo = Awaited<ReturnType<typeof getPostDetailsInfo>>;
 
-// Get posts by keyword and type
-export async function getPostsByKeyword(keyword: string) {
+// Get posts by filters
+export async function getPostsByFilters(
+  keyword: string,
+  min_rate: number | undefined,
+  max_rate: number | undefined,
+  type: "work" | "hire" | "all",
+  sort: "asc" | "desc" | undefined = undefined
+) {
   try {
-    const result = await db
+    let result = await db
       .select({
         uuid: posts.uuid,
         type: posts.type,
@@ -205,11 +223,24 @@ export async function getPostsByKeyword(keyword: string) {
       })
       .from(posts)
       .where(
-        or(
-          ilike(posts.title, `%${keyword}%`),
-          ilike(posts.description, `%${keyword}%`)
+        and(
+          or(
+            ilike(posts.title, `%${keyword}%`),
+            ilike(posts.description, `%${keyword}%`)
+          ),
+          gte(posts.min_rate, min_rate ?? 0),
+          lte(posts.max_rate, max_rate ?? 10000),
+          type === "all"
+            ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
+            : eq(posts.type, type),
+          ne(posts.status_type, "hidden")
         )
       );
+    if (sort === "asc") {
+      result = result.sort((a, b) => a.min_rate - b.min_rate);
+    } else if (sort === "desc") {
+      result = result.sort((a, b) => b.min_rate - a.min_rate);
+    }
     return result;
   } catch (error) {
     console.log(error);

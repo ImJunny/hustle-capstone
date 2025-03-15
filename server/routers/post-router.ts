@@ -4,7 +4,7 @@ import {
   createPost,
   deletePost,
   getPostDetailsInfo,
-  getPostsByKeyword,
+  getPostsByFilters,
   getUserPosts,
   updatePost,
 } from "../actions/post-actions";
@@ -84,14 +84,24 @@ export const postRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getPostDetailsInfo(input.uuid);
     }),
-  get_posts_by_keyword: protectedProcedure
+  get_posts_by_filters: protectedProcedure
     .input(
       z.object({
         keyword: z.string(),
+        min_rate: z.number().optional(),
+        max_rate: z.number().optional(),
+        type: z.enum(["work", "hire", "all"]).optional().default("all"),
+        sort: z.enum(["asc", "desc"]).optional(),
       })
     )
     .query(async ({ input }) => {
-      return await getPostsByKeyword(input.keyword);
+      return await getPostsByFilters(
+        input.keyword,
+        input.min_rate,
+        input.max_rate,
+        input.type,
+        input.sort
+      );
     }),
   delete_post: protectedProcedure
     .input(

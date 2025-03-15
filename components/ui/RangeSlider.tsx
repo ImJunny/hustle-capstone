@@ -19,22 +19,11 @@ type RangeSliderProps = {
   max: number;
   setMin: Dispatch<SetStateAction<number>>;
   setMax: Dispatch<SetStateAction<number>>;
-  setMinText: Dispatch<SetStateAction<string>>;
-  setMaxText: Dispatch<SetStateAction<string>>;
 };
 
 function RangeSlider(
   this: any,
-  {
-    minConstant,
-    maxConstant,
-    setMin,
-    setMax,
-    min,
-    max,
-    setMinText,
-    setMaxText,
-  }: RangeSliderProps
+  { minConstant, maxConstant, setMin, setMax, min, max }: RangeSliderProps
 ) {
   const themeColor = useThemeColor();
   const renderThumb = useCallback(
@@ -68,8 +57,6 @@ function RangeSlider(
     (newMin: number, newMax: number) => {
       setMin(newMin);
       setMax(newMax);
-      setMinText(String(newMin));
-      setMaxText(`$${newMax}${newMax == maxConstant ? "+" : ""}`);
     },
     [setMin, setMax]
   );
@@ -93,18 +80,18 @@ export default memo(RangeSlider);
 
 const styles = StyleSheet.create({
   thumb: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     borderRadius: 30,
   },
   rail: {
     flex: 1,
-    height: 5,
+    height: 4,
     borderRadius: 2,
     width: 100,
   },
   railSelected: {
-    height: 5,
+    height: 4,
     borderRadius: 2,
   },
   label: {

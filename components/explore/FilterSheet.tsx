@@ -1,38 +1,61 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Sheet from "../ui/Sheet";
-import { ReactNode, RefObject, useRef, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  RefObject,
+  SetStateAction,
+  useState,
+} from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
-import {
-  Pressable,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import RangeSlider from "../ui/RangeSlider";
 import Separator from "../ui/Separator";
-import Input from "../ui/Input";
+import { trpc } from "@/server/lib/trpc-client";
 
 export default function FilterSheet({
   sheetRef,
+  filters,
+  filterSetters,
 }: {
   sheetRef: RefObject<BottomSheetMethods>;
+  filters: { type: "all" | "work" | "hire"; min: number; max: number };
+  filterSetters: {
+    setMin: (min: number) => void;
+    setMax: (max: number) => void;
+    setType: (type: "all" | "work" | "hire") => void;
+  };
 }) {
   const themeColor = useThemeColor();
-  const postTypes = ["All", "Jobs", "Services"];
-  const MIN_CONSTANT = 10;
-  const MAX_CONSTANT = 500;
+  const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
+  const MIN_CONSTANT = 0;
+  const MAX_CONSTANT = 1000;
 
-  const [type, setType] = useState<(typeof postTypes)[number]>(postTypes[0]);
+  const [type, setType] = useState<"all" | "work" | "hire">(
+    postTypes[0] as "all" | "work" | "hire"
+  );
   const [min, setMin] = useState(MIN_CONSTANT);
   const [max, setMax] = useState(MAX_CONSTANT);
-  const [minText, setMinText] = useState(String(min));
-  const [maxText, setMaxText] = useState(`$${String(max)}`);
 
-  const maxInputRef = useRef<TextInput>(null);
+  const utils = trpc.useUtils();
+  function handleSave() {
+    filterSetters.setMin(min);
+    filterSetters.setMax(max);
+    filterSetters.setType(type);
+    utils.post.get_posts_by_filters.invalidate();
+    sheetRef.current?.close();
+  }
+
+  function handleReset() {
+    setMin(0);
+    setMax(1000);
+    setType("all");
+  }
+
   return (
     <Sheet
       sheetRef={sheetRef}
@@ -51,7 +74,11 @@ export default function FilterSheet({
                   type={type === postType ? "primary" : "outline"}
                   onPress={() => setType(postType)}
                 >
-                  {postType}
+                  {postType === "all"
+                    ? "All"
+                    : postType === "work"
+                    ? "Jobs"
+                    : "Services"}
                 </Button>
               ))}
             </View>
@@ -87,8 +114,6 @@ export default function FilterSheet({
               setMax={setMax}
               min={min}
               max={max}
-              setMinText={setMinText}
-              setMaxText={setMaxText}
             />
           </View>
           <Separator />
@@ -104,8 +129,13 @@ export default function FilterSheet({
           <View style={{ flex: 1 }} />
         </View>
       </BottomSheetScrollView>
-      <View style={[styles.footer, { borderColor: themeColor.border }]}>
-        <TouchableOpacity style={{ marginLeft: "auto", marginRight: 44 }}>
+      <BottomSheetView
+        style={[styles.footer, { borderColor: themeColor.border }]}
+      >
+        <TouchableOpacity
+          style={{ marginLeft: "auto", marginRight: 44 }}
+          onPress={handleReset}
+        >
           <Text
             color="muted"
             style={{
@@ -115,8 +145,8 @@ export default function FilterSheet({
             Reset
           </Text>
         </TouchableOpacity>
-        <Button>Save</Button>
-      </View>
+        <Button onPress={handleSave}>Save</Button>
+      </BottomSheetView>
     </Sheet>
   );
 }

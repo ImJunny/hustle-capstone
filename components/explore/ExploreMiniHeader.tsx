@@ -6,8 +6,10 @@ import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 export default function ExploreMiniHeader({
   filterSheetRef,
+  sortSheetRef,
 }: {
   filterSheetRef: React.RefObject<BottomSheetMethods>;
+  sortSheetRef: React.RefObject<BottomSheetMethods>;
 }) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
@@ -21,6 +23,7 @@ export default function ExploreMiniHeader({
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.entry, { marginLeft: "auto", marginRight: 20 }]}
+        onPress={() => sortSheetRef.current?.expand()}
       >
         <Text size="lg" weight="semibold">
           Sort
@@ -34,7 +37,7 @@ export default function ExploreMiniHeader({
         <Text size="lg" weight="semibold">
           Filter
         </Text>
-        <Icon name="filter" size="lg" />
+        <Icon name="options" size="lg" />
       </TouchableOpacity>
     </View>
   );

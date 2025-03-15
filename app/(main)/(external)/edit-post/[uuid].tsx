@@ -21,7 +21,7 @@ export default function CreatePostForm() {
 
   return (
     <CreatePostProvider data={data as unknown as PostDetailsInfo}>
-      <SimpleHeader title="Edit header" />
+      <SimpleHeader title="Edit post" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}

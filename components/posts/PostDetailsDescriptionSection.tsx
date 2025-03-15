@@ -34,7 +34,7 @@ export default function PostDetailsDescriptionSection({
       </Text>
       <Text weight="semibold" size="4xl">
         ${data.min_rate}
-        {data.max_rate && "-" + data.max_rate}
+        {data.max_rate && "-" + `$${data.max_rate}`}
       </Text>
       <View style={styles.badgeRow}>
         <Badge>

@@ -98,9 +98,14 @@ export default function PostSubmitButton({
       due_date,
     } = data;
 
-    let newImages = await Promise.all(
-      data.images.map(async (imageUri) => await createBuffer(imageUri))
-    );
+    let newImages;
+    if (isEditing) {
+      newImages = null;
+    } else {
+      newImages = await Promise.all(
+        data.images.map(async (imageUri) => await createBuffer(imageUri))
+      );
+    }
 
     if (isEditing) {
       updatePost({
@@ -112,7 +117,7 @@ export default function PostSubmitButton({
         location_type,
         location_address,
         due_date: due_date ?? null,
-        image_buffers: isNewImages ? newImages : null,
+        image_buffers: newImages,
       });
     } else {
       createPost({
@@ -125,7 +130,7 @@ export default function PostSubmitButton({
         location_type,
         location_address,
         due_date: due_date ?? null,
-        image_buffers: newImages,
+        image_buffers: newImages!,
       });
     }
   }

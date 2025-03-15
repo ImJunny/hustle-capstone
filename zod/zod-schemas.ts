@@ -3,13 +3,39 @@ import { z } from "zod";
 
 export const EditProfileSchema = z.object({
   username: z.string().min(1, "Username cannot be empty."),
-  firstname: z.string().min(1, "First name cannot be empty."),
-  lastname: z.string().min(1, "Last name cannot be empty."),
+  display_name: z.string().min(1, "Display name cannot be empty."),
   bio: z.string().optional(),
 });
 
-export const CreateJobSchema = z
+export const OnboardingFormSchema = z.object({
+  date_of_birth: z.date().refine(
+    (value) => {
+      const today = new Date();
+      const minAgeDate = new Date(
+        today.getFullYear() - 16,
+        today.getMonth(),
+        today.getDate()
+      );
+      return value <= minAgeDate; // Ensures user is at least 16
+    },
+    {
+      message: "Must be at least 16 years of age.",
+    }
+  ),
+  username: z
+    .string()
+    .min(1, "Username is required.")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username must contain only letters, numbers, and underscores."
+    ),
+  display_name: z.string().min(1, "First name is required."),
+  image_buffer: z.any(),
+});
+
+export const CreatePostSchema = z
   .object({
+    type: z.enum(["work", "hire"]).default("work"),
     title: z.string().min(10, "Title must be at least 10 characters."),
     description: z
       .string()
@@ -18,10 +44,9 @@ export const CreateJobSchema = z
     max_rate: z.number().optional(),
     location_type: z.enum(["local", "remote"]),
     location_address: z.string().optional(),
-    due_date: z.date().refine((data) => !isNaN(data.getTime()), {
-      message: "Due date is required.",
-    }),
+    due_date: z.date({ message: "Due date is required." }).nullable(),
     tags: z.array(z.enum(tagTypes)).optional(),
+    images: z.array(z.any()).min(1, "Must include at least one image."),
   })
   .superRefine((data, ctx) => {
     if (
@@ -43,6 +68,14 @@ export const CreateJobSchema = z
         code: "custom",
         path: ["location_address"],
         message: "Location address is required if the job is local.",
+      });
+    }
+
+    if (data.type === "work" && !data.due_date) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["due_date"],
+        message: "Due date is required.",
       });
     }
   });

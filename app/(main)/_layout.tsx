@@ -10,8 +10,8 @@ export default function Layout() {
         options={{ animation: "ios_from_right" }}
       />
       <Stack.Screen
-        name="(external)/job/[id]"
-        options={{ animation: "fade_from_bottom" }}
+        name="(external)/edit-post/[uuid]"
+        options={{ animation: "ios_from_right" }}
       />
     </Stack>
   );

@@ -1,19 +1,19 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState } from "react";
+import React from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import Button from "@/components/ui/Button";
 import { CreatePostHeader } from "@/components/headers/Headers";
-import Separator from "@/components/ui/Separator";
-import CreateJobForm from "@/components/create-post/CreateJobForm";
-import CreateServiceForm from "@/components/create-post/CreateServiceForm";
+import PostForm from "@/components/posts/PostForm";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { CreatePostProvider } from "@/contexts/CreatePostContext";
+import PostSubmitButton from "@/components/posts/PostSubmitButton";
 
-export default function PostForm() {
-  const [postType, setPostType] = useState<"job" | "service">("job");
+export default function CreatePostForm() {
+  const themeColor = useThemeColor();
 
   return (
-    <>
+    <CreatePostProvider>
       <CreatePostHeader />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -21,49 +21,31 @@ export default function PostForm() {
       >
         <ScrollView>
           <View style={styles.page}>
-            <Text size="sm">
+            <Text size="sm" style={{ marginBottom: 30 }}>
               Please do NOT include any sensitive information (phone numbers,
-              emails, addresses, etc.) in photos, title, or description.
+              emails, addresses, etc.).
             </Text>
-
-            <View style={styles.typeContainer}>
-              <Text weight="semibold" size="lg">
-                Type
-              </Text>
-
-              <View style={styles.buttonRow}>
-                <Button
-                  type={postType === "job" ? "primary" : "secondary"}
-                  style={styles.button}
-                  onPress={() => setPostType("job")}
-                >
-                  Job
-                </Button>
-                <Button
-                  type={postType === "service" ? "primary" : "secondary"}
-                  style={styles.button}
-                  onPress={() => setPostType("service")}
-                >
-                  Service
-                </Button>
-              </View>
-            </View>
-
-            <Separator style={{ marginTop: 30, marginBottom: 30 }} />
-
-            {postType === "job" ? <CreateJobForm /> : <CreateServiceForm />}
+            <PostForm />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </>
+      <View style={[styles.footer, { borderColor: themeColor.border }]}>
+        <PostSubmitButton />
+      </View>
+    </CreatePostProvider>
   );
 }
 
 const styles = StyleSheet.create({
   page: { padding: 16 },
-  typeContainer: { marginTop: 30 },
+  typeContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+  },
   buttonRow: { marginTop: 10, flexDirection: "row", gap: 16 },
-  button: {
-    flex: 1,
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
   },
 });

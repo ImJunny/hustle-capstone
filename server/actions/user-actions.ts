@@ -3,28 +3,44 @@ import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 
-// Create user
-export async function createUser(
-  uuid: string,
-  email: string,
-  username: string,
-  first_name: string,
-  last_name: string
-) {
+// Check if user exists
+export async function doesUserExist(uuid: string) {
   try {
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.uuid, uuid))
+      .limit(1);
+    if (result[0]) return true;
+    return false;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to check if user exists.");
+  }
+}
+
+// Create user
+export async function createUser(uuid: string, email: string) {
+  try {
+    const exists = await doesUserExist(uuid);
+    if (exists) {
+      const result = await db
+        .select({ onboarding_phase: users.onboarding_phase })
+        .from(users)
+        .where(eq(users.uuid, uuid));
+      return result[0];
+    }
     await db.insert(users).values({
       uuid,
       email,
-      username: username.toLowerCase(),
-      first_name,
-      last_name,
+      onboarding_phase: "date of birth",
     });
-    return first_name;
   } catch (error) {
     console.log(error);
     throw new Error("Failed to create user.");
   }
 }
+export type createUserReturn = Awaited<ReturnType<typeof createUser>>;
 
 // Get user data
 export async function getUserData(uuid: string) {
@@ -42,8 +58,7 @@ export type UserData = Awaited<ReturnType<typeof getUserData>>;
 export async function updateUserProfile(
   uuid: string,
   username: string,
-  first_name: string,
-  last_name: string,
+  display_name: string,
   bio: string,
   image_buffer: ArrayBuffer | null
 ) {
@@ -63,12 +78,12 @@ export async function updateUserProfile(
       .update(users)
       .set({
         username,
-        first_name,
-        last_name,
+        display_name,
         bio,
       })
       .where(eq(users.uuid, uuid));
   } catch (error) {
+    console.log(error);
     throw new Error("Error updating profile.");
   }
 }

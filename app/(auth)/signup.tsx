@@ -33,11 +33,8 @@ export default function SignUpScreen() {
   const themeColor = useThemeColor();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordHidden, setPasswordHidden] = useState(true);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const createUserMutation = trpc.user.create_user.useMutation({
     onSuccess: () => router.push("/(main)/(tabs)"),
@@ -65,9 +62,6 @@ export default function SignUpScreen() {
           createUserMutation.mutate({
             uuid: user.id,
             email,
-            first_name: firstName,
-            last_name: lastName,
-            username,
           });
         }
       }
@@ -103,49 +97,19 @@ export default function SignUpScreen() {
             autoCapitalize="none"
           />
           <Input
-            placeholder="Username"
+            placeholder="Password"
             style={styles.input}
-            value={username}
-            onChangeText={(text) => setUsername(text.toLocaleLowerCase())}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
             autoCapitalize="none"
           />
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <Input
-              placeholder="First"
-              style={{ flex: 1 }}
-              value={firstName}
-              onChangeText={(text) => setFirstName(text)}
-            />
-            <Input
-              placeholder="Last"
-              style={{ flex: 1 }}
-              value={lastName}
-              onChangeText={(text) => setLastName(text)}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: themeColor["background-variant"],
-              borderRadius: 6,
-            }}
-          >
-            <Input
-              placeholder="Password"
-              style={{ flexGrow: 1 }}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              autoCapitalize="none"
-              secureTextEntry={passwordHidden}
-            />
-            <IconButton
-              style={{ paddingHorizontal: 12 }}
-              name={passwordHidden ? "eye-outline" : "eye"}
-              onPress={() => setPasswordHidden(!passwordHidden)}
-              hideOpacity
-            />
-          </View>
+          <Input
+            placeholder="Confirm password"
+            style={styles.input}
+            value={confirmPassword}
+            onChangeText={(text) => setConfirmPassword(text)}
+            autoCapitalize="none"
+          />
           <Button isFullWidth onPress={signUpWithEmail} disabled={isLoading}>
             {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>

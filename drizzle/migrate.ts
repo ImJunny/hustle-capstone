@@ -3,23 +3,18 @@ import { db } from "./db";
 
 import {
   location_types,
+  onboarding_phase_types,
   progress_types,
   status_types,
   tag_types,
 } from "@/drizzle/schema";
 import {
   locationTypes,
+  onboardingPhaseTypes,
   progressTypes,
   statusTypes,
   tagTypes,
 } from "./db-types";
-
-export async function insertTypes(table_name: any, type: string) {
-  await db
-    .insert(table_name as any)
-    .values({ name: type })
-    .onConflictDoNothing();
-}
 
 export async function runMigrations() {
   try {
@@ -40,6 +35,11 @@ export async function runMigrations() {
     for (const type of progressTypes)
       await db
         .insert(progress_types)
+        .values({ name: type })
+        .onConflictDoNothing();
+    for (const type of onboardingPhaseTypes)
+      await db
+        .insert(onboarding_phase_types)
         .values({ name: type })
         .onConflictDoNothing();
 

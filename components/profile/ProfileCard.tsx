@@ -3,7 +3,7 @@ import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { UserData } from "@/server/utils/user";
+import { UserData } from "@/server/actions/user-actions";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 
 export default function ProfileCard({ data }: { data: UserData }) {
@@ -23,7 +23,7 @@ export default function ProfileCard({ data }: { data: UserData }) {
 
           <View style={styles.topInnerRight}>
             <Text color="foreground" size="xl" weight="semibold">
-              {data?.first_name} {data?.last_name}
+              {data.display_name}
             </Text>
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}

@@ -1,21 +1,15 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
 import { useAuthData } from "@/contexts/AuthContext";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
-import LoadingScreen from "@/components/ui/LoadingScreen";
-
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
+import LoadingView from "@/components/ui/LoadingView";
 import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
-import Icon from "@/components/ui/Icon";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
+import { Post } from "@/server/actions/post-actions";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -23,6 +17,12 @@ export default function ProfileMainScreen() {
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
     uuid: user.id,
   });
+  const { data: posts, isLoading: postsLoading } =
+    trpc.post.get_user_posts.useQuery({
+      uuid: user.id,
+    });
+  const jobPosts = posts?.filter((post) => post.type === "work");
+  const servicePosts = posts?.filter((post) => post.type === "hire");
 
   if (error) {
     return (
@@ -32,8 +32,29 @@ export default function ProfileMainScreen() {
     );
   }
 
-  if (isLoading) {
-    return <LoadingScreen />;
+  if (isLoading || postsLoading) {
+    return <LoadingView />;
+  }
+  if (!posts || posts.length === 0) {
+    return (
+      <>
+        <ProfileSelfHeader username={data?.username ?? ""} />
+        <ProfileSelfCard data={data as unknown as UserData} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <Text weight="semibold" size="2xl">
+            No data to show
+          </Text>
+          <Text>Create a post or complete jobs</Text>
+        </View>
+      </>
+    );
   }
 
   return (
@@ -42,14 +63,27 @@ export default function ProfileMainScreen() {
       <ScrollView color="background">
         <ProfileSelfCard data={data as unknown as UserData} />
         <View style={styles.contentContainer}>
-          <ProfileSection title="Job posts" posts={[exampleJobPosts[0]]} />
-          <ProfileSection title="Services" posts={[exampleServicePosts[0]]} />
-          <TouchableOpacity style={styles.completedContainer}>
+          {jobPosts && jobPosts.length > 0 && (
+            <ProfileSection
+              title="Jobs I need help with"
+              type="work"
+              posts={jobPosts as unknown as Post[]}
+            />
+          )}
+          {servicePosts && servicePosts.length > 0 && (
+            <ProfileSection
+              title="Services I provide"
+              type="hire"
+              posts={servicePosts as unknown as Post[]}
+            />
+          )}
+
+          {/* <TouchableOpacity style={styles.completedContainer}>
             <Text size="xl" weight="semibold">
-              Completed • 5
+              Completed • 0
             </Text>
             <Icon name="chevron-forward" size="xl" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ScrollView>
     </>

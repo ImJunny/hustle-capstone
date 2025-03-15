@@ -4,9 +4,7 @@ import { Image } from "expo-image";
 import { Dispatch, SetStateAction } from "react";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as FileSystem from "expo-file-system";
-import * as Crypto from "expo-crypto";
+import { compressImage, getImageHash } from "@/server/utils/image-methods";
 
 type ImageEditorProps = {
   avatarUrl: string | null;
@@ -30,54 +28,16 @@ export default function ImageEditor({
       aspect: [1, 1],
     });
     if (!result.canceled) {
-      let compressedImageUri = await compressImage(result.assets[0].uri);
+      let compressedImageUri = await compressImage(
+        result.assets[0].uri,
+        128,
+        128
+      );
       setImageUri(compressedImageUri);
       let oldHash;
-      if (avatarUrl) oldHash = await getImageHashes(avatarUrl!);
-      let newHash = await getImageHashes(compressedImageUri);
+      if (avatarUrl) oldHash = await getImageHash(avatarUrl!);
+      let newHash = await getImageHash(compressedImageUri);
       if (oldHash !== newHash) setIsNewImage(true);
-    }
-  }
-
-  // Function that compresses image and updates imageUri
-  async function compressImage(uri: string) {
-    const resizedImage = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width: 128, height: 128 } }],
-      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-    );
-    return resizedImage.uri;
-  }
-
-  // Function that gets hash of old image and new image; used to determine
-  // if the image has changed. This prevents an unnecessary update to s3
-  async function getImageHashes(imageUri: string) {
-    try {
-      let fileUri = imageUri;
-      let fileData = "";
-
-      if (imageUri.startsWith("file://")) {
-        fileData = await FileSystem.readAsStringAsync(fileUri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-      } else {
-        const localUri = FileSystem.cacheDirectory + "img.jpg";
-        const { uri } = await FileSystem.downloadAsync(imageUri, localUri);
-        fileData = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-      }
-
-      const hash = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        fileData,
-        {
-          encoding: Crypto.CryptoEncoding.HEX,
-        }
-      );
-      return hash;
-    } catch (error) {
-      console.log("Error hashing image:", error);
     }
   }
 

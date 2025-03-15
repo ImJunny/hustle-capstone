@@ -27,8 +27,8 @@ dependencies:
     specifier: ^8.3.0
     version: 8.3.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
   '@react-native-google-signin/google-signin':
-    specifier: ^13.1.0
-    version: 13.1.0(expo@52.0.33)(react-dom@18.3.1)(react-native@0.76.7)(react@18.3.1)
+    specifier: ^13.2.0
+    version: 13.2.0(expo@52.0.33)(react-dom@18.3.1)(react-native@0.76.7)(react@18.3.1)
   '@react-navigation/bottom-tabs':
     specifier: ^7.2.0
     version: 7.2.0(@react-navigation/native@7.0.14)(react-native-safe-area-context@4.12.0)(react-native-screens@4.4.0)(react-native@0.76.7)(react@18.3.1)
@@ -77,6 +77,9 @@ dependencies:
   cors:
     specifier: ^2.8.5
     version: 2.8.5
+  date-fns:
+    specifier: ^4.1.0
+    version: 4.1.0
   dotenv:
     specifier: ^16.4.7
     version: 16.4.7
@@ -191,11 +194,17 @@ dependencies:
   react-native-image-picker:
     specifier: ^8.1.0
     version: 8.1.0(react-native@0.76.7)(react@18.3.1)
+  react-native-modal:
+    specifier: 14.0.0-rc.0
+    version: 14.0.0-rc.0(react-native@0.76.7)(react@18.3.1)
   react-native-modal-datetime-picker:
     specifier: ^18.0.0
     version: 18.0.0(@react-native-community/datetimepicker@8.3.0)(react-native@0.76.7)
+  react-native-pager-view:
+    specifier: ^6.7.0
+    version: 6.7.0(react-native@0.76.7)(react@18.3.1)
   react-native-reanimated:
-    specifier: ~3.16.7
+    specifier: ~3.16.1
     version: 3.16.7(@babel/core@7.26.8)(react-native@0.76.7)(react@18.3.1)
   react-native-safe-area-context:
     specifier: 4.12.0
@@ -206,6 +215,9 @@ dependencies:
   react-native-svg:
     specifier: ^15.11.1
     version: 15.11.1(react-native@0.76.7)(react@18.3.1)
+  react-native-tab-view:
+    specifier: ^4.0.5
+    version: 4.0.5(react-native-pager-view@6.7.0)(react-native@0.76.7)(react@18.3.1)
   react-native-toast-message:
     specifier: ^2.2.1
     version: 2.2.1(react-native@0.76.7)(react@18.3.1)
@@ -221,6 +233,9 @@ dependencies:
   react-native-webview:
     specifier: 13.12.5
     version: 13.12.5(react-native@0.76.7)(react@18.3.1)
+  rn-range-slider:
+    specifier: ^2.2.2
+    version: 2.2.2
   supabase:
     specifier: 2.12.1
     version: 2.12.1
@@ -1004,7 +1019,7 @@ packages:
     resolution: {integrity: sha512-gv7320KBUFJz1RnylIg5WWYPRXKZ884AGkYpgpWW02TH66Dl+HaC1t1CKd0z3R4b6hdYEcmrNZHUmfCP+1u3/g==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.26.8
+      '@babel/types': 7.26.9
 
   /@babel/helper-compilation-targets@7.26.5:
     resolution: {integrity: sha512-IXuyn5EkouFJscIDuFF5EsiSolseme1s0CZB+QxVugqJLYmKdxI1VfIBOst0SUu4rnk2Z7kqTwmoO1lp3HIfnA==}
@@ -1062,8 +1077,8 @@ packages:
     resolution: {integrity: sha512-wbfdZ9w5vk0C0oyHqAJbc62+vet5prjj01jjJ8sKn3j9h3MQQlflEdXYvuqRWjHnM12coDEqiC1IRCi0U/EKwQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/traverse': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/traverse': 7.26.9
+      '@babel/types': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1071,8 +1086,8 @@ packages:
     resolution: {integrity: sha512-tnUA4RsrmflIM6W6RFTLFSXITtl0wKjgpnLgXyowocVPrbYrLUXSBXDgTs8BlbmIzIdlBySRQjINYs2BAkiLtw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/traverse': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/traverse': 7.26.9
+      '@babel/types': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1093,7 +1108,7 @@ packages:
     resolution: {integrity: sha512-FIpuNaz5ow8VyrYcnXQTDRGvV6tTjkNtCK/RYNDXGSLlUD6cBuQTSw43CShGxjvfBTfcUA/r6UhUCbtYqkhcuQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.26.8
+      '@babel/types': 7.26.9
 
   /@babel/helper-plugin-utils@7.26.5:
     resolution: {integrity: sha512-RS+jZcRdZdRFzMyr+wcsaqOmld1/EqTghfaBGQQd/WnRdzdlvSZ//kF7U8VQTxf1ynZ4cjUcYgjVGx13ewNPMg==}
@@ -1108,7 +1123,7 @@ packages:
       '@babel/core': 7.26.8
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-wrap-function': 7.25.9
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1121,7 +1136,7 @@ packages:
       '@babel/core': 7.26.8
       '@babel/helper-member-expression-to-functions': 7.25.9
       '@babel/helper-optimise-call-expression': 7.25.9
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1129,8 +1144,8 @@ packages:
     resolution: {integrity: sha512-K4Du3BFa3gvyhzgPcntrkDgZzQaq6uozzcpGbOO1OEJaI+EJdqWIMTLgFgQf6lrfiDFo5FU+BxKepI9RmZqahA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/traverse': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/traverse': 7.26.9
+      '@babel/types': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1151,7 +1166,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.26.9
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
       '@babel/types': 7.26.9
     transitivePeerDependencies:
       - supports-color
@@ -1523,7 +1538,7 @@ packages:
       '@babel/core': 7.26.8
       '@babel/helper-plugin-utils': 7.26.5
       '@babel/helper-remap-async-to-generator': 7.25.9(@babel/core@7.26.8)
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -1593,7 +1608,7 @@ packages:
       '@babel/helper-compilation-targets': 7.26.5
       '@babel/helper-plugin-utils': 7.26.5
       '@babel/helper-replace-supers': 7.26.5(@babel/core@7.26.8)
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -1716,7 +1731,7 @@ packages:
       '@babel/core': 7.26.8
       '@babel/helper-compilation-targets': 7.26.5
       '@babel/helper-plugin-utils': 7.26.5
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
     transitivePeerDependencies:
       - supports-color
 
@@ -3215,9 +3230,9 @@ packages:
     resolution: {integrity: sha512-JAsLWhFQqwLH0KsI4OMbPXsKFji5KJEmsi+/02Sz1GCT17YrjRmv1fZ91regUS/FUH2Y/PDAE/+2ulrTgMeG7A==}
     dependencies:
       '@babel/core': 7.26.8
-      '@babel/generator': 7.26.8
-      '@babel/parser': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/generator': 7.26.9
+      '@babel/parser': 7.26.9
+      '@babel/types': 7.26.9
       '@expo/config': 10.0.9
       '@expo/env': 0.4.1
       '@expo/json-file': 9.0.1
@@ -3938,8 +3953,8 @@ packages:
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.9)(@types/react@18.3.18)(react@18.3.1)
     dev: false
 
-  /@react-native-google-signin/google-signin@13.1.0(expo@52.0.33)(react-dom@18.3.1)(react-native@0.76.7)(react@18.3.1):
-    resolution: {integrity: sha512-C2/sqb0/s0c+Dwc/mykASZsRuHxGqn7SFrCxCY9D8p8IOQO05haInhCc7lzraJshRixGva5c/4usQZ71HMYSEQ==}
+  /@react-native-google-signin/google-signin@13.2.0(expo@52.0.33)(react-dom@18.3.1)(react-native@0.76.7)(react@18.3.1):
+    resolution: {integrity: sha512-1D7eWPE7itfPmNwLkBylaoiIXAvHQNalt+AfKWcgLp45ZvPh6D5wJEhbs03PJtwO7j+Nc7Z9+DjZ2auIlWzZjw==}
     peerDependencies:
       expo: '>=50.0.0'
       react: '*'
@@ -4016,7 +4031,7 @@ packages:
       '@babel/plugin-transform-sticky-regex': 7.25.9(@babel/core@7.26.8)
       '@babel/plugin-transform-typescript': 7.26.8(@babel/core@7.26.8)
       '@babel/plugin-transform-unicode-regex': 7.25.9(@babel/core@7.26.8)
-      '@babel/template': 7.26.8
+      '@babel/template': 7.26.9
       '@react-native/babel-plugin-codegen': 0.76.7(@babel/preset-env@7.26.9)
       babel-plugin-syntax-hermes-parser: 0.25.1
       babel-plugin-transform-flow-enums: 0.0.2(@babel/core@7.26.8)
@@ -4031,7 +4046,7 @@ packages:
     peerDependencies:
       '@babel/preset-env': ^7.1.6
     dependencies:
-      '@babel/parser': 7.26.8
+      '@babel/parser': 7.26.9
       '@babel/preset-env': 7.26.9(@babel/core@7.26.8)
       glob: 7.2.3
       hermes-parser: 0.23.1
@@ -5043,8 +5058,8 @@ packages:
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
     dependencies:
-      '@babel/parser': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/parser': 7.26.9
+      '@babel/types': 7.26.9
       '@types/babel__generator': 7.6.8
       '@types/babel__template': 7.4.4
       '@types/babel__traverse': 7.20.6
@@ -6577,6 +6592,10 @@ packages:
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
     dev: true
+
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+    dev: false
 
   /dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
@@ -9183,7 +9202,7 @@ packages:
       '@babel/preset-env': ^7.1.6
     dependencies:
       '@babel/core': 7.26.8
-      '@babel/parser': 7.26.8
+      '@babel/parser': 7.26.9
       '@babel/plugin-proposal-class-properties': 7.18.6(@babel/core@7.26.8)
       '@babel/plugin-proposal-nullish-coalescing-operator': 7.18.6(@babel/core@7.26.8)
       '@babel/plugin-proposal-optional-chaining': 7.21.0(@babel/core@7.26.8)
@@ -9647,9 +9666,9 @@ packages:
     resolution: {integrity: sha512-1i8ROpNNiga43F0ZixAXoFE/SS3RqcRDCCslpynb+ytym0VI7pkTH1woAN2HI9pczYtPrp3Nq0AjRpsuY35ieA==}
     engines: {node: '>=18.18'}
     dependencies:
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
       '@babel/traverse--for-generate-function-map': /@babel/traverse@7.26.9
-      '@babel/types': 7.26.8
+      '@babel/types': 7.26.9
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
       metro-symbolicate: 0.81.1
@@ -9681,7 +9700,7 @@ packages:
       '@babel/core': 7.26.8
       '@babel/generator': 7.26.9
       '@babel/template': 7.26.9
-      '@babel/traverse': 7.26.8
+      '@babel/traverse': 7.26.9
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
     transitivePeerDependencies:
@@ -9716,11 +9735,11 @@ packages:
     dependencies:
       '@babel/code-frame': 7.26.2
       '@babel/core': 7.26.8
-      '@babel/generator': 7.26.8
-      '@babel/parser': 7.26.8
-      '@babel/template': 7.26.8
-      '@babel/traverse': 7.26.8
-      '@babel/types': 7.26.8
+      '@babel/generator': 7.26.9
+      '@babel/parser': 7.26.9
+      '@babel/template': 7.26.9
+      '@babel/traverse': 7.26.9
+      '@babel/types': 7.26.9
       accepts: 1.3.8
       chalk: 4.1.2
       ci-info: 2.0.0
@@ -10672,6 +10691,12 @@ packages:
   /react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
+  /react-native-animatable@1.4.0:
+    resolution: {integrity: sha512-DZwaDVWm2NBvBxf7I0wXKXLKb/TxDnkV53sWhCvei1pRyTX3MVFpkvdYBknNBqPrxYuAIlPxEp7gJOidIauUkw==}
+    dependencies:
+      prop-types: 15.8.1
+    dev: false
+
   /react-native-date-picker@5.0.10(react-native@0.76.7)(react@18.3.1):
     resolution: {integrity: sha512-W4AXcoFXXNFhG2fItRWp5UrgiU6PJM7bW06KDl+NeWPActSzunMQkQWjMuucOsrlyfCudTyV1n3hskHRGzDeow==}
     peerDependencies:
@@ -10745,6 +10770,17 @@ packages:
       '@react-native-community/datetimepicker': 8.3.0(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
       prop-types: 15.8.1
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.9)(@types/react@18.3.18)(react@18.3.1)
+    dev: false
+
+  /react-native-modal@14.0.0-rc.0(react-native@0.76.7)(react@18.3.1):
+    resolution: {integrity: sha512-9Wkg77VUdIkkSxnxm6UctRtIzRnnvuE+MbvIOlHkYjGn/W3dJRej6B7GRGhjyn1QPZ/pO4+dixkxjMgyc380lQ==}
+    peerDependencies:
+      react: '*'
+      react-native: '>=0.70.0'
+    dependencies:
+      react: 18.3.1
+      react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.9)(@types/react@18.3.18)(react@18.3.1)
+      react-native-animatable: 1.4.0
     dev: false
 
   /react-native-pager-view@6.7.0(react-native@0.76.7)(react@18.3.1):
@@ -11196,6 +11232,10 @@ packages:
     hasBin: true
     dependencies:
       glob: 10.4.5
+    dev: false
+
+  /rn-range-slider@2.2.2:
+    resolution: {integrity: sha512-34qdWz0oPEa6Wa9+B0+IihxolfydGPfzKvIyjieCyz4+YzVuSizalwpwRufxAnojfFPxqX1Kt/CTBckt8K7eEQ==}
     dev: false
 
   /run-parallel@1.2.0:

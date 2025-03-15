@@ -2,29 +2,30 @@ import { StyleSheet } from "react-native";
 import Input from "../ui/Input";
 import Text from "../ui/Text";
 import View from "../ui/View";
-import Button from "../ui/Button";
-import DateInput from "./DateInput";
-import AddImage from "../ui/AddImages";
-import { Controller, useForm } from "react-hook-form";
-import { CreateJobSchema } from "@/zod/zod-schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { PostImagePicker } from "./PostImagePicker";
+import PostDateInput from "./PostDateInput";
+import { CreatePostSchema } from "@/zod/zod-schemas";
+import { useEffect, useState } from "react";
 
-export default function CreateJobForm() {
+type PostFormProps = {
+  data?: PostDetailsInfo;
+  isEditing?: boolean;
+};
+
+export default function PostForm({ data, isEditing }: PostFormProps) {
   // Declare form properties
   const {
     control,
     formState: { errors },
     setValue,
-    getValues,
-    handleSubmit,
     watch,
-  } = useForm<z.infer<typeof CreateJobSchema>>({
-    resolver: zodResolver(CreateJobSchema),
-  });
+    getValues,
+  } = useFormContext<z.infer<typeof CreatePostSchema>>();
 
-  const minRate = watch("min_rate");
   const locationType = watch("location_type");
   return (
     <View style={{ gap: 60 }}>
@@ -197,28 +198,30 @@ export default function CreateJobForm() {
         </View>
       )}
 
-      <View>
-        <Text weight="semibold" size="lg">
-          Due date
-        </Text>
-        <DateInput setValue={setValue} />
-        <BottomMessage
-          field="due_date"
-          defaultMessage="This indicates the end-of-day deadline for the job. You cannot make
-          the due date earlier after a worker is approved."
-          hasError
-        />
-      </View>
+      {getValues("type") === "work" && (
+        <View>
+          <Text weight="semibold" size="lg">
+            Due date
+          </Text>
+          <PostDateInput setValue={setValue} />
+          <BottomMessage
+            field="due_date"
+            defaultMessage="This indicates the end-of-day deadline for the job. You cannot make the due date earlier after a worker is approved."
+            hasError
+          />
+        </View>
+      )}
 
       <View>
         <Text weight="semibold" size="lg">
           Photos
         </Text>
-        <AddImage />
-        <Text color="muted" size="sm">
-          Add up to 6 photos. If you do not provide any images, a placeholder
-          gradient will be displayed.
-        </Text>
+        <PostImagePicker />
+        <BottomMessage
+          field="images"
+          defaultMessage="Add up to 6 photos."
+          hasError
+        />
       </View>
 
       <View>
@@ -231,14 +234,7 @@ export default function CreateJobForm() {
         </Text>
       </View>
 
-      <Button
-        style={{ marginLeft: "auto" }}
-        onPress={handleSubmit(() => {
-          console.log(getValues());
-        })}
-      >
-        Post job
-      </Button>
+      {/* <PostSubmitButton handleSubmit={handleSubmit} /> */}
     </View>
   );
 
@@ -247,7 +243,7 @@ export default function CreateJobForm() {
     defaultMessage,
     hasError,
   }: {
-    field: keyof z.infer<typeof CreateJobSchema>;
+    field: keyof z.infer<typeof CreatePostSchema>;
     defaultMessage: string;
     hasError?: boolean;
   }) {
@@ -284,12 +280,18 @@ const styles = StyleSheet.create({
   },
   description_form: {
     marginTop: 10,
-    textAlignVertical: "auto",
     height: 160,
     flexWrap: "wrap",
+    paddingVertical: 10,
   },
   rate_form: {
     marginTop: 10,
     width: 120,
   },
+  footer: {
+    position: "absolute",
+    width: "100%",
+    bottom: 0,
+  },
+  button: {},
 });

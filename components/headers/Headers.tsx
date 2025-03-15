@@ -1,12 +1,26 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
-import { router, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import Input from "../ui/Input";
 import View, { ViewProps } from "../ui/View";
-import { Pressable, TouchableOpacity } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
+import { useState } from "react";
+import { useEffect } from "react";
+import { trpc } from "@/server/lib/trpc-client";
+import { LinearGradient } from "expo-linear-gradient";
+import Button from "../ui/Button";
+import { useFormContext } from "react-hook-form";
+import z from "zod";
+import { CreatePostSchema } from "@/zod/zod-schemas";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 export function ExampleHeader() {
   return (
@@ -111,12 +125,28 @@ export function BackHeader() {
     />
   );
 }
-export function DetailsHeader() {
+export function DetailsHeader({
+  sheetRef,
+}: {
+  sheetRef: React.RefObject<BottomSheetMethods>;
+}) {
   return (
     <HeaderWrapper
       options={{
-        left: <IconButton name="chevron-back" onPress={() => router.back()} />,
-        right: <IconButton name="ellipsis-vertical" />,
+        left: <IconButton name="arrow-back" onPress={() => router.back()} />,
+        right: (
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 18,
+            }}
+          >
+            <IconButton
+              name="ellipsis-vertical"
+              onPress={() => sheetRef.current?.expand()}
+            />
+          </View>
+        ),
       }}
     />
   );
@@ -168,7 +198,7 @@ export function MessagesHeader() {
         options={{
           center: (
             <Input
-              placeholder="Search users, services, jobs..."
+              placeholder="Search users, jobs, services..."
               style={{ width: "100%" }}
             />
           ),
@@ -183,54 +213,103 @@ export function ExploreHeader() {
     <HeaderWrapper
       options={{
         center: (
-          <Input
-            placeholder="Search users, services, jobs..."
+          <Pressable
             style={{ width: "100%" }}
-            onFocus={() => {}}
-          />
+            onPress={() => {
+              router.push("/explore-recent");
+            }}
+          >
+            <Input
+              editable={false}
+              placeholder="Search users, jobs, services..."
+              style={{ width: "100%" }}
+              onFocus={() => {}}
+            />
+          </Pressable>
         ),
       }}
     />
   );
 }
 export function SearchingHeader() {
+  const { text } = useLocalSearchParams();
+  const [value, setValue] = useState(text as string);
+
+  async function handleSearch() {
+    router.replace(`/search/${value}`);
+  }
   return (
     <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
       options={{
         center: (
-          <Input
-            placeholder="Search users, jobs, messages, etc..."
-            style={{ width: "80%" }}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Input
+              placeholder="Search users, jobs, services..."
+              style={{ flex: 1 }}
+              autoFocus
+              value={value}
+              onChangeText={(value) => setValue(value)}
+              onSubmitEditing={handleSearch}
+            />
+            <IconButton name="ellipsis-vertical" size="xl" />
+          </View>
         ),
-        left: (
-          <IconButton
-            name="arrow-back"
-            size="xl"
-            onPress={() => router.back()}
-          />
-        ),
-        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );
 }
-export function SearchedHeader() {
+export function SearchedHeader({
+  text,
+  style,
+}: {
+  text: string;
+  style?: ViewStyle;
+}) {
   return (
     <HeaderWrapper
+      style={style}
       options={{
         center: (
-          <Input
-            placeholder="Searched"
-            style={{ width: "90%", marginLeft: 50 }}
-          />
-        ),
-        left: (
-          <IconButton
-            name="arrow-back"
-            size="xl"
-            onPress={() => router.back()}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              gap: 12,
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => {
+                router.replace(`/explore-recent?text=${text}`);
+              }}
+            >
+              <Input
+                value={text}
+                editable={false}
+                placeholder="Search users, jobs, services..."
+                style={{ width: "100%" }}
+              />
+            </Pressable>
+          </View>
         ),
       }}
     />
@@ -251,7 +330,11 @@ export function ProfileSelfHeader({ username }: { username: string }) {
             <View
               style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
             >
-              <IconButton name="add" size="xl" onPress={() => {}} />
+              <IconButton
+                name="add"
+                size="xl"
+                onPress={() => router.push("/create-post")}
+              />
               <IconButton
                 name="menu-sharp"
                 size="xl"
@@ -305,19 +388,52 @@ export function SettingsHeader() {
 }
 
 export function CreatePostHeader() {
+  const styles = StyleSheet.create({
+    button: {
+      height: 40,
+      width: 90,
+    },
+  });
+
+  const { setValue } = useFormContext<z.infer<typeof CreatePostSchema>>();
+  const [type, setType] = useState<"work" | "hire">("work");
+
+  useEffect(() => {
+    setValue("type", type);
+  }, [type]);
+
   return (
     <HeaderWrapper
       options={{
         left: (
-          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              gap: 16,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <IconButton
               name="arrow-back"
               size="xl"
               onPress={() => router.back()}
             />
-            <Text size="xl" weight="semibold">
-              Create a post
-            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                style={styles.button}
+                type={type === "work" ? "primary" : "secondary"}
+                onPress={() => setType("work")}
+              >
+                Job
+              </Button>
+              <Button
+                style={styles.button}
+                type={type === "hire" ? "primary" : "secondary"}
+                onPress={() => setType("hire")}
+              >
+                Service
+              </Button>
+            </View>
           </View>
         ),
       }}

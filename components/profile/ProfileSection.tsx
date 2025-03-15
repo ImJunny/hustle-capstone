@@ -2,14 +2,16 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
-import { TPost } from "@/server/utils/example-data";
+import { Post as TPost } from "@/server/actions/post-actions";
 import Post from "../posts/Post";
 
 export default function ProfileSection({
   title,
+  type,
   posts,
 }: {
   title: string;
+  type: "work" | "hire";
   posts: TPost[];
 }) {
   const themeColor = useThemeColor();
@@ -27,12 +29,12 @@ export default function ProfileSection({
       >
         {title} • {posts.length}
       </Text>
-      {posts.map((data, i) => (
+      {posts.map((post, i) => (
         <Post
           key={i}
-          data={data}
+          data={post}
+          type={type}
           style={{
-            borderTopWidth: 1,
             borderColor,
           }}
         />

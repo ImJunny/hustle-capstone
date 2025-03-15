@@ -5,7 +5,7 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { ProfileHeader } from "@/components/headers/Headers";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import {
   exampleJobPosts,
   exampleServicePosts,
@@ -33,7 +33,7 @@ export default function ProfileScreen() {
   // }
 
   // if (isLoading) {
-  //   return <LoadingScreen />;
+  //   return <LoadingView />;
   // }
 
   // return (

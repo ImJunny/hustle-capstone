@@ -20,7 +20,7 @@ export const trpcClient = trpc.createClient({
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        console.log("request sent");
+
         return {
           authorization: `Bearer ${session?.access_token}`,
         };

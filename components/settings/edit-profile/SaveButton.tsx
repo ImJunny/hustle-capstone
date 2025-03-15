@@ -26,12 +26,12 @@ export default function SaveButton({
 
   const { mutate: updateProfile, isLoading } =
     trpc.user.update_user_profile.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         Toast.show({
           text1: "Profile saved",
           swipeable: false,
         });
-        utils.user.get_user_data.invalidate();
+        await utils.user.get_user_data.invalidate();
       },
       onError: () => {
         Toast.show({
@@ -43,11 +43,11 @@ export default function SaveButton({
     });
 
   async function submit() {
-    const { username, firstname, lastname, bio } = getValues();
+    const { username, display_name, bio } = getValues();
     // Prevent unnecessary database and s3 updates
     if (
-      [data?.username, data?.first_name, data?.last_name, data?.bio].every(
-        (value, i) => value == [username, firstname, lastname, bio][i]
+      [data?.username, data?.display_name, data?.bio].every(
+        (value, i) => value == [username, display_name, bio][i]
       ) &&
       !isNewImage
     ) {
@@ -68,8 +68,7 @@ export default function SaveButton({
     updateProfile({
       uuid: data!.uuid,
       username,
-      first_name: firstname,
-      last_name: lastname,
+      display_name,
       bio: bio ?? "",
       image_buffer: buffer ?? null,
     });

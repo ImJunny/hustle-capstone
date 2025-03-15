@@ -3,19 +3,25 @@ import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import { BackHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingView from "@/components/ui/LoadingView";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SaveButton from "@/components/settings/edit-profile/SaveButton";
-import { EditProfileSchema } from "@/zod/zod-schemas";
 import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
+import { Platform } from "react-native";
+
+// Declare schema
+const EditProfileSchema = z.object({
+  username: z.string().min(1, "Username cannot be empty."),
+  display_name: z.string().min(1, "Display name cannot be empty."),
+  bio: z.string().optional(),
+});
 
 export default function EditProfileScreen() {
   // Declare form properties
@@ -39,8 +45,7 @@ export default function EditProfileScreen() {
   useEffect(() => {
     if (data) {
       setValue("username", data.username!);
-      setValue("firstname", data.first_name!);
-      setValue("lastname", data.last_name!);
+      setValue("display_name", data.display_name!);
       setValue("bio", data.bio! ?? "");
       setImageUri(data.avatar_url ?? undefined);
       setformReady(true);
@@ -53,115 +58,88 @@ export default function EditProfileScreen() {
   const [isNewImage, setIsNewImage] = useState<boolean>(false);
 
   if (!formReady || !data) {
-    return <LoadingScreen backHeader />;
+    return <LoadingView backHeader />;
   }
 
   return (
     <>
       <BackHeader />
-      <View style={styles.container} color="background">
-        <View style={{ alignItems: "center" }}>
-          <ImageEditor
-            avatarUrl={data?.avatar_url ?? null}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.container} color="background">
+          <View style={{ alignItems: "center" }}>
+            <ImageEditor
+              avatarUrl={data?.avatar_url ?? null}
+              imageUri={imageUri}
+              setImageUri={setImageUri}
+              setIsNewImage={setIsNewImage}
+            />
+          </View>
+
+          <View style={styles.inputEntry}>
+            <Text weight="bold" size="lg">
+              Username
+            </Text>
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { onChange, value } }) => (
+                <Input type="outline" value={value} onChangeText={onChange} />
+              )}
+            />
+            {errors.username && (
+              <Text color="red">{errors.username.message}</Text>
+            )}
+          </View>
+
+          <View style={styles.inputEntry}>
+            <Text weight="bold" size="lg">
+              Display name
+            </Text>
+            <Controller
+              control={control}
+              name="display_name"
+              render={({ field: { onChange, value } }) => (
+                <Input type="outline" value={value} onChangeText={onChange} />
+              )}
+            />
+            {errors.display_name && (
+              <Text color="red">{errors.display_name.message}</Text>
+            )}
+          </View>
+
+          <View style={styles.inputEntry}>
+            <Text weight="bold" size="lg">
+              Bio
+            </Text>
+            <Controller
+              control={control}
+              name="bio"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  type="outline"
+                  placeholder="Optional biography"
+                  value={value}
+                  onChangeText={onChange}
+                  multiline={true}
+                  style={{ height: 100, paddingVertical: 10 }}
+                  textAlignVertical="top"
+                />
+              )}
+            />
+          </View>
+
+          <SaveButton
+            data={data as unknown as UserData}
+            getValues={getValues}
+            handleSubmit={handleSubmit}
             imageUri={imageUri}
-            setImageUri={setImageUri}
-            setIsNewImage={setIsNewImage}
+            isNewImage={isNewImage}
           />
         </View>
-
-        <View style={styles.inputEntry}>
-          <Text weight="bold" size="lg">
-            Username
-          </Text>
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                type="outline"
-                placeholder="username"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {errors.username && (
-            <Text color="red">{errors.username.message}</Text>
-          )}
-        </View>
-
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          <View style={[styles.inputEntry, { flex: 1 }]}>
-            <Text weight="bold" size="lg">
-              First name
-            </Text>
-            <Controller
-              control={control}
-              name="firstname"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  type="outline"
-                  placeholder="First"
-                  value={value}
-                  onChangeText={onChange}
-                />
-              )}
-            />
-            {errors.firstname && (
-              <Text color="red">{errors.firstname.message}</Text>
-            )}
-          </View>
-          <View style={[styles.inputEntry, { flex: 1 }]}>
-            <Text weight="bold" size="lg">
-              Last name
-            </Text>
-            <Controller
-              control={control}
-              name="lastname"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  type="outline"
-                  placeholder="Last"
-                  value={value}
-                  onChangeText={onChange}
-                />
-              )}
-            />
-            {errors.lastname && (
-              <Text color="red">{errors.lastname.message}</Text>
-            )}
-          </View>
-        </View>
-
-        <View style={styles.inputEntry}>
-          <Text weight="bold" size="lg">
-            Bio
-          </Text>
-          <Controller
-            control={control}
-            name="bio"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                type="outline"
-                placeholder="Optional biography"
-                value={value}
-                onChangeText={onChange}
-                multiline={true}
-                style={{ height: 100 }}
-                textAlignVertical="top"
-              />
-            )}
-          />
-        </View>
-
-        <SaveButton
-          data={data as unknown as UserData}
-          getValues={getValues}
-          handleSubmit={handleSubmit}
-          imageUri={imageUri}
-          isNewImage={isNewImage}
-        />
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 }

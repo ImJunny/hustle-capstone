@@ -6,10 +6,13 @@ import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { UserData } from "@/server/actions/user-actions";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ProfileSelfCard({ data }: { data: UserData }) {
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.border;
   return (
-    <View style={styles.profileCard} color="background">
+    <View style={[styles.profileCard, { borderColor }]} color="background">
       <View style={styles.top}>
         <View>
           <Image
@@ -26,7 +29,7 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
 
         <View style={styles.topInnerRight}>
           <Text color="foreground" size="xl" weight="semibold">
-            {data?.first_name} {data?.last_name}
+            {data?.display_name}
           </Text>
           <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
             <Icon name={"star"} color="foreground" />
@@ -46,7 +49,7 @@ export default function ProfileSelfCard({ data }: { data: UserData }) {
             >
               Edit profile
             </Button>
-            <Button style={{ flex: 1, height: 32 }}>Follow</Button>
+            <Button style={{ flex: 1, height: 32 }}>Share</Button>
           </View>
         </View>
       </View>
@@ -64,8 +67,8 @@ const styles = StyleSheet.create({
   profileCard: {
     paddingVertical: 36,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    minHeight: 230,
+    borderBottomWidth: 1,
+    marginBottom: 16,
   },
   top: {
     flexDirection: "row",

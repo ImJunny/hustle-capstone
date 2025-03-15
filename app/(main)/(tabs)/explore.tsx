@@ -5,16 +5,12 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import { ExploreHeader } from "@/components/headers/Headers";
-import {
-  categories,
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
+import { categories, exampleJobPosts } from "@/server/utils/example-data";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Post from "@/components/posts/Post";
 import { router } from "expo-router";
+import Post from "@/components/posts/Post";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -24,7 +20,7 @@ export default function ExploreScreen() {
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        color="base"
+        color="background"
       >
         <View style={{ paddingBottom: 40 }}>
           <View style={{ height: 260 }}>
@@ -36,7 +32,7 @@ export default function ExploreScreen() {
             />
             <View style={{ flex: 1, paddingTop: 70, paddingHorizontal: 16 }}>
               <LinearGradient
-                colors={["transparent", themeColor.base]}
+                colors={["transparent", themeColor.background]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={{
@@ -47,16 +43,7 @@ export default function ExploreScreen() {
                   position: "absolute",
                 }}
               />
-              <Text
-                color="white"
-                weight="semibold"
-                size="3xl"
-                onPress={() =>
-                  router.push(
-                    "/(main)/(external)/(explore-tabs)/explore-recent"
-                  )
-                }
-              >
+              <Text color="white" weight="semibold" size="3xl">
                 Find the right job for you.
               </Text>
               <Text color="white" size="lg">
@@ -81,32 +68,26 @@ export default function ExploreScreen() {
         </View>
 
         <View>
-          <Text
-            size="xl"
-            weight="bold"
-            style={styles.sectionTitle}
-            onPress={() =>
-              router.push("/(main)/(external)/(searched-tabs)/searched-jobs")
-            }
-          >
+          <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Jobs you might like
           </Text>
-          {exampleJobPosts.map((post, i) => (
+          {/* {exampleJobPosts.map((post, i) => (
             <Post
               key={i}
-              data={post}
+              uuid={post.uuid}
+              type={post.type}
               style={{
                 borderTopWidth: i == 0 ? 1 : 0,
                 borderBottomWidth: 1,
               }}
             />
-          ))}
+          ))} */}
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Services suggested for you
           </Text>
-          {exampleServicePosts.map((post, i) => (
+          {/* {exampleServicePosts.map((post, i) => (
             <Post
               key={i}
               data={post}
@@ -115,7 +96,7 @@ export default function ExploreScreen() {
                 borderBottomWidth: i != exampleServicePosts.length - 1 ? 1 : 0,
               }}
             />
-          ))}
+          ))} */}
         </View>
       </ScrollView>
     </>

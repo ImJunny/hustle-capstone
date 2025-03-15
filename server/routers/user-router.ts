@@ -1,8 +1,4 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "../lib/trpc";
+import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   createUser,
   getUserData,
@@ -11,24 +7,15 @@ import {
 import { z } from "zod";
 
 export const userRouter = createTRPCRouter({
-  create_user: publicProcedure
+  create_user: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
         email: z.string(),
-        first_name: z.string(),
-        last_name: z.string(),
-        username: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      const result = await createUser(
-        input.uuid,
-        input.email,
-        input.username,
-        input.first_name,
-        input.last_name
-      );
+      const result = await createUser(input.uuid, input.email);
       return result;
     }),
 
@@ -39,13 +26,12 @@ export const userRouter = createTRPCRouter({
       return result;
     }),
 
-  update_user_profile: publicProcedure
+  update_user_profile: protectedProcedure
     .input(
       z.object({
         uuid: z.string(),
         username: z.string(),
-        first_name: z.string(),
-        last_name: z.string(),
+        display_name: z.string(),
         bio: z.string(),
         image_buffer: z.any(),
       })
@@ -54,8 +40,7 @@ export const userRouter = createTRPCRouter({
       const result = await updateUserProfile(
         input.uuid,
         input.username,
-        input.first_name,
-        input.last_name,
+        input.display_name,
         input.bio,
         input.image_buffer
       );

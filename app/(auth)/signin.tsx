@@ -20,6 +20,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { trpc } from "@/server/lib/trpc-client";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 // form schema for input validation
 const schema = z.object({
@@ -43,26 +44,7 @@ export default function SignInScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordHidden, setPasswordHidden] = useState(true);
 
-  const [user, setUser] = useState<User | undefined>(undefined);
-
-  const { data } = trpc.user.get_user_data.useQuery(
-    { uuid: user?.id ?? "" },
-    { enabled: !!user }
-  );
-
-  useEffect(() => {
-    if (data?.username) {
-      router.replace("/(main)/(tabs)");
-      Toast.show({
-        text1: `Signed in as @${data?.username}`,
-        swipeable: false,
-      });
-    }
-  }, [data]);
-
   async function signInWithEmail() {
-    if (isLoading) return;
-
     setIsLoading(true);
 
     const {
@@ -73,12 +55,19 @@ export default function SignInScreen() {
       password: getValues("password"),
     });
     if (error) {
-      Alert.alert("Error", (error as AuthError).message);
+      Toast.show({
+        text1: error.message,
+        type: "error",
+        swipeable: false,
+      });
       setIsLoading(false);
-      return;
     }
     if (user) {
-      setUser(user);
+      router.replace("/(main)/(tabs)");
+      Toast.show({
+        text1: `Successfully signed in`,
+        swipeable: false,
+      });
     }
   }
 
@@ -87,7 +76,7 @@ export default function SignInScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.container}>
+      <View style={styles.container} color="background">
         <Text
           size="4xl"
           style={{
@@ -167,10 +156,7 @@ export default function SignInScreen() {
               OR
             </Text>
           </View>
-          <Button type="outline" isFullWidth style={{ gap: 10 }}>
-            <IconButton name="logo-google" />
-            Continue with Google
-          </Button>
+          <GoogleSignInButton />
           <Text color="muted" style={{ textAlign: "center" }}>
             Forgot password?
           </Text>

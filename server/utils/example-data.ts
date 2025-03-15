@@ -34,6 +34,29 @@ export type Review = {
   rating: number;
   date: string;
 };
+export type ExamplePost = {
+  title: string;
+  uuid: string;
+  min_rate: number;
+  max_rate: number | null;
+  location_type: string;
+  due_date: string;
+  image_url: string;
+  type: "work" | "hire";
+};
+
+export const examplePosts: ExamplePost[] = [
+  {
+    uuid: "jhgddj",
+    title: "Design a poster",
+    min_rate: 75,
+    max_rate: 100,
+    location_type: "remote",
+    due_date: "March 20",
+    type: "work",
+    image_url: "http://picsum.photos/800/800",
+  },
+];
 
 export const exampleJobPosts: TPost[] = [
   {

@@ -1,27 +1,21 @@
 import React, { useState } from "react";
-import View from "./View";
-import {
-  Image,
-  StyleSheet,
-  Alert,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
-import IconButton from "./IconButton";
-import ImagePlaceholder from "./ImagePlaceholder";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as FileSystem from "expo-file-system";
-import * as Crypto from "expo-crypto";
-import Icon from "./Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import ScrollView from "./ScrollView";
+import View from "../ui/View";
+import Icon from "../ui/Icon";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { CreatePostSchema } from "@/zod/zod-schemas";
+import { useCreatePostContext } from "@/contexts/CreatePostContext";
 
-function AddImage() {
+export function PostImagePicker() {
+  const { setIsNewImages } = useCreatePostContext();
   const themeColor = useThemeColor();
-
-  const [images, setImages] = useState<string[]>([]);
+  const { setValue, getValues } =
+    useFormContext<z.infer<typeof CreatePostSchema>>();
+  const { images: formImages } = getValues();
+  const [images, setImages] = useState<string[]>(formImages ?? []);
 
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -30,12 +24,22 @@ function AddImage() {
       aspect: [1, 1],
     });
     if (!result.canceled) {
-      setImages((prevImages) => [...prevImages, result.assets[0].uri]);
+      const newImages = [...images, result.assets[0].uri];
+      setImages(newImages);
+      setValue("images", newImages, {
+        shouldValidate: true,
+      });
+      setIsNewImages(true);
     }
   }
 
   async function deleteImage(index: number) {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setImages((prevImages) => {
+      const updatedImages = prevImages.filter((_, i) => i !== index);
+      setValue("images", updatedImages, { shouldValidate: true });
+      return updatedImages;
+    });
+    setIsNewImages(true);
   }
 
   return (
@@ -43,10 +47,7 @@ function AddImage() {
       <View style={styles.imageContainer}>
         {images.map((imageUri, index) => (
           <View key={index}>
-            <Image
-              source={{ uri: `${imageUri}?=${new Date().getTime()}` }}
-              style={styles.image}
-            />
+            <Image source={{ uri: imageUri }} style={styles.image} />
             <TouchableOpacity
               style={[
                 styles.deleteContainer,
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     gap: 10,
-    marginVertical: 10,
+    marginTop: 10,
   },
   image: {
     width: 90,
@@ -104,5 +105,3 @@ const styles = StyleSheet.create({
   },
   deleteIcon: {},
 });
-
-export default AddImage;

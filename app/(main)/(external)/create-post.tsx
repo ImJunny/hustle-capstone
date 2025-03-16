@@ -19,7 +19,7 @@ export default function CreatePostForm() {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView>
+        <ScrollView color="background">
           <View style={styles.page}>
             <Text size="sm" style={{ marginBottom: 30 }}>
               Please do NOT include any sensitive information (phone numbers,
@@ -29,7 +29,10 @@ export default function CreatePostForm() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <View style={[styles.footer, { borderColor: themeColor.border }]}>
+      <View
+        color="background"
+        style={[styles.footer, { borderColor: themeColor.border }]}
+      >
         <PostSubmitButton />
       </View>
     </CreatePostProvider>

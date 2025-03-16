@@ -10,6 +10,9 @@ import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { useEffect, useState } from "react";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import IconButton from "../ui/IconButton";
+import Separator from "../ui/Separator";
 
 type PostFormProps = {
   data?: PostDetailsInfo;
@@ -26,9 +29,10 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
     getValues,
   } = useFormContext<z.infer<typeof CreatePostSchema>>();
 
+  const themeColor = useThemeColor();
   const locationType = watch("location_type");
   return (
-    <View style={{ gap: 60 }}>
+    <View style={{ gap: 70 }}>
       <View>
         <Text weight="semibold" size="lg">
           Title
@@ -111,7 +115,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
               )}
             />
           </View>
-          <Text>-</Text>
+          <Text style={{ marginTop: 30 }}>-</Text>
           <View>
             <Text weight="semibold" size="lg">
               Max rate ($)
@@ -171,32 +175,37 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
             </View>
           )}
         />
+        {locationType === "local" && (
+          <View style={{ marginTop: 30 }}>
+            <Text weight="semibold" size="lg">
+              Location address
+            </Text>
+            <View
+              style={{
+                marginTop: 10,
+                paddingHorizontal: 20,
+                paddingVertical: 30,
+                borderWidth: 1,
+                borderColor: themeColor.border,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <Text>1234 Maple Street</Text>
+                <Text>Elmwood, NJ, 13552</Text>
+              </View>
+              <IconButton name="chevron-forward" />
+            </View>
+            <BottomMessage
+              field="location_address"
+              defaultMessage="This address will be hidden to everyone except the approved worker."
+              hasError
+            />
+          </View>
+        )}
       </View>
-
-      {locationType === "local" && (
-        <View>
-          <Text weight="semibold" size="lg">
-            Location address
-          </Text>
-          <Controller
-            control={control}
-            name="location_address"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                style={styles.text_form}
-                type="outline"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          <BottomMessage
-            field="location_address"
-            defaultMessage="This address will be hidden to everyone except the approved worker."
-            hasError
-          />
-        </View>
-      )}
 
       {getValues("type") === "work" && (
         <View>

@@ -20,6 +20,7 @@ import { toastConfig } from "@/components/ui/ToastConfig";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, trpc, trpcClient } from "@/server/lib/trpc-client";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -64,20 +65,26 @@ export default function RootLayout() {
               flex: 1,
             }}
           >
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <SafeAreaView style={{ flex: 1 }}>
-                <Stack
-                  screenOptions={{ headerShown: false, animation: "none" }}
-                >
-                  <Stack.Screen name="(main)" />
-                  <Stack.Screen name="(auth)" />
-                </Stack>
-                <Toast config={toastConfig} type="info" visibilityTime={2200} />
-              </SafeAreaView>
-              <StatusBar style="auto" />
-            </ThemeProvider>
+            <BottomSheetModalProvider>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              >
+                <SafeAreaView style={{ flex: 1 }}>
+                  <Stack
+                    screenOptions={{ headerShown: false, animation: "none" }}
+                  >
+                    <Stack.Screen name="(main)" />
+                    <Stack.Screen name="(auth)" />
+                  </Stack>
+                  <Toast
+                    config={toastConfig}
+                    type="info"
+                    visibilityTime={2200}
+                  />
+                </SafeAreaView>
+                <StatusBar style="auto" />
+              </ThemeProvider>
+            </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </AuthProvider>
       </QueryClientProvider>

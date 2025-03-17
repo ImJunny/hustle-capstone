@@ -48,7 +48,7 @@ export default function Layout() {
 
   return (
     <OnboardingFormsProvider>
-      <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, padding: 16 }} color="background">
         <View style={styles.topRow}>
           <OnboardingSteps stepNumber={currentIndex + 1} />
           <TouchableOpacity onPress={handleSignout}>

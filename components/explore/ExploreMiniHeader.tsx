@@ -1,8 +1,9 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity} from "react-native";
 import Text from "../ui/Text";
 import Icon from "../ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import View from "../ui/View";
 
 export default function ExploreMiniHeader({
   filterSheetRef,
@@ -14,7 +15,7 @@ export default function ExploreMiniHeader({
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   return (
-    <View style={[styles.container, { borderColor }]}>
+    <View style={[styles.container, { borderColor }]} color="background">
       <TouchableOpacity style={styles.entry}>
         <Icon name="heart-outline" size="lg" />
         <Text size="lg" weight="semibold">

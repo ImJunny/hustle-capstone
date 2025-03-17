@@ -26,6 +26,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const themeColor = useThemeColor();
+
   const platform = Platform.OS;
   if (platform == "android") {
     SystemUI.setBackgroundColorAsync(themeColor.background);
@@ -33,6 +34,7 @@ export default function RootLayout() {
   }
 
   const colorScheme = useColorScheme();
+
   const [loaded] = useFonts({
     "Lexend-bold": require("../assets/fonts/Lexend-Bold.ttf"),
     "Inter-normal": require("../assets/fonts/Inter-Regular.ttf"),
@@ -59,14 +61,15 @@ export default function RootLayout() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
+          <ThemeProvider
+              // value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              value={DarkTheme}
+            >
           <GestureHandlerRootView
             style={{
               flex: 1,
             }}
           >
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
               <SafeAreaView style={{ flex: 1 }}>
                 <Stack
                   screenOptions={{ headerShown: false, animation: "none" }}
@@ -77,8 +80,8 @@ export default function RootLayout() {
                 <Toast config={toastConfig} type="info" visibilityTime={2200} />
               </SafeAreaView>
               <StatusBar style="auto" />
-            </ThemeProvider>
           </GestureHandlerRootView>
+          </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </trpc.Provider>

@@ -15,7 +15,6 @@ export default function RootIndex() {
         data: { session },
       } = await supabase.auth.getSession();
       setSession(session);
-
       if (session) {
         const { data: user, error } = await supabase.auth.getUser();
         if (!user || error) {
@@ -25,17 +24,15 @@ export default function RootIndex() {
       }
       setLoading(false);
     }
-
     checkSession();
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
-
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-  }, []);
+  }, [loading]);
 
   const { data: userData, isFetching } = trpc.user.get_user_data.useQuery(
     {
@@ -43,7 +40,7 @@ export default function RootIndex() {
     },
     { enabled: !!session?.user }
   );
-
+  
   if (loading || isFetching) return <LoadingView />;
   if (session?.user) {
     if (

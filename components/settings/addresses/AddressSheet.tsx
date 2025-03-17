@@ -6,6 +6,7 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
+import { router } from "expo-router";
 
 export default function ({
   uuid,
@@ -20,7 +21,9 @@ export default function ({
         <SheetOption
           text="Edit address"
           name="create-outline"
-          onPress={() => {}}
+          onPress={() => {
+            router.push("/create-address");
+          }}
         />
         <SheetOption
           text="Delete address"

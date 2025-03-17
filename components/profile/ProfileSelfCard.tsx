@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    gap: 12,
+    gap: 8,
     marginTop: 16,
     width: "100%",
   },

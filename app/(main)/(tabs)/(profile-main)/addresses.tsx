@@ -4,12 +4,9 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "@/components/ui/IconButton";
 import { useCallback, useRef } from "react";
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 import AddressSheet from "@/components/settings/addresses/AddressSheet";
-import Button from "@/components/ui/Button";
+import { StyleSheet } from "react-native";
 
 // Addresses screen
 export default function AddressesScreen() {
@@ -24,6 +21,7 @@ export default function AddressesScreen() {
   ];
 
   const addressSheetRef = useRef<BottomSheet>(null);
+
   const openSheet = useCallback(() => {
     addressSheetRef.current?.expand();
   }, []);
@@ -32,14 +30,7 @@ export default function AddressesScreen() {
     <>
       <AddressesHeader />
       {addresses.length === 0 || !addresses ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 4,
-          }}
-        >
+        <View style={styles.centerPage}>
           <Text weight="semibold" size="2xl">
             No addresses added yet
           </Text>
@@ -77,21 +68,11 @@ function AddressEntry({ address, openSheet }: AddressEntryProps) {
   return (
     <View
       color="background"
-      style={[
-        {
-          flexDirection: "row",
-          alignItems: "center",
-          borderColor: themeColor.border,
-          justifyContent: "space-between",
-          borderBottomWidth: 1,
-          paddingHorizontal: 16,
-          paddingVertical: 44,
-        },
-      ]}
+      style={[styles.entry, { borderColor: themeColor.border }]}
     >
       <View>
-        <Text size="lg">{address.street_name}</Text>
-        <Text size="lg">
+        <Text>{address.street_name}</Text>
+        <Text>
           {address.city}, {address.state}, {address.zip}
         </Text>
       </View>
@@ -100,3 +81,21 @@ function AddressEntry({ address, openSheet }: AddressEntryProps) {
     </View>
   );
 }
+
+// Styles
+const styles = StyleSheet.create({
+  centerPage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
+  },
+  entry: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 44,
+  },
+});

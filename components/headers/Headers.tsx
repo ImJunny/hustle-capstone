@@ -191,7 +191,12 @@ export function AddressesHeader() {
             </Text>
           </View>
         ),
-        right: <IconButton name="add" />,
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push("/create-address")}
+          />
+        ),
       }}
     />
   );

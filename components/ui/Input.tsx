@@ -7,12 +7,13 @@ import { FontSizes } from "@/constants/Sizes";
 
 export type InputProps = {
   color?: TColors;
+  borderColor?: TColors;
   type?: "default" | "outline" | "clear" | "line";
   placeholder?: string;
 } & TextInputProps;
 
 function Input(
-  { style, type = "default", placeholder, ...props }: InputProps,
+  { style, borderColor, type = "default", placeholder, ...props }: InputProps,
   ref: ForwardedRef<TextInput>
 ) {
   const themeColor = useThemeColor();
@@ -20,7 +21,7 @@ function Input(
     type === "default" ? themeColor["background-variant"] : "transparent";
   const textColor = themeColor.foreground;
   const placeholderColor = themeColor.muted;
-  const borderColor = themeColor.foreground;
+  const borderColorr = borderColor ?? themeColor.foreground;
   const paddingHorizontal = type === "line" || type === "clear" ? 0 : 12;
   const borderRadius = type === "line" ? 0 : 6;
   const borderBottomWidth = type === "clear" || type === "default" ? 0 : 1;
@@ -41,7 +42,7 @@ function Input(
           backgroundColor,
           color: textColor,
           borderRadius,
-          borderColor,
+          borderColor: borderColorr,
           borderBottomWidth,
           borderRightWidth,
           borderTopWidth,

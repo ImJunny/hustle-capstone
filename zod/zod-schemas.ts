@@ -79,3 +79,10 @@ export const CreatePostSchema = z
       });
     }
   });
+
+export const CreateAddressSchema = z.object({
+  street_address: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  zip: z.string().min(1),
+});

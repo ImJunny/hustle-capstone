@@ -190,6 +190,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                borderRadius: 8,
               }}
             >
               <View>

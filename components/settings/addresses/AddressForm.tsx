@@ -54,7 +54,7 @@ export default function AddressForm({ formMethods }: AddressFormProps) {
               onChange={onChange}
               type="outline"
               style={styles.input}
-              borderColor="blue"
+              borderColor="background-variant"
             />
           )}
         />

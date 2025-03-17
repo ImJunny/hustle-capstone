@@ -21,7 +21,7 @@ function Input(
     type === "default" ? themeColor["background-variant"] : "transparent";
   const textColor = themeColor.foreground;
   const placeholderColor = themeColor.muted;
-  const borderColorr = borderColor ?? themeColor.foreground;
+  const borderColorr = borderColor ? themeColor[borderColor] : themeColor.foreground;
   const paddingHorizontal = type === "line" || type === "clear" ? 0 : 12;
   const borderRadius = type === "line" ? 0 : 6;
   const borderBottomWidth = type === "clear" || type === "default" ? 0 : 1;

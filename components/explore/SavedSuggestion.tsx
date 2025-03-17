@@ -38,15 +38,13 @@ export default function RecentSuggestion({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 4,
+    paddingVertical: 10,
     paddingHorizontal: 12,
-    borderBottomWidth: 2,
     borderRadius: 8,
     margin: 8,
   },
   text: {
     justifyContent: "center",
-    paddingVertical: 16,
   },
   tag: {
     flexDirection: "row",

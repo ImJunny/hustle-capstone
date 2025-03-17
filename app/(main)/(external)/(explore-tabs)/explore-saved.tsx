@@ -12,7 +12,7 @@ const saves = [
 export default function ExploreScreen() {
   return (
     <>
-      <View>
+      <View color="background">
         {saves.map((suggestion, i) => (
           <SavedSuggestion
             key={suggestion.id}

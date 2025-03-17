@@ -12,7 +12,7 @@ const recents = [
 export default function ExploreScreen() {
   return (
     <>
-      <View>
+      <View color="background">
         {recents.map((suggestion, i) => (
           <RecentSuggestion
             key={suggestion.id}

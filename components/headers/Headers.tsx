@@ -221,9 +221,9 @@ export function ExploreHeader() {
           >
             <Input
               editable={false}
+              pointerEvents="none"
               placeholder="Search users, jobs, services..."
               style={{ width: "100%" }}
-              onFocus={() => {}}
             />
           </Pressable>
         ),

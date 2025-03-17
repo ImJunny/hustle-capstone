@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { supabase } from "@/server/lib/supabase";
@@ -12,9 +12,11 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleSignInButton() {
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
   });
+
+  const [loading, setLoading] = useState(false)
 
   const createUserMutation = trpc.user.create_user.useMutation({
     onSuccess: async (data) => {
@@ -60,6 +62,8 @@ export default function GoogleSignInButton() {
           }
         });
       }
+    }else{
+      setLoading(false)
     }
   }, [response]);
 
@@ -68,11 +72,14 @@ export default function GoogleSignInButton() {
       type="outline"
       isFullWidth
       style={{ gap: 10 }}
-      onPress={()=>promptAsync()}
-      disabled={!request}
+      onPress={()=>{
+        promptAsync()
+        setLoading(true)
+      }}
+      disabled={loading}
     >
       <Icon name="logo-google" size="xl" />
-      {request? "Signing in..." : "Continue with Google"}
+      {loading? "Signing in..." : "Continue with Google"}
     </Button>
   );
 }

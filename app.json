@@ -1,50 +1,18 @@
 {
   "expo": {
-    "name": "hustle-capstone",
-    "slug": "hustle-capstone",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.hustle",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+    "extra": {
+      "eas": {
+        "projectId": "aed301f9-d03e-4cd8-82cf-2364aeba2ad5"
       }
     },
     "android": {
-      "package": "com.hustle"
+      "package": "com.hustlecapstone.hustlecapstone"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "server"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ],
-      "@react-native-google-signin/google-signin"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "0a81680a-3293-4fd7-853d-b6bfd4c67ff2"
+    "ios": {
+      "bundleIdentifier": "com.hustlecapstone.hustlecapstone",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
-    },
-    "owner": "imjunny"
+    }
   }
 }

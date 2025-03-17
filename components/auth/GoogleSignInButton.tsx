@@ -1,38 +1,37 @@
-import React, { useEffect, useState } from "react";
-import Button from "../ui/Button";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import Icon from "../ui/Icon";
+import React, { useEffect } from "react";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 import { supabase } from "@/server/lib/supabase";
 import { trpc } from "@/server/lib/trpc-client";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
-import { User } from "@supabase/supabase-js";
-import { createUserReturn } from "@/server/actions/user-actions";
+import Button from "../ui/Button";
+import Icon from "../ui/Icon";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleSignInButton() {
-  GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const createUserMutation = trpc.user.create_user.useMutation({
-    onSuccess: async (data: createUserReturn) => {
-      if (
-        data?.onboarding_phase == null ||
-        data?.onboarding_phase === "date of birth"
-      )
+    onSuccess: async (data) => {
+      if (!data?.onboarding_phase || data.onboarding_phase === "date of birth") {
         router.replace("/onboarding/date-of-birth");
-      else if (data?.onboarding_phase === "first name")
-        router.replace("/onboarding/first-name");
-      else if (data?.onboarding_phase === "username")
+      } else if (data.onboarding_phase === "username") {
         router.replace("/onboarding/username");
-      else if (data?.onboarding_phase === "profile image")
+      } else if (data.onboarding_phase === "display name") {
+        router.replace("/onboarding/display-name");
+      } else if (data.onboarding_phase === "profile image") {
         router.replace("/onboarding/profile-image");
-      else if (data?.onboarding_phase === "completed")
+      } else {
         router.replace("/(main)/(tabs)");
+      }
 
       Toast.show({
-        text1: `Successfully signed in`,
+        text1: "Successfully signed in",
         swipeable: false,
       });
     },
@@ -42,45 +41,38 @@ export default function GoogleSignInButton() {
         type: "error",
         swipeable: false,
       });
-      setIsLoading(false);
     },
   });
 
-  async function signInWithGoogle() {
-    setIsLoading(true);
-
-    await GoogleSignin.signOut();
-    await GoogleSignin.hasPlayServices();
-    const { data, type } = await GoogleSignin.signIn();
-
-    if (type === "success") {
-      const {
-        data: { user },
-      } = await supabase.auth.signInWithIdToken({
-        provider: "google",
-        token: data.idToken ?? "",
-      });
-      if (user && user.email) {
-        createUserMutation.mutate({
-          uuid: user.id,
-          email: user.email,
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.idToken) {
+        supabase.auth.signInWithIdToken({
+          provider: "google",
+          token: authentication.idToken,
+        }).then(({ data }) => {
+          if (data?.user?.email) {
+            createUserMutation.mutate({
+              uuid: data.user.id,
+              email: data.user.email,
+            });
+          }
         });
       }
-    } else {
-      setIsLoading(false);
     }
-  }
+  }, [response]);
 
   return (
     <Button
       type="outline"
       isFullWidth
       style={{ gap: 10 }}
-      onPress={signInWithGoogle}
-      disabled={isLoading}
+      onPress={()=>promptAsync()}
+      disabled={!request}
     >
       <Icon name="logo-google" size="xl" />
-      {isLoading ? "Signing in..." : "Continue with Google"}
+      {request? "Signing in..." : "Continue with Google"}
     </Button>
   );
 }

@@ -1,17 +1,39 @@
 {
   "expo": {
-    "extra": {
-      "eas": {
-        "projectId": "aed301f9-d03e-4cd8-82cf-2364aeba2ad5"
-      }
-    },
+    "scheme":"com.hustlecapstone.hustlecapstone",
     "android": {
-      "package": "com.hustlecapstone.hustlecapstone"
+      "package": "com.hustlecapstone.hustlecapstone",
+      "userInterfaceStyle":"automatic"
     },
     "ios": {
       "bundleIdentifier": "com.hustlecapstone.hustlecapstone",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "userInterfaceStyle":"automatic"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "@react-native-google-signin/google-signin"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },    
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "aed301f9-d03e-4cd8-82cf-2364aeba2ad5"
       }
     }
   }

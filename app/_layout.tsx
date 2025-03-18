@@ -65,7 +65,8 @@ export default function RootLayout() {
             }}
           >
             <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              // value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              value={DarkTheme}
             >
               <SafeAreaView style={{ flex: 1 }}>
                 <Stack

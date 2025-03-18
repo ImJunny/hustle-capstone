@@ -22,6 +22,11 @@ import z from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
+interface IndexHeaderProps {
+  index: number;
+  setIndex: (index: number) => void;
+}
+
 export function ExampleHeader() {
   return (
     <HeaderWrapper
@@ -43,7 +48,7 @@ export function ExampleHeader() {
   );
 }
 
-export function IndexHeader() {
+export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
   return (
     <HeaderWrapper
       options={{
@@ -60,18 +65,13 @@ export function IndexHeader() {
         ),
         center: (
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <View
-              style={{
-                borderBottomColor: "white",
-                borderBottomWidth: 5,
-              }}
-            >
+            <View>
               <Text
                 weight="bold"
                 size="xl"
-                style={{
-                  fontFamily: "Inter-bold",
-                }}
+                color="muted-dark"
+                style={[styles.tabText, index === 0 && styles.activeTabText]}
+                onPress={() => setIndex(0)}
               >
                 Work
               </Text>
@@ -80,16 +80,21 @@ export function IndexHeader() {
               <Text
                 weight="bold"
                 size="xl"
-                style={{
-                  fontFamily: "Inter-bold",
-                }}
+                color="muted-dark"
+                style={[styles.tabText, index === 1 && styles.activeTabText]}
+                onPress={() => setIndex(1)}
               >
                 Hire
               </Text>
             </View>
           </View>
         ),
-        right: <IconButton name="filter" size="xl" />,
+        right: (
+          <IconButton
+            name="filter"
+            size="xl"
+          />
+        ),
       }}
     />
   );
@@ -461,3 +466,13 @@ export function ReviewHeader({ username }: { username: string }) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  tabText: {
+    fontFamily: "Inter-bold",
+  },
+  activeTabText: {
+    fontFamily: "Inter-bold",
+    color: "white",
+  },
+});

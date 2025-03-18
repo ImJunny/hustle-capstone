@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { StyleSheet } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  StyleSheet,
+  Dimensions,
+  View,
+  UIManager,
+  findNodeHandle,
+  TouchableOpacity,
+} from "react-native";
 import { Dropdown as ElementDropdown } from "react-native-element-dropdown";
 import Text from "./Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -16,9 +23,12 @@ const data = [
   { label: "Item 8", value: "8" },
 ];
 
+const screenHeight = Dimensions.get("window").height;
+
 export default function Dropdown({ label }: { label?: string }) {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  const [dropdownY, setDropdownY] = useState(0);
   const themeColor = useThemeColor();
 
   const styles = StyleSheet.create({
@@ -28,24 +38,33 @@ export default function Dropdown({ label }: { label?: string }) {
     },
   });
 
+  const elementRef = useRef<View>(null);
+
+  const handleLayout = () => {
+    const y = elementRef.current?.measure(
+      (x, y, width, height, pageX, pageY) => {
+        setDropdownY(pageY);
+      }
+    );
+  };
+
   return (
-    <>
+    <View ref={elementRef} onLayout={handleLayout}>
       <Text weight="semibold" size="lg">
         {label}
       </Text>
 
       <ElementDropdown
-        style={[
-          {
-            height: 40,
-            borderWidth: 1,
-            borderColor: themeColor.foreground,
-            borderRadius: 6,
-            paddingHorizontal: 12,
-          },
-        ]}
-        placeholderStyle={[styles.text]}
-        selectedTextStyle={[styles.text]}
+        style={{
+          height: 40,
+          borderWidth: 1,
+          borderColor: themeColor.foreground,
+          borderRadius: 6,
+          paddingHorizontal: 12,
+        }}
+        activeColor={themeColor["background-variant"]}
+        placeholderStyle={styles.text}
+        selectedTextStyle={styles.text}
         inputSearchStyle={[
           styles.text,
           { color: themeColor.muted, borderRadius: 6 },
@@ -56,15 +75,17 @@ export default function Dropdown({ label }: { label?: string }) {
           borderRadius: 6,
           borderWidth: 1,
         }}
-        itemTextStyle={[styles.text]}
+        autoScroll={false}
+        itemTextStyle={styles.text}
+        dropdownPosition={dropdownY > screenHeight / 2 ? "top" : "bottom"}
         itemContainerStyle={{}}
         data={data}
-        search
-        maxHeight={240}
+        search={false}
+        maxHeight={340}
+        showsVerticalScrollIndicator={false}
         labelField="label"
         valueField="value"
-        placeholder={!isFocus ? "Select item" : "..."}
-        searchPlaceholder="Search..."
+        placeholder={"Select item"}
         value={value}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
@@ -73,6 +94,6 @@ export default function Dropdown({ label }: { label?: string }) {
           setIsFocus(false);
         }}
       />
-    </>
+    </View>
   );
 }

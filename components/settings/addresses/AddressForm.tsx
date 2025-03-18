@@ -25,6 +25,7 @@ export default function AddressForm({ formMethods }: AddressFormProps) {
   return (
     <View style={{ gap: 12 }}>
       <AddressFormEntry title="Address line 1" name="street_address" />
+      <Dropdown label={"Country/Region"} />
       <AddressFormEntry title="Address line 2" name="street_address" />
       <AddressFormEntry title="City" name="city" />
       <AddressFormEntry title="State/Province" name="state" />

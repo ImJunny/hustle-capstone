@@ -62,8 +62,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ThemeProvider
-              // value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-              value={DarkTheme}
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
             >
           <GestureHandlerRootView
             style={{

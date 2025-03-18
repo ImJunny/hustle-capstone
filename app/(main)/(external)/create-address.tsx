@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CreateAddressSchema } from "@/zod/zod-schemas";
+import ScrollView from "@/components/ui/ScrollView";
 
 export default function CreatePostForm() {
   const themeColor = useThemeColor();
@@ -17,9 +18,9 @@ export default function CreatePostForm() {
     resolver: zodResolver(CreateAddressSchema),
   });
 
-  const handleSave = formMethods.handleSubmit(() => {
-    console.log("test");
-  });
+  const handleSave = () => {
+    console.log("saved");
+  };
 
   return (
     <>
@@ -28,14 +29,22 @@ export default function CreatePostForm() {
         style={styles.avoidingView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.page} color="background">
-          <AddressForm formMethods={formMethods} />
-        </View>
-        <View style={[styles.footer, { borderColor: themeColor.border }]} color="background">
-          <Button style={styles.footerButton} onPress={handleSave}>
-            Save changes
-          </Button>
-        </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.page} color="background">
+            <AddressForm formMethods={formMethods} />
+          </View>
+          <View
+            style={[styles.footer, { borderColor: themeColor.border }]}
+            color="background"
+          >
+            <Button
+              style={styles.footerButton}
+              onPress={formMethods.handleSubmit(handleSave)}
+            >
+              Save changes
+            </Button>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </>
   );

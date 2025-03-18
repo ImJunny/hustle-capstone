@@ -9,10 +9,8 @@ import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
-import { useEffect, useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "../ui/IconButton";
-import Separator from "../ui/Separator";
 
 type PostFormProps = {
   data?: PostDetailsInfo;

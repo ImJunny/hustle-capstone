@@ -22,6 +22,7 @@ export default function ({
           text="Edit address"
           name="create-outline"
           onPress={() => {
+            sheetRef.current?.forceClose();
             router.push("/create-address");
           }}
         />

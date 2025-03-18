@@ -6,11 +6,13 @@ import {
   UIManager,
   findNodeHandle,
   TouchableOpacity,
+  ViewStyle,
 } from "react-native";
 import { Dropdown as ElementDropdown } from "react-native-element-dropdown";
 import Text from "./Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { FontSizes } from "@/constants/Sizes";
+import { TColors } from "@/constants/Colors";
 
 const data = [
   { label: "Item 1", value: "1" },
@@ -25,9 +27,19 @@ const data = [
 
 const screenHeight = Dimensions.get("window").height;
 
-export default function Dropdown({ label }: { label?: string }) {
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
+export default function Dropdown({
+  borderColor,
+  data,
+  value,
+  onChange,
+  style,
+}: {
+  borderColor?: TColors;
+  data: { label: string; value: string }[];
+  value: string | undefined;
+  onChange: (item: { label: string; value: string }) => void;
+  style: ViewStyle;
+}) {
   const [dropdownY, setDropdownY] = useState(0);
   const themeColor = useThemeColor();
 
@@ -41,24 +53,18 @@ export default function Dropdown({ label }: { label?: string }) {
   const elementRef = useRef<View>(null);
 
   const handleLayout = () => {
-    const y = elementRef.current?.measure(
-      (x, y, width, height, pageX, pageY) => {
-        setDropdownY(pageY);
-      }
-    );
+    elementRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      setDropdownY(pageY);
+    });
   };
 
   return (
-    <View ref={elementRef} onLayout={handleLayout}>
-      <Text weight="semibold" size="lg">
-        {label}
-      </Text>
-
+    <View ref={elementRef} onLayout={handleLayout} style={style}>
       <ElementDropdown
         style={{
           height: 40,
           borderWidth: 1,
-          borderColor: themeColor.foreground,
+          borderColor: themeColor[borderColor ?? "foreground"],
           borderRadius: 6,
           paddingHorizontal: 12,
         }}
@@ -78,21 +84,15 @@ export default function Dropdown({ label }: { label?: string }) {
         autoScroll={false}
         itemTextStyle={styles.text}
         dropdownPosition={dropdownY > screenHeight / 2 ? "top" : "bottom"}
-        itemContainerStyle={{}}
         data={data}
         search={false}
         maxHeight={340}
         showsVerticalScrollIndicator={false}
         labelField="label"
         valueField="value"
-        placeholder={"Select item"}
+        placeholder={value ?? "Select"}
         value={value}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={(item) => {
-          setValue(item.value);
-          setIsFocus(false);
-        }}
+        onChange={(item) => onChange(item.value)}
       />
     </View>
   );

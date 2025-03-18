@@ -1,3 +1,4 @@
+import { countries } from "@/constants/Data";
 import { tagTypes } from "@/drizzle/db-types";
 import { z } from "zod";
 
@@ -80,9 +81,24 @@ export const CreatePostSchema = z
     }
   });
 
-export const CreateAddressSchema = z.object({
-  street_address: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().min(1),
-  zip: z.string().min(1),
-});
+export const CreateAddressSchema = z
+  .object({
+    country: z.enum(
+      countries.map((country) => country.value) as [string, ...string[]],
+      { message: "Required" }
+    ),
+    address_line_1: z.string().min(1, "Required"),
+    address_line_2: z.string().min(1, "Required").optional(),
+    city: z.string().min(1, "Required"),
+    state: z.string().min(1, "Required").optional(),
+    zip: z.string().min(1, "Required"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.country === "united_states" && !data.state) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["state"],
+        message: "State is required when the country is United States.",
+      });
+    }
+  });

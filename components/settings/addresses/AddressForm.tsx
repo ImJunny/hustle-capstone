@@ -16,12 +16,14 @@ type AddressFormInputProps = {
   title: string;
   name: keyof z.infer<typeof CreateAddressSchema>;
   formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
+  defaultMessage?: string;
 };
 type AddressFormDropdownProps = {
   title: string;
   name: keyof z.infer<typeof CreateAddressSchema>;
   data: { label: string; value: string }[];
   formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
+  defaultMessage?: string;
 };
 
 // Address form
@@ -33,6 +35,12 @@ export default function AddressForm({ formMethods }: AddressFormProps) {
 
   return (
     <View style={{ gap: 12 }}>
+      <AddressFormInput
+        title="Address title"
+        name="address_title"
+        formMethods={formMethods}
+        defaultMessage="This title is only meant for you to help identify the type of address. (ex: Home)"
+      />
       <AddressFormDropdown
         title="Country/Region"
         name="country"
@@ -64,7 +72,6 @@ export default function AddressForm({ formMethods }: AddressFormProps) {
           formMethods={formMethods}
         />
       )}
-
       <AddressFormInput
         title="Zip code*"
         name="zip"
@@ -74,10 +81,11 @@ export default function AddressForm({ formMethods }: AddressFormProps) {
   );
 }
 
-const AddressFormInput = function AddressFormInput({
+function AddressFormInput({
   title,
   name,
   formMethods,
+  defaultMessage,
 }: AddressFormInputProps) {
   const {
     control,
@@ -102,21 +110,24 @@ const AddressFormInput = function AddressFormInput({
           />
         )}
       />
-      {errors[name] && (
-        <Text color="red" style={{ marginTop: 4 }}>
-          {errors[name].message}
+      {(defaultMessage || errors[name]) && (
+        <Text color={errors[name] ? "red" : "muted"} style={{ marginTop: 4 }}>
+          {defaultMessage && !errors[name]
+            ? defaultMessage
+            : errors[name]?.message}
         </Text>
       )}
     </View>
   );
-};
+}
 
 // Memoize AddressFormDropdown to avoid unnecessary re-renders
-const AddressFormDropdown = function AddressFormDropdown({
+function AddressFormDropdown({
   title,
   name,
   data,
   formMethods,
+  defaultMessage,
 }: AddressFormDropdownProps) {
   const {
     control,
@@ -141,13 +152,15 @@ const AddressFormDropdown = function AddressFormDropdown({
           />
         )}
       />
-      {errors[name] && (
-        <Text color="red" style={{ marginTop: 4 }}>
-          {errors[name].message}
+      {(defaultMessage || errors[name]) && (
+        <Text color={errors[name] ? "red" : "muted"} style={{ marginTop: 4 }}>
+          {defaultMessage && !errors[name]
+            ? defaultMessage
+            : errors[name]?.message}
         </Text>
       )}
     </View>
   );
-};
+}
 
 export { AddressFormInput, AddressFormDropdown };

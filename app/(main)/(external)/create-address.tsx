@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CreateAddressSchema } from "@/zod/zod-schemas";
 import ScrollView from "@/components/ui/ScrollView";
+import { trpc } from "@/server/lib/trpc-client";
+import Toast from "react-native-toast-message";
 
 export default function CreatePostForm() {
   const themeColor = useThemeColor();
@@ -18,8 +20,33 @@ export default function CreatePostForm() {
     resolver: zodResolver(CreateAddressSchema),
   });
 
-  const handleSave = () => {
-    console.log("saved");
+  const { mutateAsync: findAddress } =
+    trpc.address.find_suggested_address.useMutation({
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          type: "error",
+          swipeable: false,
+          visibilityTime: 2000,
+        });
+      },
+    });
+
+  const handleSave = async () => {
+    const { address_line_1, address_line_2, city, state, zip } =
+      formMethods.getValues();
+    const encoded_address = `${address_line_1},${
+      address_line_2 ? address_line_2 : ""
+    },${city},${state},${zip}`.replaceAll(" ", "+");
+    const a = await findAddress({ encoded_address });
+    console.log(a);
+    if (!a) {
+      Toast.show({
+        text1: "No matching addresses found.",
+        type: "error",
+        swipeable: false,
+      });
+    }
   };
 
   return (
@@ -33,18 +60,18 @@ export default function CreatePostForm() {
           <View style={styles.page} color="background">
             <AddressForm formMethods={formMethods} />
           </View>
-          <View
-            style={[styles.footer, { borderColor: themeColor.border }]}
-            color="background"
-          >
-            <Button
-              style={styles.footerButton}
-              onPress={formMethods.handleSubmit(handleSave)}
-            >
-              Save changes
-            </Button>
-          </View>
         </ScrollView>
+        <View
+          style={[styles.footer, { borderColor: themeColor.border }]}
+          color="background"
+        >
+          <Button
+            style={styles.footerButton}
+            onPress={formMethods.handleSubmit(handleSave)}
+          >
+            Save changes
+          </Button>
+        </View>
       </KeyboardAvoidingView>
     </>
   );

@@ -1,25 +1,16 @@
 {
   "expo": {
-    "name": "hustle-capstone",
-    "slug": "hustle-capstone",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "scheme": "com.hustlecapstone.hustlecapstone",
+    "android": {
+      "package": "com.hustlecapstone.hustlecapstone",
+      "userInterfaceStyle": "automatic"
+    },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.hustle",
+      "bundleIdentifier": "com.hustlecapstone.hustlecapstone",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "package": "com.hustle"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "server"
+      },
+      "userInterfaceStyle": "automatic"
     },
     "plugins": [
       "expo-router",
@@ -42,9 +33,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "0a81680a-3293-4fd7-853d-b6bfd4c67ff2"
+        "projectId": "aed301f9-d03e-4cd8-82cf-2364aeba2ad5"
       }
-    },
-    "owner": "imjunny"
+    }
   }
 }

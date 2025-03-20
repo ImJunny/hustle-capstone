@@ -103,9 +103,8 @@ export default function OnboardingNextButton({
     if (nextStep) {
       router.push(`/onboarding/${nextStep}` as any);
     } else {
-      router.push("/(main)/(tabs)");
-
-      await utils.user.get_user_data.invalidate();
+      utils.user.get_user_data.invalidate();
+      router.replace("/(main)/(tabs)");
     }
   }
 

@@ -7,7 +7,7 @@ import AddressForm from "@/components/settings/addresses/AddressForm";
 import ScrollView from "@/components/ui/ScrollView";
 import AddressSuggestionsModal from "@/components/addresses/AddressSuggestionsModal";
 import AddressSubmitButton from "@/components/addresses/AddressSubmitButton";
-import { CreatePostProvider } from "@/contexts/CreatePostContext";
+import { CreateAddressProvider } from "@/contexts/CreateAddressContext";
 
 export default function CreateAddressForm() {
   const themeColor = useThemeColor();
@@ -16,7 +16,7 @@ export default function CreateAddressForm() {
   const [suggestions, setSuggestions] = useState<any>();
 
   return (
-    <CreatePostProvider>
+    <CreateAddressProvider>
       <SimpleHeader title="Create address" />
       <KeyboardAvoidingView
         style={styles.avoidingView}
@@ -42,7 +42,7 @@ export default function CreateAddressForm() {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
       />
-    </CreatePostProvider>
+    </CreateAddressProvider>
   );
 }
 

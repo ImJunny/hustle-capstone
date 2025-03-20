@@ -39,38 +39,36 @@ export default function EditAddressForm() {
   }
 
   return (
-    <>
-      <CreateAddressProvider data={data}>
-        <SimpleHeader title="Edit address" />
-        <KeyboardAvoidingView
-          style={styles.avoidingView}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={styles.page} color="background">
-              <AddressForm data={data as Address} />
-            </View>
-          </ScrollView>
-          <View
-            style={[styles.footer, { borderColor: themeColor.border }]}
-            color="background"
-          >
-            <AddressSubmitButton
-              data={data as Address}
-              setSuggestions={setSuggestions}
-              setModalOpen={setModalOpen}
-              isEditing
-            />
+    <CreateAddressProvider data={data}>
+      <SimpleHeader title="Edit address" />
+      <KeyboardAvoidingView
+        style={styles.avoidingView}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.page} color="background">
+            <AddressForm data={data as Address} />
           </View>
-        </KeyboardAvoidingView>
-        <AddressSuggestionsModal
-          suggestions={suggestions}
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          isEditing
-        />
-      </CreateAddressProvider>
-    </>
+        </ScrollView>
+        <View
+          style={[styles.footer, { borderColor: themeColor.border }]}
+          color="background"
+        >
+          <AddressSubmitButton
+            data={data as Address}
+            setSuggestions={setSuggestions}
+            setModalOpen={setModalOpen}
+            isEditing
+          />
+        </View>
+      </KeyboardAvoidingView>
+      <AddressSuggestionsModal
+        suggestions={suggestions}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        isEditing
+      />
+    </CreateAddressProvider>
   );
 }
 

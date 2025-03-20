@@ -2,7 +2,7 @@ import { z } from "zod";
 import Button from "../ui/Button";
 import { trpc } from "@/server/lib/trpc-client";
 import Toast from "react-native-toast-message";
-import { useFormContext, UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { CreateAddressSchema } from "@/zod/zod-schemas";
 import { Dispatch, SetStateAction } from "react";
 import { Address } from "@/server/actions/address-actions";
@@ -58,6 +58,7 @@ export default function AddressSubmitButton({
     } = getValues();
 
     if (
+      isEditing &&
       [
         data?.title,
         data?.address_line_1,

@@ -102,7 +102,6 @@ function AddressFormInput({
   );
 }
 
-// Memoize AddressFormDropdown to avoid unnecessary re-renders
 function AddressFormDropdown({
   title,
   name,

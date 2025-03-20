@@ -8,15 +8,18 @@ import IconButton from "@/components/ui/IconButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, formatDistanceToNow, isThisYear } from "date-fns";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { useRouter } from "expo-router"; // Import the router hook
 
 type PostDetailsDescriptionSectionProps = {
   data: PostDetailsInfo;
 };
+
 export default function PostDetailsDescriptionSection({
   data,
 }: PostDetailsDescriptionSectionProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const router = useRouter(); // Initialize the router
 
   let formattedDueDate = null;
   if (data.due_date)
@@ -26,6 +29,13 @@ export default function PostDetailsDescriptionSection({
   const createdAgo = formatDistanceToNow(new Date(data.created_at), {
     addSuffix: true,
   });
+
+  const handleAcceptJob = () => {
+    router.push({
+      pathname: "/confirmation",
+      params: { job_uuid: data.uuid }, // Pass `job_uuid` as a query parameter
+    });
+  };
 
   return (
     <View style={[styles.section, { borderColor }]}>
@@ -65,7 +75,9 @@ export default function PostDetailsDescriptionSection({
         <IconButton name="chatbubble-outline" size="2xl" flippedX />
         <IconButton name="paper-plane-outline" size="2xl" />
         {data.type == "work" ? (
-          <Button style={styles.pageButton}>Accept job</Button>
+          <Button style={styles.pageButton} onPress={handleAcceptJob}>
+            Accept job
+          </Button>
         ) : (
           <Button style={styles.pageButton}>Hire service</Button>
         )}

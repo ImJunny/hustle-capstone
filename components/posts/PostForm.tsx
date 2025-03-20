@@ -178,21 +178,15 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
                 onPress={onChange}
               />
               <RadioButton
-                label={"Local - My address"}
+                label={"Local"}
                 selected={value}
-                value="local-mine"
-                onPress={onChange}
-              />
-              <RadioButton
-                label={"Local - Their address"}
-                selected={value}
-                value="local-theirs"
+                value="local"
                 onPress={onChange}
               />
             </View>
           )}
         />
-        {locationType === "local-mine" && (
+        {locationType === "local" && (
           <View style={{ marginTop: 30 }}>
             <Text weight="semibold" size="lg">
               Location address

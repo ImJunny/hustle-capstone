@@ -40,7 +40,7 @@ export default function RootIndex() {
     },
     { enabled: !!session?.user }
   );
-  
+
   if (loading || isFetching) return <LoadingView />;
   if (session?.user) {
     if (

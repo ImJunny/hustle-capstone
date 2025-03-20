@@ -3,19 +3,21 @@ import { TouchableOpacity, StyleSheet } from "react-native";
 import View from "./View";
 import Text from "./Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { TouchableOpacityProps } from "react-native-gesture-handler";
 
 type RadioButtonProps = {
   selected?: string;
   value?: string;
   onPress?: (value: string) => void;
-  label: string;
-};
+  label?: string;
+} & TouchableOpacityProps;
 
 export default function ({
   selected,
   value,
   onPress,
   label,
+  ...props
 }: RadioButtonProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.foreground;
@@ -23,6 +25,7 @@ export default function ({
     <TouchableOpacity
       style={styles.radioButtonContainer}
       onPress={onPress && value ? () => onPress(value) : () => {}}
+      {...props}
     >
       <View style={[styles.radioButton, { borderColor }]}>
         <View
@@ -35,7 +38,7 @@ export default function ({
           ]}
         />
       </View>
-      <Text style={styles.label}>{label}</Text>
+      {label && <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
   );
 }

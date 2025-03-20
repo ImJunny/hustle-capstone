@@ -89,7 +89,7 @@ export const CreateAddressSchema = z
       { message: "Required" }
     ),
     address_line_1: z.string().min(1, "Required"),
-    address_line_2: z.string().min(1, "Required").optional(),
+    address_line_2: z.string().optional(),
     city: z.string().min(1, "Required").optional(),
     state: z.string().min(1, "Required").optional(),
     zip: z.string().min(1, "Required"),

@@ -1,7 +1,10 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   date,
+  decimal,
   integer,
+  numeric,
   pgEnum,
   pgSchema,
   serial,
@@ -102,6 +105,36 @@ export const transactions = app_schema.table("transactions", {
   id: serial("id").primaryKey(),
   user_uuid: uuid("user_uuid").references(() => users.uuid),
   post_uuid: uuid("post_uuid").references(() => posts.uuid),
+});
+
+export const addresses = app_schema.table("addresses", {
+  id: serial("id").primaryKey(),
+  user_uuid: uuid("user_uuid").references(() => users.uuid),
+  title: text("title"),
+  address_line_1: text("address_line_1"),
+  address_line_2: text("address_line_2"),
+  city: text("city"),
+  state: text("state"),
+  country: text("country"),
+  zip_code: text("zip_code"),
+  longitude: decimal("longitude"),
+  latitude: decimal("latitude"),
+  visible: boolean("visible").default(true),
+});
+
+export const accepted_jobs = app_schema.table("accepted_jobs", {
+  id: serial("id").primaryKey(),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  job_uuid: uuid("job_uuid")
+    .references(() => posts.uuid, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
 // TABLES FOR TYPES

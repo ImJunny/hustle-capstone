@@ -1,7 +1,7 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { TColors } from "@/constants/Colors";
 import { TouchableOpacity } from "react-native";
-import { RefObject } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
@@ -9,11 +9,13 @@ import Text from "@/components/ui/Text";
 import { router } from "expo-router";
 
 export default function ({
-  uuid,
+  id,
   sheetRef,
+  setModalOpen,
 }: {
-  uuid: string;
+  id: number;
   sheetRef: RefObject<BottomSheetMethods>;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <Sheet sheetRef={sheetRef} title="Address options" snapPoints={[1, "35%"]}>
@@ -23,14 +25,17 @@ export default function ({
           name="create-outline"
           onPress={() => {
             sheetRef.current?.forceClose();
-            router.push("/create-address");
+            router.push(`/edit-address/${id}` as any);
           }}
         />
         <SheetOption
           text="Delete address"
           name="trash-outline"
           color="red"
-          onPress={() => {}}
+          onPress={() => {
+            sheetRef.current?.close();
+            setModalOpen(true);
+          }}
         />
       </BottomSheetView>
     </Sheet>

@@ -7,9 +7,11 @@ import { z } from "zod";
 import Dropdown from "@/components/ui/Dropdown";
 import { countries, us_states } from "@/constants/Data";
 import { useEffect } from "react";
+import { Address } from "@/server/actions/address-actions";
 
 // Prop types
 type AddressFormProps = {
+  data?: Address;
   formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
 };
 type AddressFormInputProps = {
@@ -27,7 +29,7 @@ type AddressFormDropdownProps = {
 };
 
 // Address form
-export default function AddressForm({ formMethods }: AddressFormProps) {
+export default function AddressForm({ formMethods, data }: AddressFormProps) {
   const isUS = formMethods.watch("country") === "united_states";
   useEffect(() => {
     if (!isUS) formMethods.setValue("state", "");

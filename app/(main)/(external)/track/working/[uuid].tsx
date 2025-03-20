@@ -2,7 +2,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import { SimpleHeader } from "@/components/headers/Headers";
+import { BackHeader, SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { Dimensions, StyleSheet } from "react-native";
@@ -26,7 +26,12 @@ export default function TrackWorkingDetailsScreen() {
   );
 
   if (!post) {
-    return <Text>post not found</Text>;
+    return (
+      <>
+        <BackHeader />
+        <Text>post not found</Text>
+      </>
+    );
   }
 
   const progressDescription =

@@ -3,7 +3,6 @@ import { z } from "zod";
 import {
   applyForJob,
   doesJobApplicationExist,
-  getJobApplicationDetails,
   getUserJobApplications,
 } from "../actions/jobs-actions";
 
@@ -13,6 +12,7 @@ export const jobRouter = createTRPCRouter({
       z.object({
         user_uuid: z.string(),
         job_uuid: z.string(),
+        created_at: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -25,18 +25,26 @@ export const jobRouter = createTRPCRouter({
         throw new Error("You have already applied for this job.");
       }
 
-      return await applyForJob(input.user_uuid, input.job_uuid);
+      return await applyForJob(
+        input.user_uuid,
+        input.job_uuid,
+        input.created_at || new Date().toISOString()
+      );
     }),
 
-  get_job_application_details: protectedProcedure
+  is_accepted: protectedProcedure
     .input(
       z.object({
-        user_uuid: z.string(),
         job_uuid: z.string(),
+        user_uuid: z.string(),
       })
     )
     .query(async ({ input }) => {
-      return await getJobApplicationDetails(input.user_uuid, input.job_uuid);
+      const exists = await doesJobApplicationExist(
+        input.user_uuid,
+        input.job_uuid
+      );
+      return exists;
     }),
 
   get_user_job_applications: protectedProcedure

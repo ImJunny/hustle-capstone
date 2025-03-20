@@ -17,6 +17,7 @@ const Confirmation = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const utils = trpc.useUtils();
   const { mutate: applyForJob, isLoading: applyLoading } =
     trpc.job.apply_for_job.useMutation({
       onSuccess: () => {
@@ -24,6 +25,7 @@ const Confirmation = () => {
           text1: "Successfully applied for the job",
           swipeable: false,
         });
+        utils.job.invalidate();
         router.push("/");
       },
       onError: (error) => {

@@ -3,7 +3,11 @@ import { accepted_jobs } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 
 // Apply for a job
-export const applyForJob = async (user_uuid: string, job_uuid: string) => {
+export const applyForJob = async (
+  user_uuid: string,
+  job_uuid: string,
+  p0: string
+) => {
   try {
     const exists = await doesJobApplicationExist(user_uuid, job_uuid);
 
@@ -50,36 +54,6 @@ export const doesJobApplicationExist = async (
       error
     );
     throw new Error("Failed to verify job application status.");
-  }
-};
-
-// Get job application details
-export const getJobApplicationDetails = async (
-  user_uuid: string,
-  job_uuid: string
-) => {
-  try {
-    const result = await db
-      .select()
-      .from(accepted_jobs)
-      .where(
-        and(
-          eq(accepted_jobs.user_uuid, user_uuid),
-          eq(accepted_jobs.job_uuid, job_uuid)
-        )
-      );
-
-    if (!result[0]) {
-      throw new Error("No application found for this job.");
-    }
-
-    return result[0];
-  } catch (error) {
-    console.error(
-      `Error fetching job application details for user: ${user_uuid}, job: ${job_uuid}`,
-      error
-    );
-    throw new Error("Failed to fetch job application details.");
   }
 };
 

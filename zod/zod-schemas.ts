@@ -1,3 +1,4 @@
+import { countries } from "@/constants/Data";
 import { tagTypes } from "@/drizzle/db-types";
 import { z } from "zod";
 
@@ -77,5 +78,35 @@ export const CreatePostSchema = z
         path: ["due_date"],
         message: "Due date is required.",
       });
+    }
+  });
+
+export const CreateAddressSchema = z
+  .object({
+    address_title: z.string().min(1, "Required"),
+    country: z.enum(
+      countries.map((country) => country.value) as [string, ...string[]],
+      { message: "Required" }
+    ),
+    address_line_1: z.string().min(1, "Required"),
+    address_line_2: z.string().optional(),
+    city: z.string().min(1, "Required").optional(),
+    state: z.string().min(1, "Required").optional(),
+    zip: z.string().min(1, "Required"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.country === "united_states") {
+      if (!data.city)
+        ctx.addIssue({
+          code: "custom",
+          path: ["city"],
+          message: "City is required for the United States.",
+        });
+      if (!data.state)
+        ctx.addIssue({
+          code: "custom",
+          path: ["state"],
+          message: "State is required for the United States.",
+        });
     }
   });

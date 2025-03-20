@@ -9,7 +9,12 @@ import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
-import { useEffect, useState } from "react";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import IconButton from "../ui/IconButton";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
+import { useState } from "react";
+import { Address } from "@/server/actions/address-actions";
 
 type PostFormProps = {
   data?: PostDetailsInfo;
@@ -26,9 +31,19 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
     getValues,
   } = useFormContext<z.infer<typeof CreatePostSchema>>();
 
+  const { user } = useAuthData();
+  if (!user) return;
+  const { data: userData } = trpc.address.get_user_addresses.useQuery({
+    user_uuid: user.id,
+  });
+  const [address, setAddress] = useState<Address | undefined>(
+    userData?.[0] ?? undefined
+  );
+
+  const themeColor = useThemeColor();
   const locationType = watch("location_type");
   return (
-    <View style={{ gap: 60 }}>
+    <View style={{ gap: 70 }}>
       <View>
         <Text weight="semibold" size="lg">
           Title
@@ -111,7 +126,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
               )}
             />
           </View>
-          <Text>-</Text>
+          <Text style={{ marginTop: 30 }}>-</Text>
           <View>
             <Text weight="semibold" size="lg">
               Max rate ($)
@@ -155,7 +170,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
           control={control}
           defaultValue="remote"
           render={({ field: { value, onChange } }) => (
-            <View style={{ marginTop: 10, flexDirection: "row", gap: 16 }}>
+            <View style={{ marginTop: 10, gap: 16 }}>
               <RadioButton
                 label={"Remote"}
                 selected={value}
@@ -171,32 +186,53 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
             </View>
           )}
         />
-      </View>
+        {locationType === "local" && (
+          <View style={{ marginTop: 30 }}>
+            <Text weight="semibold" size="lg">
+              Location address
+            </Text>
+            <View
+              style={{
+                marginTop: 10,
+                paddingHorizontal: 20,
+                height: 120,
+                borderWidth: 1,
+                borderColor: themeColor.foreground,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderRadius: 8,
+              }}
+            >
+              {address ? (
+                <View>
+                  <Text weight="semibold" style={{ marginBottom: 4 }}>
+                    {address.title}
+                  </Text>
+                  <Text>
+                    {address.address_line_1}
+                    {address.address_line_2 && `, ${address.address_line_2}`}
+                  </Text>
+                  <Text>
+                    {address.city}, {address.state}, {address.zip_code}
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  <Text>No addresses added yet</Text>
+                </View>
+              )}
 
-      {locationType === "local" && (
-        <View>
-          <Text weight="semibold" size="lg">
-            Location address
-          </Text>
-          <Controller
-            control={control}
-            name="location_address"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                style={styles.text_form}
-                type="outline"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          <BottomMessage
-            field="location_address"
-            defaultMessage="This address will be hidden to everyone except the approved worker."
-            hasError
-          />
-        </View>
-      )}
+              <IconButton name="chevron-forward" />
+            </View>
+            <BottomMessage
+              field="location_address"
+              defaultMessage="This address will be hidden to everyone except the approved worker."
+              hasError
+            />
+          </View>
+        )}
+      </View>
 
       {getValues("type") === "work" && (
         <View>

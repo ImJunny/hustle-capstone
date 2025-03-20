@@ -1,0 +1,1 @@
+ALTER TABLE "app"."addresses" ADD COLUMN "visible" boolean DEFAULT true;

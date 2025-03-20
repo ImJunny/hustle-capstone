@@ -4,26 +4,19 @@ import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SimpleHeader } from "@/components/headers/Headers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import AddressForm from "@/components/settings/addresses/AddressForm";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { CreateAddressSchema } from "@/zod/zod-schemas";
 import ScrollView from "@/components/ui/ScrollView";
 import AddressSuggestionsModal from "@/components/addresses/AddressSuggestionsModal";
 import AddressSubmitButton from "@/components/addresses/AddressSubmitButton";
+import { CreatePostProvider } from "@/contexts/CreatePostContext";
 
 export default function CreateAddressForm() {
   const themeColor = useThemeColor();
-
-  const formMethods = useForm<z.infer<typeof CreateAddressSchema>>({
-    resolver: zodResolver(CreateAddressSchema),
-  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<any>();
 
   return (
-    <>
+    <CreatePostProvider>
       <SimpleHeader title="Create address" />
       <KeyboardAvoidingView
         style={styles.avoidingView}
@@ -31,7 +24,7 @@ export default function CreateAddressForm() {
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={styles.page} color="background">
-            <AddressForm formMethods={formMethods} />
+            <AddressForm />
           </View>
         </ScrollView>
         <View
@@ -41,7 +34,6 @@ export default function CreateAddressForm() {
           <AddressSubmitButton
             setSuggestions={setSuggestions}
             setModalOpen={setModalOpen}
-            formMethods={formMethods}
           />
         </View>
       </KeyboardAvoidingView>
@@ -49,9 +41,8 @@ export default function CreateAddressForm() {
         suggestions={suggestions}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        formMethods={formMethods}
       />
-    </>
+    </CreatePostProvider>
   );
 }
 

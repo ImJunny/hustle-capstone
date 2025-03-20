@@ -2,7 +2,7 @@ import Input from "@/components/ui/Input";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { CreateAddressSchema } from "@/zod/zod-schemas";
-import { Controller, UseFormReturn } from "react-hook-form";
+import { Controller, useFormContext, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import Dropdown from "@/components/ui/Dropdown";
 import { countries, us_states } from "@/constants/Data";
@@ -12,73 +12,53 @@ import { Address } from "@/server/actions/address-actions";
 // Prop types
 type AddressFormProps = {
   data?: Address;
-  formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
 };
 type AddressFormInputProps = {
   title: string;
   name: keyof z.infer<typeof CreateAddressSchema>;
-  formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
   defaultMessage?: string;
 };
 type AddressFormDropdownProps = {
   title: string;
   name: keyof z.infer<typeof CreateAddressSchema>;
   data: { label: string; value: string }[];
-  formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
   defaultMessage?: string;
 };
 
 // Address form
-export default function AddressForm({ formMethods, data }: AddressFormProps) {
-  const isUS = formMethods.watch("country") === "united_states";
+export default function AddressForm({ data }: AddressFormProps) {
+  const { setValue, watch } =
+    useFormContext<z.infer<typeof CreateAddressSchema>>();
+  const isUS = watch("country") === "united_states";
   useEffect(() => {
-    if (!isUS) formMethods.setValue("state", "");
-  }, [isUS, formMethods]);
+    if (!isUS) setValue("state", "");
+  }, [isUS, setValue]);
 
   return (
     <View style={{ gap: 12 }}>
       <AddressFormInput
         title="Address title"
         name="address_title"
-        formMethods={formMethods}
         defaultMessage="This title is only meant for you to help identify the type of address. (ex: Home)"
       />
       <AddressFormDropdown
         title="Country/Region"
         name="country"
         data={countries}
-        formMethods={formMethods}
       />
-      <AddressFormInput
-        title="Address line 1"
-        name="address_line_1"
-        formMethods={formMethods}
-      />
-      <AddressFormInput
-        title="Address line 2"
-        name="address_line_2"
-        formMethods={formMethods}
-      />
-      <AddressFormInput title="City" name="city" formMethods={formMethods} />
+      <AddressFormInput title="Address line 1" name="address_line_1" />
+      <AddressFormInput title="Address line 2" name="address_line_2" />
+      <AddressFormInput title="City" name="city" />
       {isUS ? (
         <AddressFormDropdown
           title="State/Province"
           name="state"
           data={us_states}
-          formMethods={formMethods}
         />
       ) : (
-        <AddressFormInput
-          title="State/Province"
-          name="state"
-          formMethods={formMethods}
-        />
+        <AddressFormInput title="State/Province" name="state" />
       )}
-      <AddressFormInput
-        title="Zip code*"
-        name="zip"
-        formMethods={formMethods}
-      />
+      <AddressFormInput title="Zip code" name="zip" />
     </View>
   );
 }
@@ -86,13 +66,12 @@ export default function AddressForm({ formMethods, data }: AddressFormProps) {
 function AddressFormInput({
   title,
   name,
-  formMethods,
   defaultMessage,
 }: AddressFormInputProps) {
   const {
     control,
     formState: { errors },
-  } = formMethods;
+  } = useFormContext<z.infer<typeof CreateAddressSchema>>();
 
   return (
     <View>
@@ -128,13 +107,12 @@ function AddressFormDropdown({
   title,
   name,
   data,
-  formMethods,
   defaultMessage,
 }: AddressFormDropdownProps) {
   const {
     control,
     formState: { errors },
-  } = formMethods;
+  } = useFormContext<z.infer<typeof CreateAddressSchema>>();
 
   return (
     <View>

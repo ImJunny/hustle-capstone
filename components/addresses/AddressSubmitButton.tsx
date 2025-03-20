@@ -1,32 +1,27 @@
 import { z } from "zod";
 import Button from "../ui/Button";
-import { Buffer } from "buffer";
 import { trpc } from "@/server/lib/trpc-client";
-import { useAuthData } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
-import { router } from "expo-router";
 import { useFormContext, UseFormReturn } from "react-hook-form";
-import { CreateAddressSchema, CreatePostSchema } from "@/zod/zod-schemas";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useCreatePostContext } from "@/contexts/CreatePostContext";
+import { CreateAddressSchema } from "@/zod/zod-schemas";
+import { Dispatch, SetStateAction } from "react";
+import { Address } from "@/server/actions/address-actions";
 
 type AddressSubmitButtonProps = {
-  uuid?: string;
+  data?: Address;
   isEditing?: boolean;
   setSuggestions: Dispatch<SetStateAction<any>>;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
-  formMethods: UseFormReturn<z.infer<typeof CreateAddressSchema>>;
 };
 
 export default function AddressSubmitButton({
-  uuid,
+  data,
   isEditing,
   setSuggestions,
   setModalOpen,
-  formMethods,
 }: AddressSubmitButtonProps) {
-  const { user } = useAuthData();
-  const utils = trpc.useUtils();
+  const { getValues, handleSubmit } =
+    useFormContext<z.infer<typeof CreateAddressSchema>>();
   const { mutate: findAddress, isLoading } =
     trpc.address.find_suggested_address.useMutation({
       onSuccess: (data) => {
@@ -52,8 +47,46 @@ export default function AddressSubmitButton({
     });
 
   const handleSave = async () => {
-    const { address_line_1, address_line_2, city, state, zip } =
-      formMethods.getValues();
+    const {
+      address_title,
+      address_line_1,
+      address_line_2,
+      city,
+      state,
+      country,
+      zip,
+    } = getValues();
+
+    if (
+      [
+        data?.title,
+        data?.address_line_1,
+        data?.address_line_2,
+        data?.city,
+        data?.state?.toLowerCase().replaceAll(" ", "_"),
+        data?.country?.toLowerCase().replaceAll(" ", "_"),
+        data?.zip_code,
+      ].every(
+        (value, i) =>
+          value ==
+          [
+            address_title,
+            address_line_1,
+            address_line_2,
+            city,
+            state,
+            country,
+            zip,
+          ][i]
+      )
+    ) {
+      Toast.show({
+        text1: "No changes were made",
+        swipeable: false,
+      });
+      return;
+    }
+
     const encoded_address = `${address_line_1},${
       address_line_2 ? address_line_2 : ""
     },${city},${state},${zip}`.replaceAll(" ", "+");
@@ -63,7 +96,8 @@ export default function AddressSubmitButton({
   return (
     <Button
       style={{ marginLeft: "auto", height: 40 }}
-      onPress={formMethods.handleSubmit(handleSave)}
+      onPress={handleSubmit(handleSave)}
+      disabled={isLoading}
     >
       {isEditing ? "Save changes" : "Create address"}
     </Button>

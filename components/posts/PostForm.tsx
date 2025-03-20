@@ -11,6 +11,10 @@ import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "../ui/IconButton";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
+import { useState } from "react";
+import { Address } from "@/server/actions/address-actions";
 
 type PostFormProps = {
   data?: PostDetailsInfo;
@@ -26,6 +30,15 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
     watch,
     getValues,
   } = useFormContext<z.infer<typeof CreatePostSchema>>();
+
+  const { user } = useAuthData();
+  if (!user) return;
+  const { data: userData } = trpc.address.get_user_addresses.useQuery({
+    user_uuid: user.id,
+  });
+  const [address, setAddress] = useState<Address | undefined>(
+    userData?.[0] ?? undefined
+  );
 
   const themeColor = useThemeColor();
   const locationType = watch("location_type");
@@ -157,7 +170,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
           control={control}
           defaultValue="remote"
           render={({ field: { value, onChange } }) => (
-            <View style={{ marginTop: 10, flexDirection: "row", gap: 16 }}>
+            <View style={{ marginTop: 10, gap: 16 }}>
               <RadioButton
                 label={"Remote"}
                 selected={value}
@@ -165,15 +178,21 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
                 onPress={onChange}
               />
               <RadioButton
-                label={"Local"}
+                label={"Local - My address"}
                 selected={value}
-                value="local"
+                value="local-mine"
+                onPress={onChange}
+              />
+              <RadioButton
+                label={"Local - Their address"}
+                selected={value}
+                value="local-theirs"
                 onPress={onChange}
               />
             </View>
           )}
         />
-        {locationType === "local" && (
+        {locationType === "local-mine" && (
           <View style={{ marginTop: 30 }}>
             <Text weight="semibold" size="lg">
               Location address
@@ -182,19 +201,34 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
               style={{
                 marginTop: 10,
                 paddingHorizontal: 20,
-                paddingVertical: 30,
+                height: 120,
                 borderWidth: 1,
-                borderColor: themeColor.border,
+                borderColor: themeColor.foreground,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
                 borderRadius: 8,
               }}
             >
-              <View>
-                <Text>1234 Maple Street</Text>
-                <Text>Elmwood, NJ, 13552</Text>
-              </View>
+              {address ? (
+                <View>
+                  <Text weight="semibold" style={{ marginBottom: 4 }}>
+                    {address.title}
+                  </Text>
+                  <Text>
+                    {address.address_line_1}
+                    {address.address_line_2 && `, ${address.address_line_2}`}
+                  </Text>
+                  <Text>
+                    {address.city}, {address.state}, {address.zip_code}
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  <Text>No addresses added yet</Text>
+                </View>
+              )}
+
               <IconButton name="chevron-forward" />
             </View>
             <BottomMessage

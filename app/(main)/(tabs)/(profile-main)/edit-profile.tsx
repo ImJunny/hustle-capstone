@@ -15,6 +15,7 @@ import ImageEditor from "@/components/settings/edit-profile/ImageEditor";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Platform } from "react-native";
+import ScrollView from "@/components/ui/ScrollView";
 
 // Declare schema
 const EditProfileSchema = z.object({
@@ -68,77 +69,79 @@ export default function EditProfileScreen() {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.container} color="background">
-          <View style={{ alignItems: "center" }}>
-            <ImageEditor
-              avatarUrl={data?.avatar_url ?? null}
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.container} color="background">
+            <View style={{ alignItems: "center" }}>
+              <ImageEditor
+                avatarUrl={data?.avatar_url ?? null}
+                imageUri={imageUri}
+                setImageUri={setImageUri}
+                setIsNewImage={setIsNewImage}
+              />
+            </View>
+
+            <View style={styles.inputEntry}>
+              <Text weight="bold" size="lg">
+                Username
+              </Text>
+              <Controller
+                control={control}
+                name="username"
+                render={({ field: { onChange, value } }) => (
+                  <Input type="outline" value={value} onChangeText={onChange} />
+                )}
+              />
+              {errors.username && (
+                <Text color="red">{errors.username.message}</Text>
+              )}
+            </View>
+
+            <View style={styles.inputEntry}>
+              <Text weight="bold" size="lg">
+                Display name
+              </Text>
+              <Controller
+                control={control}
+                name="display_name"
+                render={({ field: { onChange, value } }) => (
+                  <Input type="outline" value={value} onChangeText={onChange} />
+                )}
+              />
+              {errors.display_name && (
+                <Text color="red">{errors.display_name.message}</Text>
+              )}
+            </View>
+
+            <View style={styles.inputEntry}>
+              <Text weight="bold" size="lg">
+                Bio
+              </Text>
+              <Controller
+                control={control}
+                name="bio"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    type="outline"
+                    placeholder="Optional biography"
+                    value={value}
+                    onChangeText={onChange}
+                    multiline={true}
+                    style={{ height: 100, paddingVertical: 10 }}
+                    textAlignVertical="top"
+                  />
+                )}
+              />
+            </View>
+
+            <SaveButton
+              data={data as unknown as UserData}
+              getValues={getValues}
+              handleSubmit={handleSubmit}
               imageUri={imageUri}
-              setImageUri={setImageUri}
-              setIsNewImage={setIsNewImage}
+              isNewImage={isNewImage}
             />
           </View>
-
-          <View style={styles.inputEntry}>
-            <Text weight="bold" size="lg">
-              Username
-            </Text>
-            <Controller
-              control={control}
-              name="username"
-              render={({ field: { onChange, value } }) => (
-                <Input type="outline" value={value} onChangeText={onChange} />
-              )}
-            />
-            {errors.username && (
-              <Text color="red">{errors.username.message}</Text>
-            )}
-          </View>
-
-          <View style={styles.inputEntry}>
-            <Text weight="bold" size="lg">
-              Display name
-            </Text>
-            <Controller
-              control={control}
-              name="display_name"
-              render={({ field: { onChange, value } }) => (
-                <Input type="outline" value={value} onChangeText={onChange} />
-              )}
-            />
-            {errors.display_name && (
-              <Text color="red">{errors.display_name.message}</Text>
-            )}
-          </View>
-
-          <View style={styles.inputEntry}>
-            <Text weight="bold" size="lg">
-              Bio
-            </Text>
-            <Controller
-              control={control}
-              name="bio"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  type="outline"
-                  placeholder="Optional biography"
-                  value={value}
-                  onChangeText={onChange}
-                  multiline={true}
-                  style={{ height: 100, paddingVertical: 10 }}
-                  textAlignVertical="top"
-                />
-              )}
-            />
-          </View>
-
-          <SaveButton
-            data={data as unknown as UserData}
-            getValues={getValues}
-            handleSubmit={handleSubmit}
-            imageUri={imageUri}
-            isNewImage={isNewImage}
-          />
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </>
   );

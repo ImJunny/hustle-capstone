@@ -6,10 +6,6 @@ export default function Layout() {
     <Stack screenOptions={{ headerShown: false, animation: "none" }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
-        name="(external)/settings"
-        options={{ animation: "ios_from_right" }}
-      />
-      <Stack.Screen
         name="(external)/edit-post/[uuid]"
         options={{ animation: "ios_from_right" }}
       />

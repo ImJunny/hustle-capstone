@@ -53,7 +53,7 @@ export default function SortSheet({
           height: 26,
         }}
       >
-        <Text size="xl" color={color}>
+        <Text size="lg" color={color}>
           {text}
         </Text>
         {sort === type && (

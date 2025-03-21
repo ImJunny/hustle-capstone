@@ -30,7 +30,7 @@ export default function PostSubmitButton({
     trpc.post.create_post.useMutation({
       onSuccess: async () => {
         await utils.post.invalidate();
-        router.replace("/(main)/(tabs)/profile-main");
+        router.replace("/(main)/(tabs)/profile-main" as any);
         Toast.show({
           text1: "Successfully created post",
           swipeable: false,
@@ -99,7 +99,7 @@ export default function PostSubmitButton({
     } = data;
 
     let newImages;
-    if (isEditing) {
+    if (isEditing && !isNewImages) {
       newImages = null;
     } else {
       newImages = await Promise.all(

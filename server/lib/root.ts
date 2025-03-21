@@ -1,3 +1,4 @@
+import { addressRouter } from "../routers/address-router";
 import { onboardingRouter } from "../routers/onboarding-router";
 import { postRouter } from "../routers/post-router";
 import { userRouter } from "../routers/user-router";
@@ -9,5 +10,6 @@ export const appRouter = createTRPCRouter({
   onboarding: onboardingRouter,
   post: postRouter,
   job: jobRouter,
+  address: addressRouter,
 });
 export type AppRouter = typeof appRouter;

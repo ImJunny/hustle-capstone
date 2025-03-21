@@ -3,7 +3,6 @@ import View from "@/components/ui/View";
 import { OnboardingFormsProvider } from "@/contexts/OnboardingFormsContext";
 import OnboardingNextButton from "@/components/onboarding/OnboardingNextButton";
 import OnboardingSteps from "@/components/onboarding/OnboardingSteps";
-import Button from "@/components/ui/Button";
 import Text from "@/components/ui/Text";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { supabase } from "@/server/lib/supabase";

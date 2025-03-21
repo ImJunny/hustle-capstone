@@ -19,8 +19,8 @@ export default function GoogleSignInButton() {
     redirectUri: AuthSession.makeRedirectUri(),
   });
 
-  const [loading, setLoading] = useState(false)
-  
+  const [loading, setLoading] = useState(false);
+
   async function signInWithGoogle(token: string) {
     setLoading(true);
     try {
@@ -54,7 +54,10 @@ export default function GoogleSignInButton() {
 
   const createUserMutation = trpc.user.create_user.useMutation({
     onSuccess: async (data) => {
-      if (!data?.onboarding_phase || data.onboarding_phase === "date of birth") {
+      if (
+        !data?.onboarding_phase ||
+        data.onboarding_phase === "date of birth"
+      ) {
         router.replace("/onboarding/date-of-birth");
       } else if (data.onboarding_phase === "username") {
         router.replace("/onboarding/username");
@@ -85,11 +88,11 @@ export default function GoogleSignInButton() {
       type="outline"
       isFullWidth
       style={{ gap: 10 }}
-      onPress={()=>promptAsync()}
+      onPress={() => promptAsync()}
       disabled={loading}
     >
       <Icon name="logo-google" size="xl" />
-      {loading? "Signing in..." : "Continue with Google"}
+      {loading ? "Signing in..." : "Continue with Google"}
     </Button>
   );
 }

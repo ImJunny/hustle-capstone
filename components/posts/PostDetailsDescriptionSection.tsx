@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Badge from "@/components/ui/Badge";
 import { StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
@@ -8,15 +8,21 @@ import IconButton from "@/components/ui/IconButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, formatDistanceToNow, isThisYear } from "date-fns";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { Link, useRouter } from "expo-router";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
 
 type PostDetailsDescriptionSectionProps = {
   data: PostDetailsInfo;
 };
+
 export default function PostDetailsDescriptionSection({
   data,
 }: PostDetailsDescriptionSectionProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const router = useRouter();
+  const { user } = useAuthData();
 
   let formattedDueDate = null;
   if (data.due_date)
@@ -26,6 +32,27 @@ export default function PostDetailsDescriptionSection({
   const createdAgo = formatDistanceToNow(new Date(data.created_at), {
     addSuffix: true,
   });
+
+  const { data: isAccepted, isLoading } = user?.id
+    ? trpc.job.is_accepted.useQuery(
+        {
+          user_uuid: user.id,
+          job_uuid: data.uuid,
+        },
+        {
+          onError: (error) => {
+            console.error("Failed to fetch job acceptance status:", error);
+          },
+        }
+      )
+    : { data: null, isLoading: false };
+
+  const handleAcceptJob = () => {
+    router.push({
+      pathname: "/confirmation",
+      params: { job_uuid: data.uuid }, // Pass `job_uuid` as a query parameter
+    });
+  };
 
   return (
     <View style={[styles.section, { borderColor }]}>
@@ -65,7 +92,22 @@ export default function PostDetailsDescriptionSection({
         <IconButton name="chatbubble-outline" size="2xl" flippedX />
         <IconButton name="paper-plane-outline" size="2xl" />
         {data.type == "work" ? (
-          <Button style={styles.pageButton}>Accept job</Button>
+          <Link
+            href={
+              isAccepted
+                ? `/track/working/${data.uuid}`
+                : `/confirmation?job_uuid=${data.uuid}`
+            }
+            asChild
+          >
+            <Button style={styles.pageButton} disabled={isLoading}>
+              {isLoading
+                ? "Loading..."
+                : isAccepted
+                ? "Track progress"
+                : "Accept job"}
+            </Button>
+          </Link>
         ) : (
           <Button style={styles.pageButton}>Hire service</Button>
         )}

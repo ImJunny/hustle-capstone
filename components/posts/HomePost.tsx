@@ -12,8 +12,10 @@ import { TPost } from "@/server/utils/example-data";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { HomePost as THomePost } from "@/server/actions/post-actions";
+import { Image } from "expo-image";
 
-export default function HomePost({ data }: { data: TPost }) {
+export default function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
@@ -26,9 +28,8 @@ export default function HomePost({ data }: { data: TPost }) {
           height: postHeight * 0.75,
         }}
       >
-        <ImagePlaceholder
-          width={800}
-          height={800}
+        <Image
+          source={{ uri: data.image_url }}
           style={{ width: "100%", height: "100%" }}
         />
         <LinearGradient
@@ -83,10 +84,10 @@ export default function HomePost({ data }: { data: TPost }) {
                       {data.type}
                     </Text>
                   </Badge>
-                  <Badge>{data.distance}</Badge>
+                  {/* <Badge>{data.distance}</Badge>
                   {data.tags.map((tag, i) => (
                     <Badge key={i}>{tag}</Badge>
-                  ))}
+                  ))} */}
                 </View>
                 <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
                   {data.description}
@@ -109,7 +110,7 @@ export default function HomePost({ data }: { data: TPost }) {
                 size="2xl"
                 flippedX
               />
-              {data.comments && (
+              {/* {data.comments && (
                 <Text
                   style={{ textAlign: "center", marginTop: 2 }}
                   weight="semibold"
@@ -117,7 +118,7 @@ export default function HomePost({ data }: { data: TPost }) {
                 >
                   {data.comments}
                 </Text>
-              )}
+              )} */}
             </View>
 
             <IconButton
@@ -129,7 +130,7 @@ export default function HomePost({ data }: { data: TPost }) {
           </View>
         </View>
 
-        <Pressable onPress={() => router.push(`/profile/${data.user_name}`)}>
+        <Pressable onPress={() => router.push(`/profile` as any)}>
           <View style={styles.bottomContainer}>
             <ImagePlaceholder
               width={40}
@@ -137,9 +138,9 @@ export default function HomePost({ data }: { data: TPost }) {
               style={{ borderRadius: 999 }}
             />
             <View style={styles.nameContainer}>
-              <Text color="white" weight="semibold">
+              {/* <Text color="white" weight="semibold">
                 {data.user_name}
-              </Text>
+              </Text> */}
               <View
                 style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
               >
@@ -155,13 +156,7 @@ export default function HomePost({ data }: { data: TPost }) {
             </View>
             <Button
               style={styles.viewButton}
-              onPress={() =>
-                router.push(
-                  `/${data.type === "work" ? "job" : "service"}/${
-                    data.uuid
-                  }?type=${data.type}`
-                )
-              }
+              onPress={() => router.push(`/post/${data.uuid}` as any)}
             >
               <Text color="black" weight="semibold">
                 View

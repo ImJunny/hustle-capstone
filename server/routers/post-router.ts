@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   createPost,
   deletePost,
+  getHomePosts,
   getPostDetailsInfo,
   getPostsByFilters,
   getUserPosts,
@@ -111,5 +112,14 @@ export const postRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       return await deletePost(input.uuid);
+    }),
+  get_home_posts: protectedProcedure
+    .input(
+      z.object({
+        type: z.enum(["work", "hire"]),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getHomePosts(input.type);
     }),
 });

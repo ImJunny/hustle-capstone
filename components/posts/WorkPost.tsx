@@ -8,12 +8,12 @@ import Icon from "../ui/Icon";
 import Button from "../ui/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { TPost } from "@/server/utils/example-data";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { HomePost } from "@/server/actions/post-actions";
+import { Image } from "expo-image";
 
-export default function WorkPost({ data }: { data: TPost }) {
+export default function WorkPost({ data }: { data: HomePost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
@@ -26,9 +26,8 @@ export default function WorkPost({ data }: { data: TPost }) {
           height: postHeight * 0.75,
         }}
       >
-        <ImagePlaceholder
-          width={800}
-          height={800}
+        <Image
+          source={{ uri: data.image_url }}
           style={{ width: "100%", height: "100%" }}
         />
         <LinearGradient
@@ -76,10 +75,10 @@ export default function WorkPost({ data }: { data: TPost }) {
                       {data.type}
                     </Text>
                   </Badge>
-                  <Badge>{data.distance}</Badge>
+                  {/* <Badge>{data.distance}</Badge>
                   {data.tags.map((tag, i) => (
                     <Badge key={i}>{tag}</Badge>
-                  ))}
+                  ))} */}
                 </View>
                 <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
                   {data.description}
@@ -102,7 +101,7 @@ export default function WorkPost({ data }: { data: TPost }) {
                 size="2xl"
                 flippedX
               />
-              {data.comments && (
+              {/* {data.comments && (
                 <Text
                   style={{ textAlign: "center", marginTop: 2 }}
                   weight="semibold"
@@ -110,7 +109,7 @@ export default function WorkPost({ data }: { data: TPost }) {
                 >
                   {data.comments}
                 </Text>
-              )}
+              )} */}
             </View>
 
             <IconButton
@@ -128,9 +127,9 @@ export default function WorkPost({ data }: { data: TPost }) {
             color="muted"
           />
           <View style={styles.nameContainer}>
-            <Text color="white" weight="semibold">
+            {/* <Text color="white" weight="semibold">
               {data.user_name}
-            </Text>
+            </Text> */}
             <View
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
@@ -142,7 +141,7 @@ export default function WorkPost({ data }: { data: TPost }) {
           </View>
           <Button
             style={styles.viewButton}
-            onPress={() => router.push(`/job/${data.uuid}`)}
+            onPress={() => router.push(`/post/${data.uuid}` as any)}
           >
             <Text color="black" weight="semibold">
               View

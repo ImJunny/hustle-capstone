@@ -154,6 +154,7 @@ export type Post = {
   location_type: "local" | "remote";
   image_url: string;
 };
+
 export type Posts = Post[] | undefined;
 
 // Get post details info; used in post details page
@@ -262,3 +263,44 @@ export async function deletePost(uuid: string) {
     throw new Error("Failed to delete post.");
   }
 }
+
+export async function getHomePosts(type: "work" | "hire") {
+  try {
+    let result = await db
+      .select()
+      .from(posts)
+      .where(and(eq(posts.type, type), ne(posts.status_type, "hidden")));
+
+    result = await Promise.all(
+      result.map(async (post) => {
+        const image = await db
+          .select({ image_url: post_images.image_url })
+          .from(post_images)
+          .where(eq(post_images.post_uuid, post.uuid))
+          .orderBy(asc(post_images.image_url))
+          .limit(1);
+
+        return { ...post, image_url: image[0].image_url ?? null };
+      })
+    );
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get home posts.");
+  }
+}
+export type HomePost = {
+  uuid: string;
+  user_uuid: string;
+  title: string;
+  description: string;
+  min_rate: number;
+  max_rate: number | null;
+  type: "work" | "hire";
+  location_type: string;
+  location_address: string | null;
+  created_at: Date;
+  due_date: string | null;
+  status_type: string | null;
+  image_url: string | null;
+};

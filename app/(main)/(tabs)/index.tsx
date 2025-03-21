@@ -2,32 +2,53 @@ import { FlatList, Dimensions } from "react-native";
 import HomePost from "@/components/posts/HomePost";
 import WorkPost from "@/components/posts/WorkPost";
 import Feed from "@/components/posts/Feed";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { IndexHeader } from "@/components/headers/Headers";
-import { exampleJobPosts, exampleServicePosts } from "@/server/utils/example-data";
+import {
+  exampleJobPosts,
+  exampleServicePosts,
+} from "@/server/utils/example-data";
 import View from "@/components/ui/View";
 import { TabView, SceneMap } from "react-native-tab-view";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { trpc } from "@/server/lib/trpc-client";
+import { HomePost as THomePost } from "@/server/actions/post-actions";
 
 interface Route {
   key: string;
   title: string;
 }
 
-const WorkRoute = () => (
-  <Feed
-    data={exampleJobPosts}
-    renderItem={({ item }) => <HomePost key={item.uuid} data={item} />}
-  />
-);
+const WorkRoute = () => {
+  const { data: workPosts } = trpc.post.get_home_posts.useQuery({
+    type: "work",
+  });
 
-const HireRoute = () => (
-  <Feed
-    data={exampleServicePosts}
-    renderItem={({ item }) => <WorkPost key={item.uuid} data={item} />}
-  />
-);
+  return (
+    <Feed
+      data={workPosts!}
+      renderItem={({ item }) => (
+        <HomePost key={item.uuid} data={item as unknown as THomePost} />
+      )}
+    />
+  );
+};
+
+const HireRoute = () => {
+  const { data: hirePosts } = trpc.post.get_home_posts.useQuery({
+    type: "hire",
+  });
+
+  return (
+    <Feed
+      data={hirePosts!}
+      renderItem={({ item }) => (
+        <WorkPost key={item.uuid} data={item as unknown as THomePost} />
+      )}
+    />
+  );
+};
 
 const renderScene = ({ route }: { route: Route }) => {
   switch (route.key) {

@@ -499,3 +499,43 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+export function SingleMessageHeader() {
+  const { text } = useLocalSearchParams();
+  const [value, setValue] = useState(text as string);
+
+  async function handleSearch() {
+    router.replace(`/search/${value}`);
+  }
+  return (
+    <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
+      options={{
+        center: (
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <IconButton
+              name="arrow-back"
+              size="xl"
+              onPress={() => router.back()}
+            />
+            <Input
+              placeholder="Search users, jobs, services..."
+              style={{ flex: 1 }}
+              autoFocus
+              value={value}
+              onChangeText={(value) => setValue(value)}
+              onSubmitEditing={handleSearch}
+            />
+            <IconButton name="ellipsis-vertical" size="xl" />
+          </View>
+        ),
+      }}
+    />
+  );
+}

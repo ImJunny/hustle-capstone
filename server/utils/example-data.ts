@@ -212,6 +212,12 @@ export type TMessage = {
   last_message: string;
   messenger: string;
   is_job?: boolean;
+  messageHistory: Array<{
+    message: string;
+    timestamp: string; // ISO string format or Date object
+    date: string; // Date in YYYY-MM-DD format (or any desired format)
+    sent: boolean; // true if sent, false if received
+  }>;
 };
 
 export const exampleMessages: TMessage[] = [
@@ -222,6 +228,20 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Kevin So",
     is_job: true,
+    messageHistory: [
+      {
+        message: "Lorem ipsum dolor sit amet",
+        timestamp: "2025-02-15T10:00:00.000Z",
+        date: "2025-02-15",
+        sent: true
+      },
+      {
+        message: "Consectetur adipiscing elit",
+        timestamp: "2025-02-15T10:05:00.000Z",
+        date: "2025-02-15",
+        sent: false
+      }
+    ]
   },
   {
     uuid: "bnhdnhd",
@@ -229,6 +249,20 @@ export const exampleMessages: TMessage[] = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
     last_message: "5 weeks ago",
     messenger: "Jason Smith",
+    messageHistory: [
+      {
+        message: "Hey! How’s the project going?",
+        timestamp: "2025-03-17T14:00:00.000Z",
+        date: "2025-03-17",
+        sent: true
+      },
+      {
+        message: "It’s going well, thanks!",
+        timestamp: "2025-03-17T14:05:00.000Z",
+        date: "2025-03-17",
+        sent: false
+      }
+    ]
   },
   {
     uuid: "fwefewfw",
@@ -236,6 +270,20 @@ export const exampleMessages: TMessage[] = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
     last_message: "5 weeks ago",
     messenger: "Sam Johnson",
+    messageHistory: [
+      {
+        message: "I’ve got the final report ready. Should I send it over?",
+        timestamp: "2025-03-20T09:30:00.000Z",
+        date: "2025-03-20",
+        sent: true
+      },
+      {
+        message: "Yes, please send it over as soon as possible.",
+        timestamp: "2025-03-20T09:32:00.000Z",
+        date: "2025-03-20",
+        sent: false
+      }
+    ]
   },
   {
     uuid: "hgshgsh",
@@ -244,6 +292,20 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Tyler Dud",
     is_job: true,
+    messageHistory: [
+      {
+        message: "Happy to meet you! Let’s catch up soon.",
+        timestamp: "2025-03-19T18:45:00.000Z",
+        date: "2025-03-19",
+        sent: true
+      },
+      {
+        message: "Looking forward to it! Talk soon.",
+        timestamp: "2025-03-19T18:47:00.000Z",
+        date: "2025-03-19",
+        sent: false
+      }
+    ]
   },
   {
     uuid: "fdafaefea",
@@ -252,6 +314,20 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Barbara Henry",
     is_job: true,
+    messageHistory: [
+      {
+        message: "Reminder: Your meeting is in 15 minutes.",
+        timestamp: "2025-03-20T09:55:00.000Z",
+        date: "2025-03-20",
+        sent: true
+      },
+      {
+        message: "Got it, thanks for the reminder!",
+        timestamp: "2025-03-20T09:57:00.000Z",
+        date: "2025-03-20",
+        sent: false
+      }
+    ]
   },
 ];
 export type TProfile = {

@@ -32,8 +32,7 @@ export const addressRouter = createTRPCRouter({
         state: z.string(),
         country: z.string(),
         zip_code: z.string(),
-        longitude: z.number(),
-        latitude: z.number(),
+        location: z.tuple([z.number(), z.number()]),
       })
     )
     .mutation(async ({ input }) => {
@@ -46,8 +45,7 @@ export const addressRouter = createTRPCRouter({
         input.state,
         input.country,
         input.zip_code,
-        input.longitude,
-        input.latitude
+        input.location
       );
     }),
   update_address: protectedProcedure
@@ -61,8 +59,7 @@ export const addressRouter = createTRPCRouter({
         state: z.string(),
         country: z.string(),
         zip_code: z.string(),
-        longitude: z.number(),
-        latitude: z.number(),
+        location: z.tuple([z.number(), z.number()]),
       })
     )
     .mutation(async ({ input }) => {
@@ -75,8 +72,7 @@ export const addressRouter = createTRPCRouter({
         input.state,
         input.country,
         input.zip_code,
-        input.longitude,
-        input.latitude
+        input.location
       );
     }),
   get_user_addresses: protectedProcedure

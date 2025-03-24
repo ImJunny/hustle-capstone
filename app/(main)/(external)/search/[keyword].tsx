@@ -25,11 +25,13 @@ export default function SearchedPage() {
     min: number;
     max: number;
     sort: "asc" | "desc" | undefined;
+    geocode: [number, number] | undefined;
   }>({
     type: postTypes[0] as "all" | "work" | "hire",
     min: MIN_CONSTANT,
     max: MAX_CONSTANT,
     sort: undefined,
+    geocode: undefined,
   });
 
   const filterSetters = {
@@ -39,6 +41,8 @@ export default function SearchedPage() {
       setFilters((prev) => ({ ...prev, type })),
     setSort: (sort: "asc" | "desc" | undefined) =>
       setFilters((prev) => ({ ...prev, sort })),
+    setGeocode: (lat: number, lng: number) =>
+      setFilters((prev) => ({ ...prev, geocode: [lat, lng] })),
   };
 
   const { data, isLoading } = trpc.post.get_posts_by_filters.useQuery({
@@ -47,6 +51,7 @@ export default function SearchedPage() {
     max_rate: filters.max,
     type: filters.type,
     sort: filters.sort,
+    geocode: filters.geocode,
   });
 
   // Sheet refs to open/close

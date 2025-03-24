@@ -1,13 +1,9 @@
 import View from "@/components/ui/View";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SimpleHeader } from "@/components/headers/Headers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import AddressForm from "@/components/settings/addresses/AddressForm";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { CreateAddressSchema } from "@/zod/zod-schemas";
 import ScrollView from "@/components/ui/ScrollView";
 import AddressSuggestionsModal from "@/components/addresses/AddressSuggestionsModal";
 import AddressSubmitButton from "@/components/addresses/AddressSubmitButton";
@@ -67,6 +63,7 @@ export default function EditAddressForm() {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         isEditing
+        id={parseInt(id as string)}
       />
     </CreateAddressProvider>
   );

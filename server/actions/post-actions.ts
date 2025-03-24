@@ -209,7 +209,8 @@ export async function getPostsByFilters(
   min_rate: number | undefined,
   max_rate: number | undefined,
   type: "work" | "hire" | "all",
-  sort: "asc" | "desc" | undefined = undefined
+  sort: "asc" | "desc" | undefined = undefined,
+  geocode: [number, number] | undefined
 ) {
   try {
     let result = await db

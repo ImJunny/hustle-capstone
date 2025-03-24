@@ -102,8 +102,7 @@ export async function createAddress(
   state: string,
   country: string,
   zip_code: string,
-  longitude: number,
-  latitude: number
+  location: [number, number]
 ) {
   try {
     await db.insert(addresses).values({
@@ -115,8 +114,7 @@ export async function createAddress(
       state,
       country,
       zip_code,
-      longitude: String(longitude),
-      latitude: String(latitude),
+      location: { x: location[0], y: location[1] },
     });
   } catch (error) {
     console.log(error);
@@ -134,8 +132,7 @@ export async function updateAddress(
   state: string,
   country: string,
   zip_code: string,
-  longitude: number,
-  latitude: number
+  location: [number, number]
 ) {
   try {
     await db
@@ -148,8 +145,7 @@ export async function updateAddress(
         state,
         country,
         zip_code,
-        longitude: String(longitude),
-        latitude: String(latitude),
+        location: { x: location[0], y: location[1] },
       })
       .where(eq(addresses.id, id));
   } catch (error) {

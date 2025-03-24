@@ -89,12 +89,7 @@ export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
             </View>
           </View>
         ),
-        right: (
-          <IconButton
-            name="filter"
-            size="xl"
-          />
-        ),
+        right: <IconButton name="filter" size="xl" />,
       }}
     />
   );
@@ -419,7 +414,7 @@ export function CreatePostHeader() {
   const styles = StyleSheet.create({
     button: {
       height: 40,
-      width: 90,
+      width: 100,
     },
   });
 

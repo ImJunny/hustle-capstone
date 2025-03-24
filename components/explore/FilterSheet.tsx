@@ -3,14 +3,14 @@ import Sheet from "../ui/Sheet";
 import { ReactNode, RefObject, useState } from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
-import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
+import { StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import RangeSlider from "../ui/RangeSlider";
 import Separator from "../ui/Separator";
 import { trpc } from "@/server/lib/trpc-client";
-import Input from "../ui/Input";
+import GoogleAutoInput from "../ui/GoogleAutoInput";
 
 export default function FilterSheet({
   sheetRef,
@@ -21,12 +21,13 @@ export default function FilterSheet({
     setMin: (min: number) => void;
     setMax: (max: number) => void;
     setType: (type: "all" | "work" | "hire") => void;
+    setGeocode: (lat: number, lng: number) => void;
   };
 }) {
   const themeColor = useThemeColor();
   const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
   const MIN_CONSTANT = 0;
-  const MAX_CONSTANT = 1000;
+  const MAX_CONSTANT = 400;
 
   const [type, setType] = useState<"all" | "work" | "hire">(
     postTypes[0] as "all" | "work" | "hire"
@@ -51,6 +52,10 @@ export default function FilterSheet({
     setType("all");
   }
 
+  const [geocode, setGeocode] = useState<[number, number] | undefined>(
+    undefined
+  );
+
   return (
     <Sheet
       sheetRef={sheetRef}
@@ -58,8 +63,11 @@ export default function FilterSheet({
       snapPoints={[1, "100%"]}
       enableContentPanningGesture={false}
     >
-      <BottomSheetScrollView style={{ padding: 16 }}>
-        <View style={{ gap: 40 }}>
+      <BottomSheetFlatList
+        keyboardShouldPersistTaps="always"
+        contentContainerStyle={{ gap: 50 }}
+        renderItem={({ item }: { item: ReactNode }) => <>{item}</>}
+        data={[
           <FilterEntry title="Type">
             <View style={{ flexDirection: "row", gap: 12 }}>
               {postTypes.map((postType, i) => (
@@ -77,18 +85,10 @@ export default function FilterSheet({
                 </Button>
               ))}
             </View>
-          </FilterEntry>
-          <Separator />
-
+          </FilterEntry>,
+          <Separator />,
           <View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
+            <View style={styles.dualLabel}>
               <Text weight="semibold" size="xl">
                 Rate
               </Text>
@@ -103,41 +103,64 @@ export default function FilterSheet({
               </Text>
             </View>
             <RangeSlider
-              minConstant={0}
-              maxConstant={50}
+              minConstant={MIN_CONSTANT}
+              maxConstant={MAX_CONSTANT}
               setMin={setMin}
               setMax={setMax}
               min={min}
               max={max}
+              step={5}
             />
-          </View>
-          <Separator />
-          <FilterEntry title="Relative location">
-            <Input
-              type="outline"
-              borderColor="border"
-              placeholder="Find jobs from this location"
-            />
-          </FilterEntry>
-          <FilterEntry title="Distance">
-            <RangeSlider
-              minConstant={MIN_CONSTANT}
-              maxConstant={MAX_CONSTANT}
-              setMin={setMinDistance}
-              setMax={setMaxDistance}
-              min={minDistance}
-              max={maxDistance}
-            />
-          </FilterEntry>
-          <Separator />
+          </View>,
+          <Separator />,
+          <View style={{ gap: 20 }}>
+            <FilterEntry title="Location type">
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <Button style={{ flex: 1 }}>All</Button>
+                <Button style={{ flex: 1 }} type="outline">
+                  Remote
+                </Button>
+                <Button style={{ flex: 1 }} type="outline">
+                  Local
+                </Button>
+              </View>
+            </FilterEntry>
+            <GoogleAutoInput setGeocode={filterSetters.setGeocode} />
+            <View>
+              <View style={styles.dualLabel}>
+                <Text weight="semibold" size="xl">
+                  Distance
+                </Text>
+                <Text>
+                  {minDistance === 0 && maxDistance === 50
+                    ? "Any"
+                    : minDistance === 0 && maxDistance !== 50
+                    ? `up to ${maxDistance} mi`
+                    : minDistance !== 0 && maxDistance === 50
+                    ? `${minDistance} mi +`
+                    : `${minDistance} - ${maxDistance} mi`}
+                </Text>
+              </View>
+              <RangeSlider
+                minConstant={0}
+                maxConstant={50}
+                setMin={setMinDistance}
+                setMax={setMaxDistance}
+                min={minDistance}
+                max={maxDistance}
+                step={5}
+              />
+            </View>
+          </View>,
+
+          <Separator />,
           <FilterEntry title="Tags">
             <Text>To be implemented</Text>
-          </FilterEntry>
-
-          {/* This view for some reason fixes sheet sizing bug */}
-          <View style={{ flex: 1 }} />
-        </View>
-      </BottomSheetScrollView>
+          </FilterEntry>,
+        ]}
+        keyExtractor={(item, index) => index.toString()}
+        style={{ padding: 16 }}
+      />
       <BottomSheetView
         style={[styles.footer, { borderColor: themeColor.border }]}
       >
@@ -179,6 +202,12 @@ function FilterEntry({
 
 const styles = StyleSheet.create({
   label: {
+    marginBottom: 12,
+  },
+  dualLabel: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   typeButton: {

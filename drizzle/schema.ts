@@ -3,6 +3,7 @@ import {
   boolean,
   date,
   decimal,
+  geometry,
   integer,
   numeric,
   pgEnum,
@@ -131,24 +132,12 @@ export const addresses = app_schema.table("addresses", {
   state: text("state"),
   country: text("country"),
   zip_code: text("zip_code"),
-  longitude: decimal("longitude"),
-  latitude: decimal("latitude"),
+  location: geometry("location", {
+    type: "point",
+    mode: "xy",
+    srid: 4326,
+  }).notNull(),
   visible: boolean("visible").default(true),
-});
-
-export const accepted_jobs = app_schema.table("accepted_jobs", {
-  id: serial("id").primaryKey(),
-  user_uuid: uuid("user_uuid")
-    .references(() => users.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  job_uuid: uuid("job_uuid")
-    .references(() => posts.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
 // TABLES FOR TYPES

@@ -93,6 +93,7 @@ export const postRouter = createTRPCRouter({
         max_rate: z.number().optional(),
         type: z.enum(["work", "hire", "all"]).optional().default("all"),
         sort: z.enum(["asc", "desc"]).optional(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
     .query(async ({ input }) => {
@@ -101,7 +102,8 @@ export const postRouter = createTRPCRouter({
         input.min_rate,
         input.max_rate,
         input.type,
-        input.sort
+        input.sort,
+        input.geocode
       );
     }),
   delete_post: protectedProcedure

@@ -50,7 +50,7 @@ export default function PostDetailsDescriptionSection({
   const handleAcceptJob = () => {
     router.push({
       pathname: "/confirmation",
-      params: { job_uuid: data.uuid }, // Pass `job_uuid` as a query parameter
+      params: { job_uuid: data.uuid },
     });
   };
 

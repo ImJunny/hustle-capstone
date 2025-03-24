@@ -95,11 +95,7 @@ export default function SearchedPage() {
           >
         }
       />
-      <FilterSheet
-        sheetRef={filterSheetRef}
-        filters={filters}
-        filterSetters={filterSetters}
-      />
+      <FilterSheet sheetRef={filterSheetRef} filterSetters={filterSetters} />
     </>
   );
 }

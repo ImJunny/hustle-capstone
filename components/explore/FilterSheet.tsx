@@ -1,12 +1,6 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Sheet from "../ui/Sheet";
-import {
-  Dispatch,
-  ReactNode,
-  RefObject,
-  SetStateAction,
-  useState,
-} from "react";
+import { ReactNode, RefObject, useState } from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
@@ -16,14 +10,13 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import RangeSlider from "../ui/RangeSlider";
 import Separator from "../ui/Separator";
 import { trpc } from "@/server/lib/trpc-client";
+import Input from "../ui/Input";
 
 export default function FilterSheet({
   sheetRef,
-  filters,
   filterSetters,
 }: {
   sheetRef: RefObject<BottomSheetMethods>;
-  filters: { type: "all" | "work" | "hire"; min: number; max: number };
   filterSetters: {
     setMin: (min: number) => void;
     setMax: (max: number) => void;
@@ -40,6 +33,8 @@ export default function FilterSheet({
   );
   const [min, setMin] = useState(MIN_CONSTANT);
   const [max, setMax] = useState(MAX_CONSTANT);
+  const [minDistance, setMinDistance] = useState(0);
+  const [maxDistance, setMaxDistance] = useState(50);
 
   const utils = trpc.useUtils();
   function handleSave() {
@@ -108,8 +103,8 @@ export default function FilterSheet({
               </Text>
             </View>
             <RangeSlider
-              minConstant={MIN_CONSTANT}
-              maxConstant={MAX_CONSTANT}
+              minConstant={0}
+              maxConstant={50}
               setMin={setMin}
               setMax={setMax}
               min={min}
@@ -117,8 +112,22 @@ export default function FilterSheet({
             />
           </View>
           <Separator />
+          <FilterEntry title="Relative location">
+            <Input
+              type="outline"
+              borderColor="border"
+              placeholder="Find jobs from this location"
+            />
+          </FilterEntry>
           <FilterEntry title="Distance">
-            <Text>To be implemented</Text>
+            <RangeSlider
+              minConstant={MIN_CONSTANT}
+              maxConstant={MAX_CONSTANT}
+              setMin={setMinDistance}
+              setMax={setMaxDistance}
+              min={minDistance}
+              max={maxDistance}
+            />
           </FilterEntry>
           <Separator />
           <FilterEntry title="Tags">

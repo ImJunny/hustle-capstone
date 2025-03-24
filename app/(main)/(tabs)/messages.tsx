@@ -13,14 +13,14 @@ import {
   ViewStyle,
 } from "react-native";
 
+
 export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
       <ScrollView style={{ flex: 1 }} color="base">
         <View>
-          <Pressable
-            onPress={() => {router.push("/(main)/(external)/message/[uuid]");}}>
+          
           {exampleMessages.map((message, i) => (
             <Message
               key={i}
@@ -30,7 +30,7 @@ export default function MessagesScreen() {
               }}
             />
           ))}
-          </Pressable>
+          
         </View>
       </ScrollView>
     </>

@@ -21,6 +21,7 @@ import { useFormContext } from "react-hook-form";
 import z from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import ImagePlaceholder from "../ui/ImagePlaceholder";
 
 interface IndexHeaderProps {
   index: number;
@@ -490,6 +491,63 @@ export function ReviewHeader({ username }: { username: string }) {
   );
 }
 
+export function SingleMessageHeader({ messenger }: { messenger: string }) {
+  return (
+    <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
+      options={{
+        left: (
+          <IconButton
+            name="arrow-back"
+            size="xl"
+            onPress={() => router.back()}
+          />
+        ),
+        center: (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <ImagePlaceholder
+                          width={40}
+                          height={40}
+                          style={{ borderRadius: 999 }}
+                        />
+          <Text weight="semibold" size="xl">
+            {messenger}
+          </Text>
+          </View>
+        ),
+        right: (
+          <IconButton name="ellipsis-vertical" size="xl" />
+        ),
+      }}
+    />
+  );
+}
+
+export function SingleMessageFooter() {
+  return (
+    <HeaderWrapper
+      style={{ borderBottomWidth: 0, position: "absolute", bottom: 0, left: 0, right: 0 }}
+      options={{
+        center: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <Input
+            placeholder="Send a message..."
+            style={{ width: "90%" }}
+          />
+          <IconButton name="send" size="xl" />
+          </View>
+        ),
+      }}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
   tabText: {
     fontFamily: "Inter-bold",
@@ -499,43 +557,3 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
-export function SingleMessageHeader() {
-  const { text } = useLocalSearchParams();
-  const [value, setValue] = useState(text as string);
-
-  async function handleSearch() {
-    router.replace(`/search/${value}`);
-  }
-  return (
-    <HeaderWrapper
-      style={{ borderBottomWidth: 0 }}
-      options={{
-        center: (
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <IconButton
-              name="arrow-back"
-              size="xl"
-              onPress={() => router.back()}
-            />
-            <Input
-              placeholder="Search users, jobs, services..."
-              style={{ flex: 1 }}
-              autoFocus
-              value={value}
-              onChangeText={(value) => setValue(value)}
-              onSubmitEditing={handleSearch}
-            />
-            <IconButton name="ellipsis-vertical" size="xl" />
-          </View>
-        ),
-      }}
-    />
-  );
-}

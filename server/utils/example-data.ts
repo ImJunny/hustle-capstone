@@ -212,11 +212,13 @@ export type TMessage = {
   last_message: string;
   messenger: string;
   is_job?: boolean;
+  job_title?: string;
+  progress?: "accepted" | "in progress" | "paid" | "overdue" | "awaiting" | "viewed";
   messageHistory: Array<{
     message: string;
     timestamp: string; // ISO string format or Date object
     date: string; // Date in YYYY-MM-DD format (or any desired format)
-    sent: boolean; // true if sent, false if received
+    sent: boolean;
   }>;
 };
 
@@ -228,17 +230,18 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Kevin So",
     is_job: true,
+    job_title: "Digital Designer",
     messageHistory: [
       {
         message: "Lorem ipsum dolor sit amet",
-        timestamp: "2025-02-15T10:00:00.000Z",
-        date: "2025-02-15",
+        timestamp: "2025-03-23T10:00:00.000Z",
+        date: "2025-03-23",
         sent: true
       },
       {
-        message: "Consectetur adipiscing elit",
-        timestamp: "2025-02-15T10:05:00.000Z",
-        date: "2025-02-15",
+        message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...",
+        timestamp: "2025-03-23T10:05:00.000Z",
+        date: "2025-03-23",
         sent: false
       }
     ]
@@ -292,6 +295,7 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Tyler Dud",
     is_job: true,
+    job_title: "Web Developer",
     messageHistory: [
       {
         message: "Happy to meet you! Let’s catch up soon.",
@@ -314,6 +318,7 @@ export const exampleMessages: TMessage[] = [
     last_message: "5 weeks ago",
     messenger: "Barbara Henry",
     is_job: true,
+    job_title: "Project Manager",
     messageHistory: [
       {
         message: "Reminder: Your meeting is in 15 minutes.",

@@ -1,10 +1,11 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TMessage } from "@/server/utils/example-data";
+import { router } from "expo-router";
 
 type MessageProps = {
   data: TMessage;
@@ -16,6 +17,7 @@ export default function Message({ data }: MessageProps) {
   const { last_message, message, messenger, uuid, is_job } = data;
 
   return (
+    <TouchableOpacity onPress={()=>(router.push(`/message/${data.uuid} ` as any))}>
     <View style={[styles.entry, { borderColor }]} color="background">
       <View
         style={{ borderRadius: 999, width: 50, height: 50 }}
@@ -42,7 +44,7 @@ export default function Message({ data }: MessageProps) {
       {is_job && (
         <ImagePlaceholder width={70} height={70} style={styles.entryImage} />
       )}
-    </View>
+    </View></TouchableOpacity>
   );
 }
 

@@ -59,7 +59,7 @@ export default function FilterSheet({
 
   function handleReset() {
     setMin(0);
-    setMax(1000);
+    setMax(400);
     setType("all");
   }
 

@@ -18,7 +18,7 @@ import * as Location from "expo-location";
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
   const MIN_CONSTANT = 10;
-  const MAX_CONSTANT = 500;
+  const MAX_CONSTANT = 400;
   const postTypes = ["all", "work", "hire"];
 
   // useEffect(() => {
@@ -54,8 +54,10 @@ export default function SearchedPage() {
   const filterSetters = {
     setMin: (min: number) => setFilters((prev) => ({ ...prev, min })),
     setMax: (max: number) => setFilters((prev) => ({ ...prev, max })),
-    setMinDistance: (min: number) => setFilters((prev) => ({ ...prev, min })),
-    setMaxDistance: (max: number) => setFilters((prev) => ({ ...prev, max })),
+    setMinDistance: (minDistance: number) =>
+      setFilters((prev) => ({ ...prev, minDistance })),
+    setMaxDistance: (maxDistance: number) =>
+      setFilters((prev) => ({ ...prev, maxDistance })),
     setType: (type: "work" | "hire" | "all") =>
       setFilters((prev) => ({ ...prev, type })),
     setSort: (sort: "asc" | "desc" | undefined) =>
@@ -74,6 +76,10 @@ export default function SearchedPage() {
     sort: filters.sort,
     geocode: filters.geocode,
   });
+
+  useEffect(() => {
+    console.log(filters);
+  }, [filters]);
 
   // Sheet refs to open/close
   const filterSheetRef = useRef<BottomSheet>(null);

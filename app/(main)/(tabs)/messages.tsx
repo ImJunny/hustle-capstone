@@ -5,6 +5,14 @@ import Message from "@/components/messages/Message";
 import { MessagesHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { exampleMessages } from "@/server/utils/example-data";
+import { router } from "expo-router";
+import {
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
+
 
 export default function MessagesScreen() {
   return (
@@ -12,6 +20,7 @@ export default function MessagesScreen() {
       <MessagesHeader />
       <ScrollView style={{ flex: 1 }} color="base">
         <View>
+          
           {exampleMessages.map((message, i) => (
             <Message
               key={i}
@@ -21,6 +30,7 @@ export default function MessagesScreen() {
               }}
             />
           ))}
+          
         </View>
       </ScrollView>
     </>

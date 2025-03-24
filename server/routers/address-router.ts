@@ -32,8 +32,7 @@ export const addressRouter = createTRPCRouter({
         state: z.string(),
         country: z.string(),
         zip_code: z.string(),
-        longitude: z.number(),
-        latitude: z.number(),
+        location: z.tuple([z.number(), z.number()]),
       })
     )
     .mutation(async ({ input }) => {
@@ -46,14 +45,13 @@ export const addressRouter = createTRPCRouter({
         input.state,
         input.country,
         input.zip_code,
-        input.longitude,
-        input.latitude
+        input.location
       );
     }),
   update_address: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
         title: z.string(),
         address_line_1: z.string(),
         address_line_2: z.string().optional(),
@@ -61,13 +59,12 @@ export const addressRouter = createTRPCRouter({
         state: z.string(),
         country: z.string(),
         zip_code: z.string(),
-        longitude: z.number(),
-        latitude: z.number(),
+        location: z.tuple([z.number(), z.number()]),
       })
     )
     .mutation(async ({ input }) => {
       await updateAddress(
-        input.id,
+        input.uuid,
         input.title,
         input.address_line_1,
         input.address_line_2,
@@ -75,8 +72,7 @@ export const addressRouter = createTRPCRouter({
         input.state,
         input.country,
         input.zip_code,
-        input.longitude,
-        input.latitude
+        input.location
       );
     }),
   get_user_addresses: protectedProcedure
@@ -92,19 +88,19 @@ export const addressRouter = createTRPCRouter({
   delete_address: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      await deleteAddress(input.id);
+      await deleteAddress(input.uuid);
     }),
   get_address_info: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
       })
     )
     .query(async ({ input }) => {
-      return await getAddressInfo(input.id);
+      return await getAddressInfo(input.uuid);
     }),
 });

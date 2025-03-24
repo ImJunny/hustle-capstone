@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db";
 import { addresses } from "@/drizzle/schema";
 import axios from "axios";
-import { eq, and, ne, ilike } from "drizzle-orm";
+import { eq, and, ne, ilike, sql } from "drizzle-orm";
 import { string } from "zod";
 
 // Find suggested addresses; return an array or null if none found
@@ -102,8 +102,7 @@ export async function createAddress(
   state: string,
   country: string,
   zip_code: string,
-  longitude: number,
-  latitude: number
+  location: [number, number]
 ) {
   try {
     await db.insert(addresses).values({
@@ -115,8 +114,7 @@ export async function createAddress(
       state,
       country,
       zip_code,
-      longitude: String(longitude),
-      latitude: String(latitude),
+      location: sql`ST_SetSRID(ST_MakePoint(${location[0]}, ${location[1]}), 4326)`,
     });
   } catch (error) {
     console.log(error);
@@ -126,7 +124,7 @@ export async function createAddress(
 
 // Update address
 export async function updateAddress(
-  id: number,
+  uuid: string,
   title: string,
   address_line_1: string,
   address_line_2: string | undefined,
@@ -134,8 +132,7 @@ export async function updateAddress(
   state: string,
   country: string,
   zip_code: string,
-  longitude: number,
-  latitude: number
+  location: [number, number]
 ) {
   try {
     await db
@@ -148,10 +145,9 @@ export async function updateAddress(
         state,
         country,
         zip_code,
-        longitude: String(longitude),
-        latitude: String(latitude),
+        location: sql`ST_SetSRID(ST_MakePoint(${location[0]}, ${location[1]}), 4326)`,
       })
-      .where(eq(addresses.id, id));
+      .where(eq(addresses.uuid, uuid));
   } catch (error) {
     console.log(error);
     throw new Error("Failed to update address.");
@@ -176,14 +172,14 @@ export async function getUserAddresses(user_uuid: string) {
 export type Address = Awaited<ReturnType<typeof getUserAddresses>>[number];
 
 // Delete address; soft delete
-export async function deleteAddress(id: number) {
+export async function deleteAddress(uuid: string) {
   try {
     await db
       .update(addresses)
       .set({
         visible: false,
       })
-      .where(eq(addresses.id, id));
+      .where(eq(addresses.uuid, uuid));
   } catch (error) {
     console.log(error);
     throw new Error("Failed to delete address.");
@@ -191,12 +187,12 @@ export async function deleteAddress(id: number) {
 }
 
 // Get address info
-export async function getAddressInfo(id: number) {
+export async function getAddressInfo(uuid: string) {
   try {
     const result = await db
       .select()
       .from(addresses)
-      .where(eq(addresses.id, id))
+      .where(eq(addresses.uuid, uuid))
       .limit(1);
     if (result.length > 0) return result[0];
     return null;

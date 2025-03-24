@@ -89,12 +89,7 @@ export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
             </View>
           </View>
         ),
-        right: (
-          <IconButton
-            name="filter"
-            size="xl"
-          />
-        ),
+        right: <IconButton name="filter" size="xl" />,
       }}
     />
   );
@@ -193,6 +188,29 @@ export function AddressesHeader() {
             <IconButton name="arrow-back" onPress={() => router.back()} />
             <Text size="xl" weight="semibold">
               Addresses
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push("/create-address")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
+export function ChooseAddressHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Choose address
             </Text>
           </View>
         ),
@@ -419,7 +437,7 @@ export function CreatePostHeader() {
   const styles = StyleSheet.create({
     button: {
       height: 40,
-      width: 90,
+      width: 100,
     },
   });
 

@@ -1,5 +1,11 @@
 import { db } from "../../drizzle/db";
-import { post_images, post_tags, users, posts } from "../../drizzle/schema";
+import {
+  post_images,
+  post_tags,
+  users,
+  posts,
+  addresses,
+} from "../../drizzle/schema";
 import {
   eq,
   ilike,
@@ -12,6 +18,7 @@ import {
   gt,
   gte,
   lte,
+  sql,
 } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +32,7 @@ export async function createPost(
   min_rate: number,
   max_rate: number | undefined,
   location_type: "local" | "remote",
-  location_address: string | undefined,
+  address_uuid: string | null,
   due_date: Date | null,
   image_buffers: any[]
 ) {
@@ -41,7 +48,7 @@ export async function createPost(
       max_rate,
       due_date: due_date?.toDateString(),
       location_type,
-      location_address,
+      address_uuid,
       status_type: "open",
       type,
     });
@@ -71,7 +78,7 @@ export async function updatePost(
   min_rate: number,
   max_rate: number | undefined,
   location_type: "local" | "remote",
-  location_address: string | undefined,
+  address_uuid: string | null,
   due_date: Date | null,
   image_buffers: any[] | null
 ) {
@@ -85,7 +92,7 @@ export async function updatePost(
         max_rate,
         due_date: due_date?.toDateString(),
         location_type,
-        location_address,
+        address_uuid,
         created_at: new Date(),
       })
       .where(eq(posts.uuid, uuid));
@@ -153,15 +160,39 @@ export type Post = {
   max_rate: number;
   location_type: "local" | "remote";
   image_url: string;
+  distance: number;
 };
 
 export type Posts = Post[] | undefined;
 
 // Get post details info; used in post details page
-export async function getPostDetailsInfo(uuid: string) {
+export async function getPostDetailsInfo(
+  uuid: string,
+  geocode: [number, number] | undefined
+) {
   try {
+    let location = null;
+    if (geocode) {
+      location = sql`ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)`;
+    }
+
     const post = await db
-      .select()
+      .select({
+        uuid: posts.uuid,
+        user_uuid: posts.user_uuid,
+        description: posts.description,
+        created_at: posts.created_at,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        address_uuid: posts.address_uuid,
+        distance: geocode
+          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          : sql`NULL`,
+      })
       .from(posts)
       .where(eq(posts.uuid, uuid))
       .limit(1);
@@ -184,6 +215,7 @@ export async function getPostDetailsInfo(uuid: string) {
       .select({
         user_username: users.username,
         user_bio: users.bio,
+        avatar_url: users.avatar_url,
       })
       .from(users)
       .where(eq(users.uuid, poster_uuid))
@@ -208,8 +240,11 @@ export async function getPostsByFilters(
   keyword: string,
   min_rate: number | undefined,
   max_rate: number | undefined,
+  min_distance: number | undefined,
+  max_distance: number | undefined,
   type: "work" | "hire" | "all",
-  sort: "asc" | "desc" | undefined = undefined
+  sort: "asc" | "desc" | undefined = undefined,
+  geocode: [number, number] | undefined
 ) {
   try {
     let result = await db
@@ -221,27 +256,39 @@ export async function getPostsByFilters(
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
         location_type: posts.location_type,
+        address_uuid: posts.address_uuid,
+        distance: geocode
+          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          : sql`NULL`,
       })
       .from(posts)
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid)) // Join address location
       .where(
         and(
           or(
             ilike(posts.title, `%${keyword}%`),
             ilike(posts.description, `%${keyword}%`)
           ),
-          gte(posts.min_rate, min_rate ?? 0),
-          lte(posts.max_rate, max_rate ?? 10000),
+          gte(posts.min_rate, min_rate ?? 10),
+          or(
+            max_rate === null
+              ? sql`TRUE`
+              : lte(posts.max_rate ?? posts.min_rate, max_rate ?? 10000),
+            sql`TRUE`
+          ),
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
           ne(posts.status_type, "hidden")
         )
       );
+
     if (sort === "asc") {
       result = result.sort((a, b) => a.min_rate - b.min_rate);
     } else if (sort === "desc") {
       result = result.sort((a, b) => b.min_rate - a.min_rate);
     }
+
     return result;
   } catch (error) {
     console.log(error);
@@ -280,7 +327,20 @@ export async function getHomePosts(type: "work" | "hire") {
           .orderBy(asc(post_images.image_url))
           .limit(1);
 
-        return { ...post, image_url: image[0].image_url ?? null };
+        const userInfo = await db
+          .select({
+            user_username: users.username,
+            avatar_url: users.avatar_url,
+          })
+          .from(users)
+          .where(eq(users.uuid, post.user_uuid))
+          .limit(1);
+
+        return {
+          ...post,
+          image_url: image[0].image_url ?? null,
+          ...userInfo[0],
+        };
       })
     );
     return result;
@@ -303,4 +363,7 @@ export type HomePost = {
   due_date: string | null;
   status_type: string | null;
   image_url: string | null;
+  distance: string;
+  user_username: string;
+  avatar_url: string;
 };

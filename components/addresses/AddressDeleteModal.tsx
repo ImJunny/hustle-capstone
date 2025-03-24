@@ -7,11 +7,11 @@ import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 
 export default function AddressDeleteModal({
-  id,
+  uuid,
   modalOpen,
   setModalOpen,
 }: {
-  id: number | undefined;
+  uuid: string | undefined;
   modalOpen: boolean;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -86,7 +86,7 @@ export default function AddressDeleteModal({
                 <TouchableOpacity
                   onPress={() => {
                     setModalOpen(false);
-                    if (id) deleteAddress({ id });
+                    if (uuid) deleteAddress({ uuid });
                   }}
                 >
                   <Text weight="semibold">OK</Text>

@@ -40,14 +40,13 @@ export function CreatePostProvider({
       description: data?.description || undefined,
       min_rate: data?.min_rate || undefined,
       max_rate: data?.max_rate || undefined,
-      location_type: (data?.location_type as "local" | "remote") || undefined,
-      location_address: data?.location_address || undefined,
-      due_date: data?.due_date ? new Date(data.due_date) : undefined,
+      location_type: (data?.location_type as "local" | "remote") || "remote",
+      address_uuid: data?.address_uuid || null,
+      due_date: data?.due_date ? new Date(data.due_date) : null,
       type: data?.type || "work",
       images: data?.post_images.map((image) => image.image_url) || [],
     },
   });
-  formMethods.watch("type");
 
   const [isNewImages, setIsNewImages] = useState(false);
   return (

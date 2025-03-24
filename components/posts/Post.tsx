@@ -27,6 +27,18 @@ export default function Post({ type, data, style }: PostProps) {
       : "";
 
   if (!data) return;
+
+  const distance = getGeneralDistance(data.distance);
+  function getGeneralDistance(distance: number) {
+    if (distance <= 1) return 1;
+    else if (distance <= 5) return 5;
+    else if (distance <= 10) return 10;
+    else if (distance <= 15) return 15;
+    else if (distance <= 20) return 20;
+    else if (distance <= 25) return 25;
+    else if (distance <= 50) return 50;
+    return 51;
+  }
   return (
     <Link href={`/post/${data.uuid}` as any} asChild>
       <TouchableOpacity activeOpacity={0.65}>
@@ -79,9 +91,13 @@ export default function Post({ type, data, style }: PostProps) {
                 </Text>
               </Badge>
               <Badge>
-                {data.location_type === "remote"
-                  ? "remote"
-                  : "IMPLEMENT DISTANCE"}
+                <Text size="sm" weight="semibold">
+                  {data.location_type === "remote"
+                    ? "remote"
+                    : data.distance
+                    ? `< ${data.distance} mi`
+                    : "local"}
+                </Text>
               </Badge>
               {/* <Badge>{data.tags[0]}</Badge> */}
             </View>

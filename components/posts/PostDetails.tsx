@@ -33,17 +33,21 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   // Fallback renders
   if (isLoading) {
     return (
-      <View style={{ flex: 1 }}>
+      <>
         <BackHeader />
         <LoadingView color="background" />
-      </View>
+      </>
     );
   } else if (!data) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <>
         <BackHeader />
-        <Text>Post not found.</Text>
-      </View>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Post not found.</Text>
+        </View>
+      </>
     );
   }
 

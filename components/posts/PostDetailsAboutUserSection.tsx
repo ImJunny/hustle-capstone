@@ -7,6 +7,7 @@ import { Pressable, StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { Image } from "expo-image";
 
 type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
@@ -28,10 +29,15 @@ export default function PostDetailsAboutUserSection({
       </View>
       <Pressable onPress={() => router.push(`/profile/user`)}>
         <View style={styles.bottomContainer}>
-          <ImagePlaceholder
-            width={40}
-            height={40}
-            style={{ borderRadius: 999 }}
+          <Image
+            source={
+              data?.avatar_url
+                ? {
+                    uri: data.avatar_url,
+                  }
+                : require("@/assets/images/default-avatar-icon.jpg")
+            }
+            style={{ width: 40, height: 40, borderRadius: 999 }}
           />
           <View style={styles.nameContainer}>
             <Text weight="semibold">@{data.user_username}</Text>

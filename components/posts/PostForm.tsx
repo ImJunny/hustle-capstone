@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Input from "../ui/Input";
 import Text from "../ui/Text";
 import View from "../ui/View";
@@ -10,11 +10,11 @@ import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import IconButton from "../ui/IconButton";
-import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Address } from "@/server/actions/address-actions";
+import Icon from "../ui/Icon";
+import { router, useLocalSearchParams } from "expo-router";
 
 type PostFormProps = {
   data?: PostDetailsInfo;
@@ -33,12 +33,30 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
 
   const { user } = useAuthData();
   if (!user) return;
-  const { data: userData } = trpc.address.get_user_addresses.useQuery({
-    user_uuid: user.id,
-  });
-  const [address, setAddress] = useState<Address | undefined>(
-    userData?.[0] ?? undefined
-  );
+
+  const [address, setAddress] = useState<Address | null>(null);
+
+  const { selected_address } = useLocalSearchParams();
+  useEffect(() => {
+    if (selected_address) {
+      const parsedAddress = JSON.parse(selected_address as string) as Address;
+      setAddress(parsedAddress);
+      setValue("address_uuid", parsedAddress.uuid);
+    }
+  }, [selected_address]);
+
+  const location_type = watch("location_type");
+  useEffect(() => {
+    if (location_type === "remote") {
+      setValue("address_uuid", null);
+    } else {
+      if (selected_address) {
+        const parsedAddress = JSON.parse(selected_address as string) as Address;
+        setAddress(parsedAddress);
+        setValue("address_uuid", parsedAddress.uuid);
+      }
+    }
+  }, [location_type]);
 
   const themeColor = useThemeColor();
   const locationType = watch("location_type");
@@ -191,7 +209,15 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
             <Text weight="semibold" size="lg">
               Location address
             </Text>
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/choose-address",
+                  params: {
+                    selected_address: JSON.stringify(address),
+                  },
+                });
+              }}
               style={{
                 marginTop: 10,
                 paddingHorizontal: 20,
@@ -223,10 +249,10 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
                 </View>
               )}
 
-              <IconButton name="chevron-forward" />
-            </View>
+              <Icon name="chevron-forward" size="xl" />
+            </TouchableOpacity>
             <BottomMessage
-              field="location_address"
+              field="address_uuid"
               defaultMessage="This address will be hidden to everyone except the approved worker."
               hasError
             />
@@ -269,8 +295,6 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
           Add up to 3 tags. This helps others find your post.
         </Text>
       </View>
-
-      {/* <PostSubmitButton handleSubmit={handleSubmit} /> */}
     </View>
   );
 

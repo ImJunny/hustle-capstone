@@ -19,12 +19,18 @@ type RangeSliderProps = {
   max: number;
   setMin: Dispatch<SetStateAction<number>>;
   setMax: Dispatch<SetStateAction<number>>;
+  step?: number;
 };
 
-function RangeSlider(
-  this: any,
-  { minConstant, maxConstant, setMin, setMax, min, max }: RangeSliderProps
-) {
+export default function RangeSlider({
+  minConstant,
+  maxConstant,
+  setMin,
+  setMax,
+  min,
+  max,
+  step = 1,
+}: RangeSliderProps) {
   const themeColor = useThemeColor();
   const renderThumb = useCallback(
     () => <View style={styles.thumb} color="foreground" />,
@@ -65,7 +71,7 @@ function RangeSlider(
     <RNRangeSlider
       min={minConstant}
       max={maxConstant}
-      step={1}
+      step={step}
       renderThumb={renderThumb}
       renderRail={renderRail}
       renderRailSelected={renderRailSelected}
@@ -76,12 +82,10 @@ function RangeSlider(
   );
 }
 
-export default memo(RangeSlider);
-
 const styles = StyleSheet.create({
   thumb: {
-    width: 24,
-    height: 24,
+    width: 18,
+    height: 18,
     borderRadius: 30,
   },
   rail: {

@@ -44,7 +44,7 @@ export const CreatePostSchema = z
     min_rate: z.number(),
     max_rate: z.number().optional(),
     location_type: z.enum(["local", "remote"]),
-    location_address: z.string().optional(),
+    address_uuid: z.string().nullable(),
     due_date: z.date({ message: "Due date is required." }).nullable(),
     tags: z.array(z.enum(tagTypes)).optional(),
     images: z.array(z.any()).min(1, "Must include at least one image."),
@@ -61,18 +61,15 @@ export const CreatePostSchema = z
       });
     }
 
-    if (
-      data.location_type === "local" &&
-      (!data.location_address || data.location_address.length === 0)
-    ) {
+    if (data.location_type === "local" && data.address_uuid === null) {
       ctx.addIssue({
         code: "custom",
-        path: ["location_address"],
+        path: ["address_uuid"],
         message: "Location address is required if the job is local.",
       });
     }
 
-    if (data.type === "work" && !data.due_date) {
+    if (data.type === "work" && data.due_date === null) {
       ctx.addIssue({
         code: "custom",
         path: ["due_date"],

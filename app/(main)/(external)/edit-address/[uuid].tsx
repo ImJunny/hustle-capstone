@@ -1,13 +1,9 @@
 import View from "@/components/ui/View";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SimpleHeader } from "@/components/headers/Headers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import AddressForm from "@/components/settings/addresses/AddressForm";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { CreateAddressSchema } from "@/zod/zod-schemas";
 import ScrollView from "@/components/ui/ScrollView";
 import AddressSuggestionsModal from "@/components/addresses/AddressSuggestionsModal";
 import AddressSubmitButton from "@/components/addresses/AddressSubmitButton";
@@ -18,9 +14,9 @@ import LoadingView from "@/components/ui/LoadingView";
 import { CreateAddressProvider } from "@/contexts/CreateAddressContext";
 
 export default function EditAddressForm() {
-  const { id } = useLocalSearchParams();
+  const { uuid } = useLocalSearchParams();
   const { data, isLoading } = trpc.address.get_address_info.useQuery({
-    id: parseInt(id as string),
+    uuid: uuid as string,
   });
 
   const themeColor = useThemeColor();
@@ -67,6 +63,7 @@ export default function EditAddressForm() {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         isEditing
+        uuid={uuid as string}
       />
     </CreateAddressProvider>
   );

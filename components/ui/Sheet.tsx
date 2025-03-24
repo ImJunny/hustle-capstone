@@ -9,6 +9,7 @@ import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { BackHandler } from "react-native";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import IconButton from "../ui/IconButton";
+import { Keyboard } from "react-native";
 
 export default function Sheet({
   title,
@@ -91,7 +92,10 @@ export default function Sheet({
           <IconButton
             name="close-outline"
             size="2xl"
-            onPress={() => sheetRef.current?.close()}
+            onPress={() => {
+              sheetRef.current?.close();
+              Keyboard.dismiss();
+            }}
           />
         </View>
       )}

@@ -2,10 +2,8 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   date,
-  decimal,
+  geometry,
   integer,
-  numeric,
-  pgEnum,
   pgSchema,
   serial,
   text,
@@ -48,7 +46,9 @@ export const posts = app_schema.table("posts", {
   location_type: text("location_type")
     .references(() => location_types.name)
     .notNull(),
-  location_address: text("location_address"),
+  address_uuid: uuid("address_uuid").references(() => addresses.uuid, {
+    onDelete: "cascade",
+  }),
   created_at: timestamp("created_at").notNull().defaultNow(),
   due_date: date("due_date"),
   status_type: text("status_type").references(() => status_types.name, {
@@ -56,7 +56,9 @@ export const posts = app_schema.table("posts", {
   }),
 });
 export const accepted_jobs = app_schema.table("accepted_jobs", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, {
       onDelete: "cascade",
@@ -71,7 +73,9 @@ export const accepted_jobs = app_schema.table("accepted_jobs", {
 });
 
 export const post_tags = app_schema.table("post_tags", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   tag_type: text("tag_type")
     .references(() => tag_types.name, {
       onDelete: "cascade",
@@ -83,7 +87,9 @@ export const post_tags = app_schema.table("post_tags", {
 });
 
 export const initiated_jobs = app_schema.table("initiated_jobs", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   worker_uuid: uuid("worker_uuid")
     .references(() => users.uuid)
     .notNull(),
@@ -95,7 +101,9 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
 });
 
 export const post_images = app_schema.table("post_images", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   image_url: text("image_url").notNull(),
   post_uuid: uuid("post_uuid").references(() => posts.uuid, {
     onDelete: "cascade",
@@ -103,7 +111,9 @@ export const post_images = app_schema.table("post_images", {
 });
 
 export const reviews = app_schema.table("reviews", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   type: text("type", { enum: ["work", "hire"] }).notNull(),
   reviewer_uuid: uuid("reviewer_uuid").references(() => users.uuid),
   reviewee_uuid: uuid("reviewee_uuid").references(() => users.uuid),
@@ -116,13 +126,17 @@ export const reviews = app_schema.table("reviews", {
 });
 
 export const transactions = app_schema.table("transactions", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   user_uuid: uuid("user_uuid").references(() => users.uuid),
   post_uuid: uuid("post_uuid").references(() => posts.uuid),
 });
 
 export const addresses = app_schema.table("addresses", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   user_uuid: uuid("user_uuid").references(() => users.uuid),
   title: text("title"),
   address_line_1: text("address_line_1"),
@@ -131,24 +145,11 @@ export const addresses = app_schema.table("addresses", {
   state: text("state"),
   country: text("country"),
   zip_code: text("zip_code"),
-  longitude: decimal("longitude"),
-  latitude: decimal("latitude"),
+  location: geometry("location", {
+    type: "point",
+    srid: 4326,
+  }).notNull(),
   visible: boolean("visible").default(true),
-});
-
-export const accepted_jobs = app_schema.table("accepted_jobs", {
-  id: serial("id").primaryKey(),
-  user_uuid: uuid("user_uuid")
-    .references(() => users.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  job_uuid: uuid("job_uuid")
-    .references(() => posts.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
 // TABLES FOR TYPES

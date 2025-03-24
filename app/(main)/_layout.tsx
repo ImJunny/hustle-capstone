@@ -9,6 +9,10 @@ export default function Layout() {
         name="(external)/edit-post/[uuid]"
         options={{ animation: "ios_from_right" }}
       />
+      <Stack.Screen
+        name="(external)/choose-address"
+        options={{ animation: "ios_from_right" }}
+      />
     </Stack>
   );
 }

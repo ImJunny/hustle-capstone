@@ -1,17 +1,10 @@
-import { FlatList, Dimensions } from "react-native";
+import { Dimensions } from "react-native";
 import HomePost from "@/components/posts/HomePost";
-import WorkPost from "@/components/posts/WorkPost";
 import Feed from "@/components/posts/Feed";
 import React, { useState } from "react";
 import { IndexHeader } from "@/components/headers/Headers";
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
 import View from "@/components/ui/View";
-import { TabView, SceneMap } from "react-native-tab-view";
-import * as Device from "expo-device";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
 
@@ -44,7 +37,7 @@ const HireRoute = () => {
     <Feed
       data={hirePosts!}
       renderItem={({ item }) => (
-        <WorkPost key={item.uuid} data={item as unknown as THomePost} />
+        <HomePost key={item.uuid} data={item as unknown as THomePost} />
       )}
     />
   );

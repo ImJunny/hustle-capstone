@@ -17,13 +17,13 @@ export default function AddressSuggestionsModal({
   modalOpen,
   setModalOpen,
   isEditing,
-  id,
+  uuid,
 }: {
   suggestions: SuggestedAddress[] | undefined;
   modalOpen: boolean;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
   isEditing?: boolean;
-  id: number | undefined;
+  uuid?: string | undefined;
 }) {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
@@ -152,9 +152,9 @@ export default function AddressSuggestionsModal({
                 <TouchableOpacity
                   onPress={() => {
                     setModalOpen(false);
-                    if (isEditing && id)
+                    if (isEditing && uuid)
                       updateAddress({
-                        id,
+                        uuid,
                         title: getValues("address_title"),
                         address_line_1: suggestion?.address_line_1!,
                         address_line_2: suggestion?.address_line_2,
@@ -162,8 +162,10 @@ export default function AddressSuggestionsModal({
                         state: suggestion?.state!,
                         country: suggestion?.country!,
                         zip_code: suggestion?.zip!,
-                        longitude: suggestion?.longitude!,
-                        latitude: suggestion?.latitude!,
+                        location: [
+                          suggestion?.longitude!,
+                          suggestion?.latitude!,
+                        ],
                       });
                     else
                       createAddress({
@@ -175,8 +177,10 @@ export default function AddressSuggestionsModal({
                         state: suggestion?.state!,
                         country: suggestion?.country!,
                         zip_code: suggestion?.zip!,
-                        longitude: suggestion?.longitude!,
-                        latitude: suggestion?.latitude!,
+                        location: [
+                          suggestion?.latitude!,
+                          suggestion?.longitude!,
+                        ],
                       });
                   }}
                 >

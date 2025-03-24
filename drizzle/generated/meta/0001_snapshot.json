@@ -1,6 +1,6 @@
 {
-  "id": "d6cf54aa-0e7f-4ac5-ae9d-93146e6cc5dc",
-  "prevId": "1fc80328-5026-484d-805f-64e934b8e56e",
+  "id": "bc5326d5-acfd-4474-a478-037ae5235233",
+  "prevId": "5a8dd591-982b-4392-8291-8f32d6ce4b3e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -8,11 +8,12 @@
       "name": "accepted_jobs",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
@@ -39,30 +40,126 @@
         "accepted_jobs_user_uuid_users_uuid_fk": {
           "name": "accepted_jobs_user_uuid_users_uuid_fk",
           "tableFrom": "accepted_jobs",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "accepted_jobs_job_uuid_posts_uuid_fk": {
           "name": "accepted_jobs_job_uuid_posts_uuid_fk",
           "tableFrom": "accepted_jobs",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "job_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "app.addresses": {
+      "name": "addresses",
+      "schema": "app",
+      "columns": {
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "user_uuid": {
+          "name": "user_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line_1": {
+          "name": "address_line_1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line_2": {
+          "name": "address_line_2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "geometry(point)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visible": {
+          "name": "visible",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "addresses_user_uuid_users_uuid_fk": {
+          "name": "addresses_user_uuid_users_uuid_fk",
+          "tableFrom": "addresses",
+          "columnsFrom": [
+            "user_uuid"
+          ],
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -75,11 +172,12 @@
       "name": "initiated_jobs",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "worker_uuid": {
           "name": "worker_uuid",
@@ -112,44 +210,44 @@
         "initiated_jobs_worker_uuid_users_uuid_fk": {
           "name": "initiated_jobs_worker_uuid_users_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "worker_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "initiated_jobs_job_post_uuid_posts_uuid_fk": {
           "name": "initiated_jobs_job_post_uuid_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "job_post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "initiated_jobs_progress_type_progress_types_name_fk": {
           "name": "initiated_jobs_progress_type_progress_types_name_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "progress_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "progress_type"
           ],
+          "tableTo": "progress_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -181,10 +279,10 @@
       "uniqueConstraints": {
         "location_types_name_unique": {
           "name": "location_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -214,10 +312,10 @@
       "uniqueConstraints": {
         "onboarding_phase_types_name_unique": {
           "name": "onboarding_phase_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -228,11 +326,12 @@
       "name": "post_images",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "image_url": {
           "name": "image_url",
@@ -252,16 +351,16 @@
         "post_images_post_uuid_posts_uuid_fk": {
           "name": "post_images_post_uuid_posts_uuid_fk",
           "tableFrom": "post_images",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -274,11 +373,12 @@
       "name": "post_tags",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "tag_type": {
           "name": "tag_type",
@@ -298,30 +398,30 @@
         "post_tags_tag_type_tag_types_name_fk": {
           "name": "post_tags_tag_type_tag_types_name_fk",
           "tableFrom": "post_tags",
-          "tableTo": "tag_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "tag_type"
           ],
+          "tableTo": "tag_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "post_tags_post_uuid_posts_uuid_fk": {
           "name": "post_tags_post_uuid_posts_uuid_fk",
           "tableFrom": "post_tags",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -383,9 +483,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "location_address": {
-          "name": "location_address",
-          "type": "text",
+        "address_uuid": {
+          "name": "address_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -414,44 +514,58 @@
         "posts_user_uuid_users_uuid_fk": {
           "name": "posts_user_uuid_users_uuid_fk",
           "tableFrom": "posts",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "posts_location_type_location_types_name_fk": {
           "name": "posts_location_type_location_types_name_fk",
           "tableFrom": "posts",
-          "tableTo": "location_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "location_type"
           ],
+          "tableTo": "location_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "posts_address_uuid_addresses_uuid_fk": {
+          "name": "posts_address_uuid_addresses_uuid_fk",
+          "tableFrom": "posts",
+          "columnsFrom": [
+            "address_uuid"
+          ],
+          "tableTo": "addresses",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "posts_status_type_status_types_name_fk": {
           "name": "posts_status_type_status_types_name_fk",
           "tableFrom": "posts",
-          "tableTo": "status_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "status_type"
           ],
+          "tableTo": "status_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
@@ -483,10 +597,10 @@
       "uniqueConstraints": {
         "progress_types_name_unique": {
           "name": "progress_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -497,11 +611,12 @@
       "name": "reviews",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "type": {
           "name": "type",
@@ -539,58 +654,58 @@
         "reviews_reviewer_uuid_users_uuid_fk": {
           "name": "reviews_reviewer_uuid_users_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "reviewer_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "reviews_reviewee_uuid_users_uuid_fk": {
           "name": "reviews_reviewee_uuid_users_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "reviewee_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "reviews_job_uuid_posts_uuid_fk": {
           "name": "reviews_job_uuid_posts_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "job_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "reviews_service_uuid_posts_uuid_fk": {
           "name": "reviews_service_uuid_posts_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "service_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -622,10 +737,10 @@
       "uniqueConstraints": {
         "status_types_name_unique": {
           "name": "status_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -655,10 +770,10 @@
       "uniqueConstraints": {
         "tag_types_name_unique": {
           "name": "tag_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -669,11 +784,12 @@
       "name": "transactions",
       "schema": "app",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "uuid_generate_v4()"
         },
         "user_uuid": {
           "name": "user_uuid",
@@ -693,30 +809,30 @@
         "transactions_user_uuid_users_uuid_fk": {
           "name": "transactions_user_uuid_users_uuid_fk",
           "tableFrom": "transactions",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "transactions_post_uuid_posts_uuid_fk": {
           "name": "transactions_post_uuid_posts_uuid_fk",
           "tableFrom": "transactions",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -790,26 +906,26 @@
         "users_onboarding_phase_onboarding_phase_types_name_fk": {
           "name": "users_onboarding_phase_onboarding_phase_types_name_fk",
           "tableFrom": "users",
-          "tableTo": "onboarding_phase_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "onboarding_phase"
           ],
+          "tableTo": "onboarding_phase_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_uuid_unique": {
           "name": "users_uuid_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -821,10 +937,10 @@
   "schemas": {
     "app": "app"
   },
+  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
-  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

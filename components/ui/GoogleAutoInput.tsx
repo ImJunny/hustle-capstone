@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 type GoogleAutoInputProps = {
-  setGeocode: (lat: number, lng: number) => void;
+  setGeocode: Dispatch<SetStateAction<[number, number] | undefined>>;
 };
 
 export default function GoogleAutoInput({ setGeocode }: GoogleAutoInputProps) {
@@ -20,8 +20,7 @@ export default function GoogleAutoInput({ setGeocode }: GoogleAutoInputProps) {
       onPress={(data, details = null) => {
         if (details) {
           const { lat, lng } = details.geometry.location;
-          setGeocode(lat, lng);
-          console.log("Latitude:", lat, "Longitude:", lng);
+          setGeocode([lat, lng]);
         }
       }}
       query={{

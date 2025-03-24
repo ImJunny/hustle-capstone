@@ -202,6 +202,29 @@ export function AddressesHeader() {
   );
 }
 
+export function ChooseAddressHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Choose address
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push("/create-address")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
 export function MessagesHeader() {
   return (
     <View color="background">

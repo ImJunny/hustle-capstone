@@ -9,11 +9,11 @@ import Text from "@/components/ui/Text";
 import { router } from "expo-router";
 
 export default function ({
-  id,
+  uuid,
   sheetRef,
   setModalOpen,
 }: {
-  id: number;
+  uuid: string;
   sheetRef: RefObject<BottomSheetMethods>;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -25,7 +25,7 @@ export default function ({
           name="create-outline"
           onPress={() => {
             sheetRef.current?.forceClose();
-            router.push(`/edit-address/${id}` as any);
+            router.push(`/edit-address/${uuid}` as any);
           }}
         />
         <SheetOption

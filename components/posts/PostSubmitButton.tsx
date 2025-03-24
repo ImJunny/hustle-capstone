@@ -21,7 +21,7 @@ export default function PostSubmitButton({
 }: PostSubmitButtonProps) {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
-  const { handleSubmit, getValues, setValue } =
+  const { handleSubmit, getValues, setValue, watch } =
     useFormContext<z.infer<typeof CreatePostSchema>>();
 
   const [submitting, setSubmitting] = useState(false);
@@ -77,6 +77,7 @@ export default function PostSubmitButton({
     return buffer;
   }
 
+  watch("type");
   useEffect(() => {
     const type = getValues("type");
     if (type === "hire") setValue("due_date", null);
@@ -94,7 +95,7 @@ export default function PostSubmitButton({
       min_rate,
       max_rate,
       location_type,
-      location_address,
+      address_uuid,
       due_date,
     } = data;
 
@@ -115,7 +116,7 @@ export default function PostSubmitButton({
         min_rate,
         max_rate,
         location_type,
-        location_address,
+        address_uuid: address_uuid ?? null,
         due_date: due_date ?? null,
         image_buffers: newImages,
       });
@@ -128,7 +129,7 @@ export default function PostSubmitButton({
         min_rate,
         max_rate,
         location_type,
-        location_address,
+        address_uuid: address_uuid ?? null,
         due_date: due_date ?? null,
         image_buffers: newImages!,
       });

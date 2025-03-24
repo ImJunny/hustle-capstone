@@ -8,18 +8,33 @@ import Icon from "../ui/Icon";
 import Button from "../ui/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { TPost } from "@/server/utils/example-data";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
+import { format, isThisYear } from "date-fns";
 
 export default function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
   const postHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
+  function formatCustomDate(date: Date) {
+    return isThisYear(date)
+      ? format(date, "MMMM d")
+      : format(date, "MMMM d, yyyy");
+  }
+  const distance = getGeneralDistance(parseInt(data.distance));
+  function getGeneralDistance(distance: number) {
+    if (distance <= 1) return 1;
+    else if (distance <= 5) return 5;
+    else if (distance <= 10) return 10;
+    else if (distance <= 15) return 15;
+    else if (distance <= 20) return 20;
+    else if (distance <= 25) return 25;
+    else if (distance <= 50) return 50;
+    return 51;
+  }
 
   return (
     <View style={[styles.container, { height: postHeight }]} color="black">
@@ -64,9 +79,11 @@ export default function HomePost({ data }: { data: THomePost }) {
               >
                 {data.title}
               </Text>
-              <Text size="lg" color="white" weight="semibold">
-                Due {data.due_date}
-              </Text>
+              {data.due_date && (
+                <Text size="lg" color="white" weight="semibold">
+                  Due {formatCustomDate(new Date(data.due_date))}
+                </Text>
+              )}
             </View>
             <View style={styles.middleContainer}>
               <View style={styles.descriptionContainer}>
@@ -84,10 +101,15 @@ export default function HomePost({ data }: { data: THomePost }) {
                       {data.type}
                     </Text>
                   </Badge>
-                  {/* <Badge>{data.distance}</Badge>
-                  {data.tags.map((tag, i) => (
-                    <Badge key={i}>{tag}</Badge>
-                  ))} */}
+                  <Badge>
+                    <Text size="sm" weight="semibold">
+                      {data.location_type === "remote"
+                        ? "remote"
+                        : data.distance
+                        ? `< ${distance} mi`
+                        : "local"}
+                    </Text>
+                  </Badge>
                 </View>
                 <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
                   {data.description}
@@ -132,15 +154,20 @@ export default function HomePost({ data }: { data: THomePost }) {
 
         <Pressable onPress={() => router.push(`/profile` as any)}>
           <View style={styles.bottomContainer}>
-            <ImagePlaceholder
-              width={40}
-              height={40}
-              style={{ borderRadius: 999 }}
+            <Image
+              source={
+                data?.avatar_url
+                  ? {
+                      uri: data.avatar_url,
+                    }
+                  : require("@/assets/images/default-avatar-icon.jpg")
+              }
+              style={{ width: 40, height: 40, borderRadius: 999 }}
             />
             <View style={styles.nameContainer}>
-              {/* <Text color="white" weight="semibold">
-                {data.user_name}
-              </Text> */}
+              <Text color="white" weight="semibold">
+                @{data.user_username}
+              </Text>
               <View
                 style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
               >

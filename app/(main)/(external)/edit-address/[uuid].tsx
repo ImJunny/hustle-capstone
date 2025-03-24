@@ -14,9 +14,9 @@ import LoadingView from "@/components/ui/LoadingView";
 import { CreateAddressProvider } from "@/contexts/CreateAddressContext";
 
 export default function EditAddressForm() {
-  const { id } = useLocalSearchParams();
+  const { uuid } = useLocalSearchParams();
   const { data, isLoading } = trpc.address.get_address_info.useQuery({
-    id: parseInt(id as string),
+    uuid: uuid as string,
   });
 
   const themeColor = useThemeColor();
@@ -63,7 +63,7 @@ export default function EditAddressForm() {
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         isEditing
-        id={parseInt(id as string)}
+        uuid={uuid as string}
       />
     </CreateAddressProvider>
   );

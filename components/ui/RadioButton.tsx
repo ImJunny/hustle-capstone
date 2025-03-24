@@ -6,8 +6,8 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { TouchableOpacityProps } from "react-native-gesture-handler";
 
 type RadioButtonProps = {
-  selected?: string;
-  value?: string;
+  selected?: any;
+  value?: any;
   onPress?: (value: string) => void;
   label?: string;
 } & TouchableOpacityProps;

@@ -20,13 +20,15 @@ export default function FilterSheet({
   filterSetters: {
     setMin: (min: number) => void;
     setMax: (max: number) => void;
+    setMinDistance: (minDistance: number) => void;
+    setMaxDistance: (maxDistance: number) => void;
     setType: (type: "all" | "work" | "hire") => void;
     setGeocode: (lat: number, lng: number) => void;
   };
 }) {
   const themeColor = useThemeColor();
   const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
-  const MIN_CONSTANT = 0;
+  const MIN_CONSTANT = 10;
   const MAX_CONSTANT = 400;
 
   const [type, setType] = useState<"all" | "work" | "hire">(
@@ -36,12 +38,21 @@ export default function FilterSheet({
   const [max, setMax] = useState(MAX_CONSTANT);
   const [minDistance, setMinDistance] = useState(0);
   const [maxDistance, setMaxDistance] = useState(50);
+  const [geocode, setGeocode] = useState<[number, number] | undefined>(
+    undefined
+  );
 
   const utils = trpc.useUtils();
   function handleSave() {
     filterSetters.setMin(min);
     filterSetters.setMax(max);
     filterSetters.setType(type);
+    filterSetters.setMinDistance(minDistance);
+    filterSetters.setMaxDistance(maxDistance);
+    if (geocode) {
+      const [lat, lng] = geocode;
+      filterSetters.setGeocode(lat, lng);
+    }
     utils.post.get_posts_by_filters.invalidate();
     sheetRef.current?.close();
   }
@@ -51,10 +62,6 @@ export default function FilterSheet({
     setMax(1000);
     setType("all");
   }
-
-  const [geocode, setGeocode] = useState<[number, number] | undefined>(
-    undefined
-  );
 
   return (
     <Sheet
@@ -125,7 +132,7 @@ export default function FilterSheet({
                 </Button>
               </View>
             </FilterEntry>
-            <GoogleAutoInput setGeocode={filterSetters.setGeocode} />
+            <GoogleAutoInput setGeocode={setGeocode} />
             <View>
               <View style={styles.dualLabel}>
                 <Text weight="semibold" size="xl">

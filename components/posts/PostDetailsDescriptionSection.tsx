@@ -8,7 +8,7 @@ import IconButton from "@/components/ui/IconButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, formatDistanceToNow, isThisYear } from "date-fns";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 
@@ -33,25 +33,17 @@ export default function PostDetailsDescriptionSection({
     addSuffix: true,
   });
 
-  const { data: isAccepted, isLoading } = user?.id
-    ? trpc.job.is_accepted.useQuery(
-        {
-          user_uuid: user.id,
-          job_uuid: data.uuid,
-        },
-        {
-          onError: (error) => {
-            console.error("Failed to fetch job acceptance status:", error);
-          },
-        }
-      )
-    : { data: null, isLoading: false };
+  const { data: isAccepted, isLoading } = trpc.job.is_accepted.useQuery({
+    user_uuid: user?.id ?? "",
+    job_uuid: data.uuid,
+  });
 
   const handleAcceptJob = () => {
-    router.push({
-      pathname: "/confirmation",
-      params: { job_uuid: data.uuid },
-    });
+    router.push(
+      isAccepted
+        ? `/track/working/${data.uuid}`
+        : `/confirmation?job_uuid=${data.uuid}`
+    );
   };
 
   return (
@@ -74,7 +66,13 @@ export default function PostDetailsDescriptionSection({
           </Text>
         </Badge>
         <Badge>
-          {data.location_type === "remote" ? "remote" : "IMPLEMENT DISTANCE"}
+          <Text size="sm" weight="semibold">
+            {data.location_type === "remote"
+              ? "remote"
+              : data.distance
+              ? `< ${data.distance} mi`
+              : "local"}
+          </Text>
         </Badge>
         {data.post_tags.length > 0 &&
           data.post_tags.map((tag, i) => <Badge key={i}>{tag.tag_name}</Badge>)}
@@ -91,26 +89,13 @@ export default function PostDetailsDescriptionSection({
         <IconButton name="add-circle-outline" size="2xl" />
         <IconButton name="chatbubble-outline" size="2xl" flippedX />
         <IconButton name="paper-plane-outline" size="2xl" />
-        {data.type == "work" ? (
-          <Link
-            href={
-              isAccepted
-                ? `/track/working/${data.uuid}`
-                : `/confirmation?job_uuid=${data.uuid}`
-            }
-            asChild
-          >
-            <Button style={styles.pageButton} disabled={isLoading}>
-              {isLoading
-                ? "Loading..."
-                : isAccepted
-                ? "Track progress"
-                : "Accept job"}
-            </Button>
-          </Link>
-        ) : (
-          <Button style={styles.pageButton}>Hire service</Button>
-        )}
+        <Button onPress={handleAcceptJob} style={{ marginLeft: "auto" }}>
+          {data.type === "work"
+            ? isAccepted
+              ? "Manage job"
+              : "Accept job"
+            : "Hire service"}
+        </Button>
       </View>
     </View>
   );

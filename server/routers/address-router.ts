@@ -51,7 +51,7 @@ export const addressRouter = createTRPCRouter({
   update_address: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
         title: z.string(),
         address_line_1: z.string(),
         address_line_2: z.string().optional(),
@@ -64,7 +64,7 @@ export const addressRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       await updateAddress(
-        input.id,
+        input.uuid,
         input.title,
         input.address_line_1,
         input.address_line_2,
@@ -88,19 +88,19 @@ export const addressRouter = createTRPCRouter({
   delete_address: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      await deleteAddress(input.id);
+      await deleteAddress(input.uuid);
     }),
   get_address_info: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        uuid: z.string(),
       })
     )
     .query(async ({ input }) => {
-      return await getAddressInfo(input.id);
+      return await getAddressInfo(input.uuid);
     }),
 });

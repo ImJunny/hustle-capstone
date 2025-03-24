@@ -10,9 +10,10 @@ import { useLocalSearchParams } from "expo-router";
 import { Post as TPost } from "@/server/actions/post-actions";
 import "react-native-reanimated";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
+import * as Location from "expo-location";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
@@ -20,16 +21,32 @@ export default function SearchedPage() {
   const MAX_CONSTANT = 500;
   const postTypes = ["all", "work", "hire"];
 
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       return;
+  //     }
+
+  //     let { coords } = await Location.getCurrentPositionAsync({});
+  //     console.log(coords);
+  //   })();
+  // }, []);
+
   const [filters, setFilters] = useState<{
     type: "all" | "work" | "hire";
     min: number;
     max: number;
+    minDistance: number;
+    maxDistance: number;
     sort: "asc" | "desc" | undefined;
     geocode: [number, number] | undefined;
   }>({
     type: postTypes[0] as "all" | "work" | "hire",
     min: MIN_CONSTANT,
     max: MAX_CONSTANT,
+    minDistance: 0,
+    maxDistance: 50,
     sort: undefined,
     geocode: undefined,
   });
@@ -37,6 +54,8 @@ export default function SearchedPage() {
   const filterSetters = {
     setMin: (min: number) => setFilters((prev) => ({ ...prev, min })),
     setMax: (max: number) => setFilters((prev) => ({ ...prev, max })),
+    setMinDistance: (min: number) => setFilters((prev) => ({ ...prev, min })),
+    setMaxDistance: (max: number) => setFilters((prev) => ({ ...prev, max })),
     setType: (type: "work" | "hire" | "all") =>
       setFilters((prev) => ({ ...prev, type })),
     setSort: (sort: "asc" | "desc" | undefined) =>
@@ -49,6 +68,8 @@ export default function SearchedPage() {
     keyword: keyword as string,
     min_rate: filters.min,
     max_rate: filters.max,
+    min_distance: filters.minDistance,
+    max_distance: filters.maxDistance,
     type: filters.type,
     sort: filters.sort,
     geocode: filters.geocode,
@@ -86,7 +107,7 @@ export default function SearchedPage() {
       ) : (
         <ScrollView>
           {data.map((post, i) => (
-            <Post key={i} data={post as TPost} type={post.type} />
+            <Post key={i} data={post as unknown as TPost} type={post.type} />
           ))}
         </ScrollView>
       )}

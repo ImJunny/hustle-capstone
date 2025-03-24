@@ -1,20 +1,24 @@
-import { AddressesHeader, SimpleHeader } from "@/components/headers/Headers";
+import {
+  AddressesHeader,
+  ChooseAddressHeader,
+  SimpleHeader,
+} from "@/components/headers/Headers";
 import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import IconButton from "@/components/ui/IconButton";
-import { useCallback, useRef, useState } from "react";
-import BottomSheet from "@gorhom/bottom-sheet";
-import AddressSheet from "@/components/settings/addresses/AddressSheet";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { Address } from "@/server/actions/address-actions";
 import LoadingView from "@/components/ui/LoadingView";
-import AddressDeleteModal from "@/components/addresses/AddressDeleteModal";
+import Button from "@/components/ui/Button";
+import RadioButton from "@/components/ui/RadioButton";
+import { router, useLocalSearchParams } from "expo-router";
 
 // Addresses screen
-export default function AddressesScreen() {
+export default function ChooseAddressScreen() {
+  const themeColor = useThemeColor();
   const { user } = useAuthData();
   if (!user) return;
 
@@ -23,15 +27,10 @@ export default function AddressesScreen() {
       user_uuid: user.id,
     });
 
-  const addressSheetRef = useRef<BottomSheet>(null);
-
-  const [uuid, setUuid] = useState<string | undefined>();
-  const openSheet = useCallback((uuid: string) => {
-    addressSheetRef.current?.expand();
-    setUuid(uuid);
-  }, []);
-
-  const [modalOpen, setModalOpen] = useState(false);
+  const { selected_address } = useLocalSearchParams();
+  const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
+    selected_address ? JSON.parse(selected_address as string) : undefined
+  );
 
   if (isLoading) {
     return (
@@ -58,26 +57,34 @@ export default function AddressesScreen() {
 
   return (
     <>
-      <AddressesHeader />
+      <ChooseAddressHeader />
       <View style={{ flex: 1 }} color="base">
         {addresses.map((address, i) => (
           <AddressEntry
             key={i}
             address={address}
-            openSheet={() => openSheet(address.uuid)}
+            currentAddress={currentAddress}
+            setCurrentAddress={setCurrentAddress}
           />
         ))}
       </View>
-      <AddressSheet
-        sheetRef={addressSheetRef}
-        uuid={uuid!}
-        setModalOpen={setModalOpen}
-      />
-      <AddressDeleteModal
-        uuid={uuid}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-      />
+      <View
+        color="background"
+        style={[styles.footer, { borderColor: themeColor.border }]}
+      >
+        <Button
+          style={{ alignSelf: "flex-end", height: 40 }}
+          disabled={!currentAddress}
+          onPress={() => {
+            router.back();
+            router.setParams({
+              selected_address: JSON.stringify(currentAddress),
+            });
+          }}
+        >
+          Select address
+        </Button>
+      </View>
     </>
   );
 }
@@ -85,12 +92,16 @@ export default function AddressesScreen() {
 // Address entry components
 type AddressEntryProps = {
   address: Address;
-  openSheet: () => void;
+  currentAddress: Address | undefined;
+  setCurrentAddress: Dispatch<SetStateAction<Address | undefined>>;
 };
 
-function AddressEntry({ address, openSheet }: AddressEntryProps) {
+function AddressEntry({
+  address,
+  currentAddress,
+  setCurrentAddress,
+}: AddressEntryProps) {
   const themeColor = useThemeColor();
-
   return (
     <View
       color="background"
@@ -110,7 +121,11 @@ function AddressEntry({ address, openSheet }: AddressEntryProps) {
         <Text>{address.country}</Text>
       </View>
 
-      <IconButton name="ellipsis-vertical" onPress={openSheet} />
+      <RadioButton
+        onPress={() => setCurrentAddress(address)}
+        value={address.uuid}
+        selected={currentAddress?.uuid}
+      />
     </View>
   );
 }
@@ -130,5 +145,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 30,
+  },
+  page: { padding: 16 },
+  typeContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+  },
+  buttonRow: { marginTop: 10, flexDirection: "row", gap: 16 },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
   },
 });

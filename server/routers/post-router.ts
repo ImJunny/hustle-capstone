@@ -21,7 +21,7 @@ export const postRouter = createTRPCRouter({
         min_rate: z.number(),
         max_rate: z.number().optional(),
         location_type: z.enum(["local", "remote"]),
-        location_address: z.string().optional(),
+        address_uuid: z.string().nullable(),
         due_date: z.coerce.date().nullable(),
         image_buffers: z.array(z.any()),
       })
@@ -35,7 +35,7 @@ export const postRouter = createTRPCRouter({
         input.min_rate,
         input.max_rate,
         input.location_type,
-        input.location_address,
+        input.address_uuid,
         input.due_date,
         input.image_buffers
       );
@@ -49,7 +49,7 @@ export const postRouter = createTRPCRouter({
         min_rate: z.number(),
         max_rate: z.number().optional(),
         location_type: z.enum(["local", "remote"]),
-        location_address: z.string().optional(),
+        address_uuid: z.string().nullable(),
         due_date: z.coerce.date().nullable(),
         image_buffers: z.array(z.any()).nullable(),
       })
@@ -62,7 +62,7 @@ export const postRouter = createTRPCRouter({
         input.min_rate,
         input.max_rate,
         input.location_type,
-        input.location_address,
+        input.address_uuid,
         input.due_date,
         input.image_buffers
       );
@@ -80,10 +80,11 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         uuid: z.string(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
     .query(async ({ input }) => {
-      return await getPostDetailsInfo(input.uuid);
+      return await getPostDetailsInfo(input.uuid, input.geocode);
     }),
   get_posts_by_filters: protectedProcedure
     .input(
@@ -91,6 +92,8 @@ export const postRouter = createTRPCRouter({
         keyword: z.string(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
+        min_distance: z.number().optional(),
+        max_distance: z.number().optional(),
         type: z.enum(["work", "hire", "all"]).optional().default("all"),
         sort: z.enum(["asc", "desc"]).optional(),
         geocode: z.tuple([z.number(), z.number()]).optional(),
@@ -101,6 +104,8 @@ export const postRouter = createTRPCRouter({
         input.keyword,
         input.min_rate,
         input.max_rate,
+        input.min_distance,
+        input.max_distance,
         input.type,
         input.sort,
         input.geocode

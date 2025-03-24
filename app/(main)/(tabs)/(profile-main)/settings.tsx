@@ -30,7 +30,9 @@ export default function SettingsScreen() {
           <SettingsEntry
             name="information-circle-outline"
             title="Personal information"
-            onPress={() => {}}
+            onPress={() => {
+              router.push("/personal-info");
+            }}
           />
           <SettingsEntry
             name="card-outline"

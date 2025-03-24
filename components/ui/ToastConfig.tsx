@@ -9,13 +9,16 @@ import Toast, {
 import View from "./View";
 import Text from "./Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { Platform } from "react-native";
 
 const GenericToast = ({ ...props }: ToastConfigParams<any>) => {
   const themeColor = useThemeColor(); // Call the hook here
+  const marginTop = Platform.OS === "ios" ? 20 : 0;
 
   return (
     <View
       style={{
+        marginTop,
         backgroundColor:
           props.type === "info"
             ? "#444444"

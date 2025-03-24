@@ -87,3 +87,20 @@ export async function updateUserProfile(
     throw new Error("Error updating profile.");
   }
 }
+
+export async function getPersonalInfo(uuid: string) {
+  try {
+    const result = await db
+      .select({
+        email: users.email,
+        created_at: users.created_at,
+      })
+      .from(users)
+      .where(eq(users.uuid, uuid));
+    return result[0];
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error fetching user data.");
+  }
+}
+export type PersonalInfo = Awaited<ReturnType<typeof getPersonalInfo>>;

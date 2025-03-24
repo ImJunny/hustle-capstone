@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   createUser,
+  getPersonalInfo,
   getUserData,
   updateUserProfile,
 } from "../actions/user-actions";
@@ -44,6 +45,12 @@ export const userRouter = createTRPCRouter({
         input.bio,
         input.image_buffer
       );
+      return result;
+    }),
+  get_personal_info: protectedProcedure
+    .input(z.object({ uuid: z.string() }))
+    .query(async ({ input }) => {
+      const result = await getPersonalInfo(input.uuid);
       return result;
     }),
 });

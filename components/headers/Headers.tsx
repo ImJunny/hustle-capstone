@@ -511,7 +511,13 @@ export function ReviewHeader({ username }: { username: string }) {
   );
 }
 
-export function SingleMessageHeader({ messenger, avatarUrl }: { messenger: string, avatarUrl:string | null }) {
+export function SingleMessageHeader({
+  messenger,
+  avatarUrl,
+}: {
+  messenger: string;
+  avatarUrl: string | null;
+}) {
   return (
     <HeaderWrapper
       options={{
@@ -530,68 +536,83 @@ export function SingleMessageHeader({ messenger, avatarUrl }: { messenger: strin
               gap: 12,
             }}
           >
-               <Image
-            source={
-              avatarUrl
-                ? {
-                    uri: avatarUrl,
-                  }
-                : require("@/assets/images/default-avatar-icon.jpg")
-            }
-            style={{ borderRadius: 999, width: 40, height: 40 }}
-          />
-          <Text weight="semibold" size="xl">
-            {messenger}
-          </Text>
+            <Image
+              source={
+                avatarUrl
+                  ? {
+                      uri: avatarUrl,
+                    }
+                  : require("@/assets/images/default-avatar-icon.jpg")
+              }
+              style={{ borderRadius: 999, width: 40, height: 40 }}
+            />
+            <Text weight="semibold" size="xl">
+              {messenger}
+            </Text>
           </View>
         ),
-        right: (
-          <IconButton name="ellipsis-vertical" size="xl" />
-        ),
+        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );
 }
 
-export function SingleMessageFooter({sender_uuid, receiver_uuid}:{sender_uuid:string, receiver_uuid:string}) {
-  const [text, setText] = useState("")
+export function SingleMessageFooter({
+  sender_uuid,
+  receiver_uuid,
+}: {
+  sender_uuid: string;
+  receiver_uuid: string;
+}) {
+  const [text, setText] = useState("");
 
-  const utils = trpc.useUtils()
-  const {mutate: sendMessage, isLoading} = trpc.messages.send_text_message.useMutation({
-    onSuccess:()=>{
-      setText(""),
-      utils.messages.invalidate()
-    }, onError:(error)=>{
-      Toast.show({
-        text1: error.message,
-        swipeable: false,
-        type: "error",
-      });
-    }
-  })
-  function handleSubmit(){
+  const utils = trpc.useUtils();
+  const { mutate: sendMessage, isLoading } =
+    trpc.messages.send_text_message.useMutation({
+      onSuccess: () => {
+        setText(""), utils.messages.invalidate();
+      },
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          swipeable: false,
+          type: "error",
+        });
+      },
+    });
+  function handleSubmit() {
     sendMessage({
       sender_uuid,
       receiver_uuid,
-      message: text
-    })
+      message: text,
+    });
   }
-  const themeColor = useThemeColor()
+  const themeColor = useThemeColor();
   return (
     <HeaderWrapper
-      style={{ borderTopWidth: 1, borderBottomWidth:0, borderColor:themeColor.border }}
+      style={{
+        borderTopWidth: 1,
+        borderBottomWidth: 0,
+        borderColor: themeColor.border,
+      }}
       options={{
         center: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
             <Input
-            placeholder="Send a message..."
-            style={{ flexGrow:1 }}
-            value={text}
-            onChangeText={(value)=>setText(value)}
-          />
-          <IconButton name="send" size="xl" onPress={handleSubmit} disabled={isLoading}/>
+              placeholder="Send a message..."
+              style={{ flexGrow: 1 }}
+              value={text}
+              onChangeText={(value) => setText(value)}
+              onSubmitEditing={handleSubmit}
+            />
+            <IconButton
+              name="send"
+              size="xl"
+              onPress={handleSubmit}
+              disabled={isLoading}
+            />
           </View>
-        )
+        ),
       }}
     />
   );

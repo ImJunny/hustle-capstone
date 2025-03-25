@@ -16,6 +16,7 @@ import {
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
+import { MessagePreview } from "@/server/actions/message-actions";
 
 export default function MessagesScreen() {
   const { user } = useAuthData();
@@ -50,16 +51,16 @@ export default function MessagesScreen() {
       </>
     );
   }
-  console.log(data);
+
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="base">
+      <ScrollView style={{ flex: 1 }} color="background">
         <View>
           {data.map((message, i) => (
             <Message
               key={i}
-              data={message}
+              data={message as unknown as MessagePreview}
               style={{
                 borderBottomWidth: i != exampleMessages.length - 1 ? 1 : 0,
               }}

@@ -6,7 +6,7 @@ import View, { ViewProps } from "../ui/View";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TMessage } from "@/server/utils/example-data";
 import { router } from "expo-router";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceStrict, formatDistanceToNow } from "date-fns";
 import { MessagePreview } from "@/server/actions/message-actions";
 
 type MessageProps = {
@@ -16,12 +16,13 @@ type MessageProps = {
 export default function Message({ data }: MessageProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const formattedTime = formatDistanceToNow(
+    new Date(data.last_message_timestamp)
+  );
 
   return (
     <TouchableOpacity
-      onPress={() =>
-        router.push(`/message/${data.receiver_display_name} ` as any)
-      }
+      onPress={() => router.push(`/message/${data.receiver_uuid} ` as any)}
     >
       <View style={[styles.entry, { borderColor }]} color="background">
         <Image
@@ -32,10 +33,10 @@ export default function Message({ data }: MessageProps) {
                 }
               : require("@/assets/images/default-avatar-icon.jpg")
           }
-          style={{ borderRadius: 999, width: 50, height: 50 }}
+          style={{ borderRadius: 999, width: 60, height: 60 }}
         />
         <View style={styles.entryContent}>
-          <Text size="lg" weight="bold" style={styles.title}>
+          <Text size="lg" weight="bold">
             {data.receiver_display_name}
           </Text>
           <Text
@@ -44,12 +45,16 @@ export default function Message({ data }: MessageProps) {
             color="foreground"
             numberOfLines={1}
             ellipsizeMode="tail"
-            style={styles.title}
           >
             {data.last_message}
           </Text>
-          <Text size="sm" weight="normal" color="muted" style={styles.title}>
-            {/* {formatDistanceToNow(new Date(data.last_message_at!))} */}
+          <Text
+            size="sm"
+            weight="normal"
+            color="muted"
+            style={{ marginTop: 8 }}
+          >
+            {formattedTime} ago
           </Text>
         </View>
       </View>
@@ -61,9 +66,10 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    height: 84,
     borderBottomWidth: 1,
+    paddingVertical: 20,
     paddingHorizontal: 16,
+    gap: 16,
   },
   entryImage: {
     marginLeft: 12,
@@ -71,14 +77,5 @@ const styles = StyleSheet.create({
   },
   entryContent: {
     flex: 1,
-  },
-  badgeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 4,
-    gap: 8,
-  },
-  title: {
-    paddingHorizontal: 10,
   },
 });

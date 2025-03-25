@@ -167,11 +167,23 @@ export async function getMessagePreviews(user_uuid: string) {
       })
       .from(chats)
       .innerJoin(messages, eq(chats.last_message_uuid, messages.uuid))
-      .innerJoin(users, ne(users.uuid, user_uuid))
-      .where(eq(messages.sender_uuid, users.uuid));
+      .innerJoin(
+        users,
+        and(
+          ne(users.uuid, user_uuid),
+          or(
+            eq(users.uuid, messages.sender_uuid),
+            eq(users.uuid, messages.receiver_uuid)
+          ),
+          or(
+            eq(messages.sender_uuid, user_uuid),
+            eq(messages.receiver_uuid, user_uuid)
+          )
+        )
+      );
     return result;
   } catch (error) {
-    console.error("Error fetching message previews:", error);
+    console.log(error);
     throw new Error("Failed to get message previews.");
   }
 }

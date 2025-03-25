@@ -1,5 +1,5 @@
 import { db } from "@/drizzle/db";
-import { accepted_jobs } from "../../drizzle/schema";
+import { initiated_jobs } from "@/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 
 // Apply for a job
@@ -15,9 +15,10 @@ export const applyForJob = async (
       throw new Error("You have already applied for this job.");
     }
 
-    await db.insert(accepted_jobs).values({
-      user_uuid,
-      job_uuid,
+    await db.insert(initiated_jobs).values({
+      worker_uuid: user_uuid,
+      job_post_uuid: job_uuid,
+      progress_type: "accepted",
     });
 
     return {
@@ -38,11 +39,11 @@ export const doesJobApplicationExist = async (
   try {
     const result = await db
       .select()
-      .from(accepted_jobs)
+      .from(initiated_jobs)
       .where(
         and(
-          eq(accepted_jobs.user_uuid, user_uuid),
-          eq(accepted_jobs.job_uuid, job_uuid)
+          eq(initiated_jobs.worker_uuid, user_uuid),
+          eq(initiated_jobs.job_post_uuid, job_uuid)
         )
       )
       .limit(1);
@@ -62,8 +63,8 @@ export const getUserJobApplications = async (user_uuid: string) => {
   try {
     const result = await db
       .select()
-      .from(accepted_jobs)
-      .where(eq(accepted_jobs.user_uuid, user_uuid));
+      .from(initiated_jobs)
+      .where(eq(initiated_jobs.worker_uuid, user_uuid));
 
     return result;
   } catch (error) {

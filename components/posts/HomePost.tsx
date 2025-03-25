@@ -152,7 +152,7 @@ export default function HomePost({ data }: { data: THomePost }) {
           </View>
         </View>
 
-        <Pressable onPress={() => router.push(`/profile` as any)}>
+        <Pressable onPress={() => router.push(`/profile/${data.user_uuid}` as any)}>
           <View style={styles.bottomContainer}>
             <Image
               source={

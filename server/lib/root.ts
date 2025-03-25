@@ -3,6 +3,7 @@ import { onboardingRouter } from "../routers/onboarding-router";
 import { postRouter } from "../routers/post-router";
 import { userRouter } from "../routers/user-router";
 import { jobRouter } from "../routers/job-router";
+import { messageRouter } from "../routers/message-router";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
@@ -11,5 +12,6 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   job: jobRouter,
   address: addressRouter,
+  messages: messageRouter,
 });
 export type AppRouter = typeof appRouter;

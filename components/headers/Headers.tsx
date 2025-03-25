@@ -10,6 +10,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ViewStyle,
+  Image,
 } from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
 import { useState } from "react";
@@ -22,6 +23,8 @@ import z from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
+import Toast from "react-native-toast-message";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface IndexHeaderProps {
   index: number;
@@ -237,7 +240,6 @@ export function MessagesHeader() {
               Messages
             </Text>
           ),
-          right: <IconButton name="ellipsis-vertical" flippedX />,
         }}
       />
       <HeaderWrapper
@@ -509,10 +511,9 @@ export function ReviewHeader({ username }: { username: string }) {
   );
 }
 
-export function SingleMessageHeader({ messenger }: { messenger: string }) {
+export function SingleMessageHeader({ messenger, avatarUrl }: { messenger: string, avatarUrl:string | null }) {
   return (
     <HeaderWrapper
-      style={{ borderBottomWidth: 0 }}
       options={{
         left: (
           <IconButton
@@ -529,11 +530,16 @@ export function SingleMessageHeader({ messenger }: { messenger: string }) {
               gap: 12,
             }}
           >
-            <ImagePlaceholder
-                          width={40}
-                          height={40}
-                          style={{ borderRadius: 999 }}
-                        />
+               <Image
+            source={
+              avatarUrl
+                ? {
+                    uri: avatarUrl,
+                  }
+                : require("@/assets/images/default-avatar-icon.jpg")
+            }
+            style={{ borderRadius: 999, width: 40, height: 40 }}
+          />
           <Text weight="semibold" size="xl">
             {messenger}
           </Text>
@@ -547,20 +553,45 @@ export function SingleMessageHeader({ messenger }: { messenger: string }) {
   );
 }
 
-export function SingleMessageFooter() {
+export function SingleMessageFooter({sender_uuid, receiver_uuid}:{sender_uuid:string, receiver_uuid:string}) {
+  const [text, setText] = useState("")
+
+  const utils = trpc.useUtils()
+  const {mutate: sendMessage, isLoading} = trpc.messages.send_text_message.useMutation({
+    onSuccess:()=>{
+      setText(""),
+      utils.messages.invalidate()
+    }, onError:(error)=>{
+      Toast.show({
+        text1: error.message,
+        swipeable: false,
+        type: "error",
+      });
+    }
+  })
+  function handleSubmit(){
+    sendMessage({
+      sender_uuid,
+      receiver_uuid,
+      message: text
+    })
+  }
+  const themeColor = useThemeColor()
   return (
     <HeaderWrapper
-      style={{ borderBottomWidth: 0, position: "absolute", bottom: 0, left: 0, right: 0 }}
+      style={{ borderTopWidth: 1, borderBottomWidth:0, borderColor:themeColor.border }}
       options={{
         center: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
             <Input
             placeholder="Send a message..."
-            style={{ width: "90%" }}
+            style={{ flexGrow:1 }}
+            value={text}
+            onChangeText={(value)=>setText(value)}
           />
-          <IconButton name="send" size="xl" />
+          <IconButton name="send" size="xl" onPress={handleSubmit} disabled={isLoading}/>
           </View>
-        ),
+        )
       }}
     />
   );

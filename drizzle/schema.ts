@@ -144,6 +144,19 @@ export const messages = app_schema.table("messages", {
   receiver_uuid: uuid("receiver_uuid").references(() => users.uuid),
   message: text("message").notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  type: text("type")
+    .references(() => message_types.name)
+    .default("text"),
+  post_uuid: uuid("post_uuid").references(() => posts.uuid),
+});
+
+export const chats = app_schema.table("chats", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  last_message_uuid: uuid("last_message_uuid")
+    .references(() => messages.uuid)
+    .notNull(),
 });
 
 // TABLES FOR TYPES
@@ -174,3 +187,8 @@ export const onboarding_phase_types = app_schema.table(
     name: text("name").unique().notNull(),
   }
 );
+
+export const message_types = app_schema.table("message_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});

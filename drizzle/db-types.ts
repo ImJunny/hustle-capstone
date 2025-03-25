@@ -15,3 +15,4 @@ export const onboardingPhaseTypes = [
   "profile image",
   "completed",
 ];
+export const messageTypes = ["text", "post", "progress"] as const;

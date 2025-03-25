@@ -11,6 +11,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { format, isToday, isThisYear } from "date-fns";
 import TrackWorkPost from "@/components/posts/TrackWorkPost";
+import { trpc } from "@/server/lib/trpc-client";
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -32,47 +33,45 @@ const formatTimestamp = (timestamp: string) => {
 };
 
 export default function MessageScreen() {
-  const { id } = useLocalSearchParams();
-  console.log("MessageScreen id", id);
-  const msg = exampleMessages.find((msg) => msg.uuid === id);
+  const { uuid } = useLocalSearchParams();
+  
+  const {user} = useAuthData()
+  if (!user) return
+  const {data} = trpc.messages.get_chat_info.useQuery({sender_uuid: user.id as string, receiver_uuid:uuid as string })
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
-  if (!msg) {
+  if (!data) {
     return (<>
-    <Text>Message not found</Text>
+    <Text>Chat not found</Text>
     </>
     );
   }
 
   return (
       <>
-        <SingleMessageHeader messenger={msg?.messenger ?? ""}/>
-        {/* Job Detail Section - Only if is_job is true */}
-      {msg.is_job && (
-            <TrackWorkPost data = {exampleJobPosts[0]} style={{borderBottomColor: borderColor, borderBottomWidth: 1}}/>
-      )}
-        <View style={{ flex: 1 }} color="background">
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.messageContainer}>
-            {msg.messageHistory.map((history, index) => {
-              const formattedTimestamp = formatTimestamp(history.timestamp);
+        <SingleMessageHeader avatarUrl={data.avatar_url} messenger={`@${data.receiver_info.receiver_username}`}/>
 
-              return (
-                <View key={index} style={styles.messageWrapper}>
-                  {/* Timestamp above the message */}
-                  <Text style={styles.timestampText}>{formattedTimestamp}</Text>
-                  <View style={history.sent ? [styles.sentMessage, {backgroundColor:themeColor.foreground}] 
-                  : [styles.receivedMessage,{backgroundColor: themeColor["background-variant"]}]}>
-                    <Text style={styles.messageText} color={history.sent ? "background" : "foreground"}>{history.message}</Text>
+          <ScrollView contentContainerStyle={styles.scrollContainer} style={{flex:1}} color="background">
+            <View style={styles.messageContainer}>
+              {data.chats.map((chat, index) => {
+                const formattedTimestamp = formatTimestamp(chat.timestamp);
+
+                return (
+                  <View key={index} style={styles.messageWrapper}>
+                    {/* Timestamp above the message */}
+                    <Text style={styles.timestampText}>{formattedTimestamp}</Text>
+                    <View style={chat.type==="sender" ? [styles.sentMessage, {backgroundColor:themeColor.foreground}] 
+                    : [styles.receivedMessage,{backgroundColor: themeColor["background-variant"]}]}>
+                      <Text style={styles.messageText} color={chat.type==="sender" ? "background" : "foreground"}>{chat.message}</Text>
+                    </View>
                   </View>
-                </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-      </View>
-      <SingleMessageFooter />
+                );
+              })}
+            </View>
+          </ScrollView>
+
+      <SingleMessageFooter sender_uuid={user.id} receiver_uuid={data.receiver_info.receiver_uuid}/>
     </>
   );
 }
@@ -108,16 +107,5 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingBottom: 20, // To prevent the last item from getting hidden
-  },
-  jobDetail: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 84,
-    borderBottomWidth: 1,
-    paddingHorizontal: 16,
-  },
-  jobDetailImage: {
-    marginLeft: 12,
-    borderRadius: 4,
   },
 });

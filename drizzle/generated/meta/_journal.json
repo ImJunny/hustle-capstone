@@ -29,6 +29,20 @@
       "when": 1742863346854,
       "tag": "0003_furry_weapon_omega",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1742874878890,
+      "tag": "0004_vengeful_enchantress",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1742884658410,
+      "tag": "0005_slippery_black_cat",
+      "breakpoints": true
     }
   ]
 }

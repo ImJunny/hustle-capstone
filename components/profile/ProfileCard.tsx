@@ -3,57 +3,63 @@ import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
+import { router } from "expo-router";
+import { Image } from "expo-image";
 import { UserData } from "@/server/actions/user-actions";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ProfileCard({ data }: { data: UserData }) {
-  const hasBio = data.bio!.length > 0;
-
+  const themeColor = useThemeColor();
+  const borderColor = themeColor.border;
   return (
-    <>
-      <View style={styles.profileCard} color="background">
-        <View style={styles.top}>
-          <View>
-            <ImagePlaceholder
-              width={96}
-              height={96}
-              style={{ borderRadius: 999 }}
-            />
-          </View>
+    <View style={[styles.profileCard, { borderColor }]} color="background">
+      <View style={styles.top}>
+        <View>
+          <Image
+            source={
+              data?.avatar_url
+                ? {
+                    uri: data.avatar_url,
+                  }
+                : require("@/assets/images/default-avatar-icon.jpg")
+            }
+            style={{ borderRadius: 999, width: 96, height: 96 }}
+          />
+        </View>
 
-          <View style={styles.topInnerRight}>
-            <Text color="foreground" size="xl" weight="semibold">
-              {data.display_name}
+        <View style={styles.topInnerRight}>
+          <Text color="foreground" size="xl" weight="semibold">
+            {data?.display_name}
+          </Text>
+          <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+            <Icon name={"star"} color="foreground" />
+            <Icon name={"star"} color="foreground" />
+            <Icon name={"star"} color="foreground" />
+            <Icon name={"star"} color="foreground" />
+            <Icon name={"star-half"} color="foreground" />
+            <Text size="lg" style={{ textDecorationLine: "underline" }}>
+              7 Reviews
             </Text>
-            <View
-              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={{ flex: 1, height: 32 }}
+              type="variant"
+              onPress={() => {router.push(`/message/${data.uuid}` as any)}}
             >
-              <Icon name={"star"} color="foreground" />
-              <Icon name={"star"} color="foreground" />
-              <Icon name={"star"} color="foreground" />
-              <Icon name={"star"} color="foreground" />
-              <Icon name={"star-half"} color="foreground" />
-              <Text size="lg" style={{ textDecorationLine: "underline" }}>
-                7 Reviews
-              </Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                style={{ flex: 1, height: 32 }}
-                type="variant"
-                onPress={() => {}}
-              >
-                Message
-              </Button>
-              <Button style={{ flex: 1, height: 32 }}>Follow</Button>
-            </View>
+              Message
+            </Button>
+            <Button style={{ flex: 1, height: 32 }}>Share</Button>
           </View>
         </View>
-        <Text color={hasBio ? "foreground" : "muted"} style={{ marginTop: 24 }}>
-          {hasBio ? data!.bio : "Add a biography in profile settings."}
-        </Text>
       </View>
-    </>
+      <Text
+        color={data?.bio ? "foreground" : "muted"}
+        style={{ marginTop: 24 }}
+      >
+        {data?.bio ? data!.bio : "Add a biography in profile settings."}
+      </Text>
+    </View>
   );
 }
 
@@ -61,8 +67,8 @@ const styles = StyleSheet.create({
   profileCard: {
     paddingVertical: 36,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    minHeight: 230,
+    borderBottomWidth: 1,
+    marginBottom: 16,
   },
   top: {
     flexDirection: "row",

@@ -1,0 +1,1 @@
+DROP TABLE "app"."accepted_jobs" CASCADE;

@@ -15,6 +15,13 @@
       "when": 1742799945553,
       "tag": "0001_robust_rawhide_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742862688075,
+      "tag": "0002_brainy_white_queen",
+      "breakpoints": true
     }
   ]
 }

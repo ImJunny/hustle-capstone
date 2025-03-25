@@ -55,22 +55,6 @@ export const posts = app_schema.table("posts", {
     onDelete: "set null",
   }),
 });
-export const accepted_jobs = app_schema.table("accepted_jobs", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .default(sql`uuid_generate_v4()`),
-  user_uuid: uuid("user_uuid")
-    .references(() => users.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  job_uuid: uuid("job_uuid")
-    .references(() => posts.uuid, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-});
 
 export const post_tags = app_schema.table("post_tags", {
   uuid: uuid("uuid")

@@ -136,6 +136,16 @@ export const addresses = app_schema.table("addresses", {
   visible: boolean("visible").default(true),
 });
 
+export const messages = app_schema.table("messages", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  sender_uuid: uuid("sender_uuid").references(() => users.uuid),
+  receiver_uuid: uuid("receiver_uuid").references(() => users.uuid),
+  message: text("message").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

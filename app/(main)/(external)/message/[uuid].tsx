@@ -112,7 +112,7 @@ export default function MessageScreen() {
                     }
                   >
                     <Text
-                      size="lg"
+                      size="md"
                       color={
                         chat.type === "sender" ? "background" : "foreground"
                       }

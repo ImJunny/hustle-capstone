@@ -67,8 +67,6 @@ export default function MessageScreen() {
   }, [messages]);
 
   useEffect(() => {
-    if (data) setMessages(data.chats);
-
     channel.on("broadcast", { event: "message" }, (payload) => {
       setMessages((prev: any) => [...prev, payload.payload]);
     });

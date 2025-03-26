@@ -63,20 +63,13 @@ export default function MessageScreen() {
   }, [data]);
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-
-  useEffect(() => {
     channel.on("broadcast", { event: "message" }, (payload) => {
       setMessages((prev: any) => [...prev, payload.payload]);
     });
 
-    channel.subscribe(() => {
-      console.log("subscribed");
-    });
+    channel.subscribe();
 
     return () => {
-      console.log("left");
       channel.unsubscribe();
     };
   }, [channel]);

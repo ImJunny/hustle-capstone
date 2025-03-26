@@ -565,6 +565,7 @@ export function SingleMessageFooter({
   sender_uuid: string;
   receiver_uuid: string;
 }) {
+  const utils = trpc.useUtils();
   const [text, setText] = useState("");
   const themeColor = useThemeColor();
   const channelName = [sender_uuid, receiver_uuid].sort().join(".");
@@ -572,6 +573,9 @@ export function SingleMessageFooter({
 
   const { mutate: sendMessage, isLoading } =
     trpc.messages.send_text_message.useMutation({
+      onSuccess: () => {
+        utils.messages.get_message_previews.invalidate();
+      },
       onError: (error) => {
         Toast.show({
           text1: error.message,
@@ -591,7 +595,6 @@ export function SingleMessageFooter({
     };
 
     // Broadcast message to the channel
-    console.log(newMessage);
     channel.send({
       type: "broadcast",
       event: "message",

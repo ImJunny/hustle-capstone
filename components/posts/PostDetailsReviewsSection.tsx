@@ -26,7 +26,7 @@ export default function PostDetailsReviewsSection() {
       </View>
       <View style={{ flexDirection: "row", marginBottom: 15 }}>
         <View>
-          <Text size="3xl" weight="semibold">
+          <Text size="4xl" weight="semibold">
             4.5 out of 5
           </Text>
           <View

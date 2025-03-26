@@ -6,7 +6,7 @@ import {
   SingleMessageFooter,
   SingleMessageHeader,
 } from "@/components/headers/Headers";
-import { StyleSheet } from "react-native";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -14,6 +14,7 @@ import { format, isToday, isThisYear } from "date-fns";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
+import { Platform } from "react-native";
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -90,11 +91,10 @@ export default function MessageScreen() {
         avatarUrl={data.avatar_url}
         messenger={`@${data.receiver_info.receiver_username}`}
       />
-
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         style={{ flex: 1 }}
-        color="base"
+        color="background"
       >
         <View style={styles.messageContainer}>
           {messages.map((message, index) => {
@@ -115,21 +115,6 @@ export default function MessageScreen() {
                         : "flex-start",
                   }}
                 >
-                  {message.sender_uuid !== user.id && (
-                    <View
-                      style={{
-                        borderBottomWidth: 8,
-                        borderLeftWidth: 6,
-                        width: 0,
-                        height: 0,
-                        marginRight: -0.5,
-                        borderBottomColor:
-                          message.sender_uuid === user.id
-                            ? themeColor.foreground
-                            : themeColor["background-variant"],
-                      }}
-                    />
-                  )}
                   <View
                     style={[
                       styles.message,
@@ -154,28 +139,12 @@ export default function MessageScreen() {
                       {message.message}
                     </Text>
                   </View>
-                  {message.sender_uuid === user.id && (
-                    <View
-                      style={{
-                        borderBottomWidth: 8,
-                        borderRightWidth: 6,
-                        width: 0,
-                        height: 0,
-                        marginLeft: -0.5,
-                        borderBottomColor:
-                          message.sender_uuid === user.id
-                            ? themeColor.foreground
-                            : themeColor["background-variant"],
-                      }}
-                    />
-                  )}
                 </View>
               </View>
             );
           })}
         </View>
       </ScrollView>
-
       <SingleMessageFooter
         sender_uuid={user.id}
         receiver_uuid={data.receiver_info.receiver_uuid}

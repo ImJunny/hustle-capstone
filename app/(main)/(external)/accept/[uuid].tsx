@@ -50,7 +50,7 @@ export default function AcceptScreen() {
           }}
         >
           <Text weight="semibold" size="lg">
-            Link a service
+            Link a service (optional)
           </Text>
           <TouchableOpacity
             //   onPress={() => {
@@ -64,15 +64,15 @@ export default function AcceptScreen() {
             style={[styles.linker, { borderColor: themeColor.foreground }]}
           >
             <View>
-              <Text>No service linked</Text>
+              <Text>None</Text>
             </View>
 
             <Icon name="chevron-forward" size="xl" />
           </TouchableOpacity>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            You can link a service for the employer to view. Their review will
-            apply to both your account and service. You cannot unlink this
-            service after it has already been accepted.
+            You can link a service which can be viewed by the employer. Their
+            review will apply to both your account and service. You cannot
+            unlink this service after it has already been accepted.
           </Text>
         </View>
       </ScrollView>

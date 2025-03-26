@@ -630,7 +630,7 @@ export function SingleMessageFooter({
               name="send"
               size="xl"
               onPress={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || text === ""}
             />
           </View>
         ),

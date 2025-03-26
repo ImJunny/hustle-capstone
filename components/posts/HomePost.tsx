@@ -92,7 +92,7 @@ export default function HomePost({ data }: { data: THomePost }) {
               <View style={styles.descriptionContainer}>
                 <Text weight="semibold" size="4xl" color="white">
                   ${data.min_rate}
-                  {data.max_rate && "+"}
+                  {data.max_rate && " - " + `$${data.max_rate}`}
                 </Text>
                 <View style={styles.badgeRow}>
                   <Badge>

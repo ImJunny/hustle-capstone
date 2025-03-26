@@ -77,7 +77,7 @@ export default function Post({ type, data, style }: PostProps) {
 
             <Text weight="semibold" size="2xl" style={{ marginTop: 4 }}>
               ${data.min_rate}
-              {data.max_rate && "+"}
+              {data.max_rate && " - " + `$${data.max_rate}`}
             </Text>
 
             <View style={styles.badgeRow}>

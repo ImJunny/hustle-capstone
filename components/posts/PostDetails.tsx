@@ -40,14 +40,40 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   if (isLoading) {
     return (
       <>
-        <BackHeader />
+        <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
+          <View
+            style={{
+              borderTopRightRadius: 999,
+              borderBottomRightRadius: 999,
+              paddingVertical: 8,
+              paddingLeft: 8,
+              paddingRight: 16,
+              marginTop: 4,
+            }}
+          >
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+          </View>
+        </View>
         <LoadingView color="background" />
       </>
     );
   } else if (!data) {
     return (
       <>
-        <BackHeader />
+        <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
+          <View
+            style={{
+              borderTopRightRadius: 999,
+              borderBottomRightRadius: 999,
+              paddingVertical: 8,
+              paddingLeft: 8,
+              paddingRight: 16,
+              marginTop: 4,
+            }}
+          >
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+          </View>
+        </View>
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >

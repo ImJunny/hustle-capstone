@@ -1,10 +1,8 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
-import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import { ProfileHeader, ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";

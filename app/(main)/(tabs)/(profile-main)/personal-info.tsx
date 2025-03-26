@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import LoadingView from "@/components/ui/LoadingView";
-import { BackHeader } from "@/components/headers/Headers";
+import { BackHeader, SimpleHeader } from "@/components/headers/Headers";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 
@@ -32,18 +32,19 @@ export default function PersonalInfo() {
 
   return (
     <>
-      <BackHeader />
+      <SimpleHeader title="Personal information" />
       <View style={styles.container} color="background">
-        <Text weight="bold" size="lg">
-          Personal Information
-        </Text>
         <View style={styles.infoEntry}>
-          <Text weight="bold">Email:</Text>
-          <Text>{fetchedPersonalInfo.email}</Text>
+          <Text weight="semibold" size="lg">
+            Email
+          </Text>
+          <Text color="muted">{fetchedPersonalInfo.email}</Text>
         </View>
         <View style={styles.infoEntry}>
-          <Text weight="bold">Account Created:</Text>
-          <Text>{fetchedPersonalInfo.createdAt}</Text>
+          <Text weight="semibold" size="lg">
+            Account Created
+          </Text>
+          <Text color="muted">{fetchedPersonalInfo.createdAt}</Text>
         </View>
       </View>
     </>

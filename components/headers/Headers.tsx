@@ -598,11 +598,11 @@ export function SingleMessageFooter({
       payload: newMessage,
     });
 
-    // sendMessage({
-    //   sender_uuid,
-    //   receiver_uuid,
-    //   message: newMessage.message,
-    // });
+    sendMessage({
+      sender_uuid,
+      receiver_uuid,
+      message: newMessage.message,
+    });
 
     setText("");
   }

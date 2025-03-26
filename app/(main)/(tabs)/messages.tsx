@@ -55,7 +55,7 @@ export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="background">
+      <ScrollView style={{ flex: 1 }} color="base">
         <View>
           {data.map((message, i) => (
             <Message

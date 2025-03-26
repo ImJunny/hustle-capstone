@@ -114,7 +114,7 @@ export default function HomePost({ data }: { data: THomePost }) {
                     </Text>
                   </Badge>
                 </View>
-                <Text numberOfLines={3} ellipsizeMode="tail" color="muted-dark">
+                <Text numberOfLines={3} ellipsizeMode="tail" color="white">
                   {data.description}
                 </Text>
               </View>

@@ -96,7 +96,7 @@ export default function AddressSubmitButton({
 
   return (
     <Button
-      style={{ marginLeft: "auto", height: 40 }}
+      style={{ marginLeft: "auto" }}
       onPress={handleSubmit(handleSave)}
       disabled={isLoading}
     >

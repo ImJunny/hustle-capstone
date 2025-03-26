@@ -33,21 +33,13 @@ export default function PostDetailsDescriptionSection({
     addSuffix: true,
   });
 
-  const { data: isAccepted, isLoading } = trpc.job.is_accepted.useQuery({
-    user_uuid: user?.id ?? "",
-    job_uuid: data.uuid,
-  });
-
-  const handleAcceptJob = () => {
-    router.push(
-      isAccepted
-        ? `/track/working/${data.uuid}`
-        : `/confirmation?job_uuid=${data.uuid}`
-    );
-  };
+  // const { data: isAccepted, isLoading } = trpc.job.is_accepted.useQuery({
+  //   user_uuid: user?.id ?? "",
+  //   job_uuid: data.uuid,
+  // });
 
   return (
-    <View style={[styles.section, { borderColor }]}>
+    <View style={[styles.section, { borderColor }]} color="background">
       <Text size="2xl" weight="semibold" style={{ marginVertical: 4 }}>
         {data.title}
       </Text>
@@ -84,19 +76,6 @@ export default function PostDetailsDescriptionSection({
           <Text color="muted">Due {formattedDueDate}</Text>
         )}
       </View>
-
-      <View style={styles.actionsRow}>
-        <IconButton name="add-circle-outline" size="2xl" />
-        <IconButton name="chatbubble-outline" size="2xl" flippedX />
-        <IconButton name="paper-plane-outline" size="2xl" />
-        <Button onPress={handleAcceptJob} style={{ marginLeft: "auto" }}>
-          {data.type === "work"
-            ? isAccepted
-              ? "Manage job"
-              : "Accept job"
-            : "Hire service"}
-        </Button>
-      </View>
     </View>
   );
 }
@@ -116,14 +95,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 40,
-  },
-  actionsRow: {
-    flexDirection: "row",
-    gap: 16,
-    paddingBottom: 16,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 16,
   },
   pageButton: {
     marginLeft: "auto",

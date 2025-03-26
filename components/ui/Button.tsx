@@ -13,6 +13,7 @@ type ButtonProps = {
   children: React.ReactNode;
   type?: "primary" | "secondary" | "variant" | "outline";
   isFullWidth?: boolean;
+  borderColor?: TColors;
 } & TouchableOpacityProps;
 
 export default function Button({
@@ -21,6 +22,7 @@ export default function Button({
   isFullWidth,
   style,
   disabled,
+  borderColor,
   ...props
 }: ButtonProps) {
   const themeColor = useThemeColor();
@@ -33,7 +35,12 @@ export default function Button({
       : themeColor["background-variant"];
 
   const textColor = type === "primary" ? "background" : "foreground";
-  const borderColor = type === "outline" ? themeColor["border"] : "transparent";
+  const border_Color =
+    type === "outline" && borderColor
+      ? themeColor[borderColor]
+      : type === "outline"
+      ? themeColor["border"]
+      : "transparent";
   const borderWidth = type === "outline" ? 1 : 0;
 
   // If child is a string, use predefined Text component. Otherwise, use children as is.
@@ -59,7 +66,7 @@ export default function Button({
           opacity: disabled ? 0.5 : 1,
           backgroundColor: backgroundColor,
           alignSelf: isFullWidth ? "stretch" : "auto",
-          borderColor,
+          borderColor: border_Color,
           borderWidth,
         },
         style,
@@ -75,8 +82,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    height: 48,
-    paddingHorizontal: 20,
+    height: 44,
+    paddingHorizontal: 16,
     borderRadius: 8,
     alignSelf: "flex-start",
   },

@@ -73,7 +73,7 @@ export default function ChooseAddressScreen() {
         style={[styles.footer, { borderColor: themeColor.border }]}
       >
         <Button
-          style={{ alignSelf: "flex-end", height: 40 }}
+          style={{ alignSelf: "flex-end" }}
           disabled={!currentAddress}
           onPress={() => {
             router.back();

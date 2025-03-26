@@ -130,25 +130,24 @@ export function BackHeader() {
     />
   );
 }
-export function DetailsHeader({
-  sheetRef,
-}: {
-  sheetRef: React.RefObject<BottomSheetMethods>;
-}) {
+export function DetailsHeader() {
   return (
     <HeaderWrapper
+      color="transparent"
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        zIndex: 1,
+        borderBottomWidth: 0,
+      }}
       options={{
-        left: <IconButton name="arrow-back" onPress={() => router.back()} />,
-        right: (
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 18,
-            }}
-          >
+        left: (
+          <View style={{ borderRadius: 999, margin: 16 }} color="background">
             <IconButton
-              name="ellipsis-vertical"
-              onPress={() => sheetRef.current?.expand()}
+              name="arrow-back"
+              onPress={() => router.back()}
+              style={{ margin: 12 }}
             />
           </View>
         ),

@@ -12,6 +12,7 @@ export default function PostDetailsReviewsSection() {
 
   return (
     <View
+      color="background"
       style={{
         padding: 16,
         borderColor,

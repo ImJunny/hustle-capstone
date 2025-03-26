@@ -16,6 +16,12 @@ export default function View({
   ...otherProps
 }: ViewProps) {
   const backgroundColor = useThemeColor()[color];
+  const themeColor = useThemeColor();
 
-  return <NativeView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return (
+    <NativeView
+      style={[{ backgroundColor, borderColor: themeColor.border }, style]}
+      {...otherProps}
+    />
+  );
 }

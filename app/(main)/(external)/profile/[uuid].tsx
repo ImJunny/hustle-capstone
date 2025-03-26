@@ -10,11 +10,12 @@ import { ProfileHeader, ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
+import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
 
-export default function ProfileMainScreen() {
-  const {uuid} = useLocalSearchParams()
+export default function ProfileScreen() {
+  const { uuid } = useLocalSearchParams();
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
     uuid: uuid as string,
   });
@@ -52,6 +53,7 @@ export default function ProfileMainScreen() {
           <Text weight="semibold" size="2xl">
             No data to show
           </Text>
+          <Text>Create a post or complete jobs</Text>
         </View>
       </>
     );
@@ -59,31 +61,27 @@ export default function ProfileMainScreen() {
 
   return (
     <>
-      <ProfileHeader username={data?.username ?? ""} />
-      <ScrollView color="background">
-        <ProfileCard data={data as unknown as UserData} />
-        <View style={styles.contentContainer}>
-          {jobPosts && jobPosts.length > 0 && (
-            <ProfileSection
-              title="Jobs I need help with"
-              type="work"
-              posts={jobPosts as unknown as Post[]}
-            />
-          )}
-          {servicePosts && servicePosts.length > 0 && (
-            <ProfileSection
-              title="Services I provide"
-              type="hire"
-              posts={servicePosts as unknown as Post[]}
-            />
-          )}
-
-          {/* <TouchableOpacity style={styles.completedContainer}>
-            <Text size="xl" weight="semibold">
-              Completed • 0
-            </Text>
-            <Icon name="chevron-forward" size="xl" />
-          </TouchableOpacity> */}
+      <ProfileHeader username={data?.username!} />
+      <ScrollView>
+        <View color="base">
+          <ProfileCard data={data as unknown as UserData} />
+          <View>
+            {jobPosts && jobPosts.length > 0 && (
+              <ProfileSection
+                title="Jobs I need help with"
+                type="work"
+                posts={jobPosts as unknown as Post[]}
+              />
+            )}
+            <Separator />
+            {servicePosts && servicePosts.length > 0 && (
+              <ProfileSection
+                title="Services I provide"
+                type="hire"
+                posts={servicePosts as unknown as Post[]}
+              />
+            )}
+          </View>
         </View>
       </ScrollView>
     </>

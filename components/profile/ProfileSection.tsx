@@ -45,6 +45,6 @@ export default function ProfileSection({
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    borderRadius: 8,
+    paddingTop: 16,
   },
 });

@@ -84,7 +84,7 @@ export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
       all_chats.map(async (chat) => {
         // Initialize the object with basic fields
         const chatData: any = {
-          type: chat.sender_uuid === sender_uuid ? "sender" : "receiver",
+          sender_uuid: chat.sender_uuid,
           message: chat.message,
           timestamp: chat.created_at,
           chat_type: chat.type,
@@ -148,7 +148,7 @@ export type ChatsInfo = {
     receiver_avatar_url: string | null;
   };
   chats: {
-    type: "sender" | "receiver";
+    sender_uuid: string;
     message: string | null;
     timestamp: string | Date;
     chat_type: "text" | "post" | "progress";

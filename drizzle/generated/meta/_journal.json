@@ -43,6 +43,20 @@
       "when": 1742884658410,
       "tag": "0005_slippery_black_cat",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1742943715423,
+      "tag": "0006_broken_quasar",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742944045567,
+      "tag": "0007_windy_karnak",
+      "breakpoints": true
     }
   ]
 }

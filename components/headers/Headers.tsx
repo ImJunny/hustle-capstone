@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useMemo } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
@@ -25,6 +25,7 @@ import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import Toast from "react-native-toast-message";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { supabase } from "@/server/lib/supabase";
 
 interface IndexHeaderProps {
   index: number;
@@ -565,29 +566,47 @@ export function SingleMessageFooter({
   receiver_uuid: string;
 }) {
   const [text, setText] = useState("");
+  const themeColor = useThemeColor();
+  const channelName = [sender_uuid, receiver_uuid].sort().join(".");
+  const channel = useMemo(() => supabase.channel(channelName), [channelName]);
 
-  const utils = trpc.useUtils();
   const { mutate: sendMessage, isLoading } =
     trpc.messages.send_text_message.useMutation({
-      onSuccess: () => {
-        setText(""), utils.messages.invalidate();
-      },
       onError: (error) => {
         Toast.show({
           text1: error.message,
           swipeable: false,
-          type: "error",
         });
       },
     });
+
   function handleSubmit() {
-    sendMessage({
+    if (!text.trim()) return;
+
+    const newMessage = {
+      chat_type: "text",
       sender_uuid,
-      receiver_uuid,
       message: text,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Broadcast message to the channel
+    console.log(newMessage);
+    channel.send({
+      type: "broadcast",
+      event: "message",
+      payload: newMessage,
     });
+
+    // sendMessage({
+    //   sender_uuid,
+    //   receiver_uuid,
+    //   message: newMessage.message,
+    // });
+
+    setText("");
   }
-  const themeColor = useThemeColor();
+
   return (
     <HeaderWrapper
       style={{

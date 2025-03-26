@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import View from "@/components/ui/View";
 import ScrollView from "@/components/ui/ScrollView";
@@ -13,6 +13,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, isToday, isThisYear } from "date-fns";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
+import { supabase } from "@/server/lib/supabase";
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -44,6 +45,44 @@ export default function MessageScreen() {
   });
   const themeColor = useThemeColor();
 
+  const [messages, setMessages] = useState<
+    {
+      sender_uuid: string;
+      chat_type: string;
+      message: string;
+      timestamp: string;
+    }[]
+  >([]);
+
+  // Supabase Realtime
+  const channelName = [user.id, uuid].sort().join(".");
+  const channel = useMemo(() => supabase.channel(channelName), [channelName]);
+
+  useEffect(() => {
+    if (data) setMessages(data.chats);
+  }, []);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
+
+  useEffect(() => {
+    if (data) setMessages(data.chats);
+
+    channel.on("broadcast", { event: "message" }, (payload) => {
+      setMessages((prev: any) => [...prev, payload.payload]);
+    });
+
+    channel.subscribe(() => {
+      console.log("subscribed");
+    });
+
+    return () => {
+      console.log("left");
+      channel.unsubscribe();
+    };
+  }, [channel]);
+
   if (isLoading) {
     return <LoadingView />;
   } else if (!data) {
@@ -67,8 +106,8 @@ export default function MessageScreen() {
         color="base"
       >
         <View style={styles.messageContainer}>
-          {data.chats.map((chat, index) => {
-            const formattedTimestamp = formatTimestamp(chat.timestamp);
+          {messages.map((message, index) => {
+            const formattedTimestamp = formatTimestamp(message.timestamp);
 
             return (
               <View key={index} style={styles.messageWrapper}>
@@ -80,10 +119,12 @@ export default function MessageScreen() {
                     flexDirection: "row",
                     alignItems: "flex-end",
                     alignSelf:
-                      chat.type === "sender" ? "flex-end" : "flex-start",
+                      message.sender_uuid === user.id
+                        ? "flex-end"
+                        : "flex-start",
                   }}
                 >
-                  {chat.type === "receiver" && (
+                  {message.sender_uuid !== user.id && (
                     <View
                       style={{
                         borderBottomWidth: 8,
@@ -92,7 +133,7 @@ export default function MessageScreen() {
                         height: 0,
                         marginRight: -0.5,
                         borderBottomColor:
-                          chat.type === "sender"
+                          message.sender_uuid === user.id
                             ? themeColor.foreground
                             : themeColor["background-variant"],
                       }}
@@ -101,12 +142,12 @@ export default function MessageScreen() {
                   <View
                     style={[
                       styles.message,
-                      chat.type === "sender"
+                      message.sender_uuid === user.id
                         ? styles.sentMessage
                         : styles.receivedMessage,
                     ]}
                     color={
-                      chat.type === "sender"
+                      message.sender_uuid === user.id
                         ? "foreground"
                         : "background-variant"
                     }
@@ -114,13 +155,15 @@ export default function MessageScreen() {
                     <Text
                       size="md"
                       color={
-                        chat.type === "sender" ? "background" : "foreground"
+                        message.sender_uuid === user.id
+                          ? "background"
+                          : "foreground"
                       }
                     >
-                      {chat.message}
+                      {message.message}
                     </Text>
                   </View>
-                  {chat.type === "sender" && (
+                  {message.sender_uuid === user.id && (
                     <View
                       style={{
                         borderBottomWidth: 8,
@@ -129,7 +172,7 @@ export default function MessageScreen() {
                         height: 0,
                         marginLeft: -0.5,
                         borderBottomColor:
-                          chat.type === "sender"
+                          message.sender_uuid === user.id
                             ? themeColor.foreground
                             : themeColor["background-variant"],
                       }}

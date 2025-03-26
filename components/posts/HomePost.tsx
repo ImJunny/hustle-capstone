@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
@@ -35,6 +36,8 @@ export default function HomePost({ data }: { data: THomePost }) {
     else if (distance <= 50) return 50;
     return 51;
   }
+
+  const { user } = useAuthData();
 
   return (
     <View style={[styles.container, { height: postHeight }]} color="black">
@@ -152,7 +155,13 @@ export default function HomePost({ data }: { data: THomePost }) {
           </View>
         </View>
 
-        <Pressable onPress={() => router.push(`/profile/${data.user_uuid}` as any)}>
+        <Pressable
+          onPress={() => {
+            if (data.user_uuid === user?.id) {
+              router.push("/profile-main");
+            } else router.push(`/profile/${data.user_uuid}` as any);
+          }}
+        >
           <View style={styles.bottomContainer}>
             <Image
               source={

@@ -60,7 +60,7 @@ export default function MessageScreen() {
 
   useEffect(() => {
     if (data) setMessages(data.chats);
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     console.log(messages);

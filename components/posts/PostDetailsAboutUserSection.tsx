@@ -8,6 +8,7 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
+import { useAuthData } from "@/contexts/AuthContext";
 
 type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
@@ -16,6 +17,7 @@ type PostDetailsAboutUserProps = {
 export default function PostDetailsAboutUserSection({
   data,
 }: PostDetailsAboutUserProps) {
+  const { user } = useAuthData();
   return (
     <View
       style={{
@@ -27,7 +29,13 @@ export default function PostDetailsAboutUserSection({
           About the user
         </Text>
       </View>
-      <Pressable onPress={() => router.push(`/profile/user`)}>
+      <Pressable
+        onPress={() => {
+          if (data.user_uuid === user?.id) {
+            router.push("/profile-main");
+          } else router.push(`/profile/${data.user_uuid}` as any);
+        }}
+      >
         <View style={styles.bottomContainer}>
           <Image
             source={

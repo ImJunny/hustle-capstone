@@ -1,50 +1,64 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Image } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { TMessage } from "@/server/utils/example-data";
 import { router } from "expo-router";
+import { formatDistanceStrict, formatDistanceToNow } from "date-fns";
+import { MessagePreview } from "@/server/actions/message-actions";
 
 type MessageProps = {
-  data: TMessage;
+  data: MessagePreview;
 } & ViewProps;
 
 export default function Message({ data }: MessageProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
-  const { last_message, message, messenger, uuid, is_job } = data;
+  const formattedTime = formatDistanceToNow(
+    new Date(data.last_message_timestamp)
+  );
 
   return (
-    <TouchableOpacity onPress={()=>(router.push(`/message/${data.uuid} ` as any))}>
-    <View style={[styles.entry, { borderColor }]} color="background">
-      <View
-        style={{ borderRadius: 999, width: 50, height: 50 }}
-        color="muted"
-      />
-      <View style={styles.entryContent}>
-        <Text size="lg" weight="bold" color="foreground" style={styles.title}>
-          {messenger}
-        </Text>
-        <Text
-          size="md"
-          weight="normal"
-          color="foreground"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={styles.title}
-        >
-          {message}
-        </Text>
-        <Text size="sm" weight="normal" color="muted" style={styles.title}>
-          {last_message}
-        </Text>
+    <TouchableOpacity
+      onPress={() => router.push(`/message/${data.receiver_uuid} ` as any)}
+    >
+      <View style={[styles.entry, { borderColor }]} color="background">
+        <Image
+          source={
+            data?.receiver_avatar_url
+              ? {
+                  uri: data.receiver_avatar_url,
+                }
+              : require("@/assets/images/default-avatar-icon.jpg")
+          }
+          style={{ borderRadius: 999, width: 60, height: 60 }}
+        />
+        <View style={styles.entryContent}>
+          <Text size="lg" weight="bold">
+            {data.receiver_display_name}
+          </Text>
+          <Text
+            size="md"
+            weight="normal"
+            color="foreground"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {data.last_message}
+          </Text>
+          <Text
+            size="sm"
+            weight="normal"
+            color="muted"
+            style={{ marginTop: 8 }}
+          >
+            {formattedTime} ago
+          </Text>
+        </View>
       </View>
-      {is_job && (
-        <ImagePlaceholder width={70} height={70} style={styles.entryImage} />
-      )}
-    </View></TouchableOpacity>
+    </TouchableOpacity>
   );
 }
 
@@ -52,9 +66,10 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    height: 84,
     borderBottomWidth: 1,
+    paddingVertical: 20,
     paddingHorizontal: 16,
+    gap: 16,
   },
   entryImage: {
     marginLeft: 12,
@@ -62,14 +77,5 @@ const styles = StyleSheet.create({
   },
   entryContent: {
     flex: 1,
-  },
-  badgeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 4,
-    gap: 8,
-  },
-  title: {
-    paddingHorizontal: 10,
   },
 });

@@ -13,6 +13,10 @@ export default function Layout() {
         name="(external)/choose-address"
         options={{ animation: "ios_from_right" }}
       />
+      <Stack.Screen
+        name="(external)/message/[uuid]"
+        options={{ animation: "ios_from_right" }}
+      />
     </Stack>
   );
 }

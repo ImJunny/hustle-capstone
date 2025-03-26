@@ -1,59 +1,93 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
 import { useAuthData } from "@/contexts/AuthContext";
-import { ProfileHeader } from "@/components/headers/Headers";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
-import ProfileCard from "@/components/profile/ProfileCard";
+import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
-import Icon from "@/components/ui/Icon";
-import { useLocalSearchParams } from "expo-router";
+import { ProfileHeader, ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
+import { trpc } from "@/server/lib/trpc-client";
+import { Post } from "@/server/actions/post-actions";
+import { useLocalSearchParams } from "expo-router";
+import ProfileCard from "@/components/profile/ProfileCard";
 
-export default function ProfileScreen() {
-  return <></>;
-  // const { uuid } = useLocalSearchParams();
-  // const { user } = useAuthData();
-  // const { data, error, isLoading } = trpc.user.getUserData.useQuery({
-  //   uuid: user!.id, // change this later for actual users
-  // });
+export default function ProfileMainScreen() {
+  const {uuid} = useLocalSearchParams()
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
+    uuid: uuid as string,
+  });
+  const { data: posts, isLoading: postsLoading } =
+    trpc.post.get_user_posts.useQuery({
+      uuid: uuid as string,
+    });
+  const jobPosts = posts?.filter((post) => post.type === "work");
+  const servicePosts = posts?.filter((post) => post.type === "hire");
 
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>User not found.</Text>
-  //     </View>
-  //   );
-  // }
+  if (error) {
+    return (
+      <View>
+        <Text>User not found.</Text>
+      </View>
+    );
+  }
 
-  // if (isLoading) {
-  //   return <LoadingView />;
-  // }
+  if (isLoading || postsLoading) {
+    return <LoadingView />;
+  }
+  if (!posts || posts.length === 0) {
+    return (
+      <>
+        <ProfileHeader username={data?.username ?? ""} />
+        <ProfileCard data={data as unknown as UserData} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <Text weight="semibold" size="2xl">
+            No data to show
+          </Text>
+        </View>
+      </>
+    );
+  }
 
-  // return (
-  //   <>
-  //     <ProfileHeader username={data?.username ?? ""} />
-  //     <ScrollView color="background">
-  //       <ProfileCard data={data as UserData} />
-  //       <View style={styles.contentContainer}>
-  //         <ProfileSection title="Job posts" posts={[exampleJobPosts[0]]} />
-  //         <ProfileSection title="Services" posts={[exampleServicePosts[0]]} />
-  //         <TouchableOpacity style={styles.completedContainer}>
-  //           <Text size="xl" weight="semibold">
-  //             Completed • 5
-  //           </Text>
-  //           <Icon name="chevron-forward" size="xl" />
-  //         </TouchableOpacity>
-  //       </View>
-  //     </ScrollView>
-  //   </>
-  // );
+  return (
+    <>
+      <ProfileHeader username={data?.username ?? ""} />
+      <ScrollView color="background">
+        <ProfileCard data={data as unknown as UserData} />
+        <View style={styles.contentContainer}>
+          {jobPosts && jobPosts.length > 0 && (
+            <ProfileSection
+              title="Jobs I need help with"
+              type="work"
+              posts={jobPosts as unknown as Post[]}
+            />
+          )}
+          {servicePosts && servicePosts.length > 0 && (
+            <ProfileSection
+              title="Services I provide"
+              type="hire"
+              posts={servicePosts as unknown as Post[]}
+            />
+          )}
+
+          {/* <TouchableOpacity style={styles.completedContainer}>
+            <Text size="xl" weight="semibold">
+              Completed • 0
+            </Text>
+            <Icon name="chevron-forward" size="xl" />
+          </TouchableOpacity> */}
+        </View>
+      </ScrollView>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

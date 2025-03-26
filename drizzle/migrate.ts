@@ -3,6 +3,7 @@ import { db } from "./db";
 
 import {
   location_types,
+  message_types,
   onboarding_phase_types,
   progress_types,
   status_types,
@@ -14,6 +15,7 @@ import {
   progressTypes,
   statusTypes,
   tagTypes,
+  messageTypes,
 } from "./db-types";
 
 export async function runMigrations() {
@@ -40,6 +42,11 @@ export async function runMigrations() {
     for (const type of onboardingPhaseTypes)
       await db
         .insert(onboarding_phase_types)
+        .values({ name: type })
+        .onConflictDoNothing();
+    for (const type of messageTypes)
+      await db
+        .insert(message_types)
         .values({ name: type })
         .onConflictDoNothing();
 

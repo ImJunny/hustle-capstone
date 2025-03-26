@@ -94,29 +94,6 @@ export const post_images = app_schema.table("post_images", {
   }),
 });
 
-export const reviews = app_schema.table("reviews", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .default(sql`uuid_generate_v4()`),
-  type: text("type", { enum: ["work", "hire"] }).notNull(),
-  reviewer_uuid: uuid("reviewer_uuid").references(() => users.uuid),
-  reviewee_uuid: uuid("reviewee_uuid").references(() => users.uuid),
-  job_post_uuid: uuid("job_uuid").references(() => posts.uuid, {
-    onDelete: "cascade",
-  }),
-  service_post_uuid: uuid("service_uuid").references(() => posts.uuid, {
-    onDelete: "cascade",
-  }),
-});
-
-export const transactions = app_schema.table("transactions", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .default(sql`uuid_generate_v4()`),
-  user_uuid: uuid("user_uuid").references(() => users.uuid),
-  post_uuid: uuid("post_uuid").references(() => posts.uuid),
-});
-
 export const addresses = app_schema.table("addresses", {
   uuid: uuid("uuid")
     .primaryKey()
@@ -134,6 +111,29 @@ export const addresses = app_schema.table("addresses", {
     srid: 4326,
   }).notNull(),
   visible: boolean("visible").default(true),
+});
+
+export const messages = app_schema.table("messages", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  sender_uuid: uuid("sender_uuid").references(() => users.uuid),
+  receiver_uuid: uuid("receiver_uuid").references(() => users.uuid),
+  message: text("message").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  type: text("type")
+    .references(() => message_types.name)
+    .default("text"),
+  post_uuid: uuid("post_uuid").references(() => posts.uuid),
+});
+
+export const chats = app_schema.table("chats", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  last_message_uuid: uuid("last_message_uuid")
+    .references(() => messages.uuid)
+    .notNull(),
 });
 
 // TABLES FOR TYPES
@@ -164,3 +164,8 @@ export const onboarding_phase_types = app_schema.table(
     name: text("name").unique().notNull(),
   }
 );
+
+export const message_types = app_schema.table("message_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});

@@ -16,3 +16,4 @@ export const onboardingPhaseTypes = [
   "completed",
 ];
 export const messageTypes = ["text", "post", "progress"] as const;
+export const reviewerTypes = ["employer", "employee"] as const;

@@ -78,6 +78,13 @@
       "when": 1743054353749,
       "tag": "0010_exotic_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1743076641841,
+      "tag": "0011_secret_outlaw_kid",
+      "breakpoints": true
     }
   ]
 }

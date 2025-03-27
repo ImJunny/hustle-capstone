@@ -8,6 +8,7 @@ import {
   progress_types,
   status_types,
   tag_types,
+  reviewer_types,
 } from "@/drizzle/schema";
 import {
   locationTypes,
@@ -16,6 +17,7 @@ import {
   statusTypes,
   tagTypes,
   messageTypes,
+  reviewerTypes,
 } from "./db-types";
 
 export async function runMigrations() {
@@ -47,6 +49,11 @@ export async function runMigrations() {
     for (const type of messageTypes)
       await db
         .insert(message_types)
+        .values({ name: type })
+        .onConflictDoNothing();
+    for (const type of reviewerTypes)
+      await db
+        .insert(reviewer_types)
         .values({ name: type })
         .onConflictDoNothing();
 

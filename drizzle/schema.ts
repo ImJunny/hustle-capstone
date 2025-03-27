@@ -103,7 +103,9 @@ export const addresses = app_schema.table("addresses", {
   uuid: uuid("uuid")
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  user_uuid: uuid("user_uuid").references(() => users.uuid),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid)
+    .notNull(),
   title: text("title"),
   address_line_1: text("address_line_1"),
   address_line_2: text("address_line_2"),
@@ -122,8 +124,12 @@ export const messages = app_schema.table("messages", {
   uuid: uuid("uuid")
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  sender_uuid: uuid("sender_uuid").references(() => users.uuid),
-  receiver_uuid: uuid("receiver_uuid").references(() => users.uuid),
+  sender_uuid: uuid("sender_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  receiver_uuid: uuid("receiver_uuid")
+    .references(() => users.uuid)
+    .notNull(),
   message: text("message").notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
   type: text("type")
@@ -139,6 +145,28 @@ export const chats = app_schema.table("chats", {
   last_message_uuid: uuid("last_message_uuid")
     .references(() => messages.uuid)
     .notNull(),
+});
+
+export const reviews = app_schema.table("reviews", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  reviewer_uuid: uuid("reviewer_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  reviewee_uuid: uuid("reviewee_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  review: text("review"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  reviewer_type: text("type")
+    .references(() => reviewer_types.name)
+    .notNull(),
+  job_uuid: uuid("job_uuid")
+    .references(() => posts.uuid)
+    .notNull(),
+  service_uuid: uuid("job_uuid").references(() => posts.uuid),
+  rating: integer("rating").notNull(),
 });
 
 // TABLES FOR TYPES
@@ -171,6 +199,11 @@ export const onboarding_phase_types = app_schema.table(
 );
 
 export const message_types = app_schema.table("message_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});
+
+export const reviewer_types = app_schema.table("reviewer_types", {
   id: serial("id").primaryKey(),
   name: text("name").unique().notNull(),
 });

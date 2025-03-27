@@ -7,7 +7,7 @@ import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { Address } from "@/server/actions/address-actions";
@@ -103,30 +103,32 @@ function AddressEntry({
 }: AddressEntryProps) {
   const themeColor = useThemeColor();
   return (
-    <View
-      color="background"
-      style={[styles.entry, { borderColor: themeColor.border }]}
-    >
-      <View>
-        <Text weight="semibold" style={{ marginBottom: 4 }}>
-          {address.title}
-        </Text>
-        <Text>
-          {address.address_line_1}
-          {address.address_line_2 && `, ${address.address_line_2}`}
-        </Text>
-        <Text>
-          {address.city}, {address.state}, {address.zip_code}
-        </Text>
-        <Text>{address.country}</Text>
-      </View>
+    <TouchableOpacity onPress={() => setCurrentAddress(address)}>
+      <View
+        color="background"
+        style={[styles.entry, { borderColor: themeColor.border }]}
+      >
+        <View>
+          <Text weight="semibold" style={{ marginBottom: 4 }}>
+            {address.title}
+          </Text>
+          <Text>
+            {address.address_line_1}
+            {address.address_line_2 && `, ${address.address_line_2}`}
+          </Text>
+          <Text>
+            {address.city}, {address.state}, {address.zip_code}
+          </Text>
+          <Text>{address.country}</Text>
+        </View>
 
-      <RadioButton
-        onPress={() => setCurrentAddress(address)}
-        value={address.uuid}
-        selected={currentAddress?.uuid}
-      />
-    </View>
+        <RadioButton
+          onPress={() => setCurrentAddress(address)}
+          value={address.uuid}
+          selected={currentAddress?.uuid}
+        />
+      </View>
+    </TouchableOpacity>
   );
 }
 

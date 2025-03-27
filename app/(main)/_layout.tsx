@@ -25,6 +25,10 @@ export default function Layout() {
         name="(external)/post/[uuid]"
         options={{ animation: "fade_from_bottom" }}
       />
+      <Stack.Screen
+        name="(external)/choose-service"
+        options={{ animation: "ios_from_right" }}
+      />
     </Stack>
   );
 }

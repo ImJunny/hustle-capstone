@@ -43,10 +43,10 @@ export default function PostDetailsDescriptionSection({
       <Text size="2xl" weight="semibold" style={{ marginVertical: 4 }}>
         {data.title}
       </Text>
-      <Text weight="semibold" size="4xl">
+      {/* <Text weight="semibold" size="4xl">
         ${data.min_rate}
         {data.max_rate && " - " + `$${data.max_rate}`}
-      </Text>
+      </Text> */}
       <View style={styles.badgeRow}>
         <Badge>
           <Text

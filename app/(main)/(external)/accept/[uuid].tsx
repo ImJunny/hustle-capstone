@@ -6,11 +6,25 @@ import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { Post } from "@/server/actions/post-actions";
+import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
+  const [service, setService] = useState<Post | null>(null);
+
+  const { selected_service } = useLocalSearchParams();
+  useEffect(() => {
+    if (selected_service) {
+      const parsedService = JSON.parse(selected_service as string) as Post;
+      setService(parsedService);
+      // setValue("address_uuid", parsedAddress.uuid);
+    }
+  }, [selected_service]);
+
   return (
     <>
       <SimpleHeader title="Accept job" />
@@ -53,18 +67,24 @@ export default function AcceptScreen() {
             Link a service (optional)
           </Text>
           <TouchableOpacity
-            //   onPress={() => {
-            //     router.push({
-            //       pathname: "/choose-address",
-            //       params: {
-            //         selected_address: JSON.stringify(address),
-            //       },
-            //     });
-            //   }}
+            onPress={() => {
+              router.push({
+                pathname: "/choose-service",
+                params: {
+                  selected_address: JSON.stringify(service),
+                },
+              });
+            }}
             style={[styles.linker, { borderColor: themeColor.foreground }]}
           >
             <View>
-              <Text>None</Text>
+              {service ? (
+                <View>
+                  <Text>{service.title}</Text>
+                </View>
+              ) : (
+                <Text color="muted">None</Text>
+              )}
             </View>
 
             <Icon name="chevron-forward" size="xl" />

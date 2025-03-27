@@ -17,11 +17,10 @@ import Icon from "../ui/Icon";
 import { router, useLocalSearchParams } from "expo-router";
 
 type PostFormProps = {
-  data?: PostDetailsInfo;
-  isEditing?: boolean;
+  type?: "work" | "hire";
 };
 
-export default function PostForm({ data, isEditing }: PostFormProps) {
+export default function PostForm({ type = "hire" }: PostFormProps) {
   // Declare form properties
   const {
     control,

@@ -117,8 +117,8 @@ export async function updatePost(
   }
 }
 
-// Get user job posts
-export async function getUserPosts(uuid: string) {
+// Get user job posts; can pass in optional type, otherwise all
+export async function getUserPosts(uuid: string, type?: "work" | "hire") {
   try {
     let result = await db
       .select({
@@ -131,7 +131,13 @@ export async function getUserPosts(uuid: string) {
         location_type: posts.location_type,
       })
       .from(posts)
-      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "hidden")))
+      .where(
+        and(
+          eq(posts.user_uuid, uuid),
+          ne(posts.status_type, "hidden"),
+          type && eq(posts.type, type)
+        )
+      )
       .orderBy(desc(posts.created_at));
 
     result = await Promise.all(

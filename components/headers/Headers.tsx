@@ -229,6 +229,29 @@ export function ChooseAddressHeader() {
   );
 }
 
+export function ChooseServiceHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Link a service
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push(`/create-post/?type=hire` as any)}
+          />
+        ),
+      }}
+    />
+  );
+}
+
 export function MessagesHeader() {
   return (
     <View color="background">
@@ -444,12 +467,8 @@ export function CreatePostHeader() {
     },
   });
 
-  const { setValue } = useFormContext<z.infer<typeof CreatePostSchema>>();
-  const [type, setType] = useState<"work" | "hire">("work");
-
-  useEffect(() => {
-    setValue("type", type);
-  }, [type]);
+  const { setValue, getValues } =
+    useFormContext<z.infer<typeof CreatePostSchema>>();
 
   return (
     <HeaderWrapper
@@ -470,15 +489,15 @@ export function CreatePostHeader() {
             <View style={{ flexDirection: "row" }}>
               <Button
                 style={styles.button}
-                type={type === "work" ? "primary" : "secondary"}
-                onPress={() => setType("work")}
+                type={getValues("type") === "work" ? "primary" : "secondary"}
+                onPress={() => setValue("type", "work")}
               >
                 Job
               </Button>
               <Button
                 style={styles.button}
-                type={type === "hire" ? "primary" : "secondary"}
-                onPress={() => setType("hire")}
+                type={getValues("type") === "hire" ? "primary" : "secondary"}
+                onPress={() => setValue("type", "hire")}
               >
                 Service
               </Button>

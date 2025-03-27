@@ -130,7 +130,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             gap: 16,
             paddingTop: 16,
             paddingHorizontal: 16,
-            paddingBottom: 24,
+            paddingBottom: 16,
           }}
           color="background"
         >
@@ -158,6 +158,16 @@ export default function PostDetails({ uuid }: { uuid: string }) {
         style={[styles.actionsRow, { borderColor: themeColor.border }]}
         color="background"
       >
+        <View>
+          <Text size="sm" weight="semibold">
+            Base rate
+          </Text>
+          <Text weight="semibold" size="xl">
+            ${data.min_rate}
+            {data.max_rate && " - " + `$${data.max_rate}`}
+          </Text>
+        </View>
+
         <Button
           style={{ marginLeft: "auto" }}
           type="outline"
@@ -190,5 +200,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 16,
     borderTopWidth: 1,
+    alignItems: "center",
   },
 });

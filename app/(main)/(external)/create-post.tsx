@@ -3,18 +3,24 @@ import View from "@/components/ui/View";
 import React from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { CreatePostHeader } from "@/components/headers/Headers";
+import { CreatePostHeader, SimpleHeader } from "@/components/headers/Headers";
 import PostForm from "@/components/posts/PostForm";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { CreatePostProvider } from "@/contexts/CreatePostContext";
 import PostSubmitButton from "@/components/posts/PostSubmitButton";
+import { useLocalSearchParams } from "expo-router";
 
 export default function CreatePostForm() {
   const themeColor = useThemeColor();
+  const { type } = useLocalSearchParams();
 
   return (
-    <CreatePostProvider>
-      <CreatePostHeader />
+    <CreatePostProvider type={(type as "work" | "hire") ?? undefined}>
+      {type === "hire" ? (
+        <SimpleHeader title="Create a service" />
+      ) : (
+        <CreatePostHeader />
+      )}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -25,7 +31,7 @@ export default function CreatePostForm() {
               Please do NOT include any sensitive information (phone numbers,
               emails, addresses, etc.).
             </Text>
-            <PostForm />
+            <PostForm type={"hire"} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

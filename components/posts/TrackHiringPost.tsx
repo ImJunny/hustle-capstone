@@ -4,73 +4,59 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TPost } from "@/server/utils/example-data";
-import Icon from "../ui/Icon";
+import { TrackHiringPost as TrackHiringPostType } from "@/server/actions/jobs-actions";
+import { Image } from "expo-image";
+import { format, isSameYear } from "date-fns";
 
-export type TrackHirePostProps = {
-  data: TPost;
+export type TrackJobPostProps = {
+  data: TrackHiringPostType;
 } & ViewProps;
 
-export default function TrackHirePost({ data, style }: TrackHirePostProps) {
+export default function TrackHiringPost({ data, style }: TrackJobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const dueDate = new Date(data.due_date!);
+  const formattedDueDate = isSameYear(dueDate, new Date())
+    ? format(dueDate, "MMMM d")
+    : format(dueDate, "MMMM d, yyyy");
 
   return (
-    <Link href={`/track/hiring/${data.uuid}`} asChild>
+    <Link href={`/track/working/${data.uuid}`} asChild>
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
-          <ImagePlaceholder
-            width={90}
-            height={90}
-            style={{ borderRadius: 4 }}
+          <Image
+            source={{ uri: data.image_url }}
+            style={{ width: 80, height: 80, borderRadius: 4 }}
           />
           <View style={styles.entryContent}>
             <Text weight="semibold" numberOfLines={1}>
               {data.title}
             </Text>
-            {data.type == "work" ? (
-              <Text size="sm">Due {data.due_date}</Text>
-            ) : (
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginTop: 4,
-                  gap: 4,
-                  alignItems: "center",
-                }}
-              >
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star-half" />
-                <Icon name="star-outline" />
-                <Text style={{ marginLeft: 2 }} size="sm">
-                  2
-                </Text>
-              </View>
-            )}
+
+            <Text size="sm" style={{ marginBottom: 8 }}>
+              Due {formattedDueDate}
+            </Text>
 
             {data.progress === "in progress" ? (
               <Text weight="semibold" size="lg">
                 In progress
               </Text>
             ) : data.progress === "accepted" ? (
-              <Text weight="semibold" color="muted" size="lg">
-                {data.accepted_count} accepted
-              </Text>
+              <Text color="muted">Accepted, awaiting approval</Text>
             ) : data.progress === "awaiting" ? (
               <Text weight="semibold" color="yellow" size="lg">
-                Worker awaiting payment
+                Awaiting payment from employer
               </Text>
             ) : data.progress === "overdue" ? (
               <Text weight="semibold" color="red" size="lg">
                 Overdue
               </Text>
-            ) : (
+            ) : data.progress === "completed" ? (
               <Text weight="semibold" color="green" size="lg">
                 Paid
               </Text>
+            ) : (
+              <Text color="muted">{data.progress}</Text>
             )}
           </View>
         </View>

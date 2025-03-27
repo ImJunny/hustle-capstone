@@ -533,9 +533,11 @@ export function ReviewHeader({ username }: { username: string }) {
 export function SingleMessageHeader({
   messenger,
   avatarUrl,
+  user_uuid,
 }: {
   messenger: string;
   avatarUrl: string | null;
+  user_uuid: string;
 }) {
   return (
     <HeaderWrapper
@@ -548,27 +550,33 @@ export function SingleMessageHeader({
           />
         ),
         center: (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 12,
+          <Pressable
+            onPress={() => {
+              router.push(`/profile/${user_uuid}`);
             }}
           >
-            <Image
-              source={
-                avatarUrl
-                  ? {
-                      uri: avatarUrl,
-                    }
-                  : require("@/assets/images/default-avatar-icon.jpg")
-              }
-              style={{ borderRadius: 999, width: 40, height: 40 }}
-            />
-            <Text weight="semibold" size="xl">
-              {messenger}
-            </Text>
-          </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <Image
+                source={
+                  avatarUrl
+                    ? {
+                        uri: avatarUrl,
+                      }
+                    : require("@/assets/images/default-avatar-icon.jpg")
+                }
+                style={{ borderRadius: 999, width: 40, height: 40 }}
+              />
+              <Text weight="semibold" size="xl">
+                {messenger}
+              </Text>
+            </View>
+          </Pressable>
         ),
         right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}

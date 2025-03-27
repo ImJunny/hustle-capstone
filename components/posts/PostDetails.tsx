@@ -21,6 +21,7 @@ import Button from "../ui/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import PostDetailsButton from "./PostDetailsButton";
+import Skeleton from "../ui/Skeleton";
 
 // Component that renders post details by uuid; parent of sheet and modal
 export default function PostDetails({ uuid }: { uuid: string }) {

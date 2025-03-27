@@ -3,7 +3,8 @@ import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   acceptJob,
   getJobTrackingDetails,
-  getTrackJobPosts,
+  getTrackHiringPosts,
+  getTrackWorkingPosts,
   getTransactionEstimate,
   unacceptJob,
 } from "../actions/jobs-actions";
@@ -34,14 +35,23 @@ export const jobRouter = createTRPCRouter({
         input.linked_service_post_uuid
       );
     }),
-  get_track_job_posts: protectedProcedure
+  get_track_working_posts: protectedProcedure
     .input(
       z.object({
         user_uuid: z.string(),
       })
     )
     .query(async ({ input }) => {
-      return await getTrackJobPosts(input.user_uuid);
+      return await getTrackWorkingPosts(input.user_uuid);
+    }),
+  get_track_hiring_posts: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getTrackHiringPosts(input.user_uuid);
     }),
   get_job_tracking_details: protectedProcedure
     .input(

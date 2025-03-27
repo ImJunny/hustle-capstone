@@ -44,7 +44,6 @@ export default function MessageScreen() {
     sender_uuid: user.id as string,
     receiver_uuid: uuid as string,
   });
-  const themeColor = useThemeColor();
 
   const [messages, setMessages] = useState<
     {
@@ -90,6 +89,7 @@ export default function MessageScreen() {
       <SingleMessageHeader
         avatarUrl={data.avatar_url}
         messenger={`@${data.receiver_info.receiver_username}`}
+        user_uuid={data.receiver_info.receiver_uuid}
       />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}

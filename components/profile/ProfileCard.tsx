@@ -51,9 +51,9 @@ export default function ProfileCard({
             <Button
               style={{ flex: 1, height: 32 }}
               type="variant"
-              onPress={() => router.push("/edit-profile")}
+              onPress={() => router.push(`/message/${data.uuid}`)}
             >
-              {isSelf ? "Edit profile" : "Follow"}
+              {isSelf ? "Edit profile" : "Message"}
             </Button>
             <Button style={{ flex: 1, height: 32 }}>Share</Button>
           </View>

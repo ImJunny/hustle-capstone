@@ -75,6 +75,7 @@ export default function PostDetailsAboutUserSection({
             style={styles.messageButton}
             type="outline"
             borderColor="foreground"
+            onPress={() => router.push(`/message/${data.user_uuid}`)}
           >
             Message
           </Button>

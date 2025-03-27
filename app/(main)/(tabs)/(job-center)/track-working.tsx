@@ -1,17 +1,17 @@
 import { SimpleHeader } from "@/components/headers/Headers";
-import TrackJobPost from "@/components/posts/TrackJobPost";
+import TrackWorkingPost from "@/components/posts/TrackWorkingPost";
 import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
-import { TrackJobPost as TrackJobPostType } from "@/server/actions/jobs-actions";
+import { TrackWorkingPost as TrackWorkingPostType } from "@/server/actions/jobs-actions";
 
 export default function TrackWorkingScreen() {
   const { user } = useAuthData();
 
-  const { data, isLoading } = trpc.job.get_track_job_posts.useQuery({
+  const { data, isLoading } = trpc.job.get_track_working_posts.useQuery({
     user_uuid: user?.id!,
   });
 
@@ -50,9 +50,9 @@ export default function TrackWorkingScreen() {
       <SimpleHeader title="Track working" />
       <ScrollView>
         {data?.map((post, i) => (
-          <TrackJobPost
+          <TrackWorkingPost
             key={i}
-            data={post as TrackJobPostType}
+            data={post as TrackWorkingPostType}
             style={{
               borderBottomWidth: 1,
             }}

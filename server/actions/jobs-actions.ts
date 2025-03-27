@@ -1,7 +1,7 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
 import { initiated_jobs, post_images, posts, users } from "@/drizzle/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
@@ -104,11 +104,10 @@ export async function acceptJob(
   }
 }
 
-// Get track job posts
-export async function getTrackJobPosts(user_uuid: string) {
-  // temprorarily get min rate; use offer lookup later
+// Get track working posts
+export async function getTrackWorkingPosts(user_uuid: string) {
   try {
-    const result = db
+    const result = await db
       .select({
         uuid: posts.uuid,
         title: posts.title,
@@ -134,10 +133,12 @@ export async function getTrackJobPosts(user_uuid: string) {
     return result;
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to apply for job.");
+    throw new Error("Failed to get track working posts.");
   }
 }
-export type TrackJobPost = Awaited<ReturnType<typeof getTrackJobPosts>>[number];
+export type TrackWorkingPost = Awaited<
+  ReturnType<typeof getTrackWorkingPosts>
+>[number];
 
 // Get job tracking details
 export async function getJobTrackingDetails(
@@ -194,3 +195,77 @@ export async function unacceptJob(initiated_job_post_uuid: string) {
     throw new Error("Failed to unaccept job");
   }
 }
+
+// Get track hiring posts
+export async function getTrackHiringPosts(user_uuid: string) {
+  try {
+    const result = await db
+      .select({
+        uuid: posts.uuid,
+        title: posts.title,
+        due_date: posts.due_date,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+      })
+      .from(posts)
+      .innerJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(
+        and(
+          eq(posts.user_uuid, user_uuid),
+          eq(posts.type, "work"),
+          ne(posts.status_type, "hidden")
+        )
+      )
+      .then(async (posts) =>
+        Promise.all(
+          posts.map(async (post) => {
+            const approvedJob = await db
+              .select({ progress: initiated_jobs.progress_type })
+              .from(initiated_jobs)
+              .where(
+                and(
+                  eq(initiated_jobs.job_post_uuid, post.uuid),
+                  sql`${initiated_jobs.progress_type} != 'accepted'`
+                )
+              )
+              .limit(1)
+              .then((jobs) => jobs[0]);
+            if (approvedJob) {
+              return {
+                ...post,
+                progress: approvedJob.progress,
+              };
+            }
+
+            const acceptedJobCount = await db
+              .select({ count: sql`COUNT(*)` })
+              .from(initiated_jobs)
+              .where(
+                and(
+                  eq(initiated_jobs.job_post_uuid, post.uuid),
+                  eq(initiated_jobs.progress_type, "accepted")
+                )
+              )
+              .then(([result]) => result.count);
+
+            return {
+              ...post,
+              progress: `${acceptedJobCount} accepted`,
+            };
+          })
+        )
+      );
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get track hiring posts.");
+  }
+}
+export type TrackHiringPost = Awaited<
+  ReturnType<typeof getTrackHiringPosts>
+>[number];

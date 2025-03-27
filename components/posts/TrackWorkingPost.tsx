@@ -4,15 +4,15 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import { TrackJobPost as TrackJobPostType } from "@/server/actions/jobs-actions";
+import { TrackWorkingPost as TrackWorkingPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
 import { format, isSameYear } from "date-fns";
 
 export type TrackJobPostProps = {
-  data: TrackJobPostType;
+  data: TrackWorkingPostType;
 } & ViewProps;
 
-export default function TrackJobPost({ data, style }: TrackJobPostProps) {
+export default function TrackWorkingPost({ data, style }: TrackJobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   const dueDate = new Date(data.due_date!);

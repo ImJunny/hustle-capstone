@@ -8,8 +8,31 @@ import Button from "@/components/ui/Button";
 import { JobsCenterHeader } from "@/components/headers/Headers";
 import { Href, Link } from "expo-router";
 import { router } from "expo-router";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
+import LoadingView from "@/components/ui/LoadingView";
 
 export default function JobCenterScreen() {
+  const { user } = useAuthData();
+  const { data, isLoading } = trpc.post.get_active_post_counts.useQuery({
+    user_uuid: user?.id!,
+  });
+
+  if (!user || isLoading || !data) {
+    return (
+      <>
+        <JobsCenterHeader />
+        {isLoading ? (
+          <LoadingView />
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <Text>Error encountered</Text>
+          </View>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <JobsCenterHeader />
@@ -22,12 +45,13 @@ export default function JobCenterScreen() {
             iconName="briefcase-outline"
             title="Working"
             href="/track-working"
-            active_count={2}
+            active_count={data.active_job_count}
           />
           <LinkEntry
             iconName="calendar-outline"
             title="Hiring"
             href="/track-hiring"
+            active_count={data.active_service_count}
           />
         </View>
         <View style={styles.category}>
@@ -73,11 +97,11 @@ function LinkEntry({ iconName, title, href, active_count }: LinkEntryProps) {
         <View style={[styles.entry, { borderColor }]}>
           <Icon name={iconName} size="xl" />
           <Text style={styles.entryText}>{title}</Text>
-          {active_count && (
+          {active_count && active_count > 0 ? (
             <Text color="green" weight="semibold" style={{ marginRight: 12 }}>
               • {active_count} active
             </Text>
-          )}
+          ) : null}
 
           <Icon name="chevron-forward" size="xl" />
         </View>

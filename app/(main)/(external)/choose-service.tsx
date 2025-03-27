@@ -1,5 +1,4 @@
 import {
-  AddressesHeader,
   ChooseServiceHeader,
   SimpleHeader,
 } from "@/components/headers/Headers";
@@ -10,7 +9,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import { Address } from "@/server/actions/address-actions";
 import LoadingView from "@/components/ui/LoadingView";
 import Button from "@/components/ui/Button";
 import RadioButton from "@/components/ui/RadioButton";
@@ -66,8 +64,8 @@ export default function ChooseServiceScreen() {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              height: 122,
-              padding: 16,
+              paddingVertical: 32,
+              paddingHorizontal: 16,
               alignItems: "center",
               borderBottomWidth: 1,
             }}
@@ -76,7 +74,7 @@ export default function ChooseServiceScreen() {
             <Text weight="semibold" size="lg">
               None
             </Text>
-            <RadioButton value={undefined} selected={currentService} />
+            <RadioButton value={undefined} selected={currentService} disabled />
           </View>
         </TouchableOpacity>
         {services.map((service, i) => (
@@ -94,7 +92,6 @@ export default function ChooseServiceScreen() {
       >
         <Button
           style={{ alignSelf: "flex-end" }}
-          disabled={!currentService}
           onPress={() => {
             router.back();
             router.setParams({
@@ -139,7 +136,11 @@ function ServiceEntry({
             </Text>
           </View>
         </View>
-        <RadioButton value={service.uuid} selected={currentService?.uuid} />
+        <RadioButton
+          value={service.uuid}
+          selected={currentService?.uuid}
+          disabled
+        />
       </View>
     </TouchableOpacity>
   );

@@ -2,13 +2,23 @@ import { StyleSheet } from "react-native";
 import Text from "../ui/Text";
 import View from "../ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { TransactionEstimate } from "@/server/actions/jobs-actions";
+import { ServiceFee } from "@/constants/Rates";
 
-export default function TrackTransactionEstimate() {
+export default function TrackTransactionEstimate({
+  data,
+}: {
+  data?: TransactionEstimate;
+}) {
   return (
     <View>
-      <PriceRow title="Job rate" rate={55.5} />
-      <PriceRow title="Service rate (8%)" rate={2.4} isFee />
-      <PriceRow title="Total" rate={53.1} isTotal />
+      <PriceRow title="Job rate" rate={data?.rate ?? 55.5} />
+      <PriceRow
+        title={`Service fee (${ServiceFee * 100}%)`}
+        rate={data?.service_fee ?? 2.4}
+        isFee
+      />
+      <PriceRow title="Total" rate={data?.total ?? 53.1} isTotal />
     </View>
   );
 }

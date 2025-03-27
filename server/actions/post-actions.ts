@@ -5,6 +5,7 @@ import {
   users,
   posts,
   addresses,
+  initiated_jobs,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -373,3 +374,41 @@ export type HomePost = {
   user_username: string;
   avatar_url: string;
 };
+
+// Get active post counts
+export async function getActivePostCounts(user_uuid: string) {
+  try {
+    const active_job_count = await db
+      .select()
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.type, "work")
+        )
+      )
+      .where(eq(initiated_jobs.worker_uuid, user_uuid))
+      .then((posts) => posts.length);
+
+    const active_service_count = await db
+      .select()
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.type, "hire")
+        )
+      )
+      .where(eq(initiated_jobs.worker_uuid, user_uuid))
+      .then((posts) => posts.length);
+    return {
+      active_job_count,
+      active_service_count,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to apply for job.");
+  }
+}

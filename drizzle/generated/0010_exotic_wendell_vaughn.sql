@@ -1,0 +1,1 @@
+ALTER TABLE "app"."initiated_jobs" ADD COLUMN "rate" integer NOT NULL;

@@ -123,9 +123,9 @@ function AddressEntry({
         </View>
 
         <RadioButton
-          onPress={() => setCurrentAddress(address)}
           value={address.uuid}
           selected={currentAddress?.uuid}
+          disabled
         />
       </View>
     </TouchableOpacity>

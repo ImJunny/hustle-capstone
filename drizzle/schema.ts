@@ -80,8 +80,13 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
   job_post_uuid: uuid("job_post_uuid")
     .references(() => posts.uuid)
     .notNull(),
+  linked_service_post_uuid: uuid("linked_service_post_uuid").references(
+    () => posts.uuid,
+    { onDelete: "set null" }
+  ),
   created_at: timestamp("created_at").notNull().defaultNow(),
   progress_type: text("progress_type").references(() => progress_types.name),
+  rate: integer("rate").notNull(),
 });
 
 export const post_images = app_schema.table("post_images", {

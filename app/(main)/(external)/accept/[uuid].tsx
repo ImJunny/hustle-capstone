@@ -74,15 +74,19 @@ export default function AcceptScreen() {
     return (
       <>
         <SimpleHeader title="Accept job" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Encountered an error getting job information</Text>
-          </View>
-        )}
+        <LoadingView />
+      </>
+    );
+  } else if (error) {
+    return (
+      <>
+        <SimpleHeader title="Accept job" />
+
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Encountered an error getting job information</Text>
+        </View>
       </>
     );
   }

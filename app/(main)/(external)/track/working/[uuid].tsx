@@ -28,7 +28,11 @@ export default function TrackWorkingDetailsScreen() {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
 
-  const { data = null, isLoading } = trpc.job.get_job_tracking_details.useQuery(
+  const {
+    data = null,
+    isLoading,
+    error,
+  } = trpc.job.get_job_tracking_details.useQuery(
     {
       user_uuid: user?.id!,
       job_post_uuid: uuid as string,
@@ -42,14 +46,17 @@ export default function TrackWorkingDetailsScreen() {
       : format(new Date(data?.due_date!), "MMMM d, yyyy")
     : null;
 
-  const { data: estimateData, isLoading: estimateLoading } =
-    trpc.job.get_transaction_estimate.useQuery(
-      {
-        job_post_uuid: uuid as string,
-        user_uuid: user?.id!,
-      },
-      { enabled: !!user }
-    );
+  const {
+    data: estimateData,
+    isLoading: estimateLoading,
+    error: estimateError,
+  } = trpc.job.get_transaction_estimate.useQuery(
+    {
+      job_post_uuid: uuid as string,
+      user_uuid: user?.id!,
+    },
+    { enabled: !!user }
+  );
 
   const { mutate: unaccept, isLoading: unacceptLoading } =
     trpc.job.unaccept_job.useMutation({
@@ -84,15 +91,14 @@ export default function TrackWorkingDetailsScreen() {
   let progressDescription =
     "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
 
-  if (isLoading || estimateLoading) {
+  if (isLoading || estimateLoading || !data) {
     return (
       <>
         <SimpleHeader title="Tracking details" />
-
         <LoadingView />
       </>
     );
-  } else if (!data) {
+  } else if (error || estimateError) {
     return (
       <>
         <SimpleHeader title="Tracking details" />

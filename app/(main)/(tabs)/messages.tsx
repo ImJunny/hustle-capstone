@@ -9,6 +9,7 @@ import { exampleMessages } from "@/server/utils/example-data";
 import { router } from "expo-router";
 import {
   Pressable,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   ViewStyle,

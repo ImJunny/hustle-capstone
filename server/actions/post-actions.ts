@@ -374,6 +374,7 @@ export async function getHomePosts(type: "work" | "hire") {
           SELECT ${post_images.image_url}
           FROM ${post_images}
           WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
           LIMIT 1
         )`,
         user_avatar_url: users.avatar_url,

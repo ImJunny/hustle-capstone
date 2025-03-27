@@ -117,6 +117,7 @@ export async function getTrackJobPosts(user_uuid: string) {
                   SELECT ${post_images.image_url}
                   FROM ${post_images}
                   WHERE ${post_images.post_uuid} = ${posts.uuid}
+                  ORDER BY ${post_images.image_url} ASC
                   LIMIT 1
                 )`,
       })
@@ -150,6 +151,7 @@ export async function getJobTrackingDetails(
           SELECT ${post_images.image_url}
           FROM ${post_images}
           WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
           LIMIT 1
         )`,
         initiated_job_post_uuid: initiated_jobs.uuid,

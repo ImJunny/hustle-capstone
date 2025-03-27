@@ -6,6 +6,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
+import { TrackJobPost as TrackJobPostType } from "@/server/actions/jobs-actions";
 
 export default function TrackWorkingScreen() {
   const { user } = useAuthData();
@@ -51,7 +52,7 @@ export default function TrackWorkingScreen() {
         {data?.map((post, i) => (
           <TrackJobPost
             key={i}
-            data={post}
+            data={post as TrackJobPostType}
             style={{
               borderBottomWidth: 1,
             }}

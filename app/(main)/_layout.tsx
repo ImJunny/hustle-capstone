@@ -11,7 +11,7 @@ export default function Layout() {
       />
       <Stack.Screen
         name="(external)/choose-address"
-        options={{ animation: "ios_from_right" }}
+        options={{ animation: "fade_from_bottom" }}
       />
       <Stack.Screen
         name="(external)/message/[uuid]"
@@ -27,7 +27,7 @@ export default function Layout() {
       />
       <Stack.Screen
         name="(external)/choose-service"
-        options={{ animation: "ios_from_right" }}
+        options={{ animation: "fade_from_bottom" }}
       />
     </Stack>
   );

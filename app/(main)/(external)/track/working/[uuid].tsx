@@ -61,6 +61,9 @@ export default function TrackWorkingDetailsScreen() {
         utils.post.invalidate();
         utils.job.invalidate();
         router.back();
+        router.setParams({
+          param_type: "work",
+        });
       },
 
       onError: (error) => {
@@ -81,19 +84,23 @@ export default function TrackWorkingDetailsScreen() {
   let progressDescription =
     "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
 
-  if (isLoading || estimateLoading || !data || !user) {
+  if (isLoading || estimateLoading) {
     return (
       <>
         <SimpleHeader title="Tracking details" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Encountered an error while getting job information</Text>
-          </View>
-        )}
+
+        <LoadingView />
+      </>
+    );
+  } else if (!data) {
+    return (
+      <>
+        <SimpleHeader title="Tracking details" />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Encountered an error getting job information</Text>
+        </View>
       </>
     );
   }

@@ -18,8 +18,9 @@ import PostDetailsDeleteModal from "./PostDetailsDeleteModal";
 import IconButton from "../ui/IconButton";
 import { StyleSheet } from "react-native";
 import Button from "../ui/Button";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import PostDetailsButton from "./PostDetailsButton";
 
 // Component that renders post details by uuid; parent of sheet and modal
 export default function PostDetails({ uuid }: { uuid: string }) {
@@ -167,17 +168,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             {data.max_rate && " - " + `$${data.max_rate}`}
           </Text>
         </View>
-
-        <Button
-          style={{ marginLeft: "auto" }}
-          type="outline"
-          borderColor="foreground"
-        >
-          Make offer
-        </Button>
-        <Button onPress={handlePress} style={{ marginLeft: 12 }}>
-          {data.type === "work" ? "Accept job" : "Hire service"}
-        </Button>
+        <PostDetailsButton data={data as unknown as PostDetailsInfo} />
       </View>
       <PostDetailsSheet
         isSelf={data.user_uuid === user?.id}
@@ -201,5 +192,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     alignItems: "center",
+    justifyContent: "space-between",
   },
 });

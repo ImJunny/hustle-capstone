@@ -318,45 +318,6 @@ export async function deletePost(uuid: string) {
   }
 }
 
-// export async function getHomePosts(type: "work" | "hire") {
-//   try {
-//     let result = await db
-//       .select()
-//       .from(posts)
-//       .where(and(eq(posts.type, type), ne(posts.status_type, "hidden")));
-
-//     result = await Promise.all(
-//       result.map(async (post) => {
-//         const image = await db
-//           .select({ image_url: post_images.image_url })
-//           .from(post_images)
-//           .where(eq(post_images.post_uuid, post.uuid))
-//           .orderBy(asc(post_images.image_url))
-//           .limit(1);
-
-//         const userInfo = await db
-//           .select({
-//             user_username: users.username,
-//             avatar_url: users.avatar_url,
-//           })
-//           .from(users)
-//           .where(eq(users.uuid, post.user_uuid))
-//           .limit(1);
-
-//         return {
-//           ...post,
-//           image_url: image[0].image_url ?? null,
-//           ...userInfo[0],
-//         };
-//       })
-//     );
-//     return result;
-//   } catch (error) {
-//     console.log(error);
-//     throw new Error("Failed to get home posts.");
-//   }
-// }
-
 export async function getHomePosts(type: "work" | "hire") {
   try {
     let result = await db
@@ -432,5 +393,31 @@ export async function getActivePostCounts(user_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to apply for job.");
+  }
+}
+
+// Get post user progress
+export async function isInitiated(user_uuid: string, job_post_uuid: string) {
+  try {
+    const result = await db
+      .select({
+        type: posts.type,
+        uuid: posts.uuid,
+        progress: initiated_jobs.progress_type,
+      })
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.uuid, job_post_uuid),
+          eq(initiated_jobs.worker_uuid, user_uuid)
+        )
+      );
+    if (result.length > 0) return true;
+    return false;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get post user progress");
   }
 }

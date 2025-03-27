@@ -7,7 +7,6 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { StyleSheet } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";

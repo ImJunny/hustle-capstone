@@ -8,13 +8,6 @@ export async function getTransactionEstimate(
   job_post_uuid: string,
   user_uuid?: string
 ) {
-  async function getGenericRate() {
-    return await db
-      .select({ min_rate: posts.min_rate })
-      .from(posts)
-      .then(([result]) => getEstimate(result.min_rate));
-  }
-
   function getEstimate(rate: number) {
     const service_fee = Math.floor(rate * ServiceFee * 100) / 100;
     const total = rate - service_fee;
@@ -24,6 +17,14 @@ export async function getTransactionEstimate(
       service_fee,
       total,
     };
+  }
+
+  async function getGenericRate() {
+    return await db
+      .select({ min_rate: posts.min_rate })
+      .from(posts)
+      .where(eq(posts.uuid, job_post_uuid))
+      .then(([result]) => getEstimate(result.min_rate));
   }
 
   try {

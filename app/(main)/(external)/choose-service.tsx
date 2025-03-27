@@ -28,8 +28,8 @@ export default function ChooseServiceScreen() {
   });
 
   const { selected_service } = useLocalSearchParams();
-  const [currentService, setCurrentService] = useState<Post | undefined>(
-    selected_service ? JSON.parse(selected_service as string) : undefined
+  const [currentService, setCurrentService] = useState<Post | null>(
+    selected_service ? JSON.parse(selected_service as string) : null
   );
 
   if (isLoading) {
@@ -59,7 +59,7 @@ export default function ChooseServiceScreen() {
     <>
       <ChooseServiceHeader />
       <View style={{ flex: 1 }} color="base">
-        <TouchableOpacity onPress={() => setCurrentService(undefined)}>
+        <TouchableOpacity onPress={() => setCurrentService(null)}>
           <View
             style={{
               flexDirection: "row",
@@ -74,7 +74,7 @@ export default function ChooseServiceScreen() {
             <Text weight="semibold" size="lg">
               None
             </Text>
-            <RadioButton value={undefined} selected={currentService} disabled />
+            <RadioButton value={null} selected={currentService} disabled />
           </View>
         </TouchableOpacity>
         {services.map((service, i) => (
@@ -109,8 +109,8 @@ export default function ChooseServiceScreen() {
 // Address entry components
 type ServiceEntryProps = {
   service: Post;
-  currentService: Post | undefined;
-  setCurrentService: Dispatch<SetStateAction<Post | undefined>>;
+  currentService: Post | null;
+  setCurrentService: Dispatch<SetStateAction<Post | null>>;
 };
 
 function ServiceEntry({

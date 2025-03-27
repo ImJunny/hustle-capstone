@@ -39,9 +39,12 @@ export default function AcceptScreen() {
           text1: "Accepted job",
           swipeable: false,
         });
-        router.back();
         utils.job.invalidate();
         utils.post.invalidate();
+        router.back();
+        router.setParams({
+          param_type: "manage",
+        });
       },
       onError: (error) => {
         Toast.show({

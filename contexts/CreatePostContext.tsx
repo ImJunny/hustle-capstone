@@ -15,6 +15,7 @@ import { PostDetailsInfo } from "@/server/actions/post-actions";
 type CreatePostProviderProps = {
   data?: PostDetailsInfo;
   children: ReactNode;
+  type?: "work" | "hire";
 };
 
 const CreatePostContext = createContext<{
@@ -32,6 +33,7 @@ export function useCreatePostContext() {
 export function CreatePostProvider({
   data,
   children,
+  type = "work",
 }: CreatePostProviderProps) {
   const formMethods = useForm<z.infer<typeof CreatePostSchema>>({
     resolver: zodResolver(CreatePostSchema),
@@ -43,7 +45,7 @@ export function CreatePostProvider({
       location_type: (data?.location_type as "local" | "remote") || "remote",
       address_uuid: data?.address_uuid || null,
       due_date: data?.due_date ? new Date(data.due_date) : null,
-      type: data?.type || "work",
+      type: data?.type ?? type,
       images: data?.post_images.map((image) => image.image_url) || [],
     },
   });

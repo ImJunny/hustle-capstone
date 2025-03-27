@@ -4,12 +4,13 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
-import ProfileSelfCard from "@/components/profile/ProfileSelfCard";
 import ProfileSection from "@/components/profile/ProfileSection";
 import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
+import Separator from "@/components/ui/Separator";
+import ProfileCard from "@/components/profile/ProfileCard";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -39,7 +40,7 @@ export default function ProfileMainScreen() {
     return (
       <>
         <ProfileSelfHeader username={data?.username ?? ""} />
-        <ProfileSelfCard data={data as unknown as UserData} />
+        <ProfileCard data={data as unknown as UserData} />
         <View
           style={{
             flex: 1,
@@ -59,31 +60,27 @@ export default function ProfileMainScreen() {
 
   return (
     <>
-      <ProfileSelfHeader username={data?.username ?? ""} />
-      <ScrollView color="background">
-        <ProfileSelfCard data={data as unknown as UserData} />
-        <View style={styles.contentContainer}>
-          {jobPosts && jobPosts.length > 0 && (
-            <ProfileSection
-              title="Jobs I need help with"
-              type="work"
-              posts={jobPosts as unknown as Post[]}
-            />
-          )}
-          {servicePosts && servicePosts.length > 0 && (
-            <ProfileSection
-              title="Services I provide"
-              type="hire"
-              posts={servicePosts as unknown as Post[]}
-            />
-          )}
-
-          {/* <TouchableOpacity style={styles.completedContainer}>
-            <Text size="xl" weight="semibold">
-              Completed • 0
-            </Text>
-            <Icon name="chevron-forward" size="xl" />
-          </TouchableOpacity> */}
+      <ProfileSelfHeader username={data?.username!} />
+      <ScrollView>
+        <View color="base">
+          <ProfileCard data={data as unknown as UserData} isSelf />
+          <View>
+            {jobPosts && jobPosts.length > 0 && (
+              <ProfileSection
+                title="Jobs I need help with"
+                type="work"
+                posts={jobPosts as unknown as Post[]}
+              />
+            )}
+            <Separator />
+            {servicePosts && servicePosts.length > 0 && (
+              <ProfileSection
+                title="Services I provide"
+                type="hire"
+                posts={servicePosts as unknown as Post[]}
+              />
+            )}
+          </View>
         </View>
       </ScrollView>
     </>

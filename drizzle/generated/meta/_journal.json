@@ -64,6 +64,20 @@
       "when": 1742952056874,
       "tag": "0008_concerned_black_widow",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1743054108232,
+      "tag": "0009_melodic_giant_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1743054353749,
+      "tag": "0010_exotic_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

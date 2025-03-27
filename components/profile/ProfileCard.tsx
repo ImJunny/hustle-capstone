@@ -8,7 +8,13 @@ import { Image } from "expo-image";
 import { UserData } from "@/server/actions/user-actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
-export default function ProfileCard({ data }: { data: UserData }) {
+export default function ProfileCard({
+  data,
+  isSelf,
+}: {
+  data: UserData;
+  isSelf?: boolean;
+}) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   return (
@@ -45,9 +51,9 @@ export default function ProfileCard({ data }: { data: UserData }) {
             <Button
               style={{ flex: 1, height: 32 }}
               type="variant"
-              onPress={() => {router.push(`/message/${data.uuid}` as any)}}
+              onPress={() => router.push("/edit-profile")}
             >
-              Message
+              {isSelf ? "Edit profile" : "Follow"}
             </Button>
             <Button style={{ flex: 1, height: 32 }}>Share</Button>
           </View>
@@ -68,7 +74,6 @@ const styles = StyleSheet.create({
     paddingVertical: 36,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    marginBottom: 16,
   },
   top: {
     flexDirection: "row",

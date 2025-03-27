@@ -9,6 +9,8 @@ import Icon from "@/components/ui/Icon";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
 import { useAuthData } from "@/contexts/AuthContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import IconButton from "../ui/IconButton";
 
 type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
@@ -20,6 +22,7 @@ export default function PostDetailsAboutUserSection({
   const { user } = useAuthData();
   return (
     <View
+      color="background"
       style={{
         padding: 16,
       }}
@@ -68,9 +71,12 @@ export default function PostDetailsAboutUserSection({
             </View>
           </View>
 
-          <Button style={styles.messageButton} type="variant">
-            <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
-            <Text weight="semibold">Message</Text>
+          <Button
+            style={styles.messageButton}
+            type="outline"
+            borderColor="foreground"
+          >
+            Message
           </Button>
         </View>
       </Pressable>
@@ -107,8 +113,6 @@ const styles = StyleSheet.create({
   nameContainer: { marginLeft: 20 },
   messageButton: {
     marginLeft: "auto",
-    paddingHorizontal: 16,
-    gap: 12,
   },
   reviewButton: {
     marginLeft: "auto",

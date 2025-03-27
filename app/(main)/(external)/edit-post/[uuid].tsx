@@ -32,7 +32,7 @@ export default function CreatePostForm() {
               Please do NOT include any sensitive information (phone numbers,
               emails, addresses, etc.).
             </Text>
-            <PostForm isEditing />
+            <PostForm />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -9,6 +9,7 @@ import { exampleMessages } from "@/server/utils/example-data";
 import { router } from "expo-router";
 import {
   Pressable,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   ViewStyle,
@@ -55,7 +56,7 @@ export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="background">
+      <ScrollView style={{ flex: 1 }} color="base">
         <View>
           {data.map((message, i) => (
             <Message

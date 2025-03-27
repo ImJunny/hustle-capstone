@@ -1,11 +1,11 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { BackHeader, SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import {
@@ -16,41 +16,112 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
+import LoadingView from "@/components/ui/LoadingView";
+import { Image } from "expo-image";
+import { format, isThisYear } from "date-fns";
+import Toast from "react-native-toast-message";
 
 export default function TrackWorkingDetailsScreen() {
-  const themeColor = useThemeColor();
-
   const { uuid } = useLocalSearchParams();
-  const post = [...exampleJobPosts, ...exampleServicePosts].find(
-    (post) => post.uuid === uuid
+  const { user } = useAuthData();
+  const utils = trpc.useUtils();
+
+  const { data = null, isLoading } = trpc.job.get_job_tracking_details.useQuery(
+    {
+      user_uuid: user?.id!,
+      job_post_uuid: uuid as string,
+    },
+    { enabled: !!user }
   );
 
-  if (!post) {
+  const formattedDueDate = data?.due_date
+    ? isThisYear(new Date(data!.due_date!))
+      ? format(new Date(data?.due_date!), "MMMM d")
+      : format(new Date(data?.due_date!), "MMMM d, yyyy")
+    : null;
+
+  const { data: estimateData, isLoading: estimateLoading } =
+    trpc.job.get_transaction_estimate.useQuery(
+      {
+        job_post_uuid: uuid as string,
+        user_uuid: user?.id!,
+      },
+      { enabled: !!user }
+    );
+
+  const { mutate: unaccept, isLoading: unacceptLoading } =
+    trpc.job.unaccept_job.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: "Unaccepted job",
+          swipeable: false,
+        });
+        utils.post.invalidate();
+        utils.job.invalidate();
+        router.back();
+      },
+
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          type: "error",
+          swipeable: false,
+        });
+      },
+    });
+
+  const handleUnaccept = () => {
+    unaccept({
+      initiated_job_post_uuid: data?.initiated_job_post_uuid!,
+    });
+  };
+
+  let progressDescription =
+    "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
+
+  if (isLoading || estimateLoading || !data || !user) {
     return (
       <>
-        <BackHeader />
-        <Text>post not found</Text>
+        <SimpleHeader title="Tracking details" />
+        {isLoading ? (
+          <LoadingView />
+        ) : (
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <Text>Encountered an error while getting job information</Text>
+          </View>
+        )}
       </>
     );
   }
-
-  const progressDescription =
-    "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
   return (
     <>
       <SimpleHeader title="Tracking details" />
       <ScrollView color="background" style={styles.container}>
         <View style={styles.progressSection}>
-          <ImagePlaceholder width={100} height={100} />
+          <TouchableOpacity
+            onPress={() => router.push(`/post/${data.job_post_uuid}`)}
+          >
+            <Image
+              source={{ uri: data.job_image_url }}
+              style={{ width: 100, height: 100 }}
+            />
+          </TouchableOpacity>
+
           <View style={styles.textHeader}>
             <Text size="xl" weight="semibold">
-              Lawn mowing needed
+              {data.title}
             </Text>
-            <Text>Due February 20</Text>
+            <Text>Due {formattedDueDate}</Text>
           </View>
           <TrackingProgressBar progress="accepted" />
           <Text color="muted">{progressDescription}</Text>
-          <Button>Unaccept</Button>
+          <Button onPress={handleUnaccept} disabled={unacceptLoading}>
+            Unaccept
+          </Button>
         </View>
 
         <Separator />
@@ -59,7 +130,7 @@ export default function TrackWorkingDetailsScreen() {
           <Text size="xl" weight="semibold">
             Transaction estimate
           </Text>
-          <TrackTransactionEstimate />
+          <TrackTransactionEstimate data={estimateData} />
         </View>
 
         <Separator />
@@ -84,13 +155,12 @@ export default function TrackWorkingDetailsScreen() {
             Employer
           </Text>
           <View style={styles.employerRow}>
-            <ImagePlaceholder
-              width={40}
-              height={40}
-              style={{ borderRadius: 999 }}
+            <Image
+              source={{ uri: data.worker_avatar_url }}
+              style={{ borderRadius: 999, width: 40, height: 40 }}
             />
             <View style={{ gap: 4 }}>
-              <Text weight="semibold">@dwadwa</Text>
+              <Text weight="semibold">@{data.worker_username}</Text>
               <View style={styles.employerStarsRow}>
                 <Icon name="star" />
                 <Icon name="star" />

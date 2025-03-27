@@ -130,25 +130,24 @@ export function BackHeader() {
     />
   );
 }
-export function DetailsHeader({
-  sheetRef,
-}: {
-  sheetRef: React.RefObject<BottomSheetMethods>;
-}) {
+export function DetailsHeader() {
   return (
     <HeaderWrapper
+      color="transparent"
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        zIndex: 1,
+        borderBottomWidth: 0,
+      }}
       options={{
-        left: <IconButton name="arrow-back" onPress={() => router.back()} />,
-        right: (
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 18,
-            }}
-          >
+        left: (
+          <View style={{ borderRadius: 999, margin: 16 }} color="background">
             <IconButton
-              name="ellipsis-vertical"
-              onPress={() => sheetRef.current?.expand()}
+              name="arrow-back"
+              onPress={() => router.back()}
+              style={{ margin: 12 }}
             />
           </View>
         ),
@@ -223,6 +222,29 @@ export function ChooseAddressHeader() {
           <IconButton
             name="add"
             onPress={() => router.push("/create-address")}
+          />
+        ),
+      }}
+    />
+  );
+}
+
+export function ChooseServiceHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Link a service
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push(`/create-post/?type=hire` as any)}
           />
         ),
       }}
@@ -445,12 +467,8 @@ export function CreatePostHeader() {
     },
   });
 
-  const { setValue } = useFormContext<z.infer<typeof CreatePostSchema>>();
-  const [type, setType] = useState<"work" | "hire">("work");
-
-  useEffect(() => {
-    setValue("type", type);
-  }, [type]);
+  const { setValue, getValues } =
+    useFormContext<z.infer<typeof CreatePostSchema>>();
 
   return (
     <HeaderWrapper
@@ -471,15 +489,15 @@ export function CreatePostHeader() {
             <View style={{ flexDirection: "row" }}>
               <Button
                 style={styles.button}
-                type={type === "work" ? "primary" : "secondary"}
-                onPress={() => setType("work")}
+                type={getValues("type") === "work" ? "primary" : "secondary"}
+                onPress={() => setValue("type", "work")}
               >
                 Job
               </Button>
               <Button
                 style={styles.button}
-                type={type === "hire" ? "primary" : "secondary"}
-                onPress={() => setType("hire")}
+                type={getValues("type") === "hire" ? "primary" : "secondary"}
+                onPress={() => setValue("type", "hire")}
               >
                 Service
               </Button>
@@ -631,7 +649,7 @@ export function SingleMessageFooter({
               name="send"
               size="xl"
               onPress={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || text === ""}
             />
           </View>
         ),

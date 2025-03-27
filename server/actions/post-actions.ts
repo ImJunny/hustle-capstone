@@ -5,6 +5,7 @@ import {
   users,
   posts,
   addresses,
+  initiated_jobs,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -117,8 +118,8 @@ export async function updatePost(
   }
 }
 
-// Get user job posts
-export async function getUserPosts(uuid: string) {
+// Get user job posts; can pass in optional type, otherwise all
+export async function getUserPosts(uuid: string, type?: "work" | "hire") {
   try {
     let result = await db
       .select({
@@ -131,7 +132,13 @@ export async function getUserPosts(uuid: string) {
         location_type: posts.location_type,
       })
       .from(posts)
-      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "hidden")))
+      .where(
+        and(
+          eq(posts.user_uuid, uuid),
+          ne(posts.status_type, "hidden"),
+          type && eq(posts.type, type)
+        )
+      )
       .orderBy(desc(posts.created_at));
 
     result = await Promise.all(
@@ -311,59 +318,119 @@ export async function deletePost(uuid: string) {
   }
 }
 
+// export async function getHomePosts(type: "work" | "hire") {
+//   try {
+//     let result = await db
+//       .select()
+//       .from(posts)
+//       .where(and(eq(posts.type, type), ne(posts.status_type, "hidden")));
+
+//     result = await Promise.all(
+//       result.map(async (post) => {
+//         const image = await db
+//           .select({ image_url: post_images.image_url })
+//           .from(post_images)
+//           .where(eq(post_images.post_uuid, post.uuid))
+//           .orderBy(asc(post_images.image_url))
+//           .limit(1);
+
+//         const userInfo = await db
+//           .select({
+//             user_username: users.username,
+//             avatar_url: users.avatar_url,
+//           })
+//           .from(users)
+//           .where(eq(users.uuid, post.user_uuid))
+//           .limit(1);
+
+//         return {
+//           ...post,
+//           image_url: image[0].image_url ?? null,
+//           ...userInfo[0],
+//         };
+//       })
+//     );
+//     return result;
+//   } catch (error) {
+//     console.log(error);
+//     throw new Error("Failed to get home posts.");
+//   }
+// }
+
 export async function getHomePosts(type: "work" | "hire") {
   try {
     let result = await db
-      .select()
-      .from(posts)
-      .where(and(eq(posts.type, type), ne(posts.status_type, "hidden")));
-
-    result = await Promise.all(
-      result.map(async (post) => {
-        const image = await db
-          .select({ image_url: post_images.image_url })
-          .from(post_images)
-          .where(eq(post_images.post_uuid, post.uuid))
-          .orderBy(asc(post_images.image_url))
-          .limit(1);
-
-        const userInfo = await db
-          .select({
-            user_username: users.username,
-            avatar_url: users.avatar_url,
-          })
-          .from(users)
-          .where(eq(users.uuid, post.user_uuid))
-          .limit(1);
-
-        return {
-          ...post,
-          image_url: image[0].image_url ?? null,
-          ...userInfo[0],
-        };
+      .select({
+        uuid: posts.uuid,
+        user_uuid: posts.user_uuid,
+        title: posts.title,
+        description: posts.description,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        type: posts.type,
+        location_type: posts.location_type,
+        due_date: posts.due_date,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+        user_avatar_url: users.avatar_url,
+        user_username: users.username,
       })
-    );
+      .from(posts)
+      .innerJoin(
+        users,
+        and(
+          eq(users.uuid, posts.user_uuid),
+          ne(posts.status_type, "hidden"),
+          eq(posts.type, type)
+        )
+      );
     return result;
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get home posts.");
   }
 }
-export type HomePost = {
-  uuid: string;
-  user_uuid: string;
-  title: string;
-  description: string;
-  min_rate: number;
-  max_rate: number | null;
-  type: "work" | "hire";
-  location_type: string;
-  location_address: string | null;
-  created_at: Date;
-  due_date: string | null;
-  status_type: string | null;
-  image_url: string | null;
-  distance: string;
-  user_username: string;
-  avatar_url: string;
-};
+export type HomePost = Awaited<ReturnType<typeof getHomePosts>>[number];
+
+// Get active post counts
+export async function getActivePostCounts(user_uuid: string) {
+  try {
+    const active_job_count = await db
+      .select()
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.type, "work")
+        )
+      )
+      .where(eq(initiated_jobs.worker_uuid, user_uuid))
+      .then((posts) => posts.length);
+
+    const active_service_count = await db
+      .select()
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.type, "hire")
+        )
+      )
+      .where(eq(initiated_jobs.worker_uuid, user_uuid))
+      .then((posts) => posts.length);
+    return {
+      active_job_count,
+      active_service_count,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to apply for job.");
+  }
+}

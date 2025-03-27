@@ -57,6 +57,5 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     alignSelf: "flex-end",
-    height: 40,
   },
 });

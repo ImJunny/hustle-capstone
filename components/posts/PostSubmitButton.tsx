@@ -30,7 +30,7 @@ export default function PostSubmitButton({
     trpc.post.create_post.useMutation({
       onSuccess: async () => {
         await utils.post.invalidate();
-        router.replace("/(main)/(tabs)/profile-main" as any);
+        router.back();
         Toast.show({
           text1: "Successfully created post",
           swipeable: false,

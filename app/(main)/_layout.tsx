@@ -17,6 +17,18 @@ export default function Layout() {
         name="(external)/message/[uuid]"
         options={{ animation: "ios_from_right" }}
       />
+      <Stack.Screen
+        name="(external)/accept/[uuid]"
+        options={{ animation: "ios_from_right" }}
+      />
+      <Stack.Screen
+        name="(external)/post/[uuid]"
+        options={{ animation: "fade_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(external)/choose-service"
+        options={{ animation: "ios_from_right" }}
+      />
     </Stack>
   );
 }

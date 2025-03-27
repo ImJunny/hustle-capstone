@@ -14,30 +14,32 @@ interface Route {
 }
 
 const WorkRoute = () => {
-  const { data: workPosts } = trpc.post.get_home_posts.useQuery({
+  const { data: workPosts, refetch } = trpc.post.get_home_posts.useQuery({
     type: "work",
   });
 
   return (
     <Feed
       data={workPosts!}
+      refetch={() => refetch().then(() => {})}
       renderItem={({ item }) => (
-        <HomePost key={item.uuid} data={item as unknown as THomePost} />
+        <HomePost data={item as unknown as THomePost} />
       )}
     />
   );
 };
 
 const HireRoute = () => {
-  const { data: hirePosts } = trpc.post.get_home_posts.useQuery({
+  const { data: hirePosts, refetch } = trpc.post.get_home_posts.useQuery({
     type: "hire",
   });
 
   return (
     <Feed
       data={hirePosts!}
+      refetch={() => refetch().then(() => {})}
       renderItem={({ item }) => (
-        <HomePost key={item.uuid} data={item as unknown as THomePost} />
+        <HomePost data={item as unknown as THomePost} />
       )}
     />
   );
@@ -63,16 +65,14 @@ export default function HomeScreen() {
 
   return (
     <>
-      <View style={{ flex: 1 }}>
-        <IndexHeader index={index} setIndex={setIndex} />
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: Dimensions.get("window").width }}
-          renderTabBar={() => null} // Hide the default tab bar
-        />
-      </View>
+      <IndexHeader index={index} setIndex={setIndex} />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: Dimensions.get("window").width }}
+        renderTabBar={() => null} // Hide the default tab bar
+      />
     </>
   );
 }

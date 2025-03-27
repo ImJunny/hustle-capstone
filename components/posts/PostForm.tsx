@@ -17,11 +17,10 @@ import Icon from "../ui/Icon";
 import { router, useLocalSearchParams } from "expo-router";
 
 type PostFormProps = {
-  data?: PostDetailsInfo;
-  isEditing?: boolean;
+  type?: "work" | "hire";
 };
 
-export default function PostForm({ data, isEditing }: PostFormProps) {
+export default function PostForm({ type = "hire" }: PostFormProps) {
   // Declare form properties
   const {
     control,
@@ -188,7 +187,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
           control={control}
           defaultValue="remote"
           render={({ field: { value, onChange } }) => (
-            <View style={{ marginTop: 10, gap: 16 }}>
+            <View style={{ marginTop: 4, gap: 16 }}>
               <RadioButton
                 label={"Remote"}
                 selected={value}
@@ -219,7 +218,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
                 });
               }}
               style={{
-                marginTop: 10,
+                marginTop: 4,
                 paddingHorizontal: 20,
                 height: 120,
                 borderWidth: 1,
@@ -291,7 +290,7 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
           Tags
         </Text>
         <Input type="outline" style={styles.text_form} />
-        <Text color="muted" size="sm" style={{ marginTop: 10 }}>
+        <Text color="muted" size="sm" style={{ marginTop: 4 }}>
           Add up to 3 tags. This helps others find your post.
         </Text>
       </View>
@@ -312,13 +311,13 @@ export default function PostForm({ data, isEditing }: PostFormProps) {
         <Text
           color={errors[field] ? "red" : "muted"}
           size="sm"
-          style={{ marginTop: 10 }}
+          style={{ marginTop: 4 }}
         >
           {errors[field] ? errors[field].message : defaultMessage}
         </Text>
       );
     return (
-      <Text color="muted" size="sm" style={{ marginTop: 10 }}>
+      <Text color="muted" size="sm" style={{ marginTop: 4 }}>
         {defaultMessage}
       </Text>
     );
@@ -336,16 +335,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text_form: {
-    marginTop: 10,
+    marginTop: 4,
   },
   description_form: {
-    marginTop: 10,
+    marginTop: 4,
     height: 160,
     flexWrap: "wrap",
     paddingVertical: 10,
   },
   rate_form: {
-    marginTop: 10,
+    marginTop: 4,
     width: 120,
   },
   footer: {

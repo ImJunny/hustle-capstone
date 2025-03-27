@@ -136,7 +136,7 @@ export async function getTrackWorkingPosts(user_uuid: string) {
     throw new Error("Failed to get track working posts.");
   }
 }
-export type TrackWorkingPost = Awaited<
+export type TrackPost = Awaited<
   ReturnType<typeof getTrackWorkingPosts>
 >[number];
 
@@ -266,6 +266,3 @@ export async function getTrackHiringPosts(user_uuid: string) {
     throw new Error("Failed to get track hiring posts.");
   }
 }
-export type TrackHiringPost = Awaited<
-  ReturnType<typeof getTrackHiringPosts>
->[number];

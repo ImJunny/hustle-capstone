@@ -63,12 +63,14 @@ export default function AcceptScreen() {
   };
 
   // get transaction estimate
-  const { data, isLoading } = trpc.job.get_transaction_estimate.useQuery({
-    job_post_uuid: uuid as string,
-  });
+  const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
+    {
+      job_post_uuid: uuid as string,
+    }
+  );
 
   // render page
-  if (isLoading || !data || !user) {
+  if (isLoading) {
     return (
       <>
         <SimpleHeader title="Accept job" />

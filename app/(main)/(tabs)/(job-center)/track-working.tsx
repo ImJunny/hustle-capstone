@@ -1,12 +1,12 @@
 import { SimpleHeader } from "@/components/headers/Headers";
-import TrackWorkingPost from "@/components/posts/TrackWorkingPost";
 import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
-import { TrackWorkingPost as TrackWorkingPostType } from "@/server/actions/jobs-actions";
+import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
+import TrackPost from "@/components/posts/TrackPost";
 
 export default function TrackWorkingScreen() {
   const { user } = useAuthData();
@@ -50,12 +50,13 @@ export default function TrackWorkingScreen() {
       <SimpleHeader title="Track working" />
       <ScrollView>
         {data?.map((post, i) => (
-          <TrackWorkingPost
+          <TrackPost
             key={i}
-            data={post as TrackWorkingPostType}
+            data={post as TrackPostType}
             style={{
               borderBottomWidth: 1,
             }}
+            type="work"
           />
         ))}
       </ScrollView>

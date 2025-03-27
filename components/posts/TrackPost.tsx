@@ -4,15 +4,16 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import { TrackWorkingPost as TrackWorkingPostType } from "@/server/actions/jobs-actions";
+import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
 import { format, isSameYear } from "date-fns";
 
 export type TrackJobPostProps = {
-  data: TrackWorkingPostType;
+  data: TrackPostType;
+  type: "work" | "hire";
 } & ViewProps;
 
-export default function TrackWorkingPost({ data, style }: TrackJobPostProps) {
+export default function TrackPost({ data, style, type }: TrackJobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   const dueDate = new Date(data.due_date!);
@@ -51,10 +52,12 @@ export default function TrackWorkingPost({ data, style }: TrackJobPostProps) {
               <Text weight="semibold" color="red" size="lg">
                 Overdue
               </Text>
-            ) : (
+            ) : data.progress === "completed" ? (
               <Text weight="semibold" color="green" size="lg">
                 Paid
               </Text>
+            ) : (
+              <Text color="muted">{data.progress}</Text>
             )}
           </View>
         </View>

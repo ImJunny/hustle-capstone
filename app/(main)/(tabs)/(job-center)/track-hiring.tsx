@@ -5,8 +5,8 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
-import { TrackHiringPost as TrackHiringPostType } from "@/server/actions/jobs-actions";
-import TrackHiringPost from "@/components/posts/TrackHiringPost";
+import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
+import TrackPost from "@/components/posts/TrackPost";
 
 export default function TrackHireScreen() {
   const { user } = useAuthData();
@@ -50,12 +50,13 @@ export default function TrackHireScreen() {
       <SimpleHeader title="Track hiring" />
       <ScrollView>
         {data?.map((post, i) => (
-          <TrackHiringPost
+          <TrackPost
             key={i}
-            data={post as TrackHiringPostType}
+            data={post as TrackPostType}
             style={{
               borderBottomWidth: 1,
             }}
+            type="hire"
           />
         ))}
       </ScrollView>

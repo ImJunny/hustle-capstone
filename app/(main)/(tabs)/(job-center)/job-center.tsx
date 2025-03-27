@@ -25,7 +25,9 @@ export default function JobCenterScreen() {
         {isLoading ? (
           <LoadingView />
         ) : (
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
             <Text>Error encountered</Text>
           </View>
         )}

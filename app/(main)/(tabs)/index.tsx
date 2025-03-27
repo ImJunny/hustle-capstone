@@ -22,7 +22,7 @@ const WorkRoute = () => {
     <Feed
       data={workPosts!}
       renderItem={({ item }) => (
-        <HomePost key={item.uuid} data={item as unknown as THomePost} />
+        <HomePost data={item as unknown as THomePost} />
       )}
     />
   );
@@ -37,7 +37,7 @@ const HireRoute = () => {
     <Feed
       data={hirePosts!}
       renderItem={({ item }) => (
-        <HomePost key={item.uuid} data={item as unknown as THomePost} />
+        <HomePost data={item as unknown as THomePost} />
       )}
     />
   );

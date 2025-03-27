@@ -25,7 +25,7 @@ const Feed = <T extends { uuid: string }>({
       bounces={false}
       data={data}
       renderItem={renderItem}
-      keyExtractor={(item) => item.uuid}
+      keyExtractor={(item, index) => `${item.uuid}-${index}`}
       pagingEnabled
       snapToInterval={postHeight}
       snapToAlignment="end"

@@ -1,23 +1,21 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
-import { initiated_jobs, post_images, posts } from "@/drizzle/schema";
-import { and, eq } from "drizzle-orm";
+import { initiated_jobs, post_images, posts, users } from "@/drizzle/schema";
+import { and, eq, sql } from "drizzle-orm";
 
-// Get transaction estimate
+// Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
   job_post_uuid: string,
   user_uuid?: string
 ) {
-  try {
-    // temporary take min_rate since there is no offer lookup
-    const { rate } = await db
-      .select({ rate: posts.min_rate })
+  async function getGenericRate() {
+    return await db
+      .select({ min_rate: posts.min_rate })
       .from(posts)
-      .where(eq(posts.uuid, job_post_uuid))
-      .limit(1)
-      .then(([post_rate]) => post_rate);
+      .then(([result]) => getEstimate(result.min_rate));
+  }
 
-    // later add user_uuid for offer lookup
+  function getEstimate(rate: number) {
     const service_fee = Math.floor(rate * ServiceFee * 100) / 100;
     const total = rate - service_fee;
 
@@ -26,6 +24,35 @@ export async function getTransactionEstimate(
       service_fee,
       total,
     };
+  }
+
+  try {
+    if (!user_uuid) return await getGenericRate();
+
+    const is_accepted = await db
+      .select()
+      .from(initiated_jobs)
+      .where(
+        and(
+          eq(initiated_jobs.job_post_uuid, job_post_uuid),
+          eq(initiated_jobs.worker_uuid, user_uuid)
+        )
+      )
+      .then((result) => result.length > 0);
+
+    if (is_accepted) {
+      const rate = await db
+        .select()
+        .from(initiated_jobs)
+        .where(
+          and(
+            eq(initiated_jobs.job_post_uuid, job_post_uuid),
+            eq(initiated_jobs.worker_uuid, user_uuid)
+          )
+        )
+        .then(([result]) => result.rate);
+      return getEstimate(rate);
+    } else return await getGenericRate();
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get transaction estimate.");
@@ -46,8 +73,12 @@ export async function acceptJob(
     const is_already_accepted = await db
       .select()
       .from(initiated_jobs)
-      .innerJoin(posts, eq(initiated_jobs.job_post_uuid, posts.uuid))
-      .where(eq(initiated_jobs.worker_uuid, user_uuid))
+      .where(
+        and(
+          eq(initiated_jobs.job_post_uuid, job_post_uuid),
+          eq(initiated_jobs.worker_uuid, user_uuid)
+        )
+      )
       .limit(1)
       .then((posts) => posts.length > 0);
     if (is_already_accepted) throw new Error("already_accepted");
@@ -82,7 +113,12 @@ export async function getTrackJobPosts(user_uuid: string) {
         title: posts.title,
         due_date: posts.due_date,
         progress: initiated_jobs.progress_type,
-        image_url: post_images.image_url,
+        image_url: sql`(
+                  SELECT ${post_images.image_url}
+                  FROM ${post_images}
+                  WHERE ${post_images.post_uuid} = ${posts.uuid}
+                  LIMIT 1
+                )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -92,7 +128,6 @@ export async function getTrackJobPosts(user_uuid: string) {
           eq(posts.type, "work")
         )
       )
-      .innerJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .where(eq(initiated_jobs.worker_uuid, user_uuid));
     return result;
   } catch (error) {
@@ -101,3 +136,58 @@ export async function getTrackJobPosts(user_uuid: string) {
   }
 }
 export type TrackJobPost = Awaited<ReturnType<typeof getTrackJobPosts>>[number];
+
+// Get job tracking details
+export async function getJobTrackingDetails(
+  user_uuid: string,
+  job_post_uuid: string
+) {
+  //use temporary min rate as accepted rate for now
+  try {
+    const result = await db
+      .select({
+        job_image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          LIMIT 1
+        )`,
+        initiated_job_post_uuid: initiated_jobs.uuid,
+        job_post_uuid: posts.uuid,
+        title: posts.title,
+        due_date: posts.due_date,
+        progress: initiated_jobs.progress_type,
+        worker_username: users.username,
+        worker_avatar_url: users.avatar_url,
+        accepted_rate: posts.min_rate,
+      })
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.uuid, job_post_uuid),
+          eq(initiated_jobs.worker_uuid, user_uuid)
+        )
+      )
+      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .limit(1);
+    if (result.length > 0) return result[0];
+    else return null;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get job tracking details");
+  }
+}
+
+// Unaccept job
+export async function unacceptJob(initiated_job_post_uuid: string) {
+  try {
+    await db
+      .delete(initiated_jobs)
+      .where(eq(initiated_jobs.uuid, initiated_job_post_uuid));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to unaccept job");
+  }
+}

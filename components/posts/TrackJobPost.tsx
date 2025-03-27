@@ -4,8 +4,6 @@ import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
-import Icon from "../ui/Icon";
 import { TrackJobPost as TrackJobPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
 import { format, isSameYear } from "date-fns";

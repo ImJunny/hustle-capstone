@@ -6,10 +6,8 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
-import { exampleJobPosts } from "@/server/utils/example-data";
 
 export default function TrackWorkingScreen() {
-  const samplePosts = exampleJobPosts;
   const { user } = useAuthData();
 
   const { data, isLoading } = trpc.job.get_track_job_posts.useQuery({
@@ -23,13 +21,29 @@ export default function TrackWorkingScreen() {
         {isLoading ? (
           <LoadingView />
         ) : (
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
             <Text>Error encountered while getting posts</Text>
           </View>
         )}
       </>
     );
   }
+
+  if (data?.length === 0) {
+    return (
+      <>
+        <SimpleHeader title="Track working" />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>No jobs to track</Text>
+        </View>
+      </>
+    );
+  }
+
   return (
     <>
       <SimpleHeader title="Track working" />

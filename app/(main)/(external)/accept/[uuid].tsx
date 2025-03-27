@@ -72,7 +72,9 @@ export default function AcceptScreen() {
         {isLoading ? (
           <LoadingView />
         ) : (
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
             <Text>Encountered an error getting job information</Text>
           </View>
         )}

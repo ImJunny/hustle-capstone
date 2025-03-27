@@ -25,17 +25,18 @@ export default function HomePost({ data }: { data: THomePost }) {
       ? format(date, "MMMM d")
       : format(date, "MMMM d, yyyy");
   }
-  const distance = getGeneralDistance(parseInt(data.distance));
-  function getGeneralDistance(distance: number) {
-    if (distance <= 1) return 1;
-    else if (distance <= 5) return 5;
-    else if (distance <= 10) return 10;
-    else if (distance <= 15) return 15;
-    else if (distance <= 20) return 20;
-    else if (distance <= 25) return 25;
-    else if (distance <= 50) return 50;
-    return 51;
-  }
+
+  // const distance = getGeneralDistance(parseInt(data.distance));
+  // function getGeneralDistance(distance: number) {
+  //   if (distance <= 1) return 1;
+  //   else if (distance <= 5) return 5;
+  //   else if (distance <= 10) return 10;
+  //   else if (distance <= 15) return 15;
+  //   else if (distance <= 20) return 20;
+  //   else if (distance <= 25) return 25;
+  //   else if (distance <= 50) return 50;
+  //   return 51;
+  // }
 
   const { user } = useAuthData();
 
@@ -106,11 +107,7 @@ export default function HomePost({ data }: { data: THomePost }) {
                   </Badge>
                   <Badge>
                     <Text size="sm" weight="semibold">
-                      {data.location_type === "remote"
-                        ? "remote"
-                        : data.distance
-                        ? `< ${distance} mi`
-                        : "local"}
+                      {data.location_type === "remote" ? "remote" : "local"}
                     </Text>
                   </Badge>
                 </View>
@@ -165,9 +162,9 @@ export default function HomePost({ data }: { data: THomePost }) {
           <View style={styles.bottomContainer}>
             <Image
               source={
-                data?.avatar_url
+                data?.user_avatar_url
                   ? {
-                      uri: data.avatar_url,
+                      uri: data.user_avatar_url,
                     }
                   : require("@/assets/images/default-avatar-icon.jpg")
               }

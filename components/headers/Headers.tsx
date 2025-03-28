@@ -252,23 +252,6 @@ export function ChooseServiceHeader() {
   );
 }
 
-export function ChooseWorkerHeader() {
-  return (
-    <HeaderWrapper
-      options={{
-        left: (
-          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
-            <IconButton name="arrow-back" onPress={() => router.back()} />
-            <Text size="xl" weight="semibold">
-              Approve a worker
-            </Text>
-          </View>
-        ),
-      }}
-    />
-  );
-}
-
 export function MessagesHeader() {
   return (
     <View color="background">

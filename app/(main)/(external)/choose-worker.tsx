@@ -1,8 +1,4 @@
-import {
-  ChooseServiceHeader,
-  ChooseWorkerHeader,
-  SimpleHeader,
-} from "@/components/headers/Headers";
+import { SimpleHeader } from "@/components/headers/Headers";
 import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -17,7 +13,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
 import { AcceptedUser } from "@/server/actions/jobs-actions";
 import Icon from "@/components/ui/Icon";
-import { format, formatDistanceToNow, isThisYear } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 // Addresses screen
 export default function ChooseWorkerScreen() {
@@ -59,7 +55,7 @@ export default function ChooseWorkerScreen() {
 
   return (
     <>
-      <ChooseWorkerHeader />
+      <SimpleHeader title="Approve a worker" />
       <View style={{ flex: 1 }} color="base">
         <View style={{ padding: 16, borderBottomWidth: 1 }} color="background">
           <Text size="sm" color="muted">
@@ -87,7 +83,7 @@ export default function ChooseWorkerScreen() {
         <Button
           disabled={!currentWorker}
           onPress={() => {
-            router.replace("/confirm-approve");
+            router.push("/confirm-approve");
           }}
         >
           Continue to approval

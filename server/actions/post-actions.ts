@@ -6,6 +6,7 @@ import {
   posts,
   addresses,
   initiated_jobs,
+  saved_post,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -419,5 +420,113 @@ export async function isInitiated(user_uuid: string, job_post_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");
+  }
+}
+
+export async function savePost(postUuid: string, userUuid: string) {
+  try {
+    // Check if post is already saved to prevent duplicates
+    const existingSavedPost = await db
+      .select()
+      .from(saved_post)
+      .where(
+        and(
+          eq(saved_post.post_uuid, postUuid),
+          eq(saved_post.user_uuid, userUuid)
+        )
+      )
+      .limit(1);
+
+    if (existingSavedPost.length > 0) {
+      throw new Error("Post already saved");
+    }
+
+    // Insert saved post
+    await db.insert(saved_post).values({
+      post_uuid: postUuid,
+      user_uuid: userUuid,
+    });
+
+    return { success: true, message: "Post saved successfully" };
+  } catch (error) {
+    console.error("Failed to save post:", error);
+
+    if (error instanceof Error && error.message === "Post already saved") {
+      return {
+        success: false,
+        message: "This post is already saved",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Failed to save post",
+    };
+  }
+}
+
+// Unsave a post action
+export async function unsavePost(postUuid: string, userUuid: string) {
+  try {
+    // Delete the saved post
+    await db
+      .delete(saved_post)
+      .where(
+        and(
+          eq(saved_post.post_uuid, postUuid),
+          eq(saved_post.user_uuid, userUuid)
+        )
+      );
+
+    return { success: true, message: "Post unsaved successfully" };
+  } catch (error) {
+    console.error("Failed to unsave post:", error);
+
+    return {
+      success: false,
+      message: "Failed to unsave post",
+    };
+  }
+}
+
+// Get saved posts
+export async function getSavedPosts(
+  userUuid: string,
+  type: "work" | "hire"
+): Promise<Post[]> {
+  try {
+    const savedPosts = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+        distance: sql`NULL`, // Add this to match the Post type
+      })
+      .from(saved_post)
+      .innerJoin(posts, eq(saved_post.post_uuid, posts.uuid))
+      .where(
+        and(
+          eq(saved_post.user_uuid, userUuid),
+          eq(posts.type, type),
+          ne(posts.status_type, "hidden")
+        )
+      )
+      .orderBy(desc(posts.created_at));
+
+    return savedPosts as Post[];
+  } catch (error) {
+    console.error("Failed to get saved posts:", error);
+    throw new Error("Failed to retrieve saved posts");
   }
 }

@@ -1,6 +1,15 @@
+import { getSavedPosts } from "@/server/actions/post-actions";
 import PostList from "@/components/posts/PostList";
-import { exampleServicePosts } from "@/server/utils/example-data";
+import { useAuthData } from "@/contexts/AuthContext";
 
-export default function SavedJobsScreen() {
-  return <PostList data={exampleServicePosts} />;
+export default async function SavedServicesScreen() {
+  const session = await useAuthData();
+
+  if (!session?.user?.id) {
+    return <PostList data={[]} />;
+  }
+
+  const savedServices = await getSavedPosts(session.user.id, "hire");
+
+  return <PostList data={savedServices} />;
 }

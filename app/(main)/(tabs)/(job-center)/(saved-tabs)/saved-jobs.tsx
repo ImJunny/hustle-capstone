@@ -1,8 +1,15 @@
+import { getSavedPosts } from "@/server/actions/post-actions";
 import PostList from "@/components/posts/PostList";
-import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
-import { exampleJobPosts } from "@/server/utils/example-data";
+import { useAuthData } from "@/contexts/AuthContext";
 
-export default function SavedJobsScreen() {
-  return <PostList data={exampleJobPosts} />;
+export default async function SavedJobsScreen() {
+  const session = await useAuthData();
+
+  if (!session?.user?.id) {
+    return <PostList data={[]} />;
+  }
+
+  const savedJobs = await getSavedPosts(session.user.id, "work");
+
+  return <PostList data={savedJobs} />;
 }

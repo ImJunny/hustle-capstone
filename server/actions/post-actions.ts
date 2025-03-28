@@ -361,7 +361,7 @@ export type HomePost = Awaited<ReturnType<typeof getHomePosts>>[number];
 // Get active post counts
 export async function getActivePostCounts(user_uuid: string) {
   try {
-    const active_job_count = await db
+    const active_working_count = await db
       .select()
       .from(initiated_jobs)
       .innerJoin(
@@ -374,25 +374,25 @@ export async function getActivePostCounts(user_uuid: string) {
       .where(eq(initiated_jobs.worker_uuid, user_uuid))
       .then((posts) => posts.length);
 
-    const active_service_count = await db
+    const active_hiring_count = await db
       .select()
-      .from(initiated_jobs)
-      .innerJoin(
-        posts,
+      .from(posts)
+      .where(
         and(
-          eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.type, "hire")
+          eq(posts.type, "work"),
+          eq(posts.user_uuid, user_uuid),
+          ne(posts.status_type, "hidden")
         )
       )
-      .where(eq(initiated_jobs.worker_uuid, user_uuid))
       .then((posts) => posts.length);
+
     return {
-      active_job_count,
-      active_service_count,
+      active_working_count,
+      active_hiring_count,
     };
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to apply for job.");
+    throw new Error("Failed to get active post counts.");
   }
 }
 

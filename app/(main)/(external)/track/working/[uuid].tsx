@@ -153,12 +153,13 @@ export default function TrackWorkingDetailsScreen() {
             <Text size="xl" weight="semibold">
               Job location
             </Text>
-            <Text color="muted">
+            {/* <Text color="muted">
               {`308 Negra Arroyo Lane\nAlbuquerque, New Mexico\n87104`}
-            </Text>
+            </Text> */}
+            <Text color="muted">Location is hidden until you are approved</Text>
           </View>
 
-          <Button type="variant">View in Maps</Button>
+          {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
         <Separator />

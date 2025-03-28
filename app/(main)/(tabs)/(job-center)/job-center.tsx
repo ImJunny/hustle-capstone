@@ -47,13 +47,13 @@ export default function JobCenterScreen() {
             iconName="briefcase-outline"
             title="Working"
             href="/track-working"
-            active_count={data.active_job_count}
+            active_count={data.active_working_count}
           />
           <LinkEntry
             iconName="calendar-outline"
             title="Hiring"
             href="/track-hiring"
-            active_count={data.active_service_count}
+            active_count={data.active_hiring_count}
           />
         </View>
         <View style={styles.category}>

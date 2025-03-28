@@ -104,7 +104,7 @@ export default function FilterSheet({
           <Separator />,
           <View>
             <View style={styles.dualLabel}>
-              <Text weight="semibold" size="xl">
+              <Text weight="semibold" size="lg">
                 Rate
               </Text>
               <Text>
@@ -150,7 +150,7 @@ export default function FilterSheet({
             <GoogleAutoInput setGeocode={setGeocode} />
             <View>
               <View style={styles.dualLabel}>
-                <Text weight="semibold" size="xl">
+                <Text weight="semibold" size="lg">
                   Distance
                 </Text>
                 <Text>
@@ -214,7 +214,7 @@ function FilterEntry({
 }) {
   return (
     <View>
-      <Text style={styles.label} weight="semibold" size="xl">
+      <Text style={styles.label} weight="semibold" size="lg">
         {title}
       </Text>
       {children}

@@ -64,7 +64,7 @@ export default function ChooseServiceScreen() {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              paddingVertical: 32,
+              height: 100,
               paddingHorizontal: 16,
               alignItems: "center",
               borderBottomWidth: 1,
@@ -128,7 +128,7 @@ function ServiceEntry({
         <View style={{ flexDirection: "row", gap: 20 }}>
           <Image
             source={{ uri: service.image_url }}
-            style={{ width: 90, height: 90, borderRadius: 4 }}
+            style={{ width: 68, height: 68, borderRadius: 4 }}
           />
           <View style={{ justifyContent: "center" }}>
             <Text weight="semibold" size="lg">

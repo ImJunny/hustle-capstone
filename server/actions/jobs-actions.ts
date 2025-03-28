@@ -140,8 +140,8 @@ export type TrackPost = Awaited<
   ReturnType<typeof getTrackWorkingPosts>
 >[number];
 
-// Get job tracking details
-export async function getJobTrackingDetails(
+// Get track working details
+export async function getTrackWorkingDetails(
   user_uuid: string,
   job_post_uuid: string
 ) {
@@ -161,9 +161,10 @@ export async function getJobTrackingDetails(
         title: posts.title,
         due_date: posts.due_date,
         progress: initiated_jobs.progress_type,
-        worker_username: users.username,
-        worker_avatar_url: users.avatar_url,
+        employer_username: users.username,
+        employer_avatar_url: users.avatar_url,
         accepted_rate: posts.min_rate,
+        user_uuid: users.uuid,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -174,10 +175,97 @@ export async function getJobTrackingDetails(
           eq(initiated_jobs.worker_uuid, user_uuid)
         )
       )
-      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .innerJoin(users, eq(posts.user_uuid, users.uuid))
       .limit(1);
     if (result.length > 0) return result[0];
     else return null;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get job tracking details");
+  }
+}
+
+// Get track working details; get initiated job if exists, otherwise list of accepted
+export async function getTrackHiringDetails(
+  user_uuid: string,
+  job_post_uuid: string
+) {
+  try {
+    const data_with_user = await db
+      .select({
+        accepted_count: sql`(
+          SELECT COUNT(*)
+          FROM ${initiated_jobs}
+          WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+        )`,
+        job_image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+        initiated_job_post_uuid: initiated_jobs.uuid,
+        job_post_uuid: posts.uuid,
+        title: posts.title,
+        due_date: posts.due_date,
+        progress: initiated_jobs.progress_type,
+        accepted_rate: posts.min_rate,
+        user_username: users.username,
+        user_avatar_url: users.avatar_url,
+        user_uuid: users.uuid,
+      })
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
+        and(
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
+          eq(posts.uuid, job_post_uuid),
+          eq(posts.user_uuid, user_uuid),
+          ne(initiated_jobs.progress_type, "accepted")
+        )
+      )
+      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .limit(1)
+      .then(([result]) => result);
+
+    // If no approved worker, check for unapproved workers
+    if (data_with_user) return { ...data_with_user, is_approved: true };
+    const data_without_user = await db
+      .select({
+        accepted_count: sql`(
+        SELECT COUNT(*)
+        FROM ${initiated_jobs}
+        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+      )`,
+        job_image_url: post_images.image_url,
+        job_post_uuid: posts.uuid,
+        title: posts.title,
+        due_date: posts.due_date,
+        accepted_rate: posts.min_rate,
+      })
+      .from(posts)
+      .leftJoin(
+        post_images,
+        and(
+          eq(post_images.post_uuid, posts.uuid),
+          eq(
+            post_images.image_url,
+            sql`(
+            SELECT image_url
+            FROM ${post_images}
+            WHERE ${post_images.post_uuid} = ${posts.uuid}
+            ORDER BY ${post_images.image_url} ASC
+            LIMIT 1
+          )`
+          )
+        )
+      )
+      .where(eq(posts.uuid, job_post_uuid))
+      .limit(1)
+      .then(([result]) => result);
+
+    return { ...data_without_user, is_approved: false };
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get job tracking details");
@@ -255,7 +343,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
 
             return {
               ...post,
-              progress: `${acceptedJobCount} accepted`,
+              progress: `${acceptedJobCount} Accepted`,
             };
           })
         )
@@ -266,3 +354,53 @@ export async function getTrackHiringPosts(user_uuid: string) {
     throw new Error("Failed to get track hiring posts.");
   }
 }
+
+// Get accepted users for track hiring post
+export async function getAcceptedUsers(job_post_uuid: string) {
+  try {
+    const result = await db
+      .select({
+        user_uuid: users.uuid,
+        user_username: users.username,
+        user_display_name: users.display_name,
+        user_avatar_url: users.avatar_url,
+        created_at: initiated_jobs.created_at,
+        service: sql`(
+          SELECT json_build_object(
+            'uuid', ${posts.uuid},
+            'title', ${posts.title},
+            'image_url', (
+              SELECT ${post_images.image_url}
+              FROM ${post_images}
+              WHERE ${post_images.post_uuid} = ${initiated_jobs.linked_service_post_uuid}
+              ORDER BY ${post_images.image_url} ASC
+              LIMIT 1
+            )
+          )
+          FROM ${posts}
+          WHERE ${posts.uuid} = ${initiated_jobs.linked_service_post_uuid}
+        )`,
+      })
+      .from(initiated_jobs)
+      .innerJoin(posts, eq(initiated_jobs.job_post_uuid, posts.uuid))
+      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .where(eq(initiated_jobs.job_post_uuid, job_post_uuid));
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get accepted users.");
+  }
+}
+export type AcceptedUser = {
+  user_uuid: string;
+  user_username: string | null;
+  user_display_name: string | null;
+  user_avatar_url: string | null;
+  created_at: string;
+  service: {
+    uuid: string;
+    image_url: string;
+    title: string;
+  } | null;
+};

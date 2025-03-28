@@ -45,21 +45,19 @@ export default function TrackPost({ data, style, type }: TrackJobPostProps) {
           </Text>
 
           {data.progress === "in progress" ? (
-            <Text weight="semibold" size="lg">
-              In progress
-            </Text>
+            <Text size="lg">In progress</Text>
           ) : data.progress === "accepted" ? (
             <Text color="muted">Accepted, awaiting approval</Text>
           ) : data.progress === "awaiting" ? (
-            <Text weight="semibold" color="yellow" size="lg">
+            <Text color="yellow" size="lg">
               Awaiting payment from employer
             </Text>
           ) : data.progress === "overdue" ? (
-            <Text weight="semibold" color="red" size="lg">
+            <Text color="red" size="lg">
               Overdue
             </Text>
           ) : data.progress === "completed" ? (
-            <Text weight="semibold" color="green" size="lg">
+            <Text color="green" size="lg">
               Paid
             </Text>
           ) : (

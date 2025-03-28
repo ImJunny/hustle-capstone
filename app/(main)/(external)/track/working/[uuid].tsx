@@ -2,17 +2,11 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { BackHeader, SimpleHeader } from "@/components/headers/Headers";
+import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import {
-  exampleJobPosts,
-  exampleServicePosts,
-} from "@/server/utils/example-data";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
@@ -32,7 +26,7 @@ export default function TrackWorkingDetailsScreen() {
     data = null,
     isLoading,
     error,
-  } = trpc.job.get_job_tracking_details.useQuery(
+  } = trpc.job.get_track_working_details.useQuery(
     {
       user_uuid: user?.id!,
       job_post_uuid: uuid as string,
@@ -125,7 +119,7 @@ export default function TrackWorkingDetailsScreen() {
           </TouchableOpacity>
 
           <View style={styles.textHeader}>
-            <Text size="xl" weight="semibold">
+            <Text size="lg" weight="semibold">
               {data.title}
             </Text>
             <Text>Due {formattedDueDate}</Text>
@@ -140,7 +134,7 @@ export default function TrackWorkingDetailsScreen() {
         <Separator />
 
         <View style={styles.transactionSection}>
-          <Text size="xl" weight="semibold">
+          <Text size="lg" weight="semibold">
             Transaction estimate
           </Text>
           <TrackTransactionEstimate data={estimateData} />
@@ -150,7 +144,7 @@ export default function TrackWorkingDetailsScreen() {
 
         <View style={styles.locationSection}>
           <View>
-            <Text size="xl" weight="semibold">
+            <Text size="lg" weight="semibold">
               Job location
             </Text>
             {/* <Text color="muted">
@@ -165,33 +159,49 @@ export default function TrackWorkingDetailsScreen() {
         <Separator />
 
         <View style={styles.employerSection}>
-          <Text size="xl" weight="semibold">
+          <Text size="lg" weight="semibold">
             Employer
           </Text>
-          <View style={styles.employerRow}>
-            <Image
-              source={{ uri: data.worker_avatar_url }}
-              style={{ borderRadius: 999, width: 40, height: 40 }}
-            />
-            <View style={{ gap: 4 }}>
-              <Text weight="semibold">@{data.worker_username}</Text>
-              <View style={styles.employerStarsRow}>
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Text size="sm" style={{ marginLeft: 4 }}>
-                  4
-                </Text>
+          <Pressable
+            onPress={() => {
+              router.push(`/profile/${data.user_uuid}` as any);
+            }}
+          >
+            <View style={styles.employerRow}>
+              <Image
+                source={
+                  data.employer_avatar_url
+                    ? { uri: data.employer_avatar_url }
+                    : require("@/assets/images/default-avatar-icon.jpg")
+                }
+                style={{ borderRadius: 999, width: 40, height: 40 }}
+              />
+              <View style={{ gap: 4 }}>
+                <Text weight="semibold">@{data.employer_username}</Text>
+                <View style={styles.employerStarsRow}>
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Text size="sm" style={{ marginLeft: 4 }}>
+                    4
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            <Button type="variant" style={styles.messageButton}>
-              <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
-              Message
-            </Button>
-          </View>
+              <Button
+                type="outline"
+                borderColor="foreground"
+                style={styles.messageButton}
+                onPress={() =>
+                  router.push(`/message/${(data as any).user_uuid}`)
+                }
+              >
+                Message
+              </Button>
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
     </>
@@ -210,7 +220,6 @@ const styles = StyleSheet.create({
     paddingVertical: 52,
   },
   transactionSection: {
-    alignItems: "center",
     gap: 8,
     paddingVertical: 52,
   },

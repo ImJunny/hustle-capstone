@@ -259,7 +259,7 @@ export async function getPostsByFilters(
         location_type: posts.location_type,
         address_uuid: posts.address_uuid,
         distance: geocode
-          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
       })
       .from(posts)
@@ -289,7 +289,6 @@ export async function getPostsByFilters(
     } else if (sort === "desc") {
       result = result.sort((a, b) => b.min_rate - a.min_rate);
     }
-
     return result;
   } catch (error) {
     console.log(error);

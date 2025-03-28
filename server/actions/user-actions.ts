@@ -46,6 +46,7 @@ export type createUserReturn = Awaited<ReturnType<typeof createUser>>;
 export async function getUserData(uuid: string) {
   try {
     const result = await db.select().from(users).where(eq(users.uuid, uuid));
+    console.log(result);
     return result[0];
   } catch (error) {
     console.log(error);

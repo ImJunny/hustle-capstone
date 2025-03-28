@@ -13,10 +13,8 @@ import {
   or,
   asc,
   desc,
-  not,
   and,
   ne,
-  gt,
   gte,
   lte,
   sql,
@@ -130,6 +128,13 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
         location_type: posts.location_type,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
       })
       .from(posts)
       .where(
@@ -141,17 +146,6 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
       )
       .orderBy(desc(posts.created_at));
 
-    result = await Promise.all(
-      result.map(async (post) => {
-        const image = await db
-          .select({ image_url: post_images.image_url })
-          .from(post_images)
-          .where(eq(post_images.post_uuid, post.uuid))
-          .limit(1);
-
-        return { ...post, image_url: image[0].image_url ?? null };
-      })
-    );
     return result as Post[];
   } catch (error) {
     console.log(error);

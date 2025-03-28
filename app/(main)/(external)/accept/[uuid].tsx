@@ -39,9 +39,12 @@ export default function AcceptScreen() {
           text1: "Accepted job",
           swipeable: false,
         });
-        router.back();
         utils.job.invalidate();
         utils.post.invalidate();
+        router.back();
+        router.setParams({
+          param_type: "manage",
+        });
       },
       onError: (error) => {
         Toast.show({
@@ -60,24 +63,30 @@ export default function AcceptScreen() {
   };
 
   // get transaction estimate
-  const { data, isLoading } = trpc.job.get_transaction_estimate.useQuery({
-    job_post_uuid: uuid as string,
-  });
+  const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
+    {
+      job_post_uuid: uuid as string,
+    }
+  );
 
   // render page
-  if (isLoading || !data || !user) {
+  if (isLoading) {
     return (
       <>
         <SimpleHeader title="Accept job" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Encountered an error getting job information</Text>
-          </View>
-        )}
+        <LoadingView />
+      </>
+    );
+  } else if (error) {
+    return (
+      <>
+        <SimpleHeader title="Accept job" />
+
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Encountered an error getting job information</Text>
+        </View>
       </>
     );
   }

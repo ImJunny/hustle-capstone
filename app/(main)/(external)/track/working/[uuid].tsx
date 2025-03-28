@@ -28,7 +28,11 @@ export default function TrackWorkingDetailsScreen() {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
 
-  const { data = null, isLoading } = trpc.job.get_job_tracking_details.useQuery(
+  const {
+    data = null,
+    isLoading,
+    error,
+  } = trpc.job.get_job_tracking_details.useQuery(
     {
       user_uuid: user?.id!,
       job_post_uuid: uuid as string,
@@ -42,14 +46,17 @@ export default function TrackWorkingDetailsScreen() {
       : format(new Date(data?.due_date!), "MMMM d, yyyy")
     : null;
 
-  const { data: estimateData, isLoading: estimateLoading } =
-    trpc.job.get_transaction_estimate.useQuery(
-      {
-        job_post_uuid: uuid as string,
-        user_uuid: user?.id!,
-      },
-      { enabled: !!user }
-    );
+  const {
+    data: estimateData,
+    isLoading: estimateLoading,
+    error: estimateError,
+  } = trpc.job.get_transaction_estimate.useQuery(
+    {
+      job_post_uuid: uuid as string,
+      user_uuid: user?.id!,
+    },
+    { enabled: !!user }
+  );
 
   const { mutate: unaccept, isLoading: unacceptLoading } =
     trpc.job.unaccept_job.useMutation({
@@ -61,6 +68,9 @@ export default function TrackWorkingDetailsScreen() {
         utils.post.invalidate();
         utils.job.invalidate();
         router.back();
+        router.setParams({
+          param_type: "work",
+        });
       },
 
       onError: (error) => {
@@ -81,19 +91,22 @@ export default function TrackWorkingDetailsScreen() {
   let progressDescription =
     "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
 
-  if (isLoading || estimateLoading || !data || !user) {
+  if (isLoading || estimateLoading || !data) {
     return (
       <>
         <SimpleHeader title="Tracking details" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Encountered an error while getting job information</Text>
-          </View>
-        )}
+        <LoadingView />
+      </>
+    );
+  } else if (error || estimateError) {
+    return (
+      <>
+        <SimpleHeader title="Tracking details" />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Encountered an error getting job information</Text>
+        </View>
       </>
     );
   }
@@ -140,12 +153,13 @@ export default function TrackWorkingDetailsScreen() {
             <Text size="xl" weight="semibold">
               Job location
             </Text>
-            <Text color="muted">
+            {/* <Text color="muted">
               {`308 Negra Arroyo Lane\nAlbuquerque, New Mexico\n87104`}
-            </Text>
+            </Text> */}
+            <Text color="muted">Location is hidden until you are approved</Text>
           </View>
 
-          <Button type="variant">View in Maps</Button>
+          {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
         <Separator />

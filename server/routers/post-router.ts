@@ -8,6 +8,7 @@ import {
   getPostDetailsInfo,
   getPostsByFilters,
   getUserPosts,
+  isInitiated,
   updatePost,
 } from "../actions/post-actions";
 
@@ -139,5 +140,15 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return getActivePostCounts(input.user_uuid);
+    }),
+  is_initiated: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        job_post_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return isInitiated(input.user_uuid, input.job_post_uuid);
     }),
 });

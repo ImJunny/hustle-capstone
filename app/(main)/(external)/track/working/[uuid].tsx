@@ -4,7 +4,7 @@ import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
@@ -162,30 +162,46 @@ export default function TrackWorkingDetailsScreen() {
           <Text size="lg" weight="semibold">
             Employer
           </Text>
-          <View style={styles.employerRow}>
-            <Image
-              source={{ uri: data.employer_avatar_url }}
-              style={{ borderRadius: 999, width: 40, height: 40 }}
-            />
-            <View style={{ gap: 4 }}>
-              <Text weight="semibold">@{data.employer_username}</Text>
-              <View style={styles.employerStarsRow}>
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Text size="sm" style={{ marginLeft: 4 }}>
-                  4
-                </Text>
+          <Pressable
+            onPress={() => {
+              router.push(`/profile/${data.user_uuid}` as any);
+            }}
+          >
+            <View style={styles.employerRow}>
+              <Image
+                source={
+                  data.employer_avatar_url
+                    ? { uri: data.employer_avatar_url }
+                    : require("@/assets/images/default-avatar-icon.jpg")
+                }
+                style={{ borderRadius: 999, width: 40, height: 40 }}
+              />
+              <View style={{ gap: 4 }}>
+                <Text weight="semibold">@{data.employer_username}</Text>
+                <View style={styles.employerStarsRow}>
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Text size="sm" style={{ marginLeft: 4 }}>
+                    4
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            <Button type="variant" style={styles.messageButton}>
-              <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
-              Message
-            </Button>
-          </View>
+              <Button
+                type="outline"
+                borderColor="foreground"
+                style={styles.messageButton}
+                onPress={() =>
+                  router.push(`/message/${(data as any).user_uuid}`)
+                }
+              >
+                Message
+              </Button>
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
     </>

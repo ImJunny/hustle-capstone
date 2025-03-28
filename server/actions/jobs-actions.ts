@@ -164,6 +164,7 @@ export async function getTrackWorkingDetails(
         employer_username: users.username,
         employer_avatar_url: users.avatar_url,
         accepted_rate: posts.min_rate,
+        user_uuid: users.uuid,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -174,7 +175,7 @@ export async function getTrackWorkingDetails(
           eq(initiated_jobs.worker_uuid, user_uuid)
         )
       )
-      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .innerJoin(users, eq(posts.user_uuid, users.uuid))
       .limit(1);
     if (result.length > 0) return result[0];
     else return null;
@@ -212,6 +213,7 @@ export async function getTrackHiringDetails(
         accepted_rate: posts.min_rate,
         user_username: users.username,
         user_avatar_url: users.avatar_url,
+        user_uuid: users.uuid,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -341,7 +343,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
 
             return {
               ...post,
-              progress: `${acceptedJobCount} accepted`,
+              progress: `${acceptedJobCount} Accepted`,
             };
           })
         )

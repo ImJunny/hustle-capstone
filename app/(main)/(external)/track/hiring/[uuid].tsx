@@ -4,7 +4,7 @@ import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -129,7 +129,7 @@ export default function TrackWorkingDetailsScreen() {
                   >
                     <View style={{ flex: 1, gap: 4 }}>
                       <Text size="2xl" weight="semibold">
-                        {data.accepted_count as number} accepted
+                        {data.accepted_count as number} Accepted
                       </Text>
                       <Text color="muted">{progressDescription}</Text>
                     </View>
@@ -160,42 +160,60 @@ export default function TrackWorkingDetailsScreen() {
             {/* <Text color="muted">
               {`308 Negra Arroyo Lane\nAlbuquerque, New Mexico\n87104`}
             </Text> */}
-            <Text color="muted">Location is hidden until you are approved</Text>
+            <Text color="muted">
+              Location is hidden to everyone except the approved worker.
+            </Text>
           </View>
 
           {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
         {data.is_approved && (
-          <View style={styles.employerSection}>
-            <Text size="lg" weight="semibold">
-              Employer
-            </Text>
-            <View style={styles.employerRow}>
-              <Image
-                source={{ uri: (data as any).user_avatar_url }}
-                style={{ borderRadius: 999, width: 40, height: 40 }}
-              />
-              <View style={{ gap: 4 }}>
-                <Text weight="semibold">@{(data as any).user_username}</Text>
-                <View style={styles.employerStarsRow}>
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Text size="sm" style={{ marginLeft: 4 }}>
-                    4
-                  </Text>
+          <Pressable
+            onPress={() => {
+              router.push(`/profile/${(data as any).user_uuid}` as any);
+            }}
+          >
+            <View style={styles.employerSection}>
+              <Text size="lg" weight="semibold">
+                Worker
+              </Text>
+              <View style={styles.employerRow}>
+                <Image
+                  source={
+                    (data as any).user_avatar_url
+                      ? { uri: (data as any).user_avatar_url }
+                      : require("@/assets/images/default-avatar-icon.jpg")
+                  }
+                  style={{ borderRadius: 999, width: 40, height: 40 }}
+                />
+                <View style={{ gap: 4 }}>
+                  <Text weight="semibold">@{(data as any).user_username}</Text>
+                  <View style={styles.employerStarsRow}>
+                    <Icon name="star" />
+                    <Icon name="star" />
+                    <Icon name="star" />
+                    <Icon name="star" />
+                    <Icon name="star" />
+                    <Text size="sm" style={{ marginLeft: 4 }}>
+                      4
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              <Button type="variant" style={styles.messageButton}>
-                <Icon name="chatbubble-ellipses-outline" size="xl" flippedX />
-                Message
-              </Button>
+                <Button
+                  type="outline"
+                  borderColor="foreground"
+                  style={styles.messageButton}
+                  onPress={() =>
+                    router.push(`/message/${(data as any).user_uuid}`)
+                  }
+                >
+                  Message
+                </Button>
+              </View>
             </View>
-          </View>
+          </Pressable>
         )}
       </ScrollView>
     </>

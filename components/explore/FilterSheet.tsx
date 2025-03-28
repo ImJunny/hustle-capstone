@@ -28,11 +28,19 @@ export default function FilterSheet({
 }) {
   const themeColor = useThemeColor();
   const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
+  const locationTypes: Array<"all" | "remote" | "local"> = [
+    "all",
+    "remote",
+    "local",
+  ];
   const MIN_CONSTANT = 10;
   const MAX_CONSTANT = 400;
 
-  const [type, setType] = useState<"all" | "work" | "hire">(
+  const [postType, setPostType] = useState<"all" | "work" | "hire">(
     postTypes[0] as "all" | "work" | "hire"
+  );
+  const [locationType, setLocationType] = useState<"all" | "remote" | "local">(
+    "all"
   );
   const [min, setMin] = useState(MIN_CONSTANT);
   const [max, setMax] = useState(MAX_CONSTANT);
@@ -46,7 +54,7 @@ export default function FilterSheet({
   function handleSave() {
     filterSetters.setMin(min);
     filterSetters.setMax(max);
-    filterSetters.setType(type);
+    filterSetters.setType(postType);
     filterSetters.setMinDistance(minDistance);
     filterSetters.setMaxDistance(maxDistance);
     if (geocode) {
@@ -60,7 +68,7 @@ export default function FilterSheet({
   function handleReset() {
     setMin(0);
     setMax(400);
-    setType("all");
+    setPostType("all");
   }
 
   return (
@@ -77,16 +85,16 @@ export default function FilterSheet({
         data={[
           <FilterEntry title="Type">
             <View style={{ flexDirection: "row", gap: 12 }}>
-              {postTypes.map((postType, i) => (
+              {postTypes.map((type, i) => (
                 <Button
                   key={i}
                   style={styles.typeButton}
-                  type={type === postType ? "primary" : "outline"}
-                  onPress={() => setType(postType)}
+                  type={postType === type ? "primary" : "outline"}
+                  onPress={() => setPostType(type)}
                 >
-                  {postType === "all"
+                  {type === "all"
                     ? "All"
-                    : postType === "work"
+                    : type === "work"
                     ? "Jobs"
                     : "Services"}
                 </Button>
@@ -122,14 +130,21 @@ export default function FilterSheet({
           <Separator />,
           <View style={{ gap: 20 }}>
             <FilterEntry title="Location type">
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <Button style={{ flex: 1 }}>All</Button>
-                <Button style={{ flex: 1 }} type="outline">
-                  Remote
-                </Button>
-                <Button style={{ flex: 1 }} type="outline">
-                  Local
-                </Button>
+              <View style={{ flexDirection: "row", gap: 12 }}>
+                {locationTypes.map((type, i) => (
+                  <Button
+                    key={i}
+                    style={styles.typeButton}
+                    type={locationType === type ? "primary" : "outline"}
+                    onPress={() => setLocationType(type)}
+                  >
+                    {type === "all"
+                      ? "All"
+                      : type === "remote"
+                      ? "Remote"
+                      : "Local"}
+                  </Button>
+                ))}
               </View>
             </FilterEntry>
             <GoogleAutoInput setGeocode={setGeocode} />
@@ -139,18 +154,18 @@ export default function FilterSheet({
                   Distance
                 </Text>
                 <Text>
-                  {minDistance === 0 && maxDistance === 50
-                    ? "Any"
-                    : minDistance === 0 && maxDistance !== 50
+                  {minDistance === 0 && maxDistance === 55
+                    ? "50+ mi"
+                    : minDistance === 0 && maxDistance !== 55
                     ? `up to ${maxDistance} mi`
-                    : minDistance !== 0 && maxDistance === 50
+                    : minDistance !== 0 && maxDistance === 55
                     ? `${minDistance} mi +`
-                    : `${minDistance} - ${maxDistance} mi`}
+                    : `${minDistance} mi - ${maxDistance} mi`}
                 </Text>
               </View>
               <RangeSlider
                 minConstant={0}
-                maxConstant={50}
+                maxConstant={55}
                 setMin={setMinDistance}
                 setMax={setMaxDistance}
                 min={minDistance}
@@ -218,7 +233,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeButton: {
-    flex: 1,
+    width: 100,
+    height: 36,
+    borderRadius: 999,
   },
   footer: {
     padding: 16,

@@ -77,9 +77,9 @@ export default function SearchedPage() {
     geocode: filters.geocode,
   });
 
-  // useEffect(() => {
-  //   console.log(filters);
-  // }, [filters]);
+  useEffect(() => {
+    console.log(filters);
+  }, [filters]);
 
   // Sheet refs to open/close
   const filterSheetRef = useRef<BottomSheet>(null);

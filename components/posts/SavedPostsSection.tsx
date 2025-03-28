@@ -3,7 +3,7 @@ import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { Post as TPost } from "@/server/actions/post-actions";
-import Post from "../posts/Post";
+import Post from "./Post";
 
 export default function SavedPostsSection({
   title,

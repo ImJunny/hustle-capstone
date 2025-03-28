@@ -33,9 +33,9 @@ export default function PostDetailsButton({ data }: { data: PostDetailsInfo }) {
         type="outline"
         borderColor="foreground"
         onPress={() => {
-          if (data.type === "work")
-            router.push(`/track/working/${data.uuid}` as any);
-          else router.push(`/track/hiring/${data.uuid}`);
+          if (data.user_uuid === user?.id)
+            router.push(`/track/hiring/${data.uuid}`);
+          else router.push(`/track/working/${data.uuid}` as any);
         }}
       >
         Manage

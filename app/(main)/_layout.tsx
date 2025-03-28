@@ -29,6 +29,14 @@ export default function Layout() {
         name="(external)/choose-service"
         options={{ animation: "fade_from_bottom" }}
       />
+      <Stack.Screen
+        name="(external)/choose-worker"
+        options={{ animation: "fade_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(external)/confirm-approve"
+        options={{ animation: "ios_from_right" }}
+      />
     </Stack>
   );
 }

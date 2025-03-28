@@ -2,8 +2,10 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   acceptJob,
-  getJobTrackingDetails,
+  getAcceptedUsers,
+  getTrackHiringDetails,
   getTrackHiringPosts,
+  getTrackWorkingDetails,
   getTrackWorkingPosts,
   getTransactionEstimate,
   unacceptJob,
@@ -53,7 +55,7 @@ export const jobRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getTrackHiringPosts(input.user_uuid);
     }),
-  get_job_tracking_details: protectedProcedure
+  get_track_working_details: protectedProcedure
     .input(
       z.object({
         user_uuid: z.string(),
@@ -61,7 +63,7 @@ export const jobRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const result = await getJobTrackingDetails(
+      const result = await getTrackWorkingDetails(
         input.user_uuid,
         input.job_post_uuid
       );
@@ -75,5 +77,29 @@ export const jobRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       return await unacceptJob(input.initiated_job_post_uuid);
+    }),
+  get_track_hiring_details: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        job_post_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await getTrackHiringDetails(
+        input.user_uuid,
+        input.job_post_uuid
+      );
+      return result;
+    }),
+  get_accepted_users: protectedProcedure
+    .input(
+      z.object({
+        job_post_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await getAcceptedUsers(input.job_post_uuid);
+      return result;
     }),
 });

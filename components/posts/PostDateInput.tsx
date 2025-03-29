@@ -45,7 +45,7 @@ export default function PostDateInput({ setValue }: DateInputProps) {
     });
     setDate(selectedDate);
     setFormattedDate(formattedDate);
-    setValue("due_date", date, { shouldValidate: true });
+    setValue("due_date", selectedDate, { shouldValidate: true });
     setDatePickerVisible(false);
   };
 

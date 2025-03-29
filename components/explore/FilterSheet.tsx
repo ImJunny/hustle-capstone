@@ -104,7 +104,7 @@ export default function FilterSheet({
       enableContentPanningGesture={false}
     >
       <BottomSheetFlatList
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="never"
         contentContainerStyle={{ gap: 50 }}
         renderItem={({ item }: { item: ReactNode }) => <>{item}</>}
         data={[
@@ -209,14 +209,15 @@ export default function FilterSheet({
             )}
           </View>,
 
-          <Separator />,
-          <FilterEntry title="Tags">
-            <Text>To be implemented</Text>
-          </FilterEntry>,
+          // <Separator />,
+          // <FilterEntry title="Tags">
+          //   <Text>To be implemented</Text>
+          // </FilterEntry>,
         ]}
         keyExtractor={(item, index) => index.toString()}
         style={{ padding: 16 }}
       />
+
       <BottomSheetView
         style={[styles.footer, { borderColor: themeColor.border }]}
       >

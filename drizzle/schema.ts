@@ -174,11 +174,7 @@ export const payment_methods = app_schema.table("payment_methods", {
     length: 255,
   }).notNull(),
   stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).notNull(),
-  card_brand: varchar("card_brand", { length: 50 }).notNull(),
   card_last4: varchar("card_last4", { length: 4 }).notNull(),
-  card_expiration_date: varchar("card_expiration_date", {
-    length: 7,
-  }).notNull(),
   is_default: boolean("is_default").default(false),
   visible: boolean("visible").default(true),
 });

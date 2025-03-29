@@ -15,6 +15,13 @@
       "when": 1743213201025,
       "tag": "0001_nebulous_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743278810684,
+      "tag": "0002_lush_norrin_radd",
+      "breakpoints": true
     }
   ]
 }

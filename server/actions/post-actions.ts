@@ -6,6 +6,7 @@ import {
   posts,
   addresses,
   initiated_jobs,
+  saved_posts,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -264,8 +265,8 @@ export async function getPostsByFilters(
   keyword: string,
   min_rate: number | undefined,
   max_rate: number | undefined,
-  min_distance: number | undefined,
-  max_distance: number | undefined,
+  min_distance: number,
+  max_distance: number,
   location_type: "remote" | "local" | "all",
   type: "work" | "hire" | "all",
   sort:
@@ -306,6 +307,7 @@ export async function getPostsByFilters(
               : lte(posts.max_rate ?? posts.min_rate, max_rate ?? 10000),
             sql`TRUE`
           ),
+          // Post type filtering
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
@@ -316,25 +318,24 @@ export async function getPostsByFilters(
                 eq(posts.location_type, "local")
               )
             : eq(posts.location_type, location_type),
-          // Apply distance filtering only if geocode is available and min/max distances are defined
-          location_type !== "remote" &&
-            geocode &&
-            (min_distance !== undefined || max_distance !== undefined)
-            ? and(
-                min_distance !== undefined
-                  ? gte(
+          // Distance filtering - Only apply to local jobs
+          or(
+            eq(posts.location_type, "remote"), // Always include remote jobs
+            and(
+              location_type !== "remote" && geocode
+                ? and(
+                    gte(
                       sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
                       min_distance
-                    )
-                  : sql`TRUE`,
-                max_distance !== undefined
-                  ? lte(
+                    ),
+                    lte(
                       sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
                       max_distance
                     )
-                  : sql`TRUE`
-              )
-            : sql`TRUE`
+                  )
+                : sql`TRUE`
+            )
+          )
         )
       );
 
@@ -428,7 +429,8 @@ export async function getActivePostCounts(user_uuid: string) {
         posts,
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.type, "work")
+          eq(posts.type, "work"),
+          ne(initiated_jobs.progress_type, "accepted")
         )
       )
       .where(eq(initiated_jobs.worker_uuid, user_uuid))
@@ -436,11 +438,13 @@ export async function getActivePostCounts(user_uuid: string) {
 
     const active_hiring_count = await db
       .select()
-      .from(posts)
-      .where(
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
         and(
-          eq(posts.type, "work"),
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.user_uuid, user_uuid),
+          eq(initiated_jobs.progress_type, "in progress"),
           ne(posts.status_type, "hidden")
         )
       )
@@ -479,5 +483,106 @@ export async function isInitiated(user_uuid: string, job_post_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");
+  }
+}
+export async function savePost(postUuid: string, userUuid: string) {
+  try {
+    // Check if post is already saved to prevent duplicates
+    const existingSavedPost = await db
+      .select()
+      .from(saved_posts)
+      .where(
+        and(
+          eq(saved_posts.post_uuid, postUuid),
+          eq(saved_posts.user_uuid, userUuid)
+        )
+      )
+      .limit(1);
+
+    if (existingSavedPost.length > 0) return;
+
+    // Insert saved post
+    await db.insert(saved_posts).values({
+      post_uuid: postUuid,
+      user_uuid: userUuid,
+    });
+  } catch (error) {
+    console.error("Failed to save post:", error);
+
+    if (error instanceof Error && error.message === "Post already saved") {
+      return {
+        success: false,
+        message: "This post is already saved",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Failed to save post",
+    };
+  }
+}
+
+// Unsave a post action
+export async function unsavePost(postUuid: string, userUuid: string) {
+  try {
+    // Delete the saved post
+    await db
+      .delete(saved_posts)
+      .where(
+        and(
+          eq(saved_posts.post_uuid, postUuid),
+          eq(saved_posts.user_uuid, userUuid)
+        )
+      );
+  } catch (error) {
+    console.error("Failed to unsave post:", error);
+
+    return {
+      success: false,
+      message: "Failed to unsave post",
+    };
+  }
+}
+
+// Get saved posts
+export async function getSavedPosts(
+  userUuid: string,
+  type: "work" | "hire"
+): Promise<Post[]> {
+  try {
+    const savedPosts = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+        distance: sql`NULL`, // Add this to match the Post type
+      })
+      .from(saved_posts)
+      .innerJoin(posts, eq(saved_posts.post_uuid, posts.uuid))
+      .where(
+        and(
+          eq(saved_posts.user_uuid, userUuid),
+          eq(posts.type, type),
+          ne(posts.status_type, "hidden")
+        )
+      )
+      .orderBy(desc(posts.created_at));
+
+    return savedPosts as Post[];
+  } catch (error) {
+    console.error("Failed to get saved posts:", error);
+    throw new Error("Failed to retrieve saved posts");
   }
 }

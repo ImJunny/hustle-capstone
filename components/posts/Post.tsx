@@ -32,14 +32,8 @@ export default function Post({ type, data, style }: PostProps) {
     if (data.location_type === "remote") return "remote";
     if (distance === null) return "local";
 
-    if (distance <= 1) return "< 1 mi";
-    else if (distance <= 5) return "< 5 mi";
-    else if (distance <= 10) return "< 10 mi";
-    else if (distance <= 15) return "< 15 mi";
-    else if (distance <= 20) return "< 20 mi";
-    else if (distance <= 25) return "< 25 mi";
-    else if (distance <= 50) return "< 50 mi";
-    else return "> 50 mi";
+    distance = Math.ceil(distance);
+    return `${distance} mi`;
   }
   const distance = getGeneralDistance(data.distance ?? null);
 

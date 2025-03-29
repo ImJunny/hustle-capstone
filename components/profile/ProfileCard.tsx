@@ -63,14 +63,9 @@ export default function ProfileCard({
         </View>
       </View>
       {data.bio ? (
-        <Text
-          color={data?.bio ? "foreground" : "muted"}
-          style={{ marginTop: 24 }}
-        >
-          {data.bio}
-        </Text>
+        <Text style={{ marginTop: 24 }}>{data.bio}</Text>
       ) : isSelf && !data.bio ? (
-        <Text style={{ marginTop: 24 }}>
+        <Text style={{ marginTop: 24 }} color="muted">
           Add a biography in profile settings.
         </Text>
       ) : null}

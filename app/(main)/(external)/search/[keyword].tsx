@@ -13,25 +13,15 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
-import * as Location from "expo-location";
+import { useAuthData } from "@/contexts/AuthContext";
+import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
-  const MIN_CONSTANT = 10;
+  const MIN_CONSTANT = 0;
   const MAX_CONSTANT = 400;
-  const postTypes = ["all", "work", "hire"];
 
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       return;
-  //     }
-
-  //     let { coords } = await Location.getCurrentPositionAsync({});
-  //     console.log(coords);
-  //   })();
-  // }, []);
+  const { geocode: expoGeocode } = useAuthData();
 
   const [filters, setFilters] = useState<{
     type: "all" | "work" | "hire";
@@ -43,14 +33,14 @@ export default function SearchedPage() {
     sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
     geocode: [number, number] | undefined;
   }>({
-    type: postTypes[0] as "all" | "work" | "hire",
+    type: "all",
     min: MIN_CONSTANT,
     max: MAX_CONSTANT,
     minDistance: 0,
-    maxDistance: 50,
+    maxDistance: 100000,
     locationType: "all",
     sort: undefined,
-    geocode: undefined,
+    geocode: expoGeocode ?? undefined,
   });
 
   const filterSetters = {
@@ -82,10 +72,6 @@ export default function SearchedPage() {
     sort: filters.sort,
     geocode: filters.geocode,
   });
-
-  useEffect(() => {
-    console.log(filters);
-  }, [filters]);
 
   // Sheet refs to open/close
   const filterSheetRef = useRef<BottomSheet>(null);

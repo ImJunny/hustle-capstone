@@ -4,10 +4,10 @@ import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { onboardingSteps } from "@/app/onboarding/_layout";
 import { useAuthData } from "@/contexts/AuthContext";
 import { z } from "zod";
 import { OnboardingFormSchema } from "@/zod/zod-schemas";
+import { onboardingSteps } from "@/app/onboarding/_layout";
 
 // Type for component
 type OnboardingNextButtonProps = {
@@ -104,7 +104,7 @@ export default function OnboardingNextButton({
       router.push(`/onboarding/${nextStep}` as any);
     } else {
       utils.user.get_user_data.invalidate();
-      router.replace("/(main)/(tabs)");
+      router.replace("/location-prompt" as any);
     }
   }
 

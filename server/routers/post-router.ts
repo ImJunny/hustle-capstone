@@ -11,6 +11,9 @@ import {
   getUserPosts,
   isInitiated,
   updatePost,
+  savePost,
+  unsavePost,
+  getSavedPosts,
 } from "../actions/post-actions";
 
 export const postRouter = createTRPCRouter({
@@ -105,8 +108,8 @@ export const postRouter = createTRPCRouter({
         keyword: z.string(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
-        min_distance: z.number().optional(),
-        max_distance: z.number().optional(),
+        min_distance: z.number(),
+        max_distance: z.number(),
         location_type: z
           .enum(["remote", "local", "all"])
           .optional()
@@ -167,5 +170,38 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return isInitiated(input.user_uuid, input.job_post_uuid);
+    }),
+
+  save_post: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string().uuid("Invalid post UUID"),
+        user_uuid: z.string().uuid("Invalid user UUID"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await savePost(input.post_uuid, input.user_uuid);
+    }),
+
+  unsave_post: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string().uuid("Invalid post UUID"),
+        user_uuid: z.string().uuid("Invalid user UUID"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await unsavePost(input.post_uuid, input.user_uuid);
+    }),
+
+  get_saved_posts: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string().uuid("Invalid user UUID"),
+        type: z.enum(["work", "hire"]),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getSavedPosts(input.user_uuid, input.type);
     }),
 });

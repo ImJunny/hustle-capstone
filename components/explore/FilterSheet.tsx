@@ -1,16 +1,18 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Sheet from "../ui/Sheet";
-import { ReactNode, RefObject, useState } from "react";
+import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
 import { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
-import { StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import RangeSlider from "../ui/RangeSlider";
 import Separator from "../ui/Separator";
 import { trpc } from "@/server/lib/trpc-client";
 import GoogleAutoInput from "../ui/GoogleAutoInput";
+import { useAuthData } from "@/contexts/AuthContext";
+import { GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
 
 export default function FilterSheet({
   sheetRef,
@@ -36,7 +38,9 @@ export default function FilterSheet({
   ];
   const MIN_CONSTANT = 0;
   const MAX_CONSTANT = 400;
+  const { geocode: expoGeocode } = useAuthData();
 
+  // local filters
   const [postType, setPostType] = useState<"all" | "work" | "hire">(
     postTypes[0] as "all" | "work" | "hire"
   );
@@ -47,21 +51,32 @@ export default function FilterSheet({
   const [max, setMax] = useState(MAX_CONSTANT);
   const [minDistance, setMinDistance] = useState(0);
   const [maxDistance, setMaxDistance] = useState(55);
-  const [geocode, setGeocode] = useState<[number, number] | undefined>(
-    undefined
-  );
+  const [geocode, setGeocode] = useState<[number, number] | null>(expoGeocode);
 
   const utils = trpc.useUtils();
+
+  useEffect(() => {
+    if (geocode === null && expoGeocode) {
+      setGeocode(expoGeocode);
+      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
+    }
+  }, [expoGeocode]);
+
+  const googleInputRef = useRef<GooglePlacesAutocompleteRef>(null);
+
+  // save query filters
   function handleSave() {
     filterSetters.setMin(min);
     filterSetters.setMax(max);
     filterSetters.setType(postType);
     filterSetters.setMinDistance(minDistance);
-    filterSetters.setMaxDistance(maxDistance == 55 ? 1000000 : maxDistance);
+    filterSetters.setMaxDistance(maxDistance == 55 ? 100000 : maxDistance);
     filterSetters.setLocationType(locationType);
     if (geocode) {
       const [lat, lng] = geocode;
       filterSetters.setGeocode(lat, lng);
+    } else if (expoGeocode) {
+      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
     }
     utils.post.get_posts_by_filters.invalidate();
     sheetRef.current?.close();
@@ -71,6 +86,14 @@ export default function FilterSheet({
     setMin(0);
     setMax(400);
     setPostType("all");
+    setLocationType("all");
+    setMinDistance(0);
+    setMaxDistance(55);
+    setGeocode(expoGeocode);
+    if (googleInputRef.current) {
+      googleInputRef.current.clear();
+      googleInputRef.current.blur();
+    }
   }
 
   return (
@@ -82,7 +105,7 @@ export default function FilterSheet({
     >
       <BottomSheetFlatList
         keyboardShouldPersistTaps="always"
-        contentContainerStyle={{ gap: 50 }}
+        contentContainerStyle={{ gap: 30 }}
         renderItem={({ item }: { item: ReactNode }) => <>{item}</>}
         data={[
           <FilterEntry title="Type">
@@ -95,7 +118,7 @@ export default function FilterSheet({
                   onPress={() => setPostType(type)}
                 >
                   {type === "all"
-                    ? "All"
+                    ? "Any"
                     : type === "work"
                     ? "Jobs"
                     : "Services"}
@@ -103,33 +126,6 @@ export default function FilterSheet({
               ))}
             </View>
           </FilterEntry>,
-          <Separator />,
-          <View>
-            <View style={styles.dualLabel}>
-              <Text weight="semibold" size="lg">
-                Rate
-              </Text>
-              <Text>
-                {min === MIN_CONSTANT && max === MAX_CONSTANT
-                  ? "Any"
-                  : min === MIN_CONSTANT && max !== MAX_CONSTANT
-                  ? `up to $${max}`
-                  : min !== MIN_CONSTANT && max === MAX_CONSTANT
-                  ? `$${min}+`
-                  : `$${min} to $${max}`}
-              </Text>
-            </View>
-
-            <RangeSlider
-              minConstant={MIN_CONSTANT}
-              maxConstant={MAX_CONSTANT}
-              setMin={setMin}
-              setMax={setMax}
-              min={min}
-              max={max}
-              step={5}
-            />
-          </View>,
           <Separator />,
           <View style={{ gap: 20 }}>
             <FilterEntry title="Location type">
@@ -142,7 +138,7 @@ export default function FilterSheet({
                     onPress={() => setLocationType(type)}
                   >
                     {type === "all"
-                      ? "All"
+                      ? "Any"
                       : type === "remote"
                       ? "Remote"
                       : "Local"}
@@ -152,7 +148,10 @@ export default function FilterSheet({
             </FilterEntry>
             {locationType !== "remote" && (
               <>
-                <GoogleAutoInput setGeocode={setGeocode} />
+                <GoogleAutoInput
+                  setGeocode={setGeocode}
+                  googleInputRef={googleInputRef}
+                />
 
                 <View>
                   <View style={styles.dualLabel}>
@@ -182,15 +181,43 @@ export default function FilterSheet({
               </>
             )}
           </View>,
-
           <Separator />,
-          <FilterEntry title="Tags">
-            <Text>To be implemented</Text>
-          </FilterEntry>,
+          <View>
+            <View style={styles.dualLabel}>
+              <Text weight="semibold" size="lg">
+                Rate
+              </Text>
+              <Text>
+                {min === MIN_CONSTANT && max === MAX_CONSTANT
+                  ? "Any"
+                  : min === MIN_CONSTANT && max !== MAX_CONSTANT
+                  ? `up to $${max}`
+                  : min !== MIN_CONSTANT && max === MAX_CONSTANT
+                  ? `$${min}+`
+                  : `$${min} to $${max}`}
+              </Text>
+            </View>
+
+            <RangeSlider
+              minConstant={MIN_CONSTANT}
+              maxConstant={MAX_CONSTANT}
+              setMin={setMin}
+              setMax={setMax}
+              min={min}
+              max={max}
+              step={5}
+            />
+          </View>,
+
+          // <Separator />,
+          // <FilterEntry title="Tags">
+          //   <Text>To be implemented</Text>
+          // </FilterEntry>,
         ]}
         keyExtractor={(item, index) => index.toString()}
         style={{ padding: 16 }}
       />
+
       <BottomSheetView
         style={[styles.footer, { borderColor: themeColor.border }]}
       >

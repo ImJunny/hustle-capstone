@@ -105,8 +105,8 @@ export const postRouter = createTRPCRouter({
         keyword: z.string(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
-        min_distance: z.number().optional(),
-        max_distance: z.number().optional(),
+        min_distance: z.number(),
+        max_distance: z.number(),
         location_type: z
           .enum(["remote", "local", "all"])
           .optional()

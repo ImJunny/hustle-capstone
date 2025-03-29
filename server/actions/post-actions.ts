@@ -264,8 +264,8 @@ export async function getPostsByFilters(
   keyword: string,
   min_rate: number | undefined,
   max_rate: number | undefined,
-  min_distance: number | undefined,
-  max_distance: number | undefined,
+  min_distance: number,
+  max_distance: number,
   location_type: "remote" | "local" | "all",
   type: "work" | "hire" | "all",
   sort:
@@ -317,25 +317,24 @@ export async function getPostsByFilters(
                 eq(posts.location_type, "local")
               )
             : eq(posts.location_type, location_type),
-          // Distance filtering
-          location_type !== "remote" &&
-            geocode &&
-            (min_distance !== undefined || max_distance !== undefined)
-            ? and(
-                min_distance !== undefined
-                  ? gte(
+          // Distance filtering - Only apply to local jobs
+          or(
+            eq(posts.location_type, "remote"), // Always include remote jobs
+            and(
+              location_type !== "remote" && geocode
+                ? and(
+                    gte(
                       sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
                       min_distance
-                    )
-                  : sql`TRUE`,
-                max_distance !== undefined
-                  ? lte(
+                    ),
+                    lte(
                       sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
                       max_distance
                     )
-                  : sql`TRUE`
-              )
-            : sql`TRUE`
+                  )
+                : sql`TRUE`
+            )
+          )
         )
       );
 

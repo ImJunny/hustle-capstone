@@ -73,10 +73,6 @@ export default function SearchedPage() {
     geocode: filters.geocode,
   });
 
-  useEffect(() => {
-    console.log(filters);
-  }, [filters]);
-
   // Sheet refs to open/close
   const filterSheetRef = useRef<BottomSheet>(null);
   const sortSheetRef = useRef<BottomSheet>(null);

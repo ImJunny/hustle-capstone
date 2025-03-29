@@ -170,6 +170,9 @@ export const reviews = app_schema.table("reviews", {
 });
 
 export const payment_methods = app_schema.table("payment_methods", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
   stripe_payment_method_id: varchar("stripe_payment_method_id", {
     length: 255,
   }).notNull(),

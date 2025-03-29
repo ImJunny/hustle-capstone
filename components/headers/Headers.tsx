@@ -326,7 +326,7 @@ export function SearchingHeader() {
 
   async function handleSearch() {
     if (value.length > 0) router.back();
-    else router.replace(`/search/${value}`);
+    router.replace(`/search/${value}`);
   }
   return (
     <HeaderWrapper

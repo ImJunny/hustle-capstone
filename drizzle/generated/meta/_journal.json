@@ -5,85 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1742799900597,
-      "tag": "0000_slow_living_tribunal",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1742799945553,
-      "tag": "0001_robust_rawhide_kid",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1742862688075,
-      "tag": "0002_brainy_white_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1742863346854,
-      "tag": "0003_furry_weapon_omega",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1742874878890,
-      "tag": "0004_vengeful_enchantress",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1742884658410,
-      "tag": "0005_slippery_black_cat",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1742943715423,
-      "tag": "0006_broken_quasar",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1742944045567,
-      "tag": "0007_windy_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1742952056874,
-      "tag": "0008_concerned_black_widow",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1743054108232,
-      "tag": "0009_melodic_giant_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1743054353749,
-      "tag": "0010_exotic_wendell_vaughn",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1743076641841,
-      "tag": "0011_secret_outlaw_kid",
+      "when": 1743212164961,
+      "tag": "0000_serious_winter_soldier",
       "breakpoints": true
     }
   ]

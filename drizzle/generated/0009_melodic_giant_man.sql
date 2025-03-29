@@ -1,2 +1,0 @@
-ALTER TABLE "app"."initiated_jobs" ADD COLUMN "linked_service_post_uuid" uuid;--> statement-breakpoint
-ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_linked_service_post_uuid_posts_uuid_fk" FOREIGN KEY ("linked_service_post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE set null ON UPDATE no action;

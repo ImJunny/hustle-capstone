@@ -1,15 +1,10 @@
+CREATE EXTENSION postgis;
+
 CREATE SCHEMA "app";
---> statement-breakpoint
-CREATE TABLE "app"."accepted_jobs" (
-	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-	"user_uuid" uuid NOT NULL,
-	"job_uuid" uuid NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
-);
 --> statement-breakpoint
 CREATE TABLE "app"."addresses" (
 	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-	"user_uuid" uuid,
+	"user_uuid" uuid NOT NULL,
 	"title" text,
 	"address_line_1" text,
 	"address_line_2" text,
@@ -21,18 +16,41 @@ CREATE TABLE "app"."addresses" (
 	"visible" boolean DEFAULT true
 );
 --> statement-breakpoint
+CREATE TABLE "app"."chats" (
+	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+	"last_message_uuid" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "app"."initiated_jobs" (
 	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
 	"worker_uuid" uuid NOT NULL,
 	"job_post_uuid" uuid NOT NULL,
+	"linked_service_post_uuid" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"progress_type" text
+	"progress_type" text,
+	"rate" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "app"."location_types" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	CONSTRAINT "location_types_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE "app"."message_types" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	CONSTRAINT "message_types_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE "app"."messages" (
+	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+	"sender_uuid" uuid NOT NULL,
+	"receiver_uuid" uuid NOT NULL,
+	"message" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"type" text DEFAULT 'text',
+	"post_uuid" uuid
 );
 --> statement-breakpoint
 CREATE TABLE "app"."onboarding_phase_types" (
@@ -74,13 +92,21 @@ CREATE TABLE "app"."progress_types" (
 	CONSTRAINT "progress_types_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
+CREATE TABLE "app"."reviewer_types" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	CONSTRAINT "reviewer_types_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
 CREATE TABLE "app"."reviews" (
 	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+	"reviewer_uuid" uuid NOT NULL,
+	"reviewee_uuid" uuid NOT NULL,
+	"review" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
 	"type" text NOT NULL,
-	"reviewer_uuid" uuid,
-	"reviewee_uuid" uuid,
 	"job_uuid" uuid,
-	"service_uuid" uuid
+	"rating" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "app"."status_types" (
@@ -93,12 +119,6 @@ CREATE TABLE "app"."tag_types" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	CONSTRAINT "tag_types_name_unique" UNIQUE("name")
-);
---> statement-breakpoint
-CREATE TABLE "app"."transactions" (
-	"uuid" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
-	"user_uuid" uuid,
-	"post_uuid" uuid
 );
 --> statement-breakpoint
 CREATE TABLE "app"."users" (
@@ -114,12 +134,16 @@ CREATE TABLE "app"."users" (
 	CONSTRAINT "users_uuid_unique" UNIQUE("uuid")
 );
 --> statement-breakpoint
-ALTER TABLE "app"."accepted_jobs" ADD CONSTRAINT "accepted_jobs_user_uuid_users_uuid_fk" FOREIGN KEY ("user_uuid") REFERENCES "app"."users"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "app"."accepted_jobs" ADD CONSTRAINT "accepted_jobs_job_uuid_posts_uuid_fk" FOREIGN KEY ("job_uuid") REFERENCES "app"."posts"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."addresses" ADD CONSTRAINT "addresses_user_uuid_users_uuid_fk" FOREIGN KEY ("user_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."chats" ADD CONSTRAINT "chats_last_message_uuid_messages_uuid_fk" FOREIGN KEY ("last_message_uuid") REFERENCES "app"."messages"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_worker_uuid_users_uuid_fk" FOREIGN KEY ("worker_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_job_post_uuid_posts_uuid_fk" FOREIGN KEY ("job_post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_linked_service_post_uuid_posts_uuid_fk" FOREIGN KEY ("linked_service_post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_progress_type_progress_types_name_fk" FOREIGN KEY ("progress_type") REFERENCES "app"."progress_types"("name") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."messages" ADD CONSTRAINT "messages_sender_uuid_users_uuid_fk" FOREIGN KEY ("sender_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."messages" ADD CONSTRAINT "messages_receiver_uuid_users_uuid_fk" FOREIGN KEY ("receiver_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."messages" ADD CONSTRAINT "messages_type_message_types_name_fk" FOREIGN KEY ("type") REFERENCES "app"."message_types"("name") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."messages" ADD CONSTRAINT "messages_post_uuid_posts_uuid_fk" FOREIGN KEY ("post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."post_images" ADD CONSTRAINT "post_images_post_uuid_posts_uuid_fk" FOREIGN KEY ("post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."post_tags" ADD CONSTRAINT "post_tags_tag_type_tag_types_name_fk" FOREIGN KEY ("tag_type") REFERENCES "app"."tag_types"("name") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."post_tags" ADD CONSTRAINT "post_tags_post_uuid_posts_uuid_fk" FOREIGN KEY ("post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -129,8 +153,12 @@ ALTER TABLE "app"."posts" ADD CONSTRAINT "posts_address_uuid_addresses_uuid_fk" 
 ALTER TABLE "app"."posts" ADD CONSTRAINT "posts_status_type_status_types_name_fk" FOREIGN KEY ("status_type") REFERENCES "app"."status_types"("name") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_reviewer_uuid_users_uuid_fk" FOREIGN KEY ("reviewer_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_reviewee_uuid_users_uuid_fk" FOREIGN KEY ("reviewee_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_job_uuid_posts_uuid_fk" FOREIGN KEY ("job_uuid") REFERENCES "app"."posts"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_service_uuid_posts_uuid_fk" FOREIGN KEY ("service_uuid") REFERENCES "app"."posts"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "app"."transactions" ADD CONSTRAINT "transactions_user_uuid_users_uuid_fk" FOREIGN KEY ("user_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "app"."transactions" ADD CONSTRAINT "transactions_post_uuid_posts_uuid_fk" FOREIGN KEY ("post_uuid") REFERENCES "app"."posts"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_type_reviewer_types_name_fk" FOREIGN KEY ("type") REFERENCES "app"."reviewer_types"("name") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_job_uuid_posts_uuid_fk" FOREIGN KEY ("job_uuid") REFERENCES "app"."posts"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "app"."users" ADD CONSTRAINT "users_onboarding_phase_onboarding_phase_types_name_fk" FOREIGN KEY ("onboarding_phase") REFERENCES "app"."onboarding_phase_types"("name") ON DELETE no action ON UPDATE no action;
+
+CREATE POLICY "Enable read access for all users" ON "app"."chats" AS PERMISSIVE FOR SELECT TO authenticated USING (true);
+ALTER publication supabase_realtime ADD TABLE "app"."chats";
+
+CREATE POLICY "Enable read access for all users" ON "app"."messages" AS PERMISSIVE FOR SELECT TO authenticated USING (true);
+ALTER publication supabase_realtime ADD TABLE "app"."messages";

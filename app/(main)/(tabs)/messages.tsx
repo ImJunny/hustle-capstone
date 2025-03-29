@@ -40,12 +40,13 @@ export default function MessagesScreen() {
 
   if (isLoading) {
     return <LoadingView />;
-  } else if (!data) {
+  } else if (!data || data.length === 0) {
     return (
       <>
         <MessagesHeader />
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          color="background"
         >
           <Text>No messages yet</Text>
         </View>
@@ -56,7 +57,7 @@ export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="base">
+      <ScrollView style={{ flex: 1 }} color="background">
         <View>
           {data.map((message, i) => (
             <Message

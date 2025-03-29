@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native";
 import Text from "../ui/Text";
 import { trpc } from "@/server/lib/trpc-client";
 import { TColors } from "@/constants/Colors";
-import Icon from "../ui/Icon";
+import Icon, { IconSymbolName } from "../ui/Icon";
 
 export default function SortSheet({
   sheetRef,
@@ -14,12 +14,18 @@ export default function SortSheet({
   setSort,
 }: {
   sheetRef: RefObject<BottomSheetMethods>;
-  sort: "asc" | "desc" | undefined;
-  setSort: Dispatch<SetStateAction<"asc" | "desc" | undefined>>;
+  sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
+  setSort: Dispatch<
+    SetStateAction<
+      "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
+    >
+  >;
 }) {
   const utils = trpc.useUtils();
 
-  function handleSort(type: "asc" | "desc" | undefined) {
+  function handleSort(
+    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
+  ) {
     setSort(type);
     utils.post.get_posts_by_filters.invalidate();
   }
@@ -28,8 +34,10 @@ export default function SortSheet({
     <Sheet sheetRef={sheetRef} title="Sort" snapPoints={[1, "35%"]}>
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
         <SheetOption text="Relevance" type={undefined} />
-        <SheetOption text="$ - Low to high" type="asc" />
-        <SheetOption text="$ - High to low" type="desc" />
+        <SheetOption text="$ - Low to high" type="asc-rate" />
+        <SheetOption text="$ - High to low" type="desc-rate" />
+        <SheetOption text="Distance - Nearest" type="asc-dist" />
+        <SheetOption text="Distance - Farthest" type="desc-dist" />
       </BottomSheetView>
     </Sheet>
   );
@@ -41,7 +49,7 @@ export default function SortSheet({
   }: {
     text: string;
     color?: TColors;
-    type: "asc" | "desc" | undefined;
+    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
   }) {
     return (
       <TouchableOpacity

@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
-import { Session, User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "../server/lib/supabase";
 import { trpc } from "@/server/lib/trpc-client";

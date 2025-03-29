@@ -163,8 +163,8 @@ export default function AddressSuggestionsModal({
                         country: suggestion?.country!,
                         zip_code: suggestion?.zip!,
                         location: [
-                          suggestion?.longitude!,
                           suggestion?.latitude!,
+                          suggestion?.longitude!,
                         ],
                       });
                     else

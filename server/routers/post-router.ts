@@ -6,10 +6,14 @@ import {
   getActivePostCounts,
   getHomePosts,
   getPostDetailsInfo,
+  getPostInfo,
   getPostsByFilters,
   getUserPosts,
   isInitiated,
   updatePost,
+  savePost,
+  unsavePost,
+  getSavedPosts,
 } from "../actions/post-actions";
 
 export const postRouter = createTRPCRouter({
@@ -89,16 +93,31 @@ export const postRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getPostDetailsInfo(input.uuid, input.geocode);
     }),
+  get_post_info: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getPostInfo(input.uuid);
+    }),
   get_posts_by_filters: protectedProcedure
     .input(
       z.object({
         keyword: z.string(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
-        min_distance: z.number().optional(),
-        max_distance: z.number().optional(),
+        min_distance: z.number(),
+        max_distance: z.number(),
+        location_type: z
+          .enum(["remote", "local", "all"])
+          .optional()
+          .default("all"),
         type: z.enum(["work", "hire", "all"]).optional().default("all"),
-        sort: z.enum(["asc", "desc"]).optional(),
+        sort: z
+          .enum(["asc-rate", "desc-rate", "asc-dist", "desc-dist"])
+          .optional(),
         geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
@@ -109,6 +128,7 @@ export const postRouter = createTRPCRouter({
         input.max_rate,
         input.min_distance,
         input.max_distance,
+        input.location_type,
         input.type,
         input.sort,
         input.geocode
@@ -150,5 +170,38 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return isInitiated(input.user_uuid, input.job_post_uuid);
+    }),
+
+  save_post: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string().uuid("Invalid post UUID"),
+        user_uuid: z.string().uuid("Invalid user UUID"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await savePost(input.post_uuid, input.user_uuid);
+    }),
+
+  unsave_post: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string().uuid("Invalid post UUID"),
+        user_uuid: z.string().uuid("Invalid user UUID"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await unsavePost(input.post_uuid, input.user_uuid);
+    }),
+
+  get_saved_posts: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string().uuid("Invalid user UUID"),
+        type: z.enum(["work", "hire"]),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getSavedPosts(input.user_uuid, input.type);
     }),
 });

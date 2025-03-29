@@ -24,4 +24,5 @@ export const IconSizes = {
   xl: 28,
   "2xl": 34,
   "3xl": 40,
+  "4xl": 50,
 };

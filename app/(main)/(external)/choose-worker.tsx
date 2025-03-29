@@ -65,7 +65,7 @@ export default function ChooseWorkerScreen() {
           </Text>
         </View>
         {workers.map((worker, i) => (
-          <ServiceEntry
+          <WorkerEntry
             key={i}
             worker={worker as AcceptedUser}
             currentWorker={currentWorker}
@@ -94,17 +94,17 @@ export default function ChooseWorkerScreen() {
 }
 
 // Address entry components
-type ServiceEntryProps = {
+type WorkerEntryProps = {
   worker: AcceptedUser;
   currentWorker: AcceptedUser | null;
   setCurrentWorker: Dispatch<SetStateAction<AcceptedUser | null>>;
 };
 
-function ServiceEntry({
+function WorkerEntry({
   worker,
   currentWorker,
   setCurrentWorker,
-}: ServiceEntryProps) {
+}: WorkerEntryProps) {
   const formattedTimeAgo = formatDistanceToNow(worker.created_at, {
     addSuffix: true,
   })
@@ -128,7 +128,11 @@ function ServiceEntry({
         >
           <View style={{ flexDirection: "row", gap: 20 }}>
             <Image
-              source={{ uri: worker.user_avatar_url }}
+              source={
+                worker.user_avatar_url
+                  ? { uri: worker.user_avatar_url }
+                  : require("@/assets/images/default-avatar-icon.jpg")
+              }
               style={{ width: 70, height: 70, borderRadius: 999 }}
             />
             <View style={{ justifyContent: "center" }}>

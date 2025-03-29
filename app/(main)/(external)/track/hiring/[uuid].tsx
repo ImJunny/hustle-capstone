@@ -17,6 +17,7 @@ import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import Toast from "react-native-toast-message";
+import LoadingPost from "@/components/posts/LoadingPost";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -169,51 +170,70 @@ export default function TrackWorkingDetailsScreen() {
         </View>
 
         {data.is_approved && (
-          <Pressable
-            onPress={() => {
-              router.push(`/profile/${(data as any).user_uuid}` as any);
-            }}
-          >
-            <View style={styles.employerSection}>
-              <Text size="lg" weight="semibold">
-                Worker
-              </Text>
-              <View style={styles.employerRow}>
-                <Image
-                  source={
-                    (data as any).user_avatar_url
-                      ? { uri: (data as any).user_avatar_url }
-                      : require("@/assets/images/default-avatar-icon.jpg")
-                  }
-                  style={{ borderRadius: 999, width: 40, height: 40 }}
-                />
-                <View style={{ gap: 4 }}>
-                  <Text weight="semibold">@{(data as any).user_username}</Text>
-                  <View style={styles.employerStarsRow}>
-                    <Icon name="star" />
-                    <Icon name="star" />
-                    <Icon name="star" />
-                    <Icon name="star" />
-                    <Icon name="star" />
-                    <Text size="sm" style={{ marginLeft: 4 }}>
-                      4
-                    </Text>
-                  </View>
-                </View>
+          <>
+            {(data as any).service_uuid && (
+              <View style={styles.serviceSection}>
+                <Text size="lg" weight="semibold">
+                  Their linked service
+                </Text>
 
-                <Button
-                  type="outline"
-                  borderColor="foreground"
-                  style={styles.messageButton}
-                  onPress={() =>
-                    router.push(`/message/${(data as any).user_uuid}`)
-                  }
-                >
-                  Message
-                </Button>
+                <LoadingPost uuid={(data as any).service_uuid} />
+
+                <Text color="muted">
+                  They linked a service to this job. Your review will apply to
+                  both them and their service.
+                </Text>
               </View>
-            </View>
-          </Pressable>
+            )}
+
+            <Pressable
+              onPress={() => {
+                router.push(`/profile/${(data as any).user_uuid}` as any);
+              }}
+            >
+              <View style={styles.employerSection}>
+                <Text size="lg" weight="semibold">
+                  Worker
+                </Text>
+                <View style={styles.employerRow}>
+                  <Image
+                    source={
+                      (data as any).user_avatar_url
+                        ? { uri: (data as any).user_avatar_url }
+                        : require("@/assets/images/default-avatar-icon.jpg")
+                    }
+                    style={{ borderRadius: 999, width: 40, height: 40 }}
+                  />
+                  <View style={{ gap: 4 }}>
+                    <Text weight="semibold">
+                      @{(data as any).user_username}
+                    </Text>
+                    <View style={styles.employerStarsRow}>
+                      <Icon name="star" />
+                      <Icon name="star" />
+                      <Icon name="star" />
+                      <Icon name="star" />
+                      <Icon name="star" />
+                      <Text size="sm" style={{ marginLeft: 4 }}>
+                        4
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Button
+                    type="outline"
+                    borderColor="foreground"
+                    style={styles.messageButton}
+                    onPress={() =>
+                      router.push(`/message/${(data as any).user_uuid}`)
+                    }
+                  >
+                    Message
+                  </Button>
+                </View>
+              </View>
+            </Pressable>
+          </>
         )}
       </ScrollView>
     </>
@@ -246,6 +266,12 @@ const styles = StyleSheet.create({
     paddingVertical: 52,
     justifyContent: "space-between",
     gap: 12,
+  },
+  serviceSection: {
+    paddingVertical: 52,
+    justifyContent: "space-between",
+    gap: 12,
+    borderTopWidth: 1,
   },
   employerRow: {
     flexDirection: "row",

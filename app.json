@@ -1,16 +1,16 @@
 {
   "expo": {
-    "scheme":"com.hustlecapstone.hustlecapstone",
+    "scheme": "com.hustlecapstone.hustlecapstone",
     "android": {
       "package": "com.hustlecapstone.hustlecapstone",
-      "userInterfaceStyle":"automatic"
+      "userInterfaceStyle": "automatic"
     },
     "ios": {
       "bundleIdentifier": "com.hustlecapstone.hustlecapstone",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "userInterfaceStyle":"automatic"
+      "userInterfaceStyle": "automatic"
     },
     "plugins": [
       "expo-router",
@@ -23,11 +23,17 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(Hustle) to use your location."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    },    
+    },
     "extra": {
       "router": {
         "origin": false

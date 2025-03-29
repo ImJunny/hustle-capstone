@@ -6,6 +6,7 @@ import {
   posts,
   addresses,
   initiated_jobs,
+  saved_posts,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -13,10 +14,8 @@ import {
   or,
   asc,
   desc,
-  not,
   and,
   ne,
-  gt,
   gte,
   lte,
   sql,
@@ -130,28 +129,20 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
         location_type: posts.location_type,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
       })
       .from(posts)
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .where(
         and(
           eq(posts.user_uuid, uuid),
           ne(posts.status_type, "hidden"),
-          type && eq(posts.type, type)
+          type ? eq(posts.type, type) : undefined
         )
       )
+      .groupBy(posts.uuid) // Ensures we get one row per post
       .orderBy(desc(posts.created_at));
 
-    result = await Promise.all(
-      result.map(async (post) => {
-        const image = await db
-          .select({ image_url: post_images.image_url })
-          .from(post_images)
-          .where(eq(post_images.post_uuid, post.uuid))
-          .limit(1);
-
-        return { ...post, image_url: image[0].image_url ?? null };
-      })
-    );
     return result as Post[];
   } catch (error) {
     console.log(error);
@@ -167,7 +158,7 @@ export type Post = {
   max_rate: number;
   location_type: "local" | "remote";
   image_url: string;
-  distance: number;
+  distance: number | null;
 };
 
 export type Posts = Post[] | undefined;
@@ -242,15 +233,48 @@ export async function getPostDetailsInfo(
 }
 export type PostDetailsInfo = Awaited<ReturnType<typeof getPostDetailsInfo>>;
 
+// Get a single post given a uuid; used to render Post component
+export async function getPostInfo(uuid: string) {
+  try {
+    let result = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
+      })
+      .from(posts)
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(eq(posts.uuid, uuid))
+      .groupBy(posts.uuid)
+      .then(([result]) => result);
+
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get post info.");
+  }
+}
+
 // Get posts by filters
 export async function getPostsByFilters(
   keyword: string,
   min_rate: number | undefined,
   max_rate: number | undefined,
-  min_distance: number | undefined,
-  max_distance: number | undefined,
+  min_distance: number,
+  max_distance: number,
+  location_type: "remote" | "local" | "all",
   type: "work" | "hire" | "all",
-  sort: "asc" | "desc" | undefined = undefined,
+  sort:
+    | "asc-rate"
+    | "desc-rate"
+    | "asc-dist"
+    | "desc-dist"
+    | undefined = undefined,
   geocode: [number, number] | undefined
 ) {
   try {
@@ -265,7 +289,7 @@ export async function getPostsByFilters(
         location_type: posts.location_type,
         address_uuid: posts.address_uuid,
         distance: geocode
-          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
       })
       .from(posts)
@@ -276,24 +300,61 @@ export async function getPostsByFilters(
             ilike(posts.title, `%${keyword}%`),
             ilike(posts.description, `%${keyword}%`)
           ),
-          gte(posts.min_rate, min_rate ?? 10),
+          gte(posts.min_rate, min_rate ?? 0),
           or(
             max_rate === null
               ? sql`TRUE`
               : lte(posts.max_rate ?? posts.min_rate, max_rate ?? 10000),
             sql`TRUE`
           ),
+          // Post type filtering
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "hidden"),
+          location_type === "all"
+            ? or(
+                eq(posts.location_type, "remote"),
+                eq(posts.location_type, "local")
+              )
+            : eq(posts.location_type, location_type),
+          // Distance filtering - Only apply to local jobs
+          or(
+            eq(posts.location_type, "remote"), // Always include remote jobs
+            and(
+              location_type !== "remote" && geocode
+                ? and(
+                    gte(
+                      sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
+                      min_distance
+                    ),
+                    lte(
+                      sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
+                      max_distance
+                    )
+                  )
+                : sql`TRUE`
+            )
+          )
         )
       );
 
-    if (sort === "asc") {
-      result = result.sort((a, b) => a.min_rate - b.min_rate);
-    } else if (sort === "desc") {
-      result = result.sort((a, b) => b.min_rate - a.min_rate);
+    if (sort === "asc-rate") {
+      result = result.sort((a, b) => {
+        return a.min_rate - b.min_rate;
+      });
+    } else if (sort === "desc-rate") {
+      result = result.sort((a, b) => {
+        return b.min_rate - a.min_rate;
+      });
+    } else if (sort === "asc-dist") {
+      result = result.sort((a, b) => {
+        return ((a.distance as any) ?? 0) - ((b.distance as any) ?? 0);
+      });
+    } else if (sort === "desc-dist") {
+      result = result.sort((a, b) => {
+        return ((b.distance as any) ?? 0) - ((a.distance as any) ?? 0);
+      });
     }
 
     return result;
@@ -368,7 +429,8 @@ export async function getActivePostCounts(user_uuid: string) {
         posts,
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.type, "work")
+          eq(posts.type, "work"),
+          ne(initiated_jobs.progress_type, "accepted")
         )
       )
       .where(eq(initiated_jobs.worker_uuid, user_uuid))
@@ -376,11 +438,13 @@ export async function getActivePostCounts(user_uuid: string) {
 
     const active_hiring_count = await db
       .select()
-      .from(posts)
-      .where(
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
         and(
-          eq(posts.type, "work"),
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.user_uuid, user_uuid),
+          eq(initiated_jobs.progress_type, "in progress"),
           ne(posts.status_type, "hidden")
         )
       )
@@ -419,5 +483,106 @@ export async function isInitiated(user_uuid: string, job_post_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");
+  }
+}
+export async function savePost(postUuid: string, userUuid: string) {
+  try {
+    // Check if post is already saved to prevent duplicates
+    const existingSavedPost = await db
+      .select()
+      .from(saved_posts)
+      .where(
+        and(
+          eq(saved_posts.post_uuid, postUuid),
+          eq(saved_posts.user_uuid, userUuid)
+        )
+      )
+      .limit(1);
+
+    if (existingSavedPost.length > 0) return;
+
+    // Insert saved post
+    await db.insert(saved_posts).values({
+      post_uuid: postUuid,
+      user_uuid: userUuid,
+    });
+  } catch (error) {
+    console.error("Failed to save post:", error);
+
+    if (error instanceof Error && error.message === "Post already saved") {
+      return {
+        success: false,
+        message: "This post is already saved",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Failed to save post",
+    };
+  }
+}
+
+// Unsave a post action
+export async function unsavePost(postUuid: string, userUuid: string) {
+  try {
+    // Delete the saved post
+    await db
+      .delete(saved_posts)
+      .where(
+        and(
+          eq(saved_posts.post_uuid, postUuid),
+          eq(saved_posts.user_uuid, userUuid)
+        )
+      );
+  } catch (error) {
+    console.error("Failed to unsave post:", error);
+
+    return {
+      success: false,
+      message: "Failed to unsave post",
+    };
+  }
+}
+
+// Get saved posts
+export async function getSavedPosts(
+  userUuid: string,
+  type: "work" | "hire"
+): Promise<Post[]> {
+  try {
+    const savedPosts = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
+        )`,
+        distance: sql`NULL`, // Add this to match the Post type
+      })
+      .from(saved_posts)
+      .innerJoin(posts, eq(saved_posts.post_uuid, posts.uuid))
+      .where(
+        and(
+          eq(saved_posts.user_uuid, userUuid),
+          eq(posts.type, type),
+          ne(posts.status_type, "hidden")
+        )
+      )
+      .orderBy(desc(posts.created_at));
+
+    return savedPosts as Post[];
+  } catch (error) {
+    console.error("Failed to get saved posts:", error);
+    throw new Error("Failed to retrieve saved posts");
   }
 }

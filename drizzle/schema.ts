@@ -168,7 +168,7 @@ export const reviews = app_schema.table("reviews", {
   service_uuid: uuid("job_uuid").references(() => posts.uuid),
   rating: integer("rating").notNull(),
 });
-export const saved_post = app_schema.table("saved_posts", {
+export const saved_posts = app_schema.table("saved_posts", {
   uuid: uuid("uuid")
     .primaryKey()
     .default(sql`uuid_generate_v4()`),

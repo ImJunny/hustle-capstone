@@ -436,11 +436,13 @@ export async function getActivePostCounts(user_uuid: string) {
 
     const active_hiring_count = await db
       .select()
-      .from(posts)
-      .where(
+      .from(initiated_jobs)
+      .innerJoin(
+        posts,
         and(
-          eq(posts.type, "work"),
+          eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.user_uuid, user_uuid),
+          eq(initiated_jobs.progress_type, "in progress"),
           ne(posts.status_type, "hidden")
         )
       )

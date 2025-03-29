@@ -104,8 +104,8 @@ export default function FilterSheet({
       enableContentPanningGesture={false}
     >
       <BottomSheetFlatList
-        keyboardShouldPersistTaps="never"
-        contentContainerStyle={{ gap: 50 }}
+        keyboardShouldPersistTaps="always"
+        contentContainerStyle={{ gap: 30 }}
         renderItem={({ item }: { item: ReactNode }) => <>{item}</>}
         data={[
           <FilterEntry title="Type">
@@ -118,7 +118,7 @@ export default function FilterSheet({
                   onPress={() => setPostType(type)}
                 >
                   {type === "all"
-                    ? "All"
+                    ? "Any"
                     : type === "work"
                     ? "Jobs"
                     : "Services"}
@@ -126,33 +126,6 @@ export default function FilterSheet({
               ))}
             </View>
           </FilterEntry>,
-          <Separator />,
-          <View>
-            <View style={styles.dualLabel}>
-              <Text weight="semibold" size="lg">
-                Rate
-              </Text>
-              <Text>
-                {min === MIN_CONSTANT && max === MAX_CONSTANT
-                  ? "Any"
-                  : min === MIN_CONSTANT && max !== MAX_CONSTANT
-                  ? `up to $${max}`
-                  : min !== MIN_CONSTANT && max === MAX_CONSTANT
-                  ? `$${min}+`
-                  : `$${min} to $${max}`}
-              </Text>
-            </View>
-
-            <RangeSlider
-              minConstant={MIN_CONSTANT}
-              maxConstant={MAX_CONSTANT}
-              setMin={setMin}
-              setMax={setMax}
-              min={min}
-              max={max}
-              step={5}
-            />
-          </View>,
           <Separator />,
           <View style={{ gap: 20 }}>
             <FilterEntry title="Location type">
@@ -165,7 +138,7 @@ export default function FilterSheet({
                     onPress={() => setLocationType(type)}
                   >
                     {type === "all"
-                      ? "All"
+                      ? "Any"
                       : type === "remote"
                       ? "Remote"
                       : "Local"}
@@ -207,6 +180,33 @@ export default function FilterSheet({
                 </View>
               </>
             )}
+          </View>,
+          <Separator />,
+          <View>
+            <View style={styles.dualLabel}>
+              <Text weight="semibold" size="lg">
+                Rate
+              </Text>
+              <Text>
+                {min === MIN_CONSTANT && max === MAX_CONSTANT
+                  ? "Any"
+                  : min === MIN_CONSTANT && max !== MAX_CONSTANT
+                  ? `up to $${max}`
+                  : min !== MIN_CONSTANT && max === MAX_CONSTANT
+                  ? `$${min}+`
+                  : `$${min} to $${max}`}
+              </Text>
+            </View>
+
+            <RangeSlider
+              minConstant={MIN_CONSTANT}
+              maxConstant={MAX_CONSTANT}
+              setMin={setMin}
+              setMax={setMax}
+              min={min}
+              max={max}
+              step={5}
+            />
           </View>,
 
           // <Separator />,

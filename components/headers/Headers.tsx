@@ -1,28 +1,17 @@
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { useMemo } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import Input from "../ui/Input";
 import View, { ViewProps } from "../ui/View";
-import {
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-  Image,
-} from "react-native";
-import Icon, { IconSymbolName } from "../ui/Icon";
+import { Pressable, StyleSheet, ViewStyle, Image } from "react-native";
 import { useState } from "react";
-import { useEffect } from "react";
 import { trpc } from "@/server/lib/trpc-client";
-import { LinearGradient } from "expo-linear-gradient";
 import Button from "../ui/Button";
 import { useFormContext } from "react-hook-form";
 import z from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
 import Toast from "react-native-toast-message";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";

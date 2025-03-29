@@ -14,6 +14,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
 import { useAuthData } from "@/contexts/AuthContext";
+import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();

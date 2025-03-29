@@ -11,6 +11,7 @@ import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
+import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
 
 export default function JobCenterScreen() {
   const { user } = useAuthData();

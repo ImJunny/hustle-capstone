@@ -17,16 +17,6 @@ export default function SavedServicesScreen() {
     type: "hire",
   });
 
-  if (!user?.id) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text weight="semibold" size="xl">
-          Please log in to view saved services
-        </Text>
-      </View>
-    );
-  }
-
   if (isLoading) {
     return <LoadingView />;
   }
@@ -34,9 +24,7 @@ export default function SavedServicesScreen() {
   if (error) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text weight="semibold" size="xl" style={{ color: "red" }}>
-          Failed to load saved services
-        </Text>
+        <Text>Failed to load saved services</Text>
       </View>
     );
   }

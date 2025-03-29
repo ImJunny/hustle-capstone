@@ -35,9 +35,7 @@ export default function SavedJobsScreen() {
   if (error) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text weight="semibold" size="xl" style={{ color: "red" }}>
-          Failed to load saved jobs
-        </Text>
+        <Text>Failed to load saved jobs</Text>
       </View>
     );
   }

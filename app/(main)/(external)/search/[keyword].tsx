@@ -17,9 +17,8 @@ import { useAuthData } from "@/contexts/AuthContext";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
-  const MIN_CONSTANT = 10;
+  const MIN_CONSTANT = 0;
   const MAX_CONSTANT = 400;
-  const postTypes = ["all", "work", "hire"];
 
   const { geocode: expoGeocode } = useAuthData();
 
@@ -33,11 +32,11 @@ export default function SearchedPage() {
     sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
     geocode: [number, number] | undefined;
   }>({
-    type: postTypes[0] as "all" | "work" | "hire",
+    type: "all",
     min: MIN_CONSTANT,
     max: MAX_CONSTANT,
     minDistance: 0,
-    maxDistance: 50,
+    maxDistance: 100000,
     locationType: "all",
     sort: undefined,
     geocode: expoGeocode ?? undefined,

@@ -473,17 +473,13 @@ export async function savePost(postUuid: string, userUuid: string) {
       )
       .limit(1);
 
-    if (existingSavedPost.length > 0) {
-      throw new Error("Post already saved");
-    }
+    if (existingSavedPost.length > 0) return;
 
     // Insert saved post
     await db.insert(saved_posts).values({
       post_uuid: postUuid,
       user_uuid: userUuid,
     });
-
-    return { success: true, message: "Post saved successfully" };
   } catch (error) {
     console.error("Failed to save post:", error);
 
@@ -513,8 +509,6 @@ export async function unsavePost(postUuid: string, userUuid: string) {
           eq(saved_posts.user_uuid, userUuid)
         )
       );
-
-    return { success: true, message: "Post unsaved successfully" };
   } catch (error) {
     console.error("Failed to unsave post:", error);
 

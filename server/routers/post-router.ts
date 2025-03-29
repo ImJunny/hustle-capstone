@@ -170,7 +170,7 @@ export const postRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      return await savePost(input.post_uuid, input.user_uuid);
+      await savePost(input.post_uuid, input.user_uuid);
     }),
 
   unsave_post: protectedProcedure
@@ -181,7 +181,7 @@ export const postRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      return await unsavePost(input.post_uuid, input.user_uuid);
+      await unsavePost(input.post_uuid, input.user_uuid);
     }),
 
   get_saved_posts: protectedProcedure

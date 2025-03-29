@@ -169,6 +169,26 @@ export const reviews = app_schema.table("reviews", {
   rating: integer("rating").notNull(),
 });
 
+export const payment_methods = app_schema.table("payment_methods", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  stripe_payment_method_id: varchar("stripe_payment_method_id", {
+    length: 255,
+  }).notNull(),
+  stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).notNull(),
+  card_brand: varchar("card_brand", { length: 50 }).notNull(),
+  card_last4: varchar("card_last4", { length: 4 }).notNull(),
+  card_expiration_date: varchar("card_expiration_date", {
+    length: 7,
+  }).notNull(),
+  is_default: boolean("is_default").default(false),
+  visible: boolean("visible").default(true),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

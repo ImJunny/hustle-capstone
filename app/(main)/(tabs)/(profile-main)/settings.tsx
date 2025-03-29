@@ -37,7 +37,9 @@ export default function SettingsScreen() {
           <SettingsEntry
             name="card-outline"
             title="Payment methods"
-            onPress={() => {}}
+            onPress={() => {
+              router.push("/payment-methods");
+            }}
           />
           <SettingsEntry
             name="location-outline"

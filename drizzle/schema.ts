@@ -169,6 +169,18 @@ export const reviews = app_schema.table("reviews", {
   rating: integer("rating").notNull(),
 });
 
+export const saved_posts = app_schema.table("saved_posts", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  post_uuid: uuid("post_uuid")
+    .references(() => posts.uuid)
+    .notNull(),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

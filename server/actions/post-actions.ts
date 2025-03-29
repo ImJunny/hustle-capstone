@@ -306,6 +306,7 @@ export async function getPostsByFilters(
               : lte(posts.max_rate ?? posts.min_rate, max_rate ?? 10000),
             sql`TRUE`
           ),
+          // Post type filtering
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
@@ -316,7 +317,7 @@ export async function getPostsByFilters(
                 eq(posts.location_type, "local")
               )
             : eq(posts.location_type, location_type),
-          // Apply distance filtering only if geocode is available and min/max distances are defined
+          // Distance filtering
           location_type !== "remote" &&
             geocode &&
             (min_distance !== undefined || max_distance !== undefined)

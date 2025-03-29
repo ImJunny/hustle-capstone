@@ -1,17 +1,25 @@
 import { FontSizes } from "@/constants/Sizes";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import React, { Dispatch, SetStateAction } from "react";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import React, { Dispatch, LegacyRef, SetStateAction } from "react";
+import {
+  GooglePlacesAutocomplete,
+  GooglePlacesAutocompleteRef,
+} from "react-native-google-places-autocomplete";
 
 type GoogleAutoInputProps = {
-  setGeocode: Dispatch<SetStateAction<[number, number] | undefined>>;
+  setGeocode: Dispatch<SetStateAction<[number, number] | null>>;
+  googleInputRef: LegacyRef<GooglePlacesAutocompleteRef>;
 };
 
-export default function GoogleAutoInput({ setGeocode }: GoogleAutoInputProps) {
+export default function GoogleAutoInput({
+  setGeocode,
+  googleInputRef,
+}: GoogleAutoInputProps) {
   const themeColor = useThemeColor();
 
   return (
     <GooglePlacesAutocomplete
+      ref={googleInputRef}
       placeholder="Search from this location"
       fetchDetails={true}
       textInputProps={{

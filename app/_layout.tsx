@@ -62,24 +62,28 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-          <GestureHandlerRootView
-            style={{
-              flex: 1,
-            }}
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
+            <GestureHandlerRootView
+              style={{
+                flex: 1,
+              }}
+            >
               <SafeAreaView style={{ flex: 1 }}>
                 <Stack
                   screenOptions={{ headerShown: false, animation: "none" }}
                 >
-                  <Stack.Screen name="(main)" />
+                  <Stack.Screen
+                    name="(main)"
+                    options={{ animation: "ios_from_right" }}
+                  />
                   <Stack.Screen name="(auth)" />
+                  <Stack.Screen name="onboarding" />
                 </Stack>
                 <Toast config={toastConfig} type="info" visibilityTime={2200} />
               </SafeAreaView>
               <StatusBar style="auto" />
-          </GestureHandlerRootView>
+            </GestureHandlerRootView>
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>

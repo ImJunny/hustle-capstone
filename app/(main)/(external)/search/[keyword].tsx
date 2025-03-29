@@ -13,7 +13,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
-import * as Location from "expo-location";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
@@ -21,17 +21,7 @@ export default function SearchedPage() {
   const MAX_CONSTANT = 400;
   const postTypes = ["all", "work", "hire"];
 
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       return;
-  //     }
-
-  //     let { coords } = await Location.getCurrentPositionAsync({});
-  //     console.log(coords);
-  //   })();
-  // }, []);
+  const { geocode: expoGeocode } = useAuthData();
 
   const [filters, setFilters] = useState<{
     type: "all" | "work" | "hire";
@@ -50,7 +40,7 @@ export default function SearchedPage() {
     maxDistance: 50,
     locationType: "all",
     sort: undefined,
-    geocode: undefined,
+    geocode: expoGeocode ?? undefined,
   });
 
   const filterSetters = {

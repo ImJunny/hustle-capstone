@@ -55,7 +55,8 @@ export default function DateOfBirth() {
           onDateChange={handleDateChange}
           mode="date"
           maximumDate={new Date()}
-          theme={"light"}
+          theme={theme}
+          style={{}}
         />
       </View>
     </View>

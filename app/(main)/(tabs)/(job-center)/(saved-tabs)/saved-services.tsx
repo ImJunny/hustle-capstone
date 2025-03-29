@@ -1,11 +1,10 @@
 import { useAuthData } from "@/contexts/AuthContext";
-import SavedPostsSection from "@/components/posts/SavedPostsSection";
 import ScrollView from "@/components/ui/ScrollView";
 import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import LoadingView from "@/components/ui/LoadingView";
 import { trpc } from "@/server/lib/trpc-client";
-import { Post } from "@/server/actions/post-actions";
+import Post from "@/components/posts/Post";
 
 export default function SavedServicesScreen() {
   const { user } = useAuthData();
@@ -45,20 +44,16 @@ export default function SavedServicesScreen() {
   if (!savedServices || savedServices.length === 0) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text weight="semibold" size="xl">
-          No saved services found
-        </Text>
+        <Text>No saved services found</Text>
       </View>
     );
   }
 
   return (
     <ScrollView>
-      <SavedPostsSection
-        title="Saved Services"
-        type="hire"
-        posts={savedServices as Post[]}
-      />
+      {savedServices.map((post, i) => (
+        <Post key={post.uuid} data={post} type={post.type} />
+      ))}
     </ScrollView>
   );
 }

@@ -30,7 +30,7 @@ export default function Post({ type, data, style }: PostProps) {
 
   function getGeneralDistance(distance: number) {
     if (data.location_type === "remote") return "remote";
-    if (data.location_type === "local" && typeof data.distance === null)
+    if (data.location_type === "local" && data.distance === null)
       return "local";
 
     if (distance <= 1) return "< 1 mi";

@@ -97,8 +97,14 @@ export const postRouter = createTRPCRouter({
         max_rate: z.number().optional(),
         min_distance: z.number().optional(),
         max_distance: z.number().optional(),
+        location_type: z
+          .enum(["remote", "local", "all"])
+          .optional()
+          .default("all"),
         type: z.enum(["work", "hire", "all"]).optional().default("all"),
-        sort: z.enum(["asc", "desc"]).optional(),
+        sort: z
+          .enum(["asc-rate", "desc-rate", "asc-dist", "desc-dist"])
+          .optional(),
         geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
@@ -109,6 +115,7 @@ export const postRouter = createTRPCRouter({
         input.max_rate,
         input.min_distance,
         input.max_distance,
+        input.location_type,
         input.type,
         input.sort,
         input.geocode

@@ -22,6 +22,7 @@ export default function FilterSheet({
     setMax: (max: number) => void;
     setMinDistance: (minDistance: number) => void;
     setMaxDistance: (maxDistance: number) => void;
+    setLocationType: (locationType: "all" | "remote" | "local") => void;
     setType: (type: "all" | "work" | "hire") => void;
     setGeocode: (lat: number, lng: number) => void;
   };
@@ -30,10 +31,10 @@ export default function FilterSheet({
   const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
   const locationTypes: Array<"all" | "remote" | "local"> = [
     "all",
-    "remote",
     "local",
+    "remote",
   ];
-  const MIN_CONSTANT = 10;
+  const MIN_CONSTANT = 0;
   const MAX_CONSTANT = 400;
 
   const [postType, setPostType] = useState<"all" | "work" | "hire">(
@@ -56,7 +57,8 @@ export default function FilterSheet({
     filterSetters.setMax(max);
     filterSetters.setType(postType);
     filterSetters.setMinDistance(minDistance);
-    filterSetters.setMaxDistance(maxDistance);
+    filterSetters.setMaxDistance(maxDistance == 55 ? 1000000 : maxDistance);
+    filterSetters.setLocationType(locationType);
     if (geocode) {
       const [lat, lng] = geocode;
       filterSetters.setGeocode(lat, lng);
@@ -117,6 +119,7 @@ export default function FilterSheet({
                   : `$${min} to $${max}`}
               </Text>
             </View>
+
             <RangeSlider
               minConstant={MIN_CONSTANT}
               maxConstant={MAX_CONSTANT}
@@ -147,32 +150,37 @@ export default function FilterSheet({
                 ))}
               </View>
             </FilterEntry>
-            <GoogleAutoInput setGeocode={setGeocode} />
-            <View>
-              <View style={styles.dualLabel}>
-                <Text weight="semibold" size="lg">
-                  Distance
-                </Text>
-                <Text>
-                  {minDistance === 0 && maxDistance === 55
-                    ? "50+ mi"
-                    : minDistance === 0 && maxDistance !== 55
-                    ? `up to ${maxDistance} mi`
-                    : minDistance !== 0 && maxDistance === 55
-                    ? `${minDistance} mi +`
-                    : `${minDistance} mi - ${maxDistance} mi`}
-                </Text>
-              </View>
-              <RangeSlider
-                minConstant={0}
-                maxConstant={55}
-                setMin={setMinDistance}
-                setMax={setMaxDistance}
-                min={minDistance}
-                max={maxDistance}
-                step={5}
-              />
-            </View>
+            {locationType !== "remote" && (
+              <>
+                <GoogleAutoInput setGeocode={setGeocode} />
+
+                <View>
+                  <View style={styles.dualLabel}>
+                    <Text weight="semibold" size="lg">
+                      Distance
+                    </Text>
+                    <Text>
+                      {minDistance === 0 && maxDistance === 55
+                        ? "50+ mi"
+                        : minDistance === 0 && maxDistance !== 55
+                        ? `up to ${maxDistance} mi`
+                        : minDistance !== 0 && maxDistance === 55
+                        ? `${minDistance} mi +`
+                        : `${minDistance} mi - ${maxDistance} mi`}
+                    </Text>
+                  </View>
+                  <RangeSlider
+                    minConstant={0}
+                    maxConstant={55}
+                    setMin={setMinDistance}
+                    setMax={setMaxDistance}
+                    min={minDistance}
+                    max={maxDistance}
+                    step={5}
+                  />
+                </View>
+              </>
+            )}
           </View>,
 
           <Separator />,
@@ -233,8 +241,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeButton: {
-    width: 100,
-    height: 36,
+    paddingHorizontal: 20,
+    height: 34,
     borderRadius: 999,
   },
   footer: {

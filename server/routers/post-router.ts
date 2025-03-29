@@ -6,6 +6,7 @@ import {
   getActivePostCounts,
   getHomePosts,
   getPostDetailsInfo,
+  getPostInfo,
   getPostsByFilters,
   getUserPosts,
   isInitiated,
@@ -88,6 +89,15 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getPostDetailsInfo(input.uuid, input.geocode);
+    }),
+  get_post_info: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getPostInfo(input.uuid);
     }),
   get_posts_by_filters: protectedProcedure
     .input(

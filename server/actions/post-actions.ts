@@ -128,22 +128,18 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
         location_type: posts.location_type,
-        image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
       })
       .from(posts)
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .where(
         and(
           eq(posts.user_uuid, uuid),
           ne(posts.status_type, "hidden"),
-          type && eq(posts.type, type)
+          type ? eq(posts.type, type) : undefined
         )
       )
+      .groupBy(posts.uuid) // Ensures we get one row per post
       .orderBy(desc(posts.created_at));
 
     return result as Post[];
@@ -161,7 +157,7 @@ export type Post = {
   max_rate: number;
   location_type: "local" | "remote";
   image_url: string;
-  distance: number;
+  distance: number | null;
 };
 
 export type Posts = Post[] | undefined;
@@ -235,6 +231,33 @@ export async function getPostDetailsInfo(
   }
 }
 export type PostDetailsInfo = Awaited<ReturnType<typeof getPostDetailsInfo>>;
+
+// Get a single post given a uuid; used to render Post component
+export async function getPostInfo(uuid: string) {
+  try {
+    let result = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
+      })
+      .from(posts)
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(eq(posts.uuid, uuid))
+      .groupBy(posts.uuid)
+      .then(([result]) => result);
+
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get post info.");
+  }
+}
 
 // Get posts by filters
 export async function getPostsByFilters(

@@ -28,10 +28,9 @@ export default function Post({ type, data, style }: PostProps) {
 
   if (!data) return;
 
-  function getGeneralDistance(distance: number) {
+  function getGeneralDistance(distance: number | null) {
     if (data.location_type === "remote") return "remote";
-    if (data.location_type === "local" && data.distance === null)
-      return "local";
+    if (distance === null) return "local";
 
     if (distance <= 1) return "< 1 mi";
     else if (distance <= 5) return "< 5 mi";
@@ -42,7 +41,7 @@ export default function Post({ type, data, style }: PostProps) {
     else if (distance <= 50) return "< 50 mi";
     else return "> 50 mi";
   }
-  const distance = getGeneralDistance(data.distance);
+  const distance = getGeneralDistance(data.distance ?? null);
 
   return (
     <Link href={`/post/${data.uuid}` as any} asChild>

@@ -160,7 +160,7 @@ export default function FilterSheet({
                     </Text>
                     <Text>
                       {minDistance === 0 && maxDistance === 55
-                        ? "50+ mi"
+                        ? "Any"
                         : minDistance === 0 && maxDistance !== 55
                         ? `up to ${maxDistance} mi`
                         : minDistance !== 0 && maxDistance === 55

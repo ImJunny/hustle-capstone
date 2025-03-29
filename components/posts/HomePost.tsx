@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, Pressable } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Badge from "../ui/Badge";
 import IconButton from "../ui/IconButton";
 import Icon from "../ui/Icon";
@@ -14,31 +14,121 @@ import { HomePost as THomePost } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import { useAuthData } from "@/contexts/AuthContext";
+import { trpc } from "@/server/lib/trpc-client";
+import Toast from "react-native-toast-message";
 
 export default function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
   const postHeight = windowHeight - 66 - 56 - insetTop - insets.bottom;
+  const { user } = useAuthData();
+  const utils = trpc.useUtils();
+
+  // State to track if post is saved
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Check if the post is already saved by the user
+  const { data: savedPosts } = trpc.post.get_saved_posts.useQuery(
+    {
+      user_uuid: user?.id || "",
+      type: data.type as "work" | "hire",
+    },
+    {
+      enabled: !!user?.id,
+      onSuccess: (posts) => {
+        // Check if current post is in saved posts
+        const isPostSaved = posts.some((post) => post.uuid === data.uuid);
+        setIsSaved(isPostSaved);
+      },
+    }
+  );
+
+  // Save post mutation
+  const { mutate: savePostMutation } = trpc.post.save_post.useMutation({
+    onSuccess: (response) => {
+      if (response.success) {
+        setIsSaved(true);
+        Toast.show({
+          text1: response.message,
+          swipeable: false,
+        });
+        // Invalidate queries to refresh data
+        utils.post.get_saved_posts.invalidate();
+      } else {
+        Toast.show({
+          text1: response.message,
+          swipeable: false,
+          type: "error",
+        });
+      }
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message || "Failed to save post",
+        swipeable: false,
+        type: "error",
+      });
+    },
+  });
+
+  // Unsave post mutation
+  const { mutate: unsavePostMutation } = trpc.post.unsave_post.useMutation({
+    onSuccess: (response) => {
+      if (response.success) {
+        setIsSaved(false);
+        Toast.show({
+          text1: response.message,
+          swipeable: false,
+        });
+        // Invalidate queries to refresh data
+        utils.post.get_saved_posts.invalidate();
+      } else {
+        Toast.show({
+          text1: response.message,
+          swipeable: false,
+          type: "error",
+        });
+      }
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message || "Failed to unsave post",
+        swipeable: false,
+        type: "error",
+      });
+    },
+  });
+
+  // Handle save/unsave toggle
+  const handleSaveToggle = () => {
+    if (!user?.id) {
+      Toast.show({
+        text1: "Please log in to save posts",
+        swipeable: false,
+        type: "error",
+      });
+      return;
+    }
+
+    if (isSaved) {
+      unsavePostMutation({
+        post_uuid: data.uuid,
+        user_uuid: user.id,
+      });
+    } else {
+      savePostMutation({
+        post_uuid: data.uuid,
+        user_uuid: user.id,
+      });
+    }
+  };
+
   function formatCustomDate(date: Date) {
     return isThisYear(date)
       ? format(date, "MMMM d")
       : format(date, "MMMM d, yyyy");
   }
-
-  // const distance = getGeneralDistance(parseInt(data.distance));
-  // function getGeneralDistance(distance: number) {
-  //   if (distance <= 1) return 1;
-  //   else if (distance <= 5) return 5;
-  //   else if (distance <= 10) return 10;
-  //   else if (distance <= 15) return 15;
-  //   else if (distance <= 20) return 20;
-  //   else if (distance <= 25) return 25;
-  //   else if (distance <= 50) return 50;
-  //   return 51;
-  // }
-
-  const { user } = useAuthData();
 
   return (
     <View style={[styles.container, { height: postHeight }]} color="black">
@@ -120,10 +210,11 @@ export default function HomePost({ data }: { data: THomePost }) {
 
           <View style={styles.iconButtonsContainer}>
             <IconButton
-              name={"add-circle-outline"}
+              name={isSaved ? "add-circle-sharp" : "add-circle-outline"}
               style={styles.iconButton}
               color="white"
               size="2xl"
+              onPress={handleSaveToggle}
             />
             <View style={styles.iconButton}>
               <IconButton
@@ -132,15 +223,6 @@ export default function HomePost({ data }: { data: THomePost }) {
                 size="2xl"
                 flippedX
               />
-              {/* {data.comments && (
-                <Text
-                  style={{ textAlign: "center", marginTop: 2 }}
-                  weight="semibold"
-                  color="white"
-                >
-                  {data.comments}
-                </Text>
-              )} */}
             </View>
 
             <IconButton

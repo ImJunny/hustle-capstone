@@ -428,7 +428,8 @@ export async function getActivePostCounts(user_uuid: string) {
         posts,
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.type, "work")
+          eq(posts.type, "work"),
+          ne(initiated_jobs.progress_type, "accepted")
         )
       )
       .where(eq(initiated_jobs.worker_uuid, user_uuid))

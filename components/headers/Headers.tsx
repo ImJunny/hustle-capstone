@@ -325,7 +325,8 @@ export function SearchingHeader() {
   const [value, setValue] = useState(text as string);
 
   async function handleSearch() {
-    router.replace(`/search/${value}`);
+    if (value.length > 0) router.back();
+    else router.replace(`/search/${value}`);
   }
   return (
     <HeaderWrapper

@@ -1,3 +1,24 @@
+import Text from "@/components/ui/Text";
+import View from "@/components/ui/View";
+import { useStripe } from "@stripe/stripe-react-native";
+
+// Prop types for payment method form
+type PaymentMethodFormProps = {
+  data?: any; // Define your data type if needed (e.g., payment method data)
+};
+
+// Payment method form
+export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
+  return (
+    <View style={{ padding: 20 }}>
+      <Text weight="semibold" size="lg" color="muted">
+        Payment form is in progress... Please wait.
+      </Text>
+    </View>
+  );
+}
+
+/*
 import { useStripe, CardField } from "@stripe/stripe-react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
@@ -90,3 +111,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+ */

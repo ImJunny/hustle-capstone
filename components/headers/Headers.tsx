@@ -671,6 +671,25 @@ export function SingleMessageFooter({
     />
   );
 }
+export function PaymentMethodsHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Payment Methods
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton name="add" onPress={() => router.push("/add-payment")} />
+        ),
+      }}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   tabText: {

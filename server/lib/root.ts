@@ -4,6 +4,7 @@ import { postRouter } from "../routers/post-router";
 import { userRouter } from "../routers/user-router";
 import { jobRouter } from "../routers/job-router";
 import { messageRouter } from "../routers/message-router";
+import { paymentMethodsRouter } from "../routers/payment-method-router";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
@@ -13,5 +14,6 @@ export const appRouter = createTRPCRouter({
   job: jobRouter,
   address: addressRouter,
   messages: messageRouter,
+  payment_methods: paymentMethodsRouter,
 });
 export type AppRouter = typeof appRouter;

@@ -46,7 +46,7 @@ export default function FilterSheet({
   const [min, setMin] = useState(MIN_CONSTANT);
   const [max, setMax] = useState(MAX_CONSTANT);
   const [minDistance, setMinDistance] = useState(0);
-  const [maxDistance, setMaxDistance] = useState(50);
+  const [maxDistance, setMaxDistance] = useState(55);
   const [geocode, setGeocode] = useState<[number, number] | undefined>(
     undefined
   );

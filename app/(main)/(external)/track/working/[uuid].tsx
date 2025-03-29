@@ -16,6 +16,7 @@ import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import Toast from "react-native-toast-message";
+import LoadingPost from "@/components/posts/LoadingPost";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -156,6 +157,21 @@ export default function TrackWorkingDetailsScreen() {
           {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
+        {data.service_uuid && (
+          <View style={styles.serviceSection}>
+            <Text size="lg" weight="semibold">
+              Your linked service
+            </Text>
+
+            <LoadingPost uuid={data.service_uuid} />
+
+            <Text color="muted">
+              You linked a service which is viewable to the employer. Their
+              review will be applied to both you and your service.
+            </Text>
+          </View>
+        )}
+
         <Separator />
 
         <View style={styles.employerSection}>
@@ -233,6 +249,12 @@ const styles = StyleSheet.create({
     paddingVertical: 52,
     justifyContent: "space-between",
     gap: 12,
+  },
+  serviceSection: {
+    paddingVertical: 52,
+    justifyContent: "space-between",
+    gap: 12,
+    borderTopWidth: 1,
   },
   employerRow: {
     flexDirection: "row",

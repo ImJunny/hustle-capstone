@@ -165,6 +165,7 @@ export async function getTrackWorkingDetails(
         employer_avatar_url: users.avatar_url,
         accepted_rate: posts.min_rate,
         user_uuid: users.uuid,
+        service_uuid: initiated_jobs.linked_service_post_uuid,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -214,6 +215,7 @@ export async function getTrackHiringDetails(
         user_username: users.username,
         user_avatar_url: users.avatar_url,
         user_uuid: users.uuid,
+        service_uuid: initiated_jobs.linked_service_post_uuid,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -363,29 +365,28 @@ export async function getAcceptedUsers(job_post_uuid: string) {
         user_uuid: users.uuid,
         user_username: users.username,
         user_display_name: users.display_name,
-        user_avatar_url: users.avatar_url,
+        user_avatar_url: users.avatar_url, // This correctly retrieves the avatar URL
         created_at: initiated_jobs.created_at,
         service: sql`(
-          SELECT json_build_object(
-            'uuid', ${posts.uuid},
-            'title', ${posts.title},
-            'image_url', (
-              SELECT ${post_images.image_url}
-              FROM ${post_images}
-              WHERE ${post_images.post_uuid} = ${initiated_jobs.linked_service_post_uuid}
-              ORDER BY ${post_images.image_url} ASC
-              LIMIT 1
-            )
+        SELECT json_build_object(
+          'uuid', ${posts.uuid},
+          'title', ${posts.title},
+          'image_url', (
+            SELECT ${post_images.image_url}
+            FROM ${post_images}
+            WHERE ${post_images.post_uuid} = ${initiated_jobs.linked_service_post_uuid}
+            ORDER BY ${post_images.image_url} ASC
+            LIMIT 1
           )
-          FROM ${posts}
-          WHERE ${posts.uuid} = ${initiated_jobs.linked_service_post_uuid}
-        )`,
+        )
+        FROM ${posts}
+        WHERE ${posts.uuid} = ${initiated_jobs.linked_service_post_uuid}
+      )`,
       })
       .from(initiated_jobs)
       .innerJoin(posts, eq(initiated_jobs.job_post_uuid, posts.uuid))
-      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid)) // Joins users to get avatar_url
       .where(eq(initiated_jobs.job_post_uuid, job_post_uuid));
-
     return result;
   } catch (error) {
     console.error(error);

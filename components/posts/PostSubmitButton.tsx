@@ -98,6 +98,7 @@ export default function PostSubmitButton({
       address_uuid,
       due_date,
     } = data;
+
     let newImages;
     if (isEditing && !isNewImages) {
       newImages = null;
@@ -141,6 +142,7 @@ export default function PostSubmitButton({
       onPress={() => {
         handleSubmit(submitForm)();
       }}
+      disabled={createLoading || updateLoading || submitting}
     >
       {isEditing ? "Save changes" : "Create post"}
     </Button>

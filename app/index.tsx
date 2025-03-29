@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../server/lib/supabase";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
+import * as Location from "expo-location";
 
 export default function RootIndex() {
   const [session, setSession] = useState<Session | null>(null);
@@ -40,6 +41,21 @@ export default function RootIndex() {
     },
     { enabled: !!session?.user }
   );
+
+  // useEffect(() => {
+  //   async function getCurrentLocation() {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       alert("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     console.log(location);
+  //   }
+
+  //   getCurrentLocation();
+  // }, []);
 
   if (loading || isFetching) return <LoadingView />;
   if (session?.user) {

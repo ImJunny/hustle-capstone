@@ -243,8 +243,14 @@ export async function getPostsByFilters(
   max_rate: number | undefined,
   min_distance: number | undefined,
   max_distance: number | undefined,
+  location_type: "remote" | "local" | "all",
   type: "work" | "hire" | "all",
-  sort: "asc" | "desc" | undefined = undefined,
+  sort:
+    | "asc-rate"
+    | "desc-rate"
+    | "asc-dist"
+    | "desc-dist"
+    | undefined = undefined,
   geocode: [number, number] | undefined
 ) {
   try {
@@ -259,7 +265,7 @@ export async function getPostsByFilters(
         location_type: posts.location_type,
         address_uuid: posts.address_uuid,
         distance: geocode
-          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
       })
       .from(posts)
@@ -270,7 +276,7 @@ export async function getPostsByFilters(
             ilike(posts.title, `%${keyword}%`),
             ilike(posts.description, `%${keyword}%`)
           ),
-          gte(posts.min_rate, min_rate ?? 10),
+          gte(posts.min_rate, min_rate ?? 0),
           or(
             max_rate === null
               ? sql`TRUE`
@@ -280,14 +286,51 @@ export async function getPostsByFilters(
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "hidden"),
+          location_type === "all"
+            ? or(
+                eq(posts.location_type, "remote"),
+                eq(posts.location_type, "local")
+              )
+            : eq(posts.location_type, location_type),
+          // Apply distance filtering only if geocode is available and min/max distances are defined
+          location_type !== "remote" &&
+            geocode &&
+            (min_distance !== undefined || max_distance !== undefined)
+            ? and(
+                min_distance !== undefined
+                  ? gte(
+                      sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
+                      min_distance
+                    )
+                  : sql`TRUE`,
+                max_distance !== undefined
+                  ? lte(
+                      sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`,
+                      max_distance
+                    )
+                  : sql`TRUE`
+              )
+            : sql`TRUE`
         )
       );
 
-    if (sort === "asc") {
-      result = result.sort((a, b) => a.min_rate - b.min_rate);
-    } else if (sort === "desc") {
-      result = result.sort((a, b) => b.min_rate - a.min_rate);
+    if (sort === "asc-rate") {
+      result = result.sort((a, b) => {
+        return a.min_rate - b.min_rate;
+      });
+    } else if (sort === "desc-rate") {
+      result = result.sort((a, b) => {
+        return b.min_rate - a.min_rate;
+      });
+    } else if (sort === "asc-dist") {
+      result = result.sort((a, b) => {
+        return ((a.distance as any) ?? 0) - ((b.distance as any) ?? 0);
+      });
+    } else if (sort === "desc-dist") {
+      result = result.sort((a, b) => {
+        return ((b.distance as any) ?? 0) - ((a.distance as any) ?? 0);
+      });
     }
 
     return result;

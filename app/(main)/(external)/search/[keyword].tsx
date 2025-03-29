@@ -39,7 +39,8 @@ export default function SearchedPage() {
     max: number;
     minDistance: number;
     maxDistance: number;
-    sort: "asc" | "desc" | undefined;
+    locationType: "all" | "remote" | "local";
+    sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
     geocode: [number, number] | undefined;
   }>({
     type: postTypes[0] as "all" | "work" | "hire",
@@ -47,6 +48,7 @@ export default function SearchedPage() {
     max: MAX_CONSTANT,
     minDistance: 0,
     maxDistance: 50,
+    locationType: "all",
     sort: undefined,
     geocode: undefined,
   });
@@ -58,10 +60,13 @@ export default function SearchedPage() {
       setFilters((prev) => ({ ...prev, minDistance })),
     setMaxDistance: (maxDistance: number) =>
       setFilters((prev) => ({ ...prev, maxDistance })),
+    setLocationType: (locationType: "remote" | "local" | "all") =>
+      setFilters((prev) => ({ ...prev, locationType })),
     setType: (type: "work" | "hire" | "all") =>
       setFilters((prev) => ({ ...prev, type })),
-    setSort: (sort: "asc" | "desc" | undefined) =>
-      setFilters((prev) => ({ ...prev, sort })),
+    setSort: (
+      sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
+    ) => setFilters((prev) => ({ ...prev, sort })),
     setGeocode: (lat: number, lng: number) =>
       setFilters((prev) => ({ ...prev, geocode: [lat, lng] })),
   };
@@ -72,6 +77,7 @@ export default function SearchedPage() {
     max_rate: filters.max,
     min_distance: filters.minDistance,
     max_distance: filters.maxDistance,
+    location_type: filters.locationType,
     type: filters.type,
     sort: filters.sort,
     geocode: filters.geocode,
@@ -123,7 +129,9 @@ export default function SearchedPage() {
         sort={filters.sort}
         setSort={
           filterSetters.setSort as Dispatch<
-            SetStateAction<"asc" | "desc" | undefined>
+            SetStateAction<
+              "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
+            >
           >
         }
       />

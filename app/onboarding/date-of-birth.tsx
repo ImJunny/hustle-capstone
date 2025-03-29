@@ -14,7 +14,7 @@ export default function DateOfBirth() {
 
   const [date, setDate] = useState<Date>(new Date());
   const [formattedDate, setFormattedDate] = useState<string>();
-  const theme = useColorScheme() ?? "light";
+  const theme = useColorScheme() ?? "dark";
 
   const handleDateChange = (selectedDate: Date) => {
     setDate(selectedDate);
@@ -55,7 +55,7 @@ export default function DateOfBirth() {
           onDateChange={handleDateChange}
           mode="date"
           maximumDate={new Date()}
-          theme={theme}
+          theme={"light"}
         />
       </View>
     </View>

@@ -29,6 +29,13 @@
       "when": 1743281893440,
       "tag": "0003_soft_invisible_woman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1743282479349,
+      "tag": "0004_small_captain_cross",
+      "breakpoints": true
     }
   ]
 }

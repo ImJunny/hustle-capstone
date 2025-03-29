@@ -173,11 +173,12 @@ export const payment_methods = app_schema.table("payment_methods", {
   uuid: uuid("uuid")
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  stripe_payment_method_id: varchar("stripe_payment_method_id", {
-    length: 255,
-  }).notNull(),
-  stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).notNull(),
-  card_last4: varchar("card_last4", { length: 4 }).notNull(),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid, { onDelete: "cascade" })
+    .notNull(),
+  stripe_payment_method_id: text("stripe_payment_method_id").notNull(),
+  stripe_customer_id: text("stripe_customer_id").notNull(),
+  card_last4: text("card_last4").notNull(),
   is_default: boolean("is_default").default(false),
   visible: boolean("visible").default(true),
 });

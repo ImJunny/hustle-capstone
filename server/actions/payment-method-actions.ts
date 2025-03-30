@@ -1,28 +1,19 @@
 import { db } from "@/drizzle/db";
 import { payment_methods } from "@/drizzle/schema";
-import axios from "axios";
-import { eq, and, ne, ilike, sql } from "drizzle-orm";
-import { string } from "zod";
-import { v4 as uuidv4 } from "uuid";
+import { eq, and } from "drizzle-orm";
 
 export async function createPaymentMethod(
   user_uuid: string,
   stripe_payment_method_id: string,
   stripe_customer_id: string,
-  card_brand: string,
-  card_last4: string,
-  card_expiration_date: string
+  card_last4: string
 ) {
   try {
     await db.insert(payment_methods).values({
-      uuid: uuidv4(),
       user_uuid,
       stripe_payment_method_id,
       stripe_customer_id,
-      card_brand,
       card_last4,
-      card_expiration_date, // Storing expiration date as MM/YYYY
-      is_default: false, // By default, payment methods are not marked as default
     });
   } catch (error) {
     console.error("Error creating payment method:", error);

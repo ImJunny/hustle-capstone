@@ -15,12 +15,7 @@ export const paymentMethodsRouter = createTRPCRouter({
         user_uuid: z.string(),
         stripe_payment_method_id: z.string(),
         stripe_customer_id: z.string(),
-        card_brand: z.string(),
         card_last4: z.string(),
-        card_expiration_date: z
-          .string()
-          .min(7, "Invalid expiration date format")
-          .max(7, "Invalid expiration date format"), // MM/YYYY
       })
     )
     .mutation(async ({ input }) => {
@@ -28,9 +23,7 @@ export const paymentMethodsRouter = createTRPCRouter({
         input.user_uuid,
         input.stripe_payment_method_id,
         input.stripe_customer_id,
-        input.card_brand,
-        input.card_last4,
-        input.card_expiration_date
+        input.card_last4
       );
     }),
 

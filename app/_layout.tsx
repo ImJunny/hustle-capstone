@@ -20,12 +20,17 @@ import { toastConfig } from "@/components/ui/ToastConfig";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, trpc, trpcClient } from "@/server/lib/trpc-client";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const themeColor = useThemeColor();
+
+  const { expoPushToken, notification } = usePushNotifications();
+  console.log(expoPushToken);
+  console.log(notification);
 
   const platform = Platform.OS;
   if (platform == "android") {

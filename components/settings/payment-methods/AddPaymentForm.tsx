@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { useStripe } from "@stripe/stripe-react-native";
+// import { useStripe } from "@stripe/stripe-react-native";
 
 // Prop types for payment method form
 type PaymentMethodFormProps = {

@@ -13,18 +13,25 @@ export const paymentMethodsRouter = createTRPCRouter({
     .input(
       z.object({
         user_uuid: z.string(),
-        stripe_payment_method_id: z.string(),
-        stripe_customer_id: z.string(),
-        card_last4: z.string(),
+        payment_method_id: z.string(), // From Stripe Elements client-side
+        card_last4: z.string().length(4), // Last 4 digits
       })
     )
     .mutation(async ({ input }) => {
-      await createPaymentMethod(
-        input.user_uuid,
-        input.stripe_payment_method_id,
-        input.stripe_customer_id,
-        input.card_last4
-      );
+      try {
+        await createPaymentMethod(
+          input.user_uuid,
+          input.payment_method_id,
+          input.card_last4,
+          "true" // Set visible to true
+        );
+        return { success: true };
+      } catch (error) {
+        console.error("Payment method attachment failed:", error);
+        throw new Error(
+          error instanceof Error ? error.message : "Payment processing failed"
+        );
+      }
     }),
 
   delete_payment_method: protectedProcedure

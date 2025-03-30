@@ -14,7 +14,6 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import LoadingView from "@/components/ui/LoadingView";
-import AddressDeleteModal from "@/components/addresses/AddressDeleteModal";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
 
 // Addresses screen
@@ -46,7 +45,7 @@ export default function PaymentMethodsScreen() {
     );
   }
 
-  if (!paymentMethods) {
+  if (!paymentMethods || paymentMethods.length === 0) {
     return (
       <>
         <PaymentMethodsHeader />
@@ -54,7 +53,9 @@ export default function PaymentMethodsScreen() {
           <Text weight="semibold" size="2xl">
             No payment methods available
           </Text>
-          <Text>Add a payment method click the add button at the top</Text>
+          <Text>
+            Add a payment method by clicking the add button at the top
+          </Text>
         </View>
       </>
     );
@@ -77,7 +78,7 @@ export default function PaymentMethodsScreen() {
         uuid={uuid!}
         setModalOpen={setModalOpen}
       />
-      <AddressDeleteModal
+      <PaymentDeleteModal
         uuid={uuid}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
@@ -101,7 +102,7 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
     >
       <View>
         <Text weight="semibold" style={{ marginBottom: 4 }}>
-          {paymentMethod.card_brand} - **** {paymentMethod.card_last4}
+          **** {paymentMethod.card_last4}
         </Text>
       </View>
 

@@ -82,5 +82,3 @@ yarn-error.*
 # prebuilds
 /ios
 /android
-
-google-services.json

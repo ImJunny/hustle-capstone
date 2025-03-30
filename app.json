@@ -3,7 +3,8 @@
     "scheme": "com.hustlecapstone.hustlecapstone",
     "android": {
       "package": "com.hustlecapstone.hustlecapstone",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "bundleIdentifier": "com.hustlecapstone.hustlecapstone",

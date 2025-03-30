@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions } from "react-native";
@@ -22,8 +22,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import PostDetailsButton from "./PostDetailsButton";
 import Skeleton from "../ui/Skeleton";
+import Toast from "react-native-toast-message";
 
-// Component that renders post details by uuid; parent of sheet and modal
 export default function PostDetails({ uuid }: { uuid: string }) {
   const themeColor = useThemeColor();
   const { width } = Dimensions.get("window");
@@ -31,6 +31,99 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
   });
+
+  // State to track if post is saved
+  const [isSaved, setIsSaved] = useState(false);
+  const utils = trpc.useUtils();
+
+  // Check if post is saved initially
+  const { data: savedPosts } = trpc.post.get_saved_posts.useQuery(
+    { user_uuid: user?.id || "", type: "work" },
+    { enabled: !!user }
+  );
+
+  const { data: savedHirePosts } = trpc.post.get_saved_posts.useQuery(
+    { user_uuid: user?.id || "", type: "hire" },
+    { enabled: !!user }
+  );
+
+  const combinedSavedPosts = [...(savedPosts || []), ...(savedHirePosts || [])];
+
+  useEffect(() => {
+    if (combinedSavedPosts && data) {
+      const isPostSaved = combinedSavedPosts.some(
+        (post) => post.uuid === data.uuid
+      );
+      setIsSaved(isPostSaved);
+    }
+  }, [combinedSavedPosts, data]);
+
+  // Save post mutation
+  const { mutate: savePostMutation } = trpc.post.save_post.useMutation({
+    onSuccess: () => {
+      setIsSaved(true);
+      utils.post.get_saved_posts.invalidate();
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message,
+        swipeable: false,
+        type: "error",
+      });
+      setIsSaved(false);
+    },
+  });
+
+  // Unsave post mutation
+  const { mutate: unsavePostMutation } = trpc.post.unsave_post.useMutation({
+    onSuccess: () => {
+      setIsSaved(false);
+      utils.post.get_saved_posts.invalidate();
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message,
+        swipeable: false,
+        type: "error",
+      });
+      setIsSaved(true);
+    },
+  });
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSaveToggle = () => {
+    if (!user) {
+      Toast.show({
+        text1: "You need to be logged in to save posts",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!data) return;
+
+    const newIsSaved = !isSaved;
+    setIsSaved(newIsSaved);
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      if (newIsSaved) {
+        savePostMutation({
+          post_uuid: data.uuid,
+          user_uuid: user.id,
+        });
+      } else {
+        unsavePostMutation({
+          post_uuid: data.uuid,
+          user_uuid: user.id,
+        });
+      }
+    }, 300);
+  };
 
   // Sheet ref to open/close
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -136,7 +229,11 @@ export default function PostDetails({ uuid }: { uuid: string }) {
           }}
           color="background"
         >
-          <IconButton name="add-circle-outline" size="2xl" />
+          <IconButton
+            name={isSaved ? "add-circle-sharp" : "add-circle-outline"}
+            size="2xl"
+            onPress={handleSaveToggle}
+          />
           <IconButton name="chatbubble-outline" size="2xl" flippedX />
           <IconButton name="paper-plane-outline" size="2xl" />
           <IconButton

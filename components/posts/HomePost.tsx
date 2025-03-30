@@ -30,12 +30,33 @@ export default function HomePost({ data }: { data: THomePost }) {
   // State to track if post is saved
   const [isSaved, setIsSaved] = useState(false);
 
+  // Check if post is saved initially
+  const { data: savedPosts } = trpc.post.get_saved_posts.useQuery(
+    { user_uuid: user?.id || "", type: "work" },
+    { enabled: !!user }
+  );
+  const { data: savedHirePosts } = trpc.post.get_saved_posts.useQuery(
+    { user_uuid: user?.id || "", type: "hire" },
+    { enabled: !!user }
+  );
+
+  const combinedSavedPosts = [...(savedPosts || []), ...(savedHirePosts || [])];
+
+  useEffect(() => {
+    if (combinedSavedPosts && data) {
+      const isPostSaved = combinedSavedPosts.some(
+        (post) => post.uuid === data.uuid
+      );
+      setIsSaved(isPostSaved);
+    }
+  }, [combinedSavedPosts, data.uuid]);
+
   // Save post mutation
   const { mutate: savePostMutation } = trpc.post.save_post.useMutation({
     onSuccess: () => {
       setIsSaved(true);
       utils.post.get_saved_posts.invalidate();
-      console.log("saved");
+      utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
     },
     onError: (error) => {
       Toast.show({
@@ -43,6 +64,7 @@ export default function HomePost({ data }: { data: THomePost }) {
         swipeable: false,
         type: "error",
       });
+      setIsSaved(false);
     },
   });
 
@@ -51,7 +73,7 @@ export default function HomePost({ data }: { data: THomePost }) {
     onSuccess: () => {
       setIsSaved(false);
       utils.post.get_saved_posts.invalidate();
-      console.log("unsaved");
+      utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
     },
     onError: (error) => {
       Toast.show({
@@ -59,12 +81,21 @@ export default function HomePost({ data }: { data: THomePost }) {
         swipeable: false,
         type: "error",
       });
+      setIsSaved(true);
     },
   });
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSaveToggle = () => {
+    if (!user) {
+      Toast.show({
+        text1: "You need to be logged in to save posts",
+        type: "error",
+      });
+      return;
+    }
+
     const newIsSaved = !isSaved;
     setIsSaved(newIsSaved);
 
@@ -76,12 +107,12 @@ export default function HomePost({ data }: { data: THomePost }) {
       if (newIsSaved) {
         savePostMutation({
           post_uuid: data.uuid,
-          user_uuid: user!.id,
+          user_uuid: user.id,
         });
       } else {
         unsavePostMutation({
           post_uuid: data.uuid,
-          user_uuid: user!.id,
+          user_uuid: user.id,
         });
       }
     }, 300);

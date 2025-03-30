@@ -31,7 +31,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "@rneui/themed": "4.0.0-rc.8",
-    "@stripe/stripe-react-native": "0.43.0",
+    "@stripe/stripe-react-native": "0.38.6",
     "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^4.36.1",
     "@trpc/client": "^10.45.2",
@@ -105,7 +105,8 @@
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^11.1.0",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "expo-notifications": "~0.29.14"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

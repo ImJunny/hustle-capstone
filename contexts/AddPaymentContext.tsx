@@ -5,19 +5,25 @@ import { z } from "zod";
 import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
 
-type CreatePaymentProviderProps = {
+type AddPaymentProviderProps = {
   data?: PaymentMethod;
   children: ReactNode;
+  user_uuid: string;
 };
 
 export function AddPaymentProvider({
   data,
   children,
-}: CreatePaymentProviderProps) {
+  user_uuid,
+}: AddPaymentProviderProps) {
   const formMethods = useForm<z.infer<typeof CreatePaymentMethodSchema>>({
     resolver: zodResolver(CreatePaymentMethodSchema),
     defaultValues: {
-      card_last4: data?.card_last4 || "", // Last 4 digits of the card
+      cardNumber: data ? `•••• •••• •••• ${data.card_last4}` : "",
+      expiryMonth: "MM",
+      expiryYear: "YYYY",
+      cvc: "",
+      isDefault: data?.is_default || false,
     },
   });
 

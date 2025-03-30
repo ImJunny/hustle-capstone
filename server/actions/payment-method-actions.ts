@@ -5,28 +5,51 @@ import { eq, and, ne, ilike, sql } from "drizzle-orm";
 import { string } from "zod";
 import { v4 as uuidv4 } from "uuid";
 
+// export async function createPaymentMethod(
+//   uuid: string,
+//   user_uuid: string,
+//   stripe_payment_method_id: string,
+//   stripe_customer_id: string,
+//   card_last4: string,
+//   is_default: boolean,
+// ) {
+//   try {
+//     await db.insert(payment_methods).values({
+//       uuid: uuidv4(),
+//       user_uuid,
+//       stripe_payment_method_id,
+//       stripe_customer_id,
+//       card_last4,
+//       is_default,
+//     });
+//   } catch (error) {
+//     console.error("Error creating payment method:", error);
+//     throw new Error("Failed to create payment method.");
+//   }
+// }
+
 export async function createPaymentMethod(
   user_uuid: string,
-  stripe_payment_method_id: string,
-  stripe_customer_id: string,
-  card_brand: string,
-  card_last4: string,
-  card_expiration_date: string
+  payment_method_id: string, // From client-side Stripe
+  customer_id: string, // From client-side Stripe
+  card_last4: string // From client-side Stripe
 ) {
   try {
+    // Just insert into Supabase - Stripe operations happen client-side
     await db.insert(payment_methods).values({
       uuid: uuidv4(),
       user_uuid,
-      stripe_payment_method_id,
-      stripe_customer_id,
-      card_brand,
+      stripe_payment_method_id: payment_method_id,
+      stripe_customer_id: customer_id,
       card_last4,
-      card_expiration_date, // Storing expiration date as MM/YYYY
-      is_default: false, // By default, payment methods are not marked as default
+      is_default: false, // Start as non-default, can be updated later
     });
+
+    // Optional: Set as default if needed
+    // await setDefaultPaymentMethod(user_uuid, payment_method_id);
   } catch (error) {
-    console.error("Error creating payment method:", error);
-    throw new Error("Failed to create payment method.");
+    console.error("Error saving payment method:", error);
+    throw error;
   }
 }
 

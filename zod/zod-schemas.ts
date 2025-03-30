@@ -108,53 +108,10 @@ export const CreateAddressSchema = z
     }
   });
 
-export const CreatePaymentMethodSchema = z
-  .object({
-    card_last4: z
-      .string()
-      .length(4, "Card number must be 4 digits") // Storing last 4 digits
-      .regex(/^\d{4}$/, "Card number must be only digits"),
-
-    expiration_date: z
-      .string()
-      .length(7, "Expiration date must be in MM/YYYY format")
-      .regex(
-        /^(0[1-9]|1[0-2])\/\d{4}$/,
-        "Expiration date must be in MM/YYYY format"
-      ),
-
-    billing_address: z
-      .object({
-        address_line_1: z.string().min(1, "Address Line 1 is required"),
-        address_line_2: z.string().optional(),
-        city: z.string().min(1, "City is required"),
-        state: z.string().min(1, "State is required"),
-        country: z.enum(
-          countries.map((country) => country.value) as [string, ...string[]],
-          { message: "Country is required" }
-        ),
-        zip: z.string().min(1, "ZIP code is required"),
-      })
-      .optional(),
-  })
-  .superRefine((data, ctx) => {
-    // Ensure expiration date is valid
-    const [month, year] = data.expiration_date.split("/").map(Number);
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1; // Month is 0-indexed
-
-    // Check that expiration year is not in the past
-    if (year < currentYear) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["expiration_date"],
-        message: "Expiration year must be in the future",
-      });
-    } else if (year === currentYear && month < currentMonth) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["expiration_date"],
-        message: "Expiration month must be in the future",
-      });
-    }
-  });
+export const CreatePaymentMethodSchema = z.object({
+  cardNumber: z.string().min(16, "Card number must be 16 digits"),
+  expiryMonth: z.string().min(2, "Month must be 2 digits"),
+  expiryYear: z.string().min(4, "Year must be 4 digits"),
+  cvc: z.string().min(3, "CVC must be 3 digits"),
+  isDefault: z.boolean().default(false),
+});

@@ -101,7 +101,7 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
     >
       <View>
         <Text weight="semibold" style={{ marginBottom: 4 }}>
-          {paymentMethod.card_brand} - **** {paymentMethod.card_last4}
+          **** {paymentMethod.card_last4}
         </Text>
       </View>
 

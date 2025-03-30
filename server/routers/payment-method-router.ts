@@ -13,25 +13,35 @@ export const paymentMethodsRouter = createTRPCRouter({
     .input(
       z.object({
         user_uuid: z.string(),
-        stripe_payment_method_id: z.string(),
-        stripe_customer_id: z.string(),
-        card_brand: z.string(),
-        card_last4: z.string(),
-        card_expiration_date: z
-          .string()
-          .min(7, "Invalid expiration date format")
-          .max(7, "Invalid expiration date format"), // MM/YYYY
+        payment_method_id: z.string(), // From Stripe Elements client-side
+        customer_id: z.string(), // From Stripe client-side
+        card_last4: z.string(), // Last 4 digits from client
+        is_default: z.boolean().optional().default(false), // Optional default flag
       })
     )
     .mutation(async ({ input }) => {
-      await createPaymentMethod(
-        input.user_uuid,
-        input.stripe_payment_method_id,
-        input.stripe_customer_id,
-        input.card_brand,
-        input.card_last4,
-        input.card_expiration_date
-      );
+      try {
+        await createPaymentMethod(
+          input.user_uuid,
+          input.payment_method_id,
+          input.customer_id,
+          input.card_last4
+        );
+
+        // Optional: Set as default if needed
+        // if (input.is_default) {
+        //   await setDefaultPaymentMethod(input.user_uuid, input.payment_method_id);
+        // }
+
+        return { success: true };
+      } catch (error) {
+        console.error("Failed to save payment method:", error);
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "Payment method creation failed"
+        );
+      }
     }),
 
   delete_payment_method: protectedProcedure

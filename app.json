@@ -29,6 +29,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(Hustle) to use your location."
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "",
+          "enableGooglePay": false
+        }
       ]
     ],
     "experiments": {

@@ -9,6 +9,7 @@ import { Platform } from "react-native";
 export interface PushNotificationState {
   expoPushToken?: Notifications.ExpoPushToken;
   notification?: Notifications.Notification;
+  channels?: Notifications.NotificationChannel[];
 }
 
 export const usePushNotifications = (): PushNotificationState => {
@@ -23,7 +24,9 @@ export const usePushNotifications = (): PushNotificationState => {
   const [expoPushToken, setExpoPushToken] = useState<
     Notifications.ExpoPushToken | undefined
   >();
-
+  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>(
+    []
+  );
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
   >();
@@ -59,6 +62,9 @@ export const usePushNotifications = (): PushNotificationState => {
     }
 
     if (Platform.OS === "android") {
+      Notifications.getNotificationChannelsAsync().then((value) =>
+        setChannels(value ?? [])
+      );
       Notifications.setNotificationChannelAsync("default", {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
@@ -97,5 +103,6 @@ export const usePushNotifications = (): PushNotificationState => {
   return {
     expoPushToken,
     notification,
+    channels,
   };
 };

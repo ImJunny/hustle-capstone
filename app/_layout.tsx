@@ -28,9 +28,10 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const themeColor = useThemeColor();
 
-  const { expoPushToken, notification } = usePushNotifications();
+  const { expoPushToken, notification, channels } = usePushNotifications();
   console.log(expoPushToken);
   console.log(notification);
+  console.log(channels);
 
   const platform = Platform.OS;
   if (platform == "android") {

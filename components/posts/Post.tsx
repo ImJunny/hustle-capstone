@@ -93,13 +93,10 @@ export default function Post({ type, data, style }: PostProps) {
                   {distance}
                 </Text>
               </Badge>
-              {/* <Badge>{data.tags[0]}</Badge> */}
+              {data.tags?.map((tag, i) => (
+                <Badge key={i}>{tag}</Badge>
+              ))}
             </View>
-            {/* {data.status && (
-              <Text weight="semibold" color="muted" size="sm">
-                {data.status}
-              </Text>
-            )} */}
           </View>
         </View>
       </TouchableOpacity>

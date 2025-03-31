@@ -25,6 +25,8 @@ export default function ProfileMainScreen() {
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
 
+  servicePosts?.map((service) => console.log(service.tags));
+
   if (error) {
     return (
       <View>

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Text from "./Text";
-import { UseFormSetValue } from "react-hook-form";
+import { useFormContext, UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import View from "./View";
@@ -21,11 +21,13 @@ export default function TagFilterInput({
 }: {
   data?: ReadonlyArray<{ name: string; value: string }>;
   setValue: UseFormSetValue<z.infer<typeof CreatePostSchema>>;
-  getValues: UseFormSetValue<z.infer<typeof CreatePostSchema>>;
   name: keyof z.infer<typeof CreatePostSchema>;
 }) {
+  const { getValues } = useFormContext<z.infer<typeof CreatePostSchema>>();
   const [search, setSearch] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    getValues("tags") ?? []
+  );
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
 

@@ -20,6 +20,7 @@ export default function PostDetailsAboutUserSection({
   data,
 }: PostDetailsAboutUserProps) {
   const { user } = useAuthData();
+
   return (
     <View
       color="background"
@@ -42,16 +43,16 @@ export default function PostDetailsAboutUserSection({
         <View style={styles.bottomContainer}>
           <Image
             source={
-              data?.avatar_url
+              data.poster_info?.avatar_url
                 ? {
-                    uri: data.avatar_url,
+                    uri: data.poster_info.avatar_url,
                   }
                 : require("@/assets/images/default-avatar-icon.jpg")
             }
             style={{ width: 40, height: 40, borderRadius: 999 }}
           />
           <View style={styles.nameContainer}>
-            <Text weight="semibold">@{data.user_username}</Text>
+            <Text weight="semibold">@{data.poster_info?.username}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -87,9 +88,9 @@ export default function PostDetailsAboutUserSection({
       <Text
         ellipsizeMode="tail"
         style={{ marginVertical: 16, marginBottom: 16 }}
-        color={data.user_bio ? "foreground" : "muted"}
+        color={data.poster_info?.bio ? "foreground" : "muted"}
       >
-        {data.user_bio ?? "No bio provided"}
+        {data.poster_info?.bio ?? "No bio provided"}
       </Text>
     </View>
   );

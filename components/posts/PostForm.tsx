@@ -295,12 +295,7 @@ export default function PostForm({ type = "hire" }: PostFormProps) {
           control={control}
           name="tags"
           render={({ field: { onChange, value } }) => (
-            <TagFilterInput
-              data={tagTypes}
-              setValue={setValue}
-              getValues={getValues}
-              name="tags"
-            />
+            <TagFilterInput data={tagTypes} setValue={setValue} name="tags" />
           )}
         />
         <BottomMessage

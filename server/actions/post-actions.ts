@@ -19,6 +19,8 @@ import {
   gte,
   lte,
   sql,
+  exists,
+  inArray,
 } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
@@ -34,7 +36,8 @@ export async function createPost(
   location_type: "local" | "remote",
   address_uuid: string | null,
   due_date: Date | null,
-  image_buffers: any[]
+  image_buffers: any[],
+  tags: string[]
 ) {
   try {
     const post_uuid = uuidv4();
@@ -64,6 +67,15 @@ export async function createPost(
         });
       })
     );
+
+    await Promise.all(
+      tags.map((tag) =>
+        db.insert(post_tags).values({
+          tag_type: tag,
+          post_uuid: post_uuid,
+        })
+      )
+    );
   } catch (error) {
     console.log(error);
     throw new Error("Failed to create post.");
@@ -80,7 +92,8 @@ export async function updatePost(
   location_type: "local" | "remote",
   address_uuid: string | null,
   due_date: Date | null,
-  image_buffers: any[] | null
+  image_buffers: any[] | null,
+  tags: string[]
 ) {
   try {
     await db
@@ -111,6 +124,16 @@ export async function updatePost(
         })
       );
     }
+
+    await db.delete(post_tags).where(eq(post_tags.post_uuid, uuid));
+    await Promise.all(
+      tags.map((tag) =>
+        db.insert(post_tags).values({
+          tag_type: tag,
+          post_uuid: uuid,
+        })
+      )
+    );
   } catch (error) {
     console.log(error);
     throw new Error("Failed to save post.");
@@ -130,8 +153,14 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         max_rate: posts.max_rate,
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .where(
         and(
@@ -159,6 +188,7 @@ export type Post = {
   location_type: "local" | "remote";
   image_url: string;
   distance: number | null;
+  tags: string[] | undefined;
 };
 
 export type Posts = Post[] | undefined;
@@ -174,7 +204,7 @@ export async function getPostDetailsInfo(
       location = sql`ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)`;
     }
 
-    const post = await db
+    const result = await db
       .select({
         uuid: posts.uuid,
         user_uuid: posts.user_uuid,
@@ -190,42 +220,36 @@ export async function getPostDetailsInfo(
         distance: geocode
           ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
           : sql`NULL`,
+        tags: sql<string[]>`(
+            SELECT ARRAY_AGG(${post_tags.tag_type})
+            FROM ${post_tags}
+            WHERE ${post_tags.post_uuid} = ${posts.uuid}
+          )`,
+        poster_info: {
+          username: users.username,
+          bio: users.bio,
+          avatar_url: users.avatar_url,
+        },
+        images: sql<
+          string[]
+        >`ARRAY_AGG(DISTINCT ${post_images.image_url} ORDER BY ${post_images.image_url} ASC)`,
       })
       .from(posts)
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .leftJoin(users, eq(users.uuid, posts.user_uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .where(eq(posts.uuid, uuid))
-      .limit(1);
-    const poster_uuid = post[0].user_uuid;
-
-    const postTags = await db
-      .select({
-        tag_name: post_tags.tag_type,
-      })
-      .from(post_tags)
-      .where(eq(post_tags.post_uuid, uuid));
-    const postImages = await db
-      .select({
-        image_url: post_images.image_url,
-      })
-      .from(post_images)
-      .where(eq(post_images.post_uuid, uuid))
-      .orderBy(asc(post_images.image_url));
-    const posterInfo = await db
-      .select({
-        user_username: users.username,
-        user_bio: users.bio,
-        avatar_url: users.avatar_url,
-      })
-      .from(users)
-      .where(eq(users.uuid, poster_uuid))
+      .groupBy(
+        posts.uuid,
+        users.username,
+        users.bio,
+        users.avatar_url,
+        addresses.location
+      )
       .limit(1);
 
-    const result = {
-      ...post[0],
-      post_tags: postTags,
-      post_images: postImages,
-      ...posterInfo[0],
-    };
-    return result;
+    return result[0];
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get post details info.");
@@ -246,11 +270,17 @@ export async function getPostInfo(uuid: string) {
         max_rate: posts.max_rate,
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
-      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid)) // Keep left join
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid)) // Change to left join
       .where(eq(posts.uuid, uuid))
-      .groupBy(posts.uuid)
+      .groupBy(posts.uuid, post_tags.post_uuid) // Ensure correct grouping
       .then(([result]) => result);
 
     return result;
@@ -275,7 +305,8 @@ export async function getPostsByFilters(
     | "asc-dist"
     | "desc-dist"
     | undefined = undefined,
-  geocode: [number, number] | undefined
+  geocode: [number, number] | undefined,
+  tags: string[]
 ) {
   try {
     let result = await db
@@ -291,8 +322,14 @@ export async function getPostsByFilters(
         distance: geocode
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid)) // Join address location
       .where(
         and(
@@ -335,9 +372,24 @@ export async function getPostsByFilters(
                   )
                 : sql`TRUE`
             )
-          )
+          ),
+          // Tag filtering - Ensure post has at least one matching tag
+          tags.length > 0
+            ? exists(
+                db
+                  .select({ tag_type: post_tags.tag_type })
+                  .from(post_tags)
+                  .where(
+                    and(
+                      eq(post_tags.post_uuid, posts.uuid),
+                      inArray(post_tags.tag_type, tags)
+                    )
+                  )
+              )
+            : sql`TRUE`
         )
-      );
+      )
+      .groupBy(posts.uuid, addresses.location);
 
     if (sort === "asc-rate") {
       result = result.sort((a, b) => {
@@ -401,6 +453,11 @@ export async function getHomePosts(type: "work" | "hire") {
         )`,
         user_avatar_url: users.avatar_url,
         user_username: users.username,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
       .innerJoin(

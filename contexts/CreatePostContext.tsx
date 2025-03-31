@@ -46,7 +46,8 @@ export function CreatePostProvider({
       address_uuid: data?.address_uuid || null,
       due_date: data?.due_date ? new Date(data.due_date) : null,
       type: data?.type ?? type,
-      images: data?.post_images.map((image) => image.image_url) || [],
+      images: data?.images || [],
+      tags: data?.tags || [],
     },
   });
 

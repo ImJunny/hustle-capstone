@@ -1,8 +1,12 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import ScrollView from "@/components/ui/ScrollView";
-import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { CreatePostHeader, SimpleHeader } from "@/components/headers/Headers";
 import PostForm from "@/components/posts/PostForm";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -13,6 +17,19 @@ import { useLocalSearchParams } from "expo-router";
 export default function CreatePostForm() {
   const themeColor = useThemeColor();
   const { type } = useLocalSearchParams();
+
+  const data = [
+    {
+      id: "notice",
+      component: (
+        <Text size="sm" style={{ marginBottom: 30 }}>
+          Please do NOT include any sensitive information (phone numbers,
+          emails, addresses, etc.).
+        </Text>
+      ),
+    },
+    { id: "form", component: <PostForm type={type as "work" | "hire"} /> },
+  ];
 
   return (
     <CreatePostProvider type={(type as "work" | "hire") ?? undefined}>
@@ -25,15 +42,13 @@ export default function CreatePostForm() {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView color="background">
-          <View style={styles.page}>
-            <Text size="sm" style={{ marginBottom: 30 }}>
-              Please do NOT include any sensitive information (phone numbers,
-              emails, addresses, etc.).
-            </Text>
-            <PostForm type={"hire"} />
-          </View>
-        </ScrollView>
+        <FlatList
+          keyboardShouldPersistTaps="handled"
+          data={data}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => item.component}
+          contentContainerStyle={styles.page}
+        />
       </KeyboardAvoidingView>
       <View
         color="background"
@@ -47,12 +62,6 @@ export default function CreatePostForm() {
 
 const styles = StyleSheet.create({
   page: { padding: 16 },
-  typeContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-  },
-  buttonRow: { marginTop: 10, flexDirection: "row", gap: 16 },
   footer: {
     padding: 16,
     borderTopWidth: 1,

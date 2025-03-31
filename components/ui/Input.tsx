@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from "react";
+import React, { ForwardedRef, ReactNode } from "react";
 import { StyleSheet, TextInput, TextInputProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -10,10 +10,18 @@ export type InputProps = {
   borderColor?: TColors;
   type?: "default" | "outline" | "clear" | "line";
   placeholder?: string;
+  children?: ReactNode;
 } & TextInputProps;
 
 function Input(
-  { style, borderColor, type = "default", placeholder, ...props }: InputProps,
+  {
+    style,
+    borderColor,
+    type = "default",
+    placeholder,
+    children,
+    ...props
+  }: InputProps,
   ref: ForwardedRef<TextInput>
 ) {
   const themeColor = useThemeColor();
@@ -21,7 +29,9 @@ function Input(
     type === "default" ? themeColor["background-variant"] : "transparent";
   const textColor = themeColor.foreground;
   const placeholderColor = themeColor.muted;
-  const borderColorr = borderColor ? themeColor[borderColor] : themeColor.foreground;
+  const borderColorr = borderColor
+    ? themeColor[borderColor]
+    : themeColor.foreground;
   const paddingHorizontal = type === "line" || type === "clear" ? 0 : 12;
   const borderRadius = type === "line" ? 0 : 6;
   const borderBottomWidth = type === "clear" || type === "default" ? 0 : 1;
@@ -55,7 +65,9 @@ function Input(
       ]}
       placeholderTextColor={placeholderColor}
       {...props}
-    />
+    >
+      {children}
+    </TextInput>
   );
 }
 

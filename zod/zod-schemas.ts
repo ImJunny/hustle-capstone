@@ -46,7 +46,14 @@ export const CreatePostSchema = z
     location_type: z.enum(["local", "remote"]),
     address_uuid: z.string().nullable(),
     due_date: z.date({ message: "Due date is required." }).nullable(),
-    tags: z.array(z.enum(tagTypes)).optional(),
+    tags: z
+      .array(
+        z.object({
+          name: z.string(),
+          value: z.string(),
+        })
+      )
+      .min(1, "Must include at least one tag."),
     images: z.array(z.any()).min(1, "Must include at least one image."),
   })
   .superRefine((data, ctx) => {

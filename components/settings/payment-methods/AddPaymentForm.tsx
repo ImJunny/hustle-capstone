@@ -4,6 +4,8 @@ import Button from "@/components/ui/Button";
 import { useStripe, CardField } from "@stripe/stripe-react-native";
 import { useState } from "react";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
+import { trpc } from "@/server/lib/trpc-client";
+
 type PaymentMethodFormProps = {
   data?: PaymentMethod;
 };

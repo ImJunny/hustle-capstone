@@ -13,7 +13,7 @@ export const paymentMethodsRouter = createTRPCRouter({
     .input(
       z.object({
         user_uuid: z.string(),
-        payment_method_id: z.string(), // From Stripe Elements client-side
+        stripe_payment_method_id: z.string(), // From Stripe Elements client-side
         card_last4: z.string().length(4), // Last 4 digits
       })
     )
@@ -21,7 +21,7 @@ export const paymentMethodsRouter = createTRPCRouter({
       try {
         await createPaymentMethod(
           input.user_uuid,
-          input.payment_method_id,
+          input.stripe_payment_method_id,
           input.card_last4,
           "true" // Set visible to true
         );

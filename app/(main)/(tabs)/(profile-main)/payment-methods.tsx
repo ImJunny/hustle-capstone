@@ -16,15 +16,28 @@ import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import LoadingView from "@/components/ui/LoadingView";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
 
-// Addresses screen
 export default function PaymentMethodsScreen() {
   const { user } = useAuthData();
   if (!user) return;
 
-  const { data: paymentMethods, isLoading } =
-    trpc.payment_methods.get_user_payment_methods.useQuery({
-      user_uuid: user.id,
-    });
+  const {
+    data: paymentMethods,
+    isLoading,
+    error,
+  } = trpc.payment_methods.get_user_payment_methods.useQuery({
+    user_uuid: user.id,
+  });
+
+  if (error) {
+    return (
+      <>
+        <SimpleHeader title="Payment Methods" />
+        <View style={styles.centerPage}>
+          <Text color="red">Error loading payment methods</Text>
+        </View>
+      </>
+    );
+  }
 
   const paymentMethodSheetRef = useRef<BottomSheet>(null);
 

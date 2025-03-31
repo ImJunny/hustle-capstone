@@ -59,7 +59,6 @@ export default function PaymentMethodsScreen() {
   }
 
   if (!paymentMethods || paymentMethods.length === 0) {
-    console.log("No payment methods available");
     return (
       <>
         <PaymentMethodsHeader />
@@ -89,7 +88,6 @@ export default function PaymentMethodsScreen() {
       </View>
       <PaymentMethodSheet
         sheetRef={paymentMethodSheetRef}
-        uuid={uuid!}
         setModalOpen={setModalOpen}
       />
       <PaymentDeleteModal

@@ -6,14 +6,11 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { router } from "expo-router";
 
 export default function ({
-  uuid,
   sheetRef,
   setModalOpen,
 }: {
-  uuid: string;
   sheetRef: RefObject<BottomSheetMethods>;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {

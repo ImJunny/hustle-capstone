@@ -83,7 +83,7 @@ export default function ChooseWorkerScreen() {
         <Button
           disabled={!currentWorker}
           onPress={() => {
-            router.push("/confirm-approve");
+            router.push("/confirm-approval");
           }}
         >
           Continue to approval

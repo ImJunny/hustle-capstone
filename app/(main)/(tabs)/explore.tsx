@@ -5,12 +5,10 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import { ExploreHeader } from "@/components/headers/Headers";
-import { categories, exampleJobPosts } from "@/server/utils/example-data";
+import { categories } from "@/server/utils/example-data";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { router } from "expo-router";
-import Post from "@/components/posts/Post";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();

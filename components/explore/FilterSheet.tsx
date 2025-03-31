@@ -3,8 +3,19 @@ import Sheet from "../ui/Sheet";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
-import { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {
+  BottomSheetFlatList,
+  BottomSheetFooter,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import RangeSlider from "../ui/RangeSlider";
@@ -13,6 +24,8 @@ import { trpc } from "@/server/lib/trpc-client";
 import GoogleAutoInput from "../ui/GoogleAutoInput";
 import { useAuthData } from "@/contexts/AuthContext";
 import { GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
+import TagFilterInput from "../ui/TagFilterInput";
+import { tagTypes } from "@/drizzle/db-types";
 
 export default function FilterSheet({
   sheetRef,
@@ -27,6 +40,7 @@ export default function FilterSheet({
     setLocationType: (locationType: "all" | "remote" | "local") => void;
     setType: (type: "all" | "work" | "hire") => void;
     setGeocode: (lat: number, lng: number) => void;
+    setTags?: (tags: string[]) => void; // Add tags filter setter if needed
   };
 }) {
   const themeColor = useThemeColor();
@@ -52,6 +66,7 @@ export default function FilterSheet({
   const [minDistance, setMinDistance] = useState(0);
   const [maxDistance, setMaxDistance] = useState(55);
   const [geocode, setGeocode] = useState<[number, number] | null>(expoGeocode);
+  const [tags, setTags] = useState<string[]>([]); // Local state for tags
 
   const utils = trpc.useUtils();
 
@@ -78,6 +93,9 @@ export default function FilterSheet({
     } else if (expoGeocode) {
       filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
     }
+    if (filterSetters.setTags) {
+      filterSetters.setTags(tags); // Apply tags if filterSetters has setTags
+    }
     utils.post.get_posts_by_filters.invalidate();
     sheetRef.current?.close();
   }
@@ -90,168 +108,201 @@ export default function FilterSheet({
     setMinDistance(0);
     setMaxDistance(55);
     setGeocode(expoGeocode);
+    setTags([]);
     if (googleInputRef.current) {
       googleInputRef.current.clear();
       googleInputRef.current.blur();
     }
   }
+  const filterOptions = [
+    {
+      key: "Type",
+      component: (
+        <FilterEntry title="Type">
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            {postTypes.map((type, i) => (
+              <Button
+                key={i}
+                style={styles.typeButton}
+                type={postType === type ? "primary" : "outline"}
+                onPress={() => setPostType(type)}
+              >
+                {type === "all" ? "Any" : type === "work" ? "Jobs" : "Services"}
+              </Button>
+            ))}
+          </View>
+        </FilterEntry>
+      ),
+    },
+    {
+      key: "Location type",
+      component: (
+        <View style={{ gap: 30 }}>
+          <FilterEntry title="Location type">
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              {locationTypes.map((type, i) => (
+                <Button
+                  key={i}
+                  style={styles.typeButton}
+                  type={locationType === type ? "primary" : "outline"}
+                  onPress={() => setLocationType(type)}
+                >
+                  {type === "all"
+                    ? "Any"
+                    : type === "remote"
+                    ? "Remote"
+                    : "Local"}
+                </Button>
+              ))}
+            </View>
+          </FilterEntry>
 
+          {locationType !== "remote" && (
+            <>
+              <GoogleAutoInput
+                setGeocode={setGeocode}
+                googleInputRef={googleInputRef}
+              />
+              <FilterEntry
+                title="Distance"
+                text={
+                  minDistance === 0 && maxDistance === 55
+                    ? "Any"
+                    : minDistance === 0 && maxDistance !== 55
+                    ? `Up to ${maxDistance} mi`
+                    : minDistance !== 0 && maxDistance === 55
+                    ? `${minDistance}+ mi`
+                    : `${minDistance}mi - ${maxDistance}mi`
+                }
+              >
+                <RangeSlider
+                  minConstant={0}
+                  maxConstant={55}
+                  setMin={setMinDistance}
+                  setMax={setMaxDistance}
+                  min={minDistance}
+                  max={maxDistance}
+                  step={5}
+                />
+              </FilterEntry>
+            </>
+          )}
+        </View>
+      ),
+    },
+    {
+      key: "Rate",
+      component: (
+        <FilterEntry
+          title="Minimum rate"
+          text={
+            min === MIN_CONSTANT && max === MAX_CONSTANT
+              ? "Any"
+              : min === MIN_CONSTANT && max !== MAX_CONSTANT
+              ? `Up to $${max}`
+              : min !== MIN_CONSTANT && max === MAX_CONSTANT
+              ? `$${min}+`
+              : `$${min}mi - $${max}`
+          }
+        >
+          <RangeSlider
+            minConstant={MIN_CONSTANT}
+            maxConstant={MAX_CONSTANT}
+            setMin={setMin}
+            setMax={setMax}
+            min={min}
+            max={max}
+            step={5}
+          />
+        </FilterEntry>
+      ),
+    },
+    {
+      key: "Tags",
+      component: (
+        <FilterEntry title="Tags">
+          <TagFilterInput
+            data={tagTypes}
+            value={tags}
+            onChange={setTags}
+            borderColor="border"
+          />
+        </FilterEntry>
+      ),
+    },
+  ];
   return (
     <Sheet
       sheetRef={sheetRef}
       title="Filters"
       snapPoints={[1, "100%"]}
       enableContentPanningGesture={false}
-    >
-      <BottomSheetFlatList
-        keyboardShouldPersistTaps="always"
-        contentContainerStyle={{ gap: 30 }}
-        renderItem={({ item }: { item: ReactNode }) => <>{item}</>}
-        data={[
-          <FilterEntry title="Type">
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              {postTypes.map((type, i) => (
-                <Button
-                  key={i}
-                  style={styles.typeButton}
-                  type={postType === type ? "primary" : "outline"}
-                  onPress={() => setPostType(type)}
-                >
-                  {type === "all"
-                    ? "Any"
-                    : type === "work"
-                    ? "Jobs"
-                    : "Services"}
-                </Button>
-              ))}
-            </View>
-          </FilterEntry>,
-          <Separator />,
-          <View style={{ gap: 20 }}>
-            <FilterEntry title="Location type">
-              <View style={{ flexDirection: "row", gap: 12 }}>
-                {locationTypes.map((type, i) => (
-                  <Button
-                    key={i}
-                    style={styles.typeButton}
-                    type={locationType === type ? "primary" : "outline"}
-                    onPress={() => setLocationType(type)}
-                  >
-                    {type === "all"
-                      ? "Any"
-                      : type === "remote"
-                      ? "Remote"
-                      : "Local"}
-                  </Button>
-                ))}
-              </View>
-            </FilterEntry>
-            {locationType !== "remote" && (
-              <>
-                <GoogleAutoInput
-                  setGeocode={setGeocode}
-                  googleInputRef={googleInputRef}
-                />
-
-                <View>
-                  <View style={styles.dualLabel}>
-                    <Text weight="semibold" size="lg">
-                      Distance
-                    </Text>
-                    <Text>
-                      {minDistance === 0 && maxDistance === 55
-                        ? "Any"
-                        : minDistance === 0 && maxDistance !== 55
-                        ? `up to ${maxDistance} mi`
-                        : minDistance !== 0 && maxDistance === 55
-                        ? `${minDistance} mi +`
-                        : `${minDistance} mi - ${maxDistance} mi`}
-                    </Text>
-                  </View>
-                  <RangeSlider
-                    minConstant={0}
-                    maxConstant={55}
-                    setMin={setMinDistance}
-                    setMax={setMaxDistance}
-                    min={minDistance}
-                    max={maxDistance}
-                    step={5}
-                  />
-                </View>
-              </>
-            )}
-          </View>,
-          <Separator />,
-          <View>
-            <View style={styles.dualLabel}>
-              <Text weight="semibold" size="lg">
-                Rate
-              </Text>
-              <Text>
-                {min === MIN_CONSTANT && max === MAX_CONSTANT
-                  ? "Any"
-                  : min === MIN_CONSTANT && max !== MAX_CONSTANT
-                  ? `up to $${max}`
-                  : min !== MIN_CONSTANT && max === MAX_CONSTANT
-                  ? `$${min}+`
-                  : `$${min} to $${max}`}
-              </Text>
-            </View>
-
-            <RangeSlider
-              minConstant={MIN_CONSTANT}
-              maxConstant={MAX_CONSTANT}
-              setMin={setMin}
-              setMax={setMax}
-              min={min}
-              max={max}
-              step={5}
-            />
-          </View>,
-
-          // <Separator />,
-          // <FilterEntry title="Tags">
-          //   <Text>To be implemented</Text>
-          // </FilterEntry>,
-        ]}
-        keyExtractor={(item, index) => index.toString()}
-        style={{ padding: 16 }}
-      />
-
-      <BottomSheetView
-        style={[styles.footer, { borderColor: themeColor.border }]}
-      >
-        <TouchableOpacity
-          style={{ marginLeft: "auto", marginRight: 44 }}
-          onPress={handleReset}
-        >
-          <Text
-            color="muted"
-            style={{
-              textDecorationLine: "underline",
-            }}
+      keyboardBehavior="extend"
+      android_keyboardInputMode="adjustResize"
+      keyboardBlurBehavior="none"
+      footerComponent={({ animatedFooterPosition }) => (
+        <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ backgroundColor: themeColor.background }}
           >
-            Reset
-          </Text>
-        </TouchableOpacity>
-        <Button onPress={handleSave}>Save</Button>
-      </BottomSheetView>
+            <View
+              color="background"
+              style={[styles.footer, { borderColor: themeColor.border }]}
+            >
+              <TouchableOpacity
+                style={{ marginLeft: "auto", marginRight: 44 }}
+                onPress={handleReset}
+              >
+                <Text color="muted" style={{ textDecorationLine: "underline" }}>
+                  Reset
+                </Text>
+              </TouchableOpacity>
+              <Button onPress={handleSave}>Save</Button>
+            </View>
+          </KeyboardAvoidingView>
+        </BottomSheetFooter>
+      )}
+    >
+      <KeyboardAvoidingView style={{ flex: 1, padding: 16 }}>
+        <BottomSheetFlatList
+          data={filterOptions}
+          keyExtractor={(item) => item.key}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          contentContainerStyle={{ flexGrow: 1, gap: 30, paddingBottom: 80 }}
+          renderItem={({ item, index }) => (
+            <>
+              {item.component}
+              {index < filterOptions.length - 1 && (
+                <Separator style={{ marginTop: 30 }} />
+              )}
+            </>
+          )}
+        />
+      </KeyboardAvoidingView>
     </Sheet>
   );
 }
 
 function FilterEntry({
   title,
+  text,
   children,
 }: {
   title: string;
+  text?: string;
   children: ReactNode;
 }) {
   return (
     <View>
-      <Text style={styles.label} weight="semibold" size="lg">
-        {title}
-      </Text>
+      <View style={styles.label}>
+        <Text weight="semibold" size="lg">
+          {title}
+        </Text>
+        <Text>{text}</Text>
+      </View>
+
       {children}
     </View>
   );
@@ -259,13 +310,9 @@ function FilterEntry({
 
 const styles = StyleSheet.create({
   label: {
-    marginBottom: 12,
-  },
-  dualLabel: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   typeButton: {
     paddingHorizontal: 20,

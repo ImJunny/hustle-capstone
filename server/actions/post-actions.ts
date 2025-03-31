@@ -218,7 +218,11 @@ export async function getPostDetailsInfo(
         distance: geocode
           ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
           : sql`NULL`,
-        tags: sql<string[]>`ARRAY_AGG(${post_tags.tag_type})`,
+        tags: sql<string[]>`(
+            SELECT ARRAY_AGG(${post_tags.tag_type})
+            FROM ${post_tags}
+            WHERE ${post_tags.post_uuid} = ${posts.uuid}
+          )`,
         poster_info: {
           username: users.username,
           bio: users.bio,

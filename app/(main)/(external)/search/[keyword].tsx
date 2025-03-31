@@ -77,6 +77,10 @@ export default function SearchedPage() {
   const filterSheetRef = useRef<BottomSheet>(null);
   const sortSheetRef = useRef<BottomSheet>(null);
 
+  useEffect(() => {
+    console.log(filters);
+  }, [filters]);
+
   return (
     <>
       <SearchedHeader

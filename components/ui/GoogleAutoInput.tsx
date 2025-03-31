@@ -20,7 +20,7 @@ export default function GoogleAutoInput({
   return (
     <GooglePlacesAutocomplete
       ref={googleInputRef}
-      placeholder="Search from this location"
+      placeholder="Search from this location..."
       fetchDetails={true}
       textInputProps={{
         placeholderTextColor: themeColor.muted,

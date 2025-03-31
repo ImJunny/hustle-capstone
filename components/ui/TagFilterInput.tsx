@@ -8,50 +8,43 @@ import {
 } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Text from "./Text";
-import { useFormContext, UseFormSetValue } from "react-hook-form";
-import { z } from "zod";
-import { CreatePostSchema } from "@/zod/zod-schemas";
 import View from "./View";
 import { tagTypes } from "@/drizzle/db-types";
+import { TColors } from "@/constants/Colors";
 
 export default function TagFilterInput({
   data = tagTypes,
-  setValue,
-  name,
+  value = [],
+  onChange,
+  borderColor = "border",
+  limit,
 }: {
   data?: ReadonlyArray<{ name: string; value: string }>;
-  setValue: UseFormSetValue<z.infer<typeof CreatePostSchema>>;
-  name: keyof z.infer<typeof CreatePostSchema>;
+  value: string[];
+  onChange: (tags: string[]) => void;
+  borderColor?: TColors;
+  limit?: number;
 }) {
-  const { getValues } = useFormContext<z.infer<typeof CreatePostSchema>>();
   const [search, setSearch] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>(
-    getValues("tags") ?? []
-  );
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    setValue(name, selectedTags);
-  }, [selectedTags, setValue, name]);
-
+  const themeColor = useThemeColor();
+  const color = themeColor[borderColor];
   const addTag = (tagValue: string) => {
-    if (!selectedTags.some((t) => t === tagValue)) {
-      const updatedTags = [...selectedTags, tagValue];
-      setSelectedTags(updatedTags);
+    if (!value.includes(tagValue)) {
+      onChange([...value, tagValue]);
       setSearch("");
     }
   };
 
   const removeTag = (tagValue: string) => {
-    const updatedTags = selectedTags.filter((t) => t !== tagValue);
-    setSelectedTags(updatedTags);
+    onChange(value.filter((t) => t !== tagValue));
     setSearch("");
   };
 
   const removeLastTag = () => {
-    if (selectedTags.length > 0) {
-      const lastTag = selectedTags[selectedTags.length - 1];
+    if (value.length > 0) {
+      const lastTag = value[value.length - 1];
       removeTag(lastTag);
     }
   };
@@ -60,13 +53,12 @@ export default function TagFilterInput({
     if (
       e.nativeEvent.key === "Backspace" &&
       search === "" &&
-      selectedTags.length > 0
+      value.length > 0
     ) {
       removeLastTag();
     }
   };
 
-  // Get the display name for a tag value
   const getTagName = (tagValue: string) => {
     const tag = data.find((t) => t.value === tagValue);
     return tag ? tag.name : tagValue;
@@ -76,11 +68,9 @@ export default function TagFilterInput({
     ? data.filter(
         (item) =>
           item.name.toLowerCase().includes(search.toLowerCase()) &&
-          !selectedTags.some((t) => t === item.value)
+          !value.includes(item.value)
       )
     : [];
-
-  const themeColor = useThemeColor();
 
   useEffect(() => {
     if (filteredData.length > 0 && search.trim()) {
@@ -97,7 +87,7 @@ export default function TagFilterInput({
           flexDirection: "row",
           height: 40,
           borderRadius: 6,
-          borderColor: "white",
+          borderColor: color,
           borderWidth: 1,
           paddingLeft: 8,
           paddingRight: 12,
@@ -113,7 +103,7 @@ export default function TagFilterInput({
             flex: 1,
           }}
         >
-          {selectedTags.map((tagValue) => (
+          {value.map((tagValue) => (
             <TouchableOpacity
               key={tagValue}
               onPress={() => removeTag(tagValue)}
@@ -141,7 +131,7 @@ export default function TagFilterInput({
               onChangeText={(text) => setSearch(text)}
               onKeyPress={handleKeyPress}
               onFocus={() => setIsDropdownVisible(true)}
-              placeholder={selectedTags.length > 0 ? "" : "Search tags..."}
+              placeholder={value.length > 0 ? "" : "Search tags..."}
               placeholderTextColor={themeColor.muted}
               autoCapitalize="none"
               style={{
@@ -150,55 +140,50 @@ export default function TagFilterInput({
                 width: "100%",
                 color: themeColor.foreground,
               }}
-              editable={selectedTags.length < 3}
+              editable={limit ? value.length < limit : true}
             />
           </View>
         </View>
       </View>
 
       {isDropdownVisible && filteredData.length > 0 && (
-        <TouchableWithoutFeedback
-          onPress={() => Keyboard.dismiss()}
-          accessible={false}
+        <View
+          style={{
+            position: "absolute",
+            bottom: 60,
+            left: 0,
+            right: 0,
+            zIndex: 1,
+            backgroundColor: themeColor.background,
+            borderWidth: 1,
+            borderColor: themeColor.border,
+            borderRadius: 6,
+            flexDirection: "column-reverse",
+          }}
         >
-          <View
-            style={{
-              position: "absolute",
-              bottom: 60,
-              left: 0,
-              right: 0,
-              zIndex: 1,
-              backgroundColor: themeColor.background,
-              borderWidth: 2,
-              borderColor: themeColor.border,
-              borderRadius: 6,
-              flexDirection: "column-reverse",
-            }}
-          >
-            <FlatList
-              nestedScrollEnabled
-              keyboardShouldPersistTaps="handled"
-              data={filteredData}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    addTag(item.value);
-                    setIsDropdownVisible(true);
-                  }}
-                  style={{
-                    padding: 10,
-                    backgroundColor: themeColor.background,
-                    borderBottomWidth: 1,
-                    borderColor: themeColor.border,
-                  }}
-                >
-                  <Text>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+          <FlatList
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            data={filteredData}
+            keyExtractor={(item) => item.value}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  addTag(item.value);
+                  setIsDropdownVisible(true);
+                }}
+                style={{
+                  padding: 10,
+                  backgroundColor: themeColor.background,
+                  borderBottomWidth: 1,
+                  borderColor: themeColor.border,
+                }}
+              >
+                <Text>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
       )}
     </View>
   );

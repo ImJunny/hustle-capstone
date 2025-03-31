@@ -34,7 +34,8 @@ export async function createPost(
   location_type: "local" | "remote",
   address_uuid: string | null,
   due_date: Date | null,
-  image_buffers: any[]
+  image_buffers: any[],
+  tags: string[]
 ) {
   try {
     const post_uuid = uuidv4();
@@ -80,7 +81,8 @@ export async function updatePost(
   location_type: "local" | "remote",
   address_uuid: string | null,
   due_date: Date | null,
-  image_buffers: any[] | null
+  image_buffers: any[] | null,
+  tags: string[]
 ) {
   try {
     await db

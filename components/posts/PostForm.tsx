@@ -5,7 +5,6 @@ import View from "../ui/View";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
-import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
@@ -16,7 +15,7 @@ import { Address } from "@/server/actions/address-actions";
 import Icon from "../ui/Icon";
 import { router, useLocalSearchParams } from "expo-router";
 import TagFilterInput from "../ui/TagFilterInput";
-import { tags } from "@/constants/Data";
+import { tagTypes } from "@/drizzle/db-types";
 
 type PostFormProps = {
   type?: "work" | "hire";
@@ -297,7 +296,7 @@ export default function PostForm({ type = "hire" }: PostFormProps) {
           name="tags"
           render={({ field: { onChange, value } }) => (
             <TagFilterInput
-              data={tags}
+              data={tagTypes}
               setValue={setValue}
               getValues={getValues}
               name="tags"

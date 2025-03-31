@@ -97,6 +97,7 @@ export default function PostSubmitButton({
       location_type,
       address_uuid,
       due_date,
+      tags,
     } = data;
 
     let newImages;
@@ -119,6 +120,7 @@ export default function PostSubmitButton({
         address_uuid: address_uuid ?? null,
         due_date: due_date ?? null,
         image_buffers: newImages,
+        tags,
       });
     } else {
       createPost({
@@ -132,6 +134,7 @@ export default function PostSubmitButton({
         address_uuid: address_uuid ?? null,
         due_date: due_date ?? null,
         image_buffers: newImages!,
+        tags,
       });
     }
   }

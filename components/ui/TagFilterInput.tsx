@@ -12,49 +12,71 @@ import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
 import { CreatePostSchema } from "@/zod/zod-schemas";
 import View from "./View";
+import { tagTypes } from "@/drizzle/db-types";
 
 export default function TagFilterInput({
-  data,
+  data = tagTypes,
   setValue,
-  getValues,
   name,
 }: {
-  data: { name: string; value: string }[];
+  data?: ReadonlyArray<{ name: string; value: string }>;
   setValue: UseFormSetValue<z.infer<typeof CreatePostSchema>>;
   getValues: UseFormSetValue<z.infer<typeof CreatePostSchema>>;
   name: keyof z.infer<typeof CreatePostSchema>;
 }) {
   const [search, setSearch] = useState("");
-  const [selectedTags, setSelectedTags] = useState<
-    { name: string; value: string }[]
-  >([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     setValue(name, selectedTags);
   }, [selectedTags, setValue, name]);
 
-  const addTag = (tag: { name: string; value: string }) => {
-    if (!selectedTags.some((t) => t.value === tag.value)) {
-      const updatedTags = [...selectedTags, tag];
+  const addTag = (tagValue: string) => {
+    if (!selectedTags.some((t) => t === tagValue)) {
+      const updatedTags = [...selectedTags, tagValue];
       setSelectedTags(updatedTags);
       setSearch("");
     }
   };
 
-  const removeTag = (tag: { name: string; value: string }) => {
-    const updatedTags = selectedTags.filter((t) => t.value !== tag.value);
+  const removeTag = (tagValue: string) => {
+    const updatedTags = selectedTags.filter((t) => t !== tagValue);
     setSelectedTags(updatedTags);
     setSearch("");
+  };
+
+  const removeLastTag = () => {
+    if (selectedTags.length > 0) {
+      const lastTag = selectedTags[selectedTags.length - 1];
+      removeTag(lastTag);
+    }
+  };
+
+  const handleKeyPress = (e: any) => {
+    if (
+      e.nativeEvent.key === "Backspace" &&
+      search === "" &&
+      selectedTags.length > 0
+    ) {
+      removeLastTag();
+    }
+  };
+
+  // Get the display name for a tag value
+  const getTagName = (tagValue: string) => {
+    const tag = data.find((t) => t.value === tagValue);
+    return tag ? tag.name : tagValue;
   };
 
   const filteredData = search
     ? data.filter(
         (item) =>
           item.name.toLowerCase().includes(search.toLowerCase()) &&
-          !selectedTags.some((t) => t.value === item.value)
+          !selectedTags.some((t) => t === item.value)
       )
-    : []; // Empty array when no search is active or no filter matches
+    : [];
 
   const themeColor = useThemeColor();
 
@@ -89,8 +111,11 @@ export default function TagFilterInput({
             flex: 1,
           }}
         >
-          {selectedTags.map((tag) => (
-            <TouchableOpacity key={tag.value} onPress={() => removeTag(tag)}>
+          {selectedTags.map((tagValue) => (
+            <TouchableOpacity
+              key={tagValue}
+              onPress={() => removeTag(tagValue)}
+            >
               <View
                 color="foreground"
                 style={{
@@ -103,17 +128,20 @@ export default function TagFilterInput({
                   alignItems: "center",
                 }}
               >
-                <Text color="background">{tag.name} ✕</Text>
+                <Text color="background">{getTagName(tagValue)} ✕</Text>
               </View>
             </TouchableOpacity>
           ))}
           <View style={{ flex: 1 }}>
             <TextInput
+              ref={inputRef}
               value={search}
               onChangeText={(text) => setSearch(text)}
+              onKeyPress={handleKeyPress}
               onFocus={() => setIsDropdownVisible(true)}
               placeholder={selectedTags.length > 0 ? "" : "Search tags..."}
               placeholderTextColor={themeColor.muted}
+              autoCapitalize="none"
               style={{
                 flex: 1,
                 padding: 5,
@@ -133,16 +161,16 @@ export default function TagFilterInput({
         >
           <View
             style={{
-              position: "absolute", // Position dropdown above input
-              bottom: 60, // Adjust based on input's position
+              position: "absolute",
+              bottom: 60,
               left: 0,
               right: 0,
-              zIndex: 1, // Ensure it appears above other elements
+              zIndex: 1,
               backgroundColor: themeColor.background,
               borderWidth: 2,
               borderColor: themeColor.border,
               borderRadius: 6,
-              flexDirection: "column-reverse", // Reverse the direction of the list items
+              flexDirection: "column-reverse",
             }}
           >
             <FlatList
@@ -153,8 +181,8 @@ export default function TagFilterInput({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => {
-                    addTag(item);
-                    setIsDropdownVisible(true); // Keep dropdown open
+                    addTag(item.value);
+                    setIsDropdownVisible(true);
                   }}
                   style={{
                     padding: 10,

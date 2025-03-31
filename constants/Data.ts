@@ -98,19 +98,3 @@ export const countries = [
   { label: "United States", value: "united_states" },
   { label: "Vietnam", value: "vietnam" },
 ];
-
-export const tags = [
-  { name: "home", value: "home" },
-  { name: "tech", value: "tech" },
-  { name: "yardwork", value: "yardwork" },
-  { name: "beauty", value: "beauty" },
-  { name: "food", value: "food" },
-  { name: "vehicle", value: "vehicle" },
-  { name: "moving", value: "moving" },
-  { name: "moving", value: "moving" },
-  { name: "sports", value: "sports" },
-  { name: "health", value: "health" },
-  { name: "education", value: "education" },
-  { name: "gaming", value: "gaming" },
-  { name: "misc", value: "misc" },
-];

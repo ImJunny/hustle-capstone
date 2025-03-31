@@ -15,6 +15,7 @@ import {
   unsavePost,
   getSavedPosts,
 } from "../actions/post-actions";
+import Input from "@/components/ui/Input";
 
 export const postRouter = createTRPCRouter({
   create_post: protectedProcedure
@@ -30,6 +31,7 @@ export const postRouter = createTRPCRouter({
         address_uuid: z.string().nullable(),
         due_date: z.coerce.date().nullable(),
         image_buffers: z.array(z.any()),
+        tags: z.array(z.string()),
       })
     )
     .mutation(async ({ input }) => {
@@ -43,7 +45,8 @@ export const postRouter = createTRPCRouter({
         input.location_type,
         input.address_uuid,
         input.due_date,
-        input.image_buffers
+        input.image_buffers,
+        input.tags
       );
     }),
   update_post: protectedProcedure
@@ -58,6 +61,7 @@ export const postRouter = createTRPCRouter({
         address_uuid: z.string().nullable(),
         due_date: z.coerce.date().nullable(),
         image_buffers: z.array(z.any()).nullable(),
+        tags: z.array(z.string()),
       })
     )
     .mutation(async ({ input }) => {
@@ -70,7 +74,8 @@ export const postRouter = createTRPCRouter({
         input.location_type,
         input.address_uuid,
         input.due_date,
-        input.image_buffers
+        input.image_buffers,
+        input.tags
       );
     }),
   get_user_posts: protectedProcedure

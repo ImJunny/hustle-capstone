@@ -26,15 +26,19 @@ import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
-  const themeColor = useThemeColor();
   const { width } = Dimensions.get("window");
   const { user } = useAuthData();
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
+    user_uuid: user?.id,
   });
 
   // State to track if post is saved
   const [isSaved, setIsSaved] = useState(data?.is_liked);
+  useEffect(() => {
+    setIsSaved(data?.is_liked);
+  }, [data?.is_liked]);
+
   const utils = trpc.useUtils();
 
   const saveMutation = trpc.post.save_post.useMutation();
@@ -60,8 +64,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
         { post_uuid: data.uuid, user_uuid: user.id },
         {
           onSuccess: () => {
-            utils.post.get_saved_posts.invalidate();
-            utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
+            utils.post.invalidate();
           },
           onError: (error) => {
             Toast.show({

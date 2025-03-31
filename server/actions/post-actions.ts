@@ -196,6 +196,7 @@ export type Posts = Post[] | undefined;
 // Get post details info; used in post details page
 export async function getPostDetailsInfo(
   uuid: string,
+  user_uuid: string | undefined,
   geocode: [number, number] | undefined
 ) {
   try {
@@ -229,8 +230,8 @@ export async function getPostDetailsInfo(
         is_liked: sql<boolean>`EXISTS(
           SELECT 1
           FROM ${saved_posts}
-          WHERE ${saved_posts.post_uuid} = ${posts.uuid}
-          AND ${saved_posts.user_uuid} = ${users.uuid}
+          WHERE ${saved_posts.post_uuid} = ${uuid}
+          AND ${saved_posts.user_uuid} = ${user_uuid}
         )`,
       })
       .from(posts)
@@ -431,7 +432,10 @@ export async function deletePost(uuid: string) {
   }
 }
 
-export async function getHomePosts(type: "work" | "hire") {
+export async function getHomePosts(
+  type: "work" | "hire",
+  user_uuid: string | undefined
+) {
   try {
     let result = await db
       .select({
@@ -462,7 +466,7 @@ export async function getHomePosts(type: "work" | "hire") {
         SELECT 1
         FROM ${saved_posts}
         WHERE ${saved_posts.post_uuid} = ${posts.uuid}
-        AND ${saved_posts.user_uuid} = ${users.uuid}
+        AND ${saved_posts.user_uuid} = ${user_uuid}
       )`,
       })
       .from(posts)
@@ -537,7 +541,7 @@ export async function getPostDetailsFooterInfo(
         initiated: sql<boolean>`EXISTS(
         SELECT 1
         FROM ${initiated_jobs}
-        WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
         AND ${initiated_jobs.worker_uuid} = ${user_uuid}
       )`,
       })

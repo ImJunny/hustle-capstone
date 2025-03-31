@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, Pressable } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Badge from "../ui/Badge";
 import IconButton from "../ui/IconButton";
 import Icon from "../ui/Icon";
@@ -29,6 +29,9 @@ export default function HomePost({ data }: { data: THomePost }) {
 
   // State to track if post is saved
   const [isSaved, setIsSaved] = useState(data.is_liked);
+  useEffect(() => {
+    setIsSaved(data?.is_liked);
+  }, [data?.is_liked]);
 
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
@@ -52,8 +55,7 @@ export default function HomePost({ data }: { data: THomePost }) {
       { post_uuid: data.uuid, user_uuid: user.id },
       {
         onSuccess: () => {
-          utils.post.get_saved_posts.invalidate();
-          utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
+          utils.post.invalidate();
         },
         onError: (error) => {
           Toast.show({ text1: error.message, swipeable: false, type: "error" });

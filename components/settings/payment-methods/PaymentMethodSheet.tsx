@@ -21,7 +21,7 @@ export default function ({
     <Sheet sheetRef={sheetRef} title="Payment options" snapPoints={[1, "35%"]}>
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
         <SheetOption
-          text="Delete Payment"
+          text="Delete payment method"
           name="trash-outline"
           color="red"
           onPress={() => {

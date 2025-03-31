@@ -2,27 +2,50 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import Button from "@/components/ui/Button";
 import { useStripe, CardField } from "@stripe/stripe-react-native";
-import { useState } from "react";
-import { PaymentMethod } from "@/server/actions/payment-method-actions";
+import { useEffect, useState } from "react";
 import { trpc } from "@/server/lib/trpc-client";
-import { useFormContext } from "react-hook-form";
-import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
-import { z } from "zod";
 import { useAuthData } from "@/contexts/AuthContext";
+import Toast from "react-native-toast-message";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import Input from "@/components/ui/Input";
+import { z } from "zod";
+import { CreatePaymentMethodSchema } from "@/app/(main)/(external)/add-payment";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { router } from "expo-router";
 
 type PaymentMethodFormProps = {
-  data?: PaymentMethod;
+  formMethods: UseFormReturn<z.infer<typeof CreatePaymentMethodSchema>>;
 };
 
-export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
+export default function AddPaymentForm({
+  formMethods,
+}: PaymentMethodFormProps) {
   const { user } = useAuthData() as { user: { id: string } | undefined };
   const { createPaymentMethod } = useStripe();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const { getValues, handleSubmit } =
-    useFormContext<z.infer<typeof CreatePaymentMethodSchema>>();
-  const createPaymentMethodMutation =
-    trpc.payment_methods.create_payment_method.useMutation();
+  const utils = trpc.useUtils();
+
+  const { mutate: createMethod } =
+    trpc.payment_methods.create_payment_method.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: `Successfully added payment method`,
+          swipeable: false,
+        });
+        router.back();
+        utils.payment_methods.invalidate();
+      },
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          type: "error",
+          swipeable: false,
+        });
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+    });
 
   if (!user) {
     return <Text>No user data found</Text>;
@@ -30,173 +53,121 @@ export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
 
   const handleAddPayment = async () => {
     setLoading(true);
-    setMessage("");
 
-    try {
-      const { stripe_customer_id } = getValues();
-      // Correct way to create payment method in v0.23.0+
-      const { paymentMethod, error } = await createPaymentMethod({
-        paymentMethodType: "Card",
-        paymentMethodData: {
-          billingDetails: {
-            name: "Test User", // Replace with actual user data
-          },
+    const { paymentMethod, error } = await createPaymentMethod({
+      paymentMethodType: "Card",
+      paymentMethodData: {
+        billingDetails: {
+          name: "Test User", // Replace with actual user data
         },
+      },
+    });
+
+    if (error || !paymentMethod) {
+      Toast.show({
+        text1: error.message,
+        type: "error",
+        swipeable: false,
       });
+    }
 
-      if (error || !paymentMethod) {
-        throw error || new Error("Payment failed");
-      }
-
-      if (user?.id) {
-        createPaymentMethodMutation.mutate({
-          user_uuid: user.id, // Only use if user.id is valid
-          stripe_payment_method_id: paymentMethod.id,
-          stripe_customer_id: "1",
-          card_last4: paymentMethod.Card?.last4 ?? "0000",
-        });
-      } else {
-        console.error("User ID is not available");
-        // Handle the case when user.id is missing
-      }
-
-      setMessage(
-        `Success! Card ending in ${paymentMethod.Card?.last4 || "4242"}`
-      );
-      console.log("Payment method created:", paymentMethod.id);
-    } catch (error) {
-      setMessage(
-        `Error: ${error instanceof Error ? error.message : "Payment failed"}`
-      );
-      console.error("Payment error:", error);
-    } finally {
-      setLoading(false);
+    if (user?.id && paymentMethod) {
+      createMethod({
+        user_uuid: user.id,
+        cardholder_name: formMethods.getValues("cardholder_name"),
+        stripe_payment_method_id: paymentMethod.id,
+        stripe_customer_id: "1",
+        card_last4: paymentMethod.Card?.last4 ?? "0000",
+      });
     }
   };
+  const [isCardValid, setIsCardValid] = useState(false);
 
+  const themeColor = useThemeColor();
   return (
-    <View style={{ padding: 20, gap: 16 }}>
-      <Text weight="semibold" size="lg">
-        Insert Details Here
-      </Text>
-
-      {/* Stripe's secure card input */}
-      <CardField
-        postalCodeEnabled={false}
-        placeholders={{
-          number: "4242 4242 4242 4242",
-        }}
-        style={{
-          width: "100%",
-          height: 50,
-          marginVertical: 10,
-        }}
-      />
-
-      <Button onPress={handleAddPayment} disabled={loading}>
-        {loading ? "Processing..." : "Add Payment Method"}
-      </Button>
-
-      {message && (
-        <Text color={message.startsWith("Success") ? "green" : "red"}>
-          {message}
+    <View style={{ padding: 16, gap: 20 }}>
+      <View style={{ gap: 4 }}>
+        <Text size="lg" weight="semibold">
+          Cardholder name
         </Text>
-      )}
+        <Controller
+          control={formMethods.control}
+          name="cardholder_name"
+          render={({ field: { onChange, value } }) => (
+            <Input type="outline" value={value} onChangeText={onChange} />
+          )}
+        />
+        {formMethods.formState.errors.cardholder_name && (
+          <Text color="red" style={{ marginTop: 4 }}>
+            {formMethods.formState.errors.cardholder_name.message}
+          </Text>
+        )}
+      </View>
+
+      <View style={{ gap: 4 }}>
+        <Text size="lg" weight="semibold">
+          Card information
+        </Text>
+        <Controller
+          control={formMethods.control}
+          name="card_is_valid"
+          render={({ field: { onChange }, fieldState: { error } }) => (
+            <>
+              <CardField
+                onCardChange={(cardDetails) => {
+                  const isValid = cardDetails.complete;
+                  setIsCardValid(isValid);
+                  onChange(isValid);
+
+                  // Trigger error in real-time
+                  if (!isValid) {
+                    formMethods.setError("card_is_valid", {
+                      type: "manual",
+                      message: "Please enter a valid card",
+                    });
+                  } else {
+                    formMethods.clearErrors("card_is_valid");
+                  }
+                }}
+                postalCodeEnabled={false}
+                placeholders={{
+                  number: "4242 4242 4242 4242",
+                }}
+                cardStyle={{
+                  borderRadius: 6,
+                  textColor: themeColor.foreground,
+                  placeholderColor: themeColor.muted,
+                  backgroundColor: themeColor.background,
+                  borderWidth: 1,
+                  borderColor: themeColor.foreground,
+                }}
+                style={{ height: 40 }}
+              />
+              {error && (
+                <Text color="red" style={{ marginTop: 4 }}>
+                  {error.message}
+                </Text>
+              )}
+            </>
+          )}
+        />
+      </View>
+
+      <Button
+        onPress={formMethods.handleSubmit((data) => {
+          if (!isCardValid) {
+            formMethods.setError("card_is_valid", {
+              type: "manual",
+              message: "Please enter a valid card.",
+            });
+            return;
+          }
+          handleAddPayment();
+        })}
+        disabled={loading}
+      >
+        {loading ? "Processing..." : "Add payment method"}
+      </Button>
     </View>
   );
 }
-
-/*
-import { useStripe, CardField } from "@stripe/stripe-react-native";
-import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
-import Button from "@/components/ui/Button";
-import { Alert, StyleSheet } from "react-native";
-
-type PaymentMethodFormProps = {
-  onSuccess?: (paymentMethodId: string) => void;
-  onError?: (error: any) => void;
-};
-
-export default function AddPaymentForm({
-  onSuccess,
-  onError,
-}: PaymentMethodFormProps) {
-  const { createPaymentMethod } = useStripe();
-
-  const handleSubmit = async () => {
-    try {
-      // 1. Create payment method
-      const { paymentMethod, error } = await createPaymentMethod({
-        paymentMethodType: "Card",
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (!paymentMethod?.id) {
-        throw new Error("Payment method creation failed");
-      }
-
-      // 2. Call success callback
-      onSuccess?.(paymentMethod.id);
-
-      Alert.alert("Success", "Payment method added successfully");
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      onError?.(error);
-      Alert.alert("Error", error.message || "Failed to add payment method");
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text weight="bold" size="lg" style={styles.title}>
-        Add Payment Method
-      </Text>
-
-      <CardField
-        postalCodeEnabled={false}
-        placeholders={{
-          number: "4242 4242 4242 4242",
-          expiration: "MM/YY",
-          cvc: "CVC",
-        }}
-        cardStyle={styles.card}
-        style={styles.cardField}
-        onCardChange={(cardDetails) => {
-          console.log("Card details:", cardDetails);
-        }}
-      />
-
-      <Button>Add Payment Method</Button>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
-  },
-  title: {
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  card: {
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
-    borderRadius: 8,
-    fontSize: 16,
-  },
-  cardField: {
-    width: "100%",
-    height: 50,
-    marginVertical: 20,
-  },
-  button: {
-    marginTop: 20,
-  },
-});
- */

@@ -107,14 +107,3 @@ export const CreateAddressSchema = z
         });
     }
   });
-
-export const CreatePaymentMethodSchema = z.object({
-  stripe_payment_method_id: z
-    .string()
-    .min(1, "Stripe Payment Method ID is required"),
-  stripe_customer_id: z.string().min(1, "Stripe Customer ID is required"),
-  card_last4: z
-    .string()
-    .length(4, "Card number must be 4 digits")
-    .regex(/^\d{4}$/, "Card number must be only digits"),
-});

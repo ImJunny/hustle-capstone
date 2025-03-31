@@ -1,44 +1,40 @@
 import View from "@/components/ui/View";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SimpleHeader } from "@/components/headers/Headers";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import ScrollView from "@/components/ui/ScrollView";
-import { CreateAddressProvider } from "@/contexts/CreateAddressContext";
 import AddPaymentForm from "@/components/settings/payment-methods/AddPaymentForm";
 import { StripeProvider } from "@stripe/stripe-react-native";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-const publish_key = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
-if (!publish_key) {
-  throw new Error(
-    "Stripe publishable key is not defined in environment variables."
-  );
-}
+export const CreatePaymentMethodSchema = z.object({
+  cardholder_name: z.string().trim().min(1, "Cannot leave field empty"),
+  card_is_valid: z.boolean().default(false),
+});
+
 export default function CreateAddressForm() {
-  const themeColor = useThemeColor();
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [suggestions, setSuggestions] = useState<any>();
+  const formMethods = useForm<z.infer<typeof CreatePaymentMethodSchema>>({
+    resolver: zodResolver(CreatePaymentMethodSchema),
+  });
 
   return (
     <StripeProvider
-      publishableKey={publish_key} // required
+      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
       merchantIdentifier="merchant.com.your-app" // required for Apple Pay
-      // ...other props if needed
     >
-      <CreateAddressProvider>
-        <SimpleHeader title="Add New Payment" />
-        <KeyboardAvoidingView
-          style={styles.avoidingView}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={styles.page} color="background">
-              <AddPaymentForm />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </CreateAddressProvider>
+      <SimpleHeader title="Add new payment method" />
+      <KeyboardAvoidingView
+        style={styles.avoidingView}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.page} color="background">
+            <AddPaymentForm formMethods={formMethods} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </StripeProvider>
   );
 }

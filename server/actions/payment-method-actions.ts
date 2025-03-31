@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function createPaymentMethod(
   user_uuid: string,
+  cardholder_name: string,
   stripe_payment_method_id: string,
   stripe_customer_id: string,
   card_last4: string
@@ -13,6 +14,7 @@ export async function createPaymentMethod(
     await db.insert(payment_methods).values({
       uuid: uuidv4(),
       user_uuid,
+      cardholder_name,
       stripe_payment_method_id,
       stripe_customer_id,
       card_last4,

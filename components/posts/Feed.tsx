@@ -2,6 +2,8 @@ import { FlatList, Dimensions, RefreshControl } from "react-native";
 import React from "react";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import HomePost from "./HomePost";
+import { HomePost as THomePost } from "@/server/actions/post-actions";
 
 const useFeedHeight = () => {
   const insets = useSafeAreaInsets();
@@ -12,13 +14,11 @@ const useFeedHeight = () => {
 
 interface FeedListProps<T> {
   data: T[];
-  renderItem: ({ item }: { item: T }) => JSX.Element;
   refetch: () => Promise<void>;
 }
 
 const Feed = <T extends { uuid: string }>({
   data,
-  renderItem,
   refetch,
 }: FeedListProps<T>) => {
   const postHeight = useFeedHeight();
@@ -36,7 +36,9 @@ const Feed = <T extends { uuid: string }>({
       }
       bounces={false}
       data={data}
-      renderItem={renderItem}
+      renderItem={({ item }) => (
+        <HomePost data={item as unknown as THomePost} />
+      )}
       keyExtractor={(item, index) => `${item.uuid}-${index}`}
       pagingEnabled
       snapToInterval={postHeight}

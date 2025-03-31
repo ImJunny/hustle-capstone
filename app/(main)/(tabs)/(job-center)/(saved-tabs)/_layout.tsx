@@ -28,7 +28,11 @@ export default function Layout() {
       <SimpleHeader title="Saved" style={{ borderBottomWidth: 0 }} />
       <MaterialTopTabs
         screenOptions={{
-          tabBarStyle: { backgroundColor: themeColor.background },
+          tabBarStyle: {
+            backgroundColor: themeColor.background,
+            borderBottomWidth: 1,
+            borderColor: themeColor.border,
+          },
           tabBarActiveTintColor: themeColor.muted,
           tabBarLabelStyle: {
             fontSize: FontSizes.md,

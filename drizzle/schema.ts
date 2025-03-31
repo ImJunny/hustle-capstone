@@ -176,6 +176,7 @@ export const payment_methods = app_schema.table("payment_methods", {
   user_uuid: uuid("user_uuid")
     .references(() => users.uuid, { onDelete: "cascade" })
     .notNull(),
+  cardholder_name: text("cardholder_name").notNull(),
   stripe_payment_method_id: text("stripe_payment_method_id").notNull(),
   stripe_customer_id: text("stripe_customer_id").notNull(),
   card_last4: text("card_last4").notNull(),

@@ -49,8 +49,6 @@ export default function PaymentMethodsScreen() {
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  console.log(paymentMethods);
-
   if (isLoading) {
     return (
       <>
@@ -61,7 +59,6 @@ export default function PaymentMethodsScreen() {
   }
 
   if (!paymentMethods || paymentMethods.length === 0) {
-    console.log("No payment methods available");
     return (
       <>
         <PaymentMethodsHeader />
@@ -91,7 +88,6 @@ export default function PaymentMethodsScreen() {
       </View>
       <PaymentMethodSheet
         sheetRef={paymentMethodSheetRef}
-        uuid={uuid!}
         setModalOpen={setModalOpen}
       />
       <PaymentDeleteModal
@@ -117,9 +113,8 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
       style={[styles.entry, { borderColor: themeColor.border }]}
     >
       <View>
-        <Text weight="semibold" style={{ marginBottom: 4 }}>
-          Card ending in ****{paymentMethod.card_last4}
-        </Text>
+        <Text weight="semibold">{paymentMethod.cardholder_name}</Text>
+        <Text>Card ending in ****{paymentMethod.card_last4}</Text>
       </View>
 
       <IconButton name="ellipsis-vertical" onPress={openSheet} />

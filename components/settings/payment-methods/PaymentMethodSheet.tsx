@@ -6,14 +6,11 @@ import { BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { router } from "expo-router";
 
 export default function ({
-  uuid,
   sheetRef,
   setModalOpen,
 }: {
-  uuid: string;
   sheetRef: RefObject<BottomSheetMethods>;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -21,7 +18,7 @@ export default function ({
     <Sheet sheetRef={sheetRef} title="Payment options" snapPoints={[1, "35%"]}>
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
         <SheetOption
-          text="Delete Payment"
+          text="Delete payment method"
           name="trash-outline"
           color="red"
           onPress={() => {

@@ -199,11 +199,6 @@ export async function getPostDetailsInfo(
   geocode: [number, number] | undefined
 ) {
   try {
-    let location = null;
-    if (geocode) {
-      location = sql`ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)`;
-    }
-
     const result = await db
       .select({
         uuid: posts.uuid,
@@ -213,8 +208,6 @@ export async function getPostDetailsInfo(
         type: posts.type,
         title: posts.title,
         due_date: posts.due_date,
-        min_rate: posts.min_rate,
-        max_rate: posts.max_rate,
         location_type: posts.location_type,
         address_uuid: posts.address_uuid,
         distance: geocode
@@ -233,6 +226,12 @@ export async function getPostDetailsInfo(
         images: sql<
           string[]
         >`ARRAY_AGG(DISTINCT ${post_images.image_url} ORDER BY ${post_images.image_url} ASC)`,
+        is_liked: sql<boolean>`EXISTS(
+          SELECT 1
+          FROM ${saved_posts}
+          WHERE ${saved_posts.post_uuid} = ${posts.uuid}
+          AND ${saved_posts.user_uuid} = ${users.uuid}
+        )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -245,6 +244,7 @@ export async function getPostDetailsInfo(
         users.username,
         users.bio,
         users.avatar_url,
+        users.uuid,
         addresses.location
       )
       .limit(1);
@@ -445,19 +445,25 @@ export async function getHomePosts(type: "work" | "hire") {
         location_type: posts.location_type,
         due_date: posts.due_date,
         image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+      )`,
         user_avatar_url: users.avatar_url,
         user_username: users.username,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
+        is_liked: sql<boolean>`EXISTS(
+        SELECT 1
+        FROM ${saved_posts}
+        WHERE ${saved_posts.post_uuid} = ${posts.uuid}
+        AND ${saved_posts.user_uuid} = ${users.uuid}
+      )`,
       })
       .from(posts)
       .innerJoin(
@@ -468,6 +474,7 @@ export async function getHomePosts(type: "work" | "hire") {
           eq(posts.type, type)
         )
       );
+
     return result;
   } catch (error) {
     console.log(error);
@@ -518,25 +525,27 @@ export async function getActivePostCounts(user_uuid: string) {
 }
 
 // Get post user progress
-export async function isInitiated(user_uuid: string, job_post_uuid: string) {
+export async function getPostDetailsFooterInfo(
+  user_uuid: string,
+  job_post_uuid: string
+) {
   try {
     const result = await db
       .select({
-        type: posts.type,
-        uuid: posts.uuid,
-        progress: initiated_jobs.progress_type,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        initiated: sql<boolean>`EXISTS(
+        SELECT 1
+        FROM ${initiated_jobs}
+        WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+        AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+      )`,
       })
-      .from(initiated_jobs)
-      .innerJoin(
-        posts,
-        and(
-          eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.uuid, job_post_uuid),
-          eq(initiated_jobs.worker_uuid, user_uuid)
-        )
-      );
-    if (result.length > 0) return true;
-    return false;
+      .from(posts)
+      .where(eq(posts.uuid, job_post_uuid))
+      .then(([result]) => result);
+
+    return result;
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");

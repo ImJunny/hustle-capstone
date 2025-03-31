@@ -13,6 +13,7 @@ export const paymentMethodsRouter = createTRPCRouter({
     .input(
       z.object({
         user_uuid: z.string(),
+        cardholder_name: z.string(),
         stripe_payment_method_id: z
           .string()
           .min(1, "Stripe Payment Method ID is required"),
@@ -27,6 +28,7 @@ export const paymentMethodsRouter = createTRPCRouter({
       try {
         await createPaymentMethod(
           input.user_uuid,
+          input.cardholder_name,
           input.stripe_payment_method_id,
           input.stripe_customer_id,
           input.card_last4

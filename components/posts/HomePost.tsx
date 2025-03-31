@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, Pressable } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import Badge from "../ui/Badge";
 import IconButton from "../ui/IconButton";
 import Icon from "../ui/Icon";
@@ -28,66 +28,12 @@ export default function HomePost({ data }: { data: THomePost }) {
   const utils = trpc.useUtils();
 
   // State to track if post is saved
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(data.is_liked);
 
-  // Check if post is saved initially
-  const { data: savedPosts } = trpc.post.get_saved_posts.useQuery(
-    { user_uuid: user?.id || "", type: "work" },
-    { enabled: !!user }
-  );
-  const { data: savedHirePosts } = trpc.post.get_saved_posts.useQuery(
-    { user_uuid: user?.id || "", type: "hire" },
-    { enabled: !!user }
-  );
+  const saveMutation = trpc.post.save_post.useMutation();
+  const unsaveMutation = trpc.post.unsave_post.useMutation();
 
-  const combinedSavedPosts = [...(savedPosts || []), ...(savedHirePosts || [])];
-
-  useEffect(() => {
-    if (combinedSavedPosts && data) {
-      const isPostSaved = combinedSavedPosts.some(
-        (post) => post.uuid === data.uuid
-      );
-      setIsSaved(isPostSaved);
-    }
-  }, [combinedSavedPosts, data.uuid]);
-
-  // Save post mutation
-  const { mutate: savePostMutation } = trpc.post.save_post.useMutation({
-    onSuccess: () => {
-      setIsSaved(true);
-      utils.post.get_saved_posts.invalidate();
-      utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
-    },
-    onError: (error) => {
-      Toast.show({
-        text1: error.message,
-        swipeable: false,
-        type: "error",
-      });
-      setIsSaved(false);
-    },
-  });
-
-  // Unsave post mutation
-  const { mutate: unsavePostMutation } = trpc.post.unsave_post.useMutation({
-    onSuccess: () => {
-      setIsSaved(false);
-      utils.post.get_saved_posts.invalidate();
-      utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
-    },
-    onError: (error) => {
-      Toast.show({
-        text1: error.message,
-        swipeable: false,
-        type: "error",
-      });
-      setIsSaved(true);
-    },
-  });
-
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSaveToggle = () => {
+  const handleSaveToggle = useCallback(() => {
     if (!user) {
       Toast.show({
         text1: "You need to be logged in to save posts",
@@ -96,27 +42,26 @@ export default function HomePost({ data }: { data: THomePost }) {
       return;
     }
 
+    // Optimistic Update
+    setIsSaved((prev) => !prev);
     const newIsSaved = !isSaved;
-    setIsSaved(newIsSaved);
 
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+    const mutation = newIsSaved ? saveMutation : unsaveMutation;
 
-    saveTimeoutRef.current = setTimeout(() => {
-      if (newIsSaved) {
-        savePostMutation({
-          post_uuid: data.uuid,
-          user_uuid: user.id,
-        });
-      } else {
-        unsavePostMutation({
-          post_uuid: data.uuid,
-          user_uuid: user.id,
-        });
+    mutation.mutate(
+      { post_uuid: data.uuid, user_uuid: user.id },
+      {
+        onSuccess: () => {
+          utils.post.get_saved_posts.invalidate();
+          utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
+        },
+        onError: (error) => {
+          Toast.show({ text1: error.message, swipeable: false, type: "error" });
+          setIsSaved((prev) => !prev); // Revert on failure
+        },
       }
-    }, 300);
-  };
+    );
+  }, [isSaved, user, data.uuid, saveMutation, unsaveMutation, utils]);
 
   function formatCustomDate(date: Date) {
     return isThisYear(date)

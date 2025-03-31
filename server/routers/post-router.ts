@@ -9,11 +9,11 @@ import {
   getPostInfo,
   getPostsByFilters,
   getUserPosts,
-  isInitiated,
   updatePost,
   savePost,
   unsavePost,
   getSavedPosts,
+  getPostDetailsFooterInfo,
 } from "../actions/post-actions";
 import Input from "@/components/ui/Input";
 
@@ -168,7 +168,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return getActivePostCounts(input.user_uuid);
     }),
-  is_initiated: protectedProcedure
+  get_post_details_footer_info: protectedProcedure
     .input(
       z.object({
         user_uuid: z.string(),
@@ -176,7 +176,7 @@ export const postRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return isInitiated(input.user_uuid, input.job_post_uuid);
+      return getPostDetailsFooterInfo(input.user_uuid, input.job_post_uuid);
     }),
 
   save_post: protectedProcedure

@@ -679,7 +679,7 @@ export function PaymentMethodsHeader() {
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
             <IconButton name="arrow-back" onPress={() => router.back()} />
             <Text size="xl" weight="semibold">
-              Payment Methods
+              Payment methods
             </Text>
           </View>
         ),

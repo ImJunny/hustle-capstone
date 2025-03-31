@@ -5,6 +5,7 @@ import Text from "@/components/ui/Text";
 import LoadingView from "@/components/ui/LoadingView";
 import { trpc } from "@/server/lib/trpc-client";
 import Post from "@/components/posts/Post";
+import { Post as TPost } from "@/server/actions/post-actions";
 
 export default function SavedServicesScreen() {
   const { user } = useAuthData();
@@ -40,7 +41,7 @@ export default function SavedServicesScreen() {
   return (
     <ScrollView>
       {savedServices.map((post, i) => (
-        <Post key={post.uuid} data={post} type={post.type} />
+        <Post key={post.uuid} data={post as TPost} type={post.type} />
       ))}
     </ScrollView>
   );

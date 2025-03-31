@@ -19,10 +19,11 @@ import IconButton from "../ui/IconButton";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import PostDetailsButton from "./PostDetailsButton";
+import PostDetailsButton from "./PostDetailsFooter";
 import Toast from "react-native-toast-message";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
+import PostDetailsFooter from "./PostDetailsFooter";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const themeColor = useThemeColor();
@@ -204,21 +205,8 @@ export default function PostDetails({ uuid }: { uuid: string }) {
           data={data as unknown as PostDetailsInfo}
         />
       </ScrollView>
-      <View
-        style={[styles.actionsRow, { borderColor: themeColor.border }]}
-        color="background"
-      >
-        <View>
-          <Text size="sm" weight="semibold">
-            Base rate
-          </Text>
-          <Text weight="semibold" size="xl">
-            ${data.min_rate}
-            {data.max_rate && " - " + `$${data.max_rate}`}
-          </Text>
-        </View>
-        <PostDetailsButton data={data as unknown as PostDetailsInfo} />
-      </View>
+      <PostDetailsFooter data={data as unknown as PostDetailsInfo} />
+
       <PostDetailsSheet
         isSelf={data.user_uuid === user?.id}
         uuid={uuid}
@@ -234,13 +222,3 @@ export default function PostDetails({ uuid }: { uuid: string }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  actionsRow: {
-    flexDirection: "row",
-    padding: 16,
-    borderTopWidth: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-});

@@ -54,6 +54,7 @@ export default function PostDetailsDescriptionSection({
           <Badge key={i}>{tag}</Badge>
         ))}
       </View>
+
       <Text>{data.description}</Text>
       <View style={styles.datesRow}>
         <Text color="muted">{createdAgo}</Text>

@@ -208,8 +208,6 @@ export async function getPostDetailsInfo(
         type: posts.type,
         title: posts.title,
         due_date: posts.due_date,
-        min_rate: posts.min_rate,
-        max_rate: posts.max_rate,
         location_type: posts.location_type,
         address_uuid: posts.address_uuid,
         distance: geocode
@@ -527,25 +525,27 @@ export async function getActivePostCounts(user_uuid: string) {
 }
 
 // Get post user progress
-export async function isInitiated(user_uuid: string, job_post_uuid: string) {
+export async function getPostDetailsFooterInfo(
+  user_uuid: string,
+  job_post_uuid: string
+) {
   try {
     const result = await db
       .select({
-        type: posts.type,
-        uuid: posts.uuid,
-        progress: initiated_jobs.progress_type,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        initiated: sql<boolean>`EXISTS(
+        SELECT 1
+        FROM ${initiated_jobs}
+        WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+        AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+      )`,
       })
-      .from(initiated_jobs)
-      .innerJoin(
-        posts,
-        and(
-          eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.uuid, job_post_uuid),
-          eq(initiated_jobs.worker_uuid, user_uuid)
-        )
-      );
-    if (result.length > 0) return true;
-    return false;
+      .from(posts)
+      .where(eq(posts.uuid, job_post_uuid))
+      .then(([result]) => result);
+
+    return result;
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");

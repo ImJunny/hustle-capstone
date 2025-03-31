@@ -19,6 +19,8 @@ import {
   gte,
   lte,
   sql,
+  exists,
+  inArray,
 } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
@@ -303,7 +305,8 @@ export async function getPostsByFilters(
     | "asc-dist"
     | "desc-dist"
     | undefined = undefined,
-  geocode: [number, number] | undefined
+  geocode: [number, number] | undefined,
+  tags: string[]
 ) {
   try {
     let result = await db
@@ -320,10 +323,10 @@ export async function getPostsByFilters(
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
         tags: sql<string[]>`(
-            SELECT ARRAY_AGG(${post_tags.tag_type})
-            FROM ${post_tags}
-            WHERE ${post_tags.post_uuid} = ${posts.uuid}
-          )`,
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -369,7 +372,21 @@ export async function getPostsByFilters(
                   )
                 : sql`TRUE`
             )
-          )
+          ),
+          // Tag filtering - Ensure post has at least one matching tag
+          tags.length > 0
+            ? exists(
+                db
+                  .select({ tag_type: post_tags.tag_type })
+                  .from(post_tags)
+                  .where(
+                    and(
+                      eq(post_tags.post_uuid, posts.uuid),
+                      inArray(post_tags.tag_type, tags)
+                    )
+                  )
+              )
+            : sql`TRUE`
         )
       )
       .groupBy(posts.uuid, addresses.location);

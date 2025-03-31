@@ -15,6 +15,7 @@ import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
 import { useAuthData } from "@/contexts/AuthContext";
 import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
+import { preventAutoHideAsync } from "expo-router/build/utils/splash";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();
@@ -32,6 +33,7 @@ export default function SearchedPage() {
     locationType: "all" | "remote" | "local";
     sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
     geocode: [number, number] | undefined;
+    tags: string[];
   }>({
     type: "all",
     min: MIN_CONSTANT,
@@ -41,6 +43,7 @@ export default function SearchedPage() {
     locationType: "all",
     sort: undefined,
     geocode: expoGeocode ?? undefined,
+    tags: [],
   });
 
   const filterSetters = {
@@ -59,6 +62,7 @@ export default function SearchedPage() {
     ) => setFilters((prev) => ({ ...prev, sort })),
     setGeocode: (lat: number, lng: number) =>
       setFilters((prev) => ({ ...prev, geocode: [lat, lng] })),
+    setTags: (tags: string[]) => setFilters((prev) => ({ ...prev, tags })),
   };
 
   const { data, isLoading } = trpc.post.get_posts_by_filters.useQuery({
@@ -71,15 +75,12 @@ export default function SearchedPage() {
     type: filters.type,
     sort: filters.sort,
     geocode: filters.geocode,
+    tags: filters.tags,
   });
 
   // Sheet refs to open/close
   const filterSheetRef = useRef<BottomSheet>(null);
   const sortSheetRef = useRef<BottomSheet>(null);
-
-  useEffect(() => {
-    console.log(filters);
-  }, [filters]);
 
   return (
     <>

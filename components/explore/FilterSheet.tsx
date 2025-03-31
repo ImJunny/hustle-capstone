@@ -40,7 +40,7 @@ export default function FilterSheet({
     setLocationType: (locationType: "all" | "remote" | "local") => void;
     setType: (type: "all" | "work" | "hire") => void;
     setGeocode: (lat: number, lng: number) => void;
-    setTags?: (tags: string[]) => void; // Add tags filter setter if needed
+    setTags: (tags: string[]) => void;
   };
 }) {
   const themeColor = useThemeColor();
@@ -87,17 +87,18 @@ export default function FilterSheet({
     filterSetters.setMinDistance(minDistance);
     filterSetters.setMaxDistance(maxDistance == 55 ? 100000 : maxDistance);
     filterSetters.setLocationType(locationType);
-    if (geocode) {
+    if (googleInputRef.current?.getAddressText() === "" && expoGeocode) {
+      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
+    } else if (geocode) {
       const [lat, lng] = geocode;
       filterSetters.setGeocode(lat, lng);
-    } else if (expoGeocode) {
-      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
     }
     if (filterSetters.setTags) {
-      filterSetters.setTags(tags); // Apply tags if filterSetters has setTags
+      filterSetters.setTags(tags);
     }
     utils.post.get_posts_by_filters.invalidate();
     sheetRef.current?.close();
+    Keyboard.dismiss();
   }
 
   function handleReset() {

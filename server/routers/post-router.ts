@@ -124,6 +124,7 @@ export const postRouter = createTRPCRouter({
           .enum(["asc-rate", "desc-rate", "asc-dist", "desc-dist"])
           .optional(),
         geocode: z.tuple([z.number(), z.number()]).optional(),
+        tags: z.array(z.string()),
       })
     )
     .query(async ({ input }) => {
@@ -136,7 +137,8 @@ export const postRouter = createTRPCRouter({
         input.location_type,
         input.type,
         input.sort,
-        input.geocode
+        input.geocode,
+        input.tags
       );
     }),
   delete_post: protectedProcedure

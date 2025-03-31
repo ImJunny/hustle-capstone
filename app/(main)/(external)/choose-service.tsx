@@ -15,6 +15,7 @@ import RadioButton from "@/components/ui/RadioButton";
 import { router, useLocalSearchParams } from "expo-router";
 import { Post } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
+import ScrollView from "@/components/ui/ScrollView";
 
 // Addresses screen
 export default function ChooseServiceScreen() {
@@ -58,7 +59,7 @@ export default function ChooseServiceScreen() {
   return (
     <>
       <ChooseServiceHeader />
-      <View style={{ flex: 1 }} color="base">
+      <ScrollView style={{ flex: 1 }} color="base">
         <TouchableOpacity onPress={() => setCurrentService(null)}>
           <View
             style={{
@@ -80,12 +81,12 @@ export default function ChooseServiceScreen() {
         {services.map((service, i) => (
           <ServiceEntry
             key={i}
-            service={service}
+            service={service as Post}
             currentService={currentService}
             setCurrentService={setCurrentService}
           />
         ))}
-      </View>
+      </ScrollView>
       <View
         color="background"
         style={[styles.footer, { borderColor: themeColor.border }]}

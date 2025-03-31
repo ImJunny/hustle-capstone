@@ -18,15 +18,7 @@ const WorkRoute = () => {
     type: "work",
   });
 
-  return (
-    <Feed
-      data={workPosts!}
-      refetch={() => refetch().then(() => {})}
-      renderItem={({ item }) => (
-        <HomePost data={item as unknown as THomePost} />
-      )}
-    />
-  );
+  return <Feed data={workPosts!} refetch={() => refetch().then(() => {})} />;
 };
 
 const HireRoute = () => {
@@ -34,15 +26,7 @@ const HireRoute = () => {
     type: "hire",
   });
 
-  return (
-    <Feed
-      data={hirePosts!}
-      refetch={() => refetch().then(() => {})}
-      renderItem={({ item }) => (
-        <HomePost data={item as unknown as THomePost} />
-      )}
-    />
-  );
+  return <Feed data={hirePosts!} refetch={() => refetch().then(() => {})} />;
 };
 
 const renderScene = ({ route }: { route: Route }) => {

@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions } from "react-native";
@@ -20,8 +20,9 @@ import { StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import PostDetailsButton from "./PostDetailsButton";
-import Skeleton from "../ui/Skeleton";
 import Toast from "react-native-toast-message";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const themeColor = useThemeColor();
@@ -32,66 +33,13 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   });
 
   // State to track if post is saved
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(data?.is_liked);
   const utils = trpc.useUtils();
 
-  // Check if post is saved initially
-  const { data: savedPosts } = trpc.post.get_saved_posts.useQuery(
-    { user_uuid: user?.id || "", type: "work" },
-    { enabled: !!user }
-  );
+  const saveMutation = trpc.post.save_post.useMutation();
+  const unsaveMutation = trpc.post.unsave_post.useMutation();
 
-  const { data: savedHirePosts } = trpc.post.get_saved_posts.useQuery(
-    { user_uuid: user?.id || "", type: "hire" },
-    { enabled: !!user }
-  );
-
-  const combinedSavedPosts = [...(savedPosts || []), ...(savedHirePosts || [])];
-
-  useEffect(() => {
-    if (combinedSavedPosts && data) {
-      const isPostSaved = combinedSavedPosts.some(
-        (post) => post.uuid === data.uuid
-      );
-      setIsSaved(isPostSaved);
-    }
-  }, [combinedSavedPosts, data]);
-
-  // Save post mutation
-  const { mutate: savePostMutation } = trpc.post.save_post.useMutation({
-    onSuccess: () => {
-      setIsSaved(true);
-      utils.post.get_saved_posts.invalidate();
-    },
-    onError: (error) => {
-      Toast.show({
-        text1: error.message,
-        swipeable: false,
-        type: "error",
-      });
-      setIsSaved(false);
-    },
-  });
-
-  // Unsave post mutation
-  const { mutate: unsavePostMutation } = trpc.post.unsave_post.useMutation({
-    onSuccess: () => {
-      setIsSaved(false);
-      utils.post.get_saved_posts.invalidate();
-    },
-    onError: (error) => {
-      Toast.show({
-        text1: error.message,
-        swipeable: false,
-        type: "error",
-      });
-      setIsSaved(true);
-    },
-  });
-
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSaveToggle = () => {
+  const handleSaveToggle = useCallback(() => {
     if (!user) {
       Toast.show({
         text1: "You need to be logged in to save posts",
@@ -100,29 +48,31 @@ export default function PostDetails({ uuid }: { uuid: string }) {
       return;
     }
 
-    if (!data) return;
-
+    // Optimistic Update
+    setIsSaved((prev) => !prev);
     const newIsSaved = !isSaved;
-    setIsSaved(newIsSaved);
 
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+    const mutation = newIsSaved ? saveMutation : unsaveMutation;
 
-    saveTimeoutRef.current = setTimeout(() => {
-      if (newIsSaved) {
-        savePostMutation({
-          post_uuid: data.uuid,
-          user_uuid: user.id,
-        });
-      } else {
-        unsavePostMutation({
-          post_uuid: data.uuid,
-          user_uuid: user.id,
-        });
-      }
-    }, 300);
-  };
+    if (data)
+      mutation.mutate(
+        { post_uuid: data.uuid, user_uuid: user.id },
+        {
+          onSuccess: () => {
+            utils.post.get_saved_posts.invalidate();
+            utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
+          },
+          onError: (error) => {
+            Toast.show({
+              text1: error.message,
+              swipeable: false,
+              type: "error",
+            });
+            setIsSaved((prev) => !prev); // Revert on failure
+          },
+        }
+      );
+  }, [isSaved, user, data?.uuid, saveMutation, unsaveMutation, utils]);
 
   // Sheet ref to open/close
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -177,11 +127,11 @@ export default function PostDetails({ uuid }: { uuid: string }) {
     );
   }
 
-  const handlePress = () => {
-    if (data.type === "work") {
-      router.push(`/accept/${data.uuid}` as any);
-    }
-  };
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd(() => {
+      runOnJS(handleSaveToggle)();
+    });
 
   return (
     <>
@@ -202,22 +152,24 @@ export default function PostDetails({ uuid }: { uuid: string }) {
       </View>
 
       <ScrollView color="base">
-        <ScrollView
-          horizontal
-          pagingEnabled
-          snapToInterval={width}
-          snapToAlignment="center"
-          decelerationRate="fast"
-          showsHorizontalScrollIndicator={false}
-        >
-          {data.images.map((image, i) => (
-            <Image
-              key={i}
-              style={{ width, height: width }}
-              source={{ uri: image }}
-            />
-          ))}
-        </ScrollView>
+        <GestureDetector gesture={doubleTap}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            snapToInterval={width}
+            snapToAlignment="center"
+            decelerationRate="fast"
+            showsHorizontalScrollIndicator={false}
+          >
+            {data.images.map((image, i) => (
+              <Image
+                key={i}
+                style={{ width, height: width }}
+                source={{ uri: image }}
+              />
+            ))}
+          </ScrollView>
+        </GestureDetector>
         <View
           style={{
             flexDirection: "row",

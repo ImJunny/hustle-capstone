@@ -199,11 +199,6 @@ export async function getPostDetailsInfo(
   geocode: [number, number] | undefined
 ) {
   try {
-    let location = null;
-    if (geocode) {
-      location = sql`ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)`;
-    }
-
     const result = await db
       .select({
         uuid: posts.uuid,
@@ -233,6 +228,12 @@ export async function getPostDetailsInfo(
         images: sql<
           string[]
         >`ARRAY_AGG(DISTINCT ${post_images.image_url} ORDER BY ${post_images.image_url} ASC)`,
+        is_liked: sql<boolean>`EXISTS(
+          SELECT 1
+          FROM ${saved_posts}
+          WHERE ${saved_posts.post_uuid} = ${posts.uuid}
+          AND ${saved_posts.user_uuid} = ${users.uuid}
+        )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -245,6 +246,7 @@ export async function getPostDetailsInfo(
         users.username,
         users.bio,
         users.avatar_url,
+        users.uuid,
         addresses.location
       )
       .limit(1);

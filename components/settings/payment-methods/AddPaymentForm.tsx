@@ -1,19 +1,107 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-// import { useStripe } from "@stripe/stripe-react-native";
+import Button from "@/components/ui/Button";
+import { useStripe, CardField } from "@stripe/stripe-react-native";
+import { useState } from "react";
+import { PaymentMethod } from "@/server/actions/payment-method-actions";
+import { trpc } from "@/server/lib/trpc-client";
+import { useFormContext } from "react-hook-form";
+import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
+import { z } from "zod";
+import { useAuthData } from "@/contexts/AuthContext";
 
-// Prop types for payment method form
 type PaymentMethodFormProps = {
-  data?: any; // Define your data type if needed (e.g., payment method data)
+  data?: PaymentMethod;
 };
 
-// Payment method form
 export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
+  const { user } = useAuthData() as { user: { id: string } | undefined };
+  const { createPaymentMethod } = useStripe();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const { getValues, handleSubmit } =
+    useFormContext<z.infer<typeof CreatePaymentMethodSchema>>();
+  const createPaymentMethodMutation =
+    trpc.payment_methods.create_payment_method.useMutation();
+
+  if (!user) {
+    return <Text>No user data found</Text>;
+  }
+
+  const handleAddPayment = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const { stripe_customer_id } = getValues();
+      // Correct way to create payment method in v0.23.0+
+      const { paymentMethod, error } = await createPaymentMethod({
+        paymentMethodType: "Card",
+        paymentMethodData: {
+          billingDetails: {
+            name: "Test User", // Replace with actual user data
+          },
+        },
+      });
+
+      if (error || !paymentMethod) {
+        throw error || new Error("Payment failed");
+      }
+
+      if (user?.id) {
+        createPaymentMethodMutation.mutate({
+          user_uuid: user.id, // Only use if user.id is valid
+          stripe_payment_method_id: paymentMethod.id,
+          stripe_customer_id: "1",
+          card_last4: paymentMethod.Card?.last4 ?? "0000",
+        });
+      } else {
+        console.error("User ID is not available");
+        // Handle the case when user.id is missing
+      }
+
+      setMessage(
+        `Success! Card ending in ${paymentMethod.Card?.last4 || "4242"}`
+      );
+      console.log("Payment method created:", paymentMethod.id);
+    } catch (error) {
+      setMessage(
+        `Error: ${error instanceof Error ? error.message : "Payment failed"}`
+      );
+      console.error("Payment error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View style={{ padding: 20 }}>
-      <Text weight="semibold" size="lg" color="muted">
-        Payment form is in progress... Please wait.
+    <View style={{ padding: 20, gap: 16 }}>
+      <Text weight="semibold" size="lg">
+        Insert Details Here
       </Text>
+
+      {/* Stripe's secure card input */}
+      <CardField
+        postalCodeEnabled={false}
+        placeholders={{
+          number: "4242 4242 4242 4242",
+        }}
+        style={{
+          width: "100%",
+          height: 50,
+          marginVertical: 10,
+        }}
+      />
+
+      <Button onPress={handleAddPayment} disabled={loading}>
+        {loading ? "Processing..." : "Add Payment Method"}
+      </Button>
+
+      {message && (
+        <Text color={message.startsWith("Success") ? "green" : "red"}>
+          {message}
+        </Text>
+      )}
     </View>
   );
 }

@@ -14,18 +14,30 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import LoadingView from "@/components/ui/LoadingView";
-import AddressDeleteModal from "@/components/addresses/AddressDeleteModal";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
 
-// Addresses screen
 export default function PaymentMethodsScreen() {
   const { user } = useAuthData();
   if (!user) return;
 
-  const { data: paymentMethods, isLoading } =
-    trpc.payment_methods.get_user_payment_methods.useQuery({
-      user_uuid: user.id,
-    });
+  const {
+    data: paymentMethods,
+    isLoading,
+    error,
+  } = trpc.payment_methods.get_user_payment_methods.useQuery({
+    user_uuid: user.id,
+  });
+
+  if (error) {
+    return (
+      <>
+        <SimpleHeader title="Payment Methods" />
+        <View style={styles.centerPage}>
+          <Text color="red">Error loading payment methods</Text>
+        </View>
+      </>
+    );
+  }
 
   const paymentMethodSheetRef = useRef<BottomSheet>(null);
 
@@ -37,6 +49,8 @@ export default function PaymentMethodsScreen() {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  console.log(paymentMethods);
+
   if (isLoading) {
     return (
       <>
@@ -46,7 +60,8 @@ export default function PaymentMethodsScreen() {
     );
   }
 
-  if (!paymentMethods) {
+  if (!paymentMethods || paymentMethods.length === 0) {
+    console.log("No payment methods available");
     return (
       <>
         <PaymentMethodsHeader />
@@ -54,7 +69,9 @@ export default function PaymentMethodsScreen() {
           <Text weight="semibold" size="2xl">
             No payment methods available
           </Text>
-          <Text>Add a payment method click the add button at the top</Text>
+          <Text>
+            Add a payment method by clicking the add button at the top
+          </Text>
         </View>
       </>
     );
@@ -77,7 +94,7 @@ export default function PaymentMethodsScreen() {
         uuid={uuid!}
         setModalOpen={setModalOpen}
       />
-      <AddressDeleteModal
+      <PaymentDeleteModal
         uuid={uuid}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
@@ -101,7 +118,7 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
     >
       <View>
         <Text weight="semibold" style={{ marginBottom: 4 }}>
-          {paymentMethod.card_brand} - **** {paymentMethod.card_last4}
+          Card ending in ****{paymentMethod.card_last4}
         </Text>
       </View>
 

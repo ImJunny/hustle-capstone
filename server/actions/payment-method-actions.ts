@@ -1,6 +1,7 @@
 import { db } from "@/drizzle/db";
 import { payment_methods } from "@/drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, is } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 
 export async function createPaymentMethod(
   user_uuid: string,
@@ -10,10 +11,12 @@ export async function createPaymentMethod(
 ) {
   try {
     await db.insert(payment_methods).values({
+      uuid: uuidv4(),
       user_uuid,
       stripe_payment_method_id,
       stripe_customer_id,
       card_last4,
+      visible: true,
     });
   } catch (error) {
     console.error("Error creating payment method:", error);

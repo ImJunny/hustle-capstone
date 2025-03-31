@@ -217,6 +217,25 @@ export function ChooseAddressHeader() {
     />
   );
 }
+export function ChoosePaymentHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Choose Payment
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton name="add" onPress={() => router.push("/add-payment")} />
+        ),
+      }}
+    />
+  );
+}
 
 export function ChooseServiceHeader() {
   return (

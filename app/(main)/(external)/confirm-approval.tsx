@@ -9,6 +9,7 @@ import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Post } from "@/server/actions/post-actions";
+import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
@@ -18,25 +19,27 @@ import Toast from "react-native-toast-message";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
-  const { uuid, selected_service } = useLocalSearchParams();
+  const { uuid, selected_payment } = useLocalSearchParams();
   const utils = trpc.useUtils();
   const { user } = useAuthData();
 
   // get selected service
-  const [service, setService] = useState<Post | null>(null);
+  const [payment, setPayment] = useState<PaymentMethod | null>(null);
   useEffect(() => {
-    if (selected_service) {
-      const parsedService = JSON.parse(selected_service as string) as Post;
-      setService(parsedService);
+    if (selected_payment) {
+      const parsedPayment = JSON.parse(
+        selected_payment as string
+      ) as PaymentMethod;
+      setPayment(parsedPayment);
     }
-  }, [selected_service]);
+  }, [selected_payment]);
 
   // function to handle confirm accept
-  const { mutate: acceptJob, isLoading: acceptLoading } =
-    trpc.job.accept_job.useMutation({
+  const { mutate: approveJob, isLoading: acceptLoading } =
+    trpc.job.approve_job.useMutation({
       onSuccess: () => {
         Toast.show({
-          text1: "Accepted job",
+          text1: "Approved job",
           swipeable: false,
         });
         utils.job.invalidate();
@@ -55,10 +58,10 @@ export default function AcceptScreen() {
       },
     });
   const handleAccept = () => {
-    acceptJob({
+    approveJob({
       user_uuid: user?.id!,
       job_post_uuid: uuid as string,
-      linked_service_post_uuid: service?.uuid ?? null,
+      linked_payment_method_uuid: payment?.uuid ?? null,
     });
   };
 
@@ -105,10 +108,8 @@ export default function AcceptScreen() {
             Disclaimer
           </Text>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            Accepting this job does not guarentee you will be approved for it.
-            The employer will consider all users who accept this job and proceed
-            with who they choose. You cannot unaccept within 24 hours of the due
-            date.
+            Once you approve this worker for a job you cannot unapprove this
+            person unless and all payments our finals.
           </Text>
         </View>
         <View
@@ -135,18 +136,18 @@ export default function AcceptScreen() {
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: "/choose-service",
+                pathname: "/choose-payment",
                 params: {
-                  selected_service: JSON.stringify(service),
+                  selected_payment: JSON.stringify(payment),
                 },
               });
             }}
             style={[styles.linker, { borderColor: themeColor.foreground }]}
           >
             <View>
-              {service ? (
+              {payment ? (
                 <View>
-                  <Text>{service.title}</Text>
+                  <Text>Card ending in {payment.card_last4}</Text>
                 </View>
               ) : (
                 <Text color="muted">None</Text>

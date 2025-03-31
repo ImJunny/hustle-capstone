@@ -17,8 +17,7 @@ import PostDetailsSheet from "./PostDetailsSheet";
 import PostDetailsDeleteModal from "./PostDetailsDeleteModal";
 import IconButton from "../ui/IconButton";
 import { StyleSheet } from "react-native";
-import Button from "../ui/Button";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import PostDetailsButton from "./PostDetailsButton";
 import Skeleton from "../ui/Skeleton";
@@ -211,11 +210,11 @@ export default function PostDetails({ uuid }: { uuid: string }) {
           decelerationRate="fast"
           showsHorizontalScrollIndicator={false}
         >
-          {data.post_images.map((image, i) => (
+          {data.images.map((image, i) => (
             <Image
               key={i}
               style={{ width, height: width }}
-              source={{ uri: image.image_url }}
+              source={{ uri: image }}
             />
           ))}
         </ScrollView>

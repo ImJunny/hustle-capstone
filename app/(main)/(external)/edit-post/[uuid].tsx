@@ -11,6 +11,7 @@ import PostSubmitButton from "@/components/posts/PostSubmitButton";
 import { useLocalSearchParams } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
+import { FlatList } from "react-native-gesture-handler";
 
 export default function CreatePostForm() {
   const { uuid } = useLocalSearchParams();
@@ -19,24 +20,38 @@ export default function CreatePostForm() {
   });
   const themeColor = useThemeColor();
 
+  const flatListData = [
+    {
+      id: "notice",
+      component: (
+        <Text size="sm" style={{ marginBottom: 30 }}>
+          Please do NOT include any sensitive information (phone numbers,
+          emails, addresses, etc.).
+        </Text>
+      ),
+    },
+    { id: "form", component: <PostForm /> },
+  ];
   return (
     <CreatePostProvider data={data as unknown as PostDetailsInfo}>
       <SimpleHeader title="Edit post" />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView>
-          <View style={styles.page}>
-            <Text size="sm" style={{ marginBottom: 30 }}>
-              Please do NOT include any sensitive information (phone numbers,
-              emails, addresses, etc.).
-            </Text>
-            <PostForm />
-          </View>
-        </ScrollView>
+        <FlatList
+          keyboardShouldPersistTaps="handled"
+          data={flatListData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => item.component}
+          contentContainerStyle={styles.page}
+        />
       </KeyboardAvoidingView>
-      <View style={[styles.footer, { borderColor: themeColor.border }]}>
+      <View
+        color="background"
+        style={[styles.footer, { borderColor: themeColor.border }]}
+      >
         <PostSubmitButton uuid={uuid as string} isEditing />
       </View>
     </CreatePostProvider>

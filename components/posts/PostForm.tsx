@@ -5,7 +5,6 @@ import View from "../ui/View";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import RadioButton from "../ui/RadioButton";
-import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { PostImagePicker } from "./PostImagePicker";
 import PostDateInput from "./PostDateInput";
 import { CreatePostSchema } from "@/zod/zod-schemas";
@@ -15,6 +14,8 @@ import { useEffect, useState } from "react";
 import { Address } from "@/server/actions/address-actions";
 import Icon from "../ui/Icon";
 import { router, useLocalSearchParams } from "expo-router";
+import TagFilterInput from "../ui/TagFilterInput";
+import { tagTypes } from "@/drizzle/db-types";
 
 type PostFormProps = {
   type?: "work" | "hire";
@@ -59,6 +60,7 @@ export default function PostForm({ type = "hire" }: PostFormProps) {
 
   const themeColor = useThemeColor();
   const locationType = watch("location_type");
+
   return (
     <View style={{ gap: 70 }}>
       <View>
@@ -286,13 +288,26 @@ export default function PostForm({ type = "hire" }: PostFormProps) {
       </View>
 
       <View>
-        <Text weight="semibold" size="lg">
+        <Text weight="semibold" size="lg" style={{ marginBottom: 4 }}>
           Tags
         </Text>
-        <Input type="outline" style={styles.text_form} />
-        <Text color="muted" size="sm" style={{ marginTop: 4 }}>
-          Add up to 3 tags. This helps others find your post.
-        </Text>
+        <Controller
+          control={control}
+          name="tags"
+          render={({ field: { onChange, value } }) => (
+            <TagFilterInput
+              data={tagTypes}
+              value={value || []}
+              onChange={onChange}
+              limit={3}
+            />
+          )}
+        />
+        <BottomMessage
+          field="tags"
+          defaultMessage="Add 1-3 tags. This helps others know more about your post."
+          hasError
+        />
       </View>
     </View>
   );

@@ -201,6 +201,13 @@ export default function HomePost({ data }: { data: THomePost }) {
                         {data.location_type === "remote" ? "remote" : "local"}
                       </Text>
                     </Badge>
+                    {data.tags?.map((tag, i) => (
+                      <Badge key={i}>
+                        <Text size="sm" weight="semibold">
+                          {tag}
+                        </Text>
+                      </Badge>
+                    ))}
                   </View>
                   <Text numberOfLines={3} ellipsizeMode="tail" color="white">
                     {data.description}

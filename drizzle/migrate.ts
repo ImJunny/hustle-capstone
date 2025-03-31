@@ -25,7 +25,10 @@ export async function runMigrations() {
     console.log("running migrations...");
     await migrate(db, { migrationsFolder: "drizzle/generated" });
     for (const type of tagTypes)
-      await db.insert(tag_types).values({ name: type }).onConflictDoNothing();
+      await db
+        .insert(tag_types)
+        .values({ name: type.value })
+        .onConflictDoNothing();
     for (const type of locationTypes)
       await db
         .insert(location_types)

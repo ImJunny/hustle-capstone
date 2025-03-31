@@ -8,12 +8,14 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useFormContext } from "react-hook-form";
 import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
 import { z } from "zod";
+import { useAuthData } from "@/contexts/AuthContext";
 
 type PaymentMethodFormProps = {
   data?: PaymentMethod;
 };
 
 export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
+  const { user } = useAuthData() as { user: { id: string } | undefined };
   const { createPaymentMethod } = useStripe();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -21,6 +23,10 @@ export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
     useFormContext<z.infer<typeof CreatePaymentMethodSchema>>();
   const createPaymentMethodMutation =
     trpc.payment_methods.create_payment_method.useMutation();
+
+  if (!user) {
+    return <Text>No user data found</Text>;
+  }
 
   const handleAddPayment = async () => {
     setLoading(true);
@@ -42,12 +48,17 @@ export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
         throw error || new Error("Payment failed");
       }
 
-      createPaymentMethodMutation.mutate({
-        user_uuid: "892682af-2e23-41b9-aeee-448854933d9a", // Replace with the actual user UUID
-        stripe_payment_method_id: paymentMethod.id,
-        stripe_customer_id: "1", // Ensure this value is provided
-        card_last4: paymentMethod.Card?.last4 ?? "0000",
-      });
+      if (user?.id) {
+        createPaymentMethodMutation.mutate({
+          user_uuid: user.id, // Only use if user.id is valid
+          stripe_payment_method_id: paymentMethod.id,
+          stripe_customer_id: "1",
+          card_last4: paymentMethod.Card?.last4 ?? "0000",
+        });
+      } else {
+        console.error("User ID is not available");
+        // Handle the case when user.id is missing
+      }
 
       setMessage(
         `Success! Card ending in ${paymentMethod.Card?.last4 || "4242"}`

@@ -5,6 +5,9 @@ import { useStripe, CardField } from "@stripe/stripe-react-native";
 import { useState } from "react";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import { trpc } from "@/server/lib/trpc-client";
+import { useFormContext } from "react-hook-form";
+import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
+import { z } from "zod";
 
 type PaymentMethodFormProps = {
   data?: PaymentMethod;
@@ -14,12 +17,17 @@ export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
   const { createPaymentMethod } = useStripe();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const { getValues, handleSubmit } =
+    useFormContext<z.infer<typeof CreatePaymentMethodSchema>>();
+  const createPaymentMethodMutation =
+    trpc.payment_methods.create_payment_method.useMutation();
 
   const handleAddPayment = async () => {
     setLoading(true);
     setMessage("");
 
     try {
+      const { stripe_customer_id } = getValues();
       // Correct way to create payment method in v0.23.0+
       const { paymentMethod, error } = await createPaymentMethod({
         paymentMethodType: "Card",
@@ -33,6 +41,13 @@ export default function AddPaymentForm({ data }: PaymentMethodFormProps) {
       if (error || !paymentMethod) {
         throw error || new Error("Payment failed");
       }
+
+      createPaymentMethodMutation.mutate({
+        user_uuid: "892682af-2e23-41b9-aeee-448854933d9a", // Replace with the actual user UUID
+        stripe_payment_method_id: paymentMethod.id,
+        stripe_customer_id: "1", // Ensure this value is provided
+        card_last4: paymentMethod.Card?.last4 ?? "0000",
+      });
 
       setMessage(
         `Success! Card ending in ${paymentMethod.Card?.last4 || "4242"}`

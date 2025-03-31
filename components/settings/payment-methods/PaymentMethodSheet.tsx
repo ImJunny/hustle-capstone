@@ -21,14 +21,6 @@ export default function ({
     <Sheet sheetRef={sheetRef} title="Payment options" snapPoints={[1, "35%"]}>
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
         <SheetOption
-          text="Edit Payment"
-          name="create-outline"
-          onPress={() => {
-            sheetRef.current?.forceClose();
-            router.push(`/edit-payment/${uuid}` as any);
-          }}
-        />
-        <SheetOption
           text="Delete Payment"
           name="trash-outline"
           color="red"

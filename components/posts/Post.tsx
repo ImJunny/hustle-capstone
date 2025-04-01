@@ -44,7 +44,7 @@ export default function Post({ type, data, style }: PostProps) {
           <Image
             style={{ width: 116, height: 116, borderRadius: 4 }}
             source={{
-              uri: `https://hustle-images-bucket.s3.us-east-2.amazonaws.com/${data.uuid}-0`,
+              uri: data.image_url!,
             }}
           />
           <View style={styles.entryContent}>

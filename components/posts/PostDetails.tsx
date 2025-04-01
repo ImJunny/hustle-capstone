@@ -1,7 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
@@ -16,25 +15,27 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import PostDetailsSheet from "./PostDetailsSheet";
 import PostDetailsDeleteModal from "./PostDetailsDeleteModal";
 import IconButton from "../ui/IconButton";
-import { StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import PostDetailsButton from "./PostDetailsFooter";
 import Toast from "react-native-toast-message";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
-  const themeColor = useThemeColor();
   const { width } = Dimensions.get("window");
   const { user } = useAuthData();
+
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
+    user_uuid: user?.id as string,
   });
 
   // State to track if post is saved
   const [isSaved, setIsSaved] = useState(data?.is_liked);
+  useEffect(() => {
+    setIsSaved(data?.is_liked);
+  }, [data?.is_liked]);
+
   const utils = trpc.useUtils();
 
   const saveMutation = trpc.post.save_post.useMutation();
@@ -60,8 +61,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
         { post_uuid: data.uuid, user_uuid: user.id },
         {
           onSuccess: () => {
-            utils.post.get_saved_posts.invalidate();
-            utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
+            utils.post.invalidate();
           },
           onError: (error) => {
             Toast.show({

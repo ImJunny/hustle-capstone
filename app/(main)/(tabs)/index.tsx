@@ -1,12 +1,10 @@
 import { Dimensions } from "react-native";
-import HomePost from "@/components/posts/HomePost";
 import Feed from "@/components/posts/Feed";
 import React, { useState } from "react";
 import { IndexHeader } from "@/components/headers/Headers";
-import View from "@/components/ui/View";
 import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
-import { HomePost as THomePost } from "@/server/actions/post-actions";
+import { useAuthData } from "@/contexts/AuthContext";
 
 interface Route {
   key: string;
@@ -14,16 +12,20 @@ interface Route {
 }
 
 const WorkRoute = () => {
+  const { user } = useAuthData();
   const { data: workPosts, refetch } = trpc.post.get_home_posts.useQuery({
     type: "work",
+    user_uuid: user?.id,
   });
 
   return <Feed data={workPosts!} refetch={() => refetch().then(() => {})} />;
 };
 
 const HireRoute = () => {
+  const { user } = useAuthData();
   const { data: hirePosts, refetch } = trpc.post.get_home_posts.useQuery({
     type: "hire",
+    user_uuid: user?.id,
   });
 
   return <Feed data={hirePosts!} refetch={() => refetch().then(() => {})} />;

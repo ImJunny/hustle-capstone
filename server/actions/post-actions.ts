@@ -110,20 +110,32 @@ export async function updatePost(
       })
       .where(eq(posts.uuid, uuid));
 
-    if (image_buffers) {
-      await db.delete(post_images).where(eq(post_images.post_uuid, uuid));
-      await Promise.all(
-        image_buffers.map(async (image, index) => {
-          await uploadImage(`${uuid}-${index}`, image);
-          await db.insert(post_images).values({
-            image_url: `${
-              process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
-            }/${uuid}-${index}?=${new Date().getTime()}`,
-            post_uuid: uuid,
-          });
-        })
-      );
-    }
+    if (image_buffers)
+      for (let index = 0; index < image_buffers.length; index++) {
+        const image = image_buffers[index];
+        await uploadImage(`${uuid}-${index}`, image);
+        await db.insert(post_images).values({
+          image_url: `${
+            process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+          }/${uuid}-${index}?=${new Date().getTime()}`,
+          post_uuid: uuid,
+        });
+      }
+
+    // if (image_buffers) {
+    //   await db.delete(post_images).where(eq(post_images.post_uuid, uuid));
+    //   await Promise.all(
+    //     image_buffers.map(async (image, index) => {
+    //       await uploadImage(`${uuid}-${index}`, image);
+    //       await db.insert(post_images).values({
+    //         image_url: `${
+    //           process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
+    //         }/${uuid}-${index}?=${new Date().getTime()}`,
+    //         post_uuid: uuid,
+    //       });
+    //     })
+    //   );
+    // }
 
     await db.delete(post_tags).where(eq(post_tags.post_uuid, uuid));
     await Promise.all(
@@ -196,7 +208,7 @@ export type Posts = Post[] | undefined;
 // Get post details info; used in post details page
 export async function getPostDetailsInfo(
   uuid: string,
-  user_uuid: string | undefined,
+  user_uuid: string,
   geocode: [number, number] | undefined
 ) {
   try {
@@ -210,9 +222,11 @@ export async function getPostDetailsInfo(
         title: posts.title,
         due_date: posts.due_date,
         location_type: posts.location_type,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
         address_uuid: posts.address_uuid,
         distance: geocode
-          ? sql`ST_Distance(ST_SetSRID(addresses.location, 4326), ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)) * 0.000621371`
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
         tags: sql<string[]>`(
             SELECT ARRAY_AGG(${post_tags.tag_type})
@@ -224,19 +238,20 @@ export async function getPostDetailsInfo(
           bio: users.bio,
           avatar_url: users.avatar_url,
         },
-        images: sql<
-          string[]
-        >`ARRAY_AGG(DISTINCT ${post_images.image_url} ORDER BY ${post_images.image_url} ASC)`,
         is_liked: sql<boolean>`EXISTS(
           SELECT 1
           FROM ${saved_posts}
           WHERE ${saved_posts.post_uuid} = ${uuid}
           AND ${saved_posts.user_uuid} = ${user_uuid}
         )`,
+        images: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_images.image_url} ORDER BY ${post_images.image_url} ASC)
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
-      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .leftJoin(users, eq(users.uuid, posts.user_uuid))
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .where(eq(posts.uuid, uuid))
@@ -248,9 +263,9 @@ export async function getPostDetailsInfo(
         users.uuid,
         addresses.location
       )
-      .limit(1);
-
-    return result[0];
+      .limit(1)
+      .then(([result]) => result);
+    return result;
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get post details info.");
@@ -327,6 +342,13 @@ export async function getPostsByFilters(
           SELECT ARRAY_AGG(${post_tags.tag_type})
           FROM ${post_tags}
           WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
+        image_url: sql`(
+          SELECT ${post_images.image_url}
+          FROM ${post_images}
+          WHERE ${post_images.post_uuid} = ${posts.uuid}
+          ORDER BY ${post_images.image_url} ASC
+          LIMIT 1
         )`,
       })
       .from(posts)

@@ -92,7 +92,7 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         uuid: z.string(),
-        user_uuid: z.string().optional(),
+        user_uuid: z.string(),
         geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )

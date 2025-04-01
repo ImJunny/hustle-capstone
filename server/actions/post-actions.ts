@@ -110,7 +110,8 @@ export async function updatePost(
       })
       .where(eq(posts.uuid, uuid));
 
-    if (image_buffers)
+    if (image_buffers) {
+      await db.delete(post_images).where(eq(post_images.post_uuid, uuid));
       for (let index = 0; index < image_buffers.length; index++) {
         const image = image_buffers[index];
         await uploadImage(`${uuid}-${index}`, image);
@@ -121,6 +122,7 @@ export async function updatePost(
           post_uuid: uuid,
         });
       }
+    }
 
     // if (image_buffers) {
     //   await db.delete(post_images).where(eq(post_images.post_uuid, uuid));

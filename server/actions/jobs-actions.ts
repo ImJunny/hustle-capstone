@@ -104,6 +104,46 @@ export async function acceptJob(
   }
 }
 
+export async function approveJob(
+  user_uuid: string,
+  job_post_uuid: string,
+  linked_payment_method_uuid: string | null
+) {
+  // temprorarily get min rate; use offer lookup later
+  try {
+    const is_already_approved = await db
+      .select()
+      .from(initiated_jobs)
+      .where(
+        and(
+          eq(initiated_jobs.job_post_uuid, job_post_uuid),
+          eq(initiated_jobs.worker_uuid, user_uuid)
+        )
+      )
+      .limit(1)
+      .then((posts) => posts.length > 0);
+    if (is_already_approved) throw new Error("already_approved");
+
+    await db.insert(initiated_jobs).values({
+      rate: await db
+        .select({ rate: posts.min_rate })
+        .from(posts)
+        .where(eq(posts.uuid, job_post_uuid))
+        .limit(1)
+        .then(([post_rate]) => post_rate.rate),
+      job_post_uuid,
+      linked_payment_method_uuid,
+      worker_uuid: user_uuid,
+      progress_type: "accepted",
+    });
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error && error.message === "already_accepted")
+      throw new Error("Already approved this job");
+    throw new Error("Failed to approve this job");
+  }
+}
+
 // Get track working posts
 export async function getTrackWorkingPosts(user_uuid: string) {
   try {

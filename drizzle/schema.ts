@@ -84,6 +84,10 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
     () => posts.uuid,
     { onDelete: "set null" }
   ),
+  linked_payment_method_uuid: uuid("linked_payment_method_uuid").references(
+    () => payment_methods.uuid,
+    { onDelete: "set null" }
+  ),
   created_at: timestamp("created_at").notNull().defaultNow(),
   progress_type: text("progress_type").references(() => progress_types.name),
   rate: integer("rate").notNull(),

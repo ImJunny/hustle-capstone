@@ -1,0 +1,2 @@
+ALTER TABLE "app"."initiated_jobs" ADD COLUMN "linked_payment_method_uuid" uuid;--> statement-breakpoint
+ALTER TABLE "app"."initiated_jobs" ADD CONSTRAINT "initiated_jobs_linked_payment_method_uuid_payment_methods_uuid_fk" FOREIGN KEY ("linked_payment_method_uuid") REFERENCES "app"."payment_methods"("uuid") ON DELETE set null ON UPDATE no action;

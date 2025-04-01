@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -9,6 +9,7 @@ import Icon from "../ui/Icon";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import { Post as TPost } from "@/server/actions/post-actions";
+import Skeleton from "../ui/Skeleton";
 
 type PostProps = {
   type: "work" | "hire";
@@ -42,7 +43,11 @@ export default function Post({ type, data, style }: PostProps) {
       <TouchableOpacity activeOpacity={0.65}>
         <View style={[styles.entry, { borderColor }, style]} color="background">
           <Image
-            style={{ width: 116, height: 116, borderRadius: 4 }}
+            style={{
+              width: 116,
+              height: 116,
+              borderRadius: 4,
+            }}
             source={{
               uri: data.image_url!,
             }}

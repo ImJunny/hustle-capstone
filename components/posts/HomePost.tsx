@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, Pressable } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import Badge from "../ui/Badge";
 import IconButton from "../ui/IconButton";
 import Icon from "../ui/Icon";
@@ -18,8 +18,9 @@ import { trpc } from "@/server/lib/trpc-client";
 import Toast from "react-native-toast-message";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
+import { usePostStore } from "@/hooks/usePostStore";
 
-export default function HomePost({ data }: { data: THomePost }) {
+function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;
@@ -27,55 +28,50 @@ export default function HomePost({ data }: { data: THomePost }) {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
 
-  // State to track if post is saved
-  const [isSaved, setIsSaved] = useState(data.is_liked);
-  useEffect(() => {
-    setIsSaved(data?.is_liked);
-  }, [data?.is_liked]);
+  const savePost = usePostStore((state) => state.savePost);
+  const unsavePost = usePostStore((state) => state.unsavePost);
+  const isSaved = usePostStore((state) => state.isSavedPost(data.uuid));
 
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
 
   const handleSaveToggle = useCallback(() => {
-    if (!user) {
-      Toast.show({
-        text1: "You need to be logged in to save posts",
-        type: "error",
-      });
-      return;
-    }
-
-    // Optimistic Update
-    setIsSaved((prev) => !prev);
     const newIsSaved = !isSaved;
+    newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
 
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
-
     mutation.mutate(
-      { post_uuid: data.uuid, user_uuid: user.id },
+      { post_uuid: data.uuid, user_uuid: user?.id! },
       {
-        onSuccess: () => {
-          utils.post.invalidate();
-        },
+        onSuccess: () => utils.post.invalidate(),
         onError: (error) => {
           Toast.show({ text1: error.message, swipeable: false, type: "error" });
-          setIsSaved((prev) => !prev); // Revert on failure
+          newIsSaved ? unsavePost(data.uuid) : savePost(data.uuid);
         },
       }
     );
-  }, [isSaved, user, data.uuid, saveMutation, unsaveMutation, utils]);
-
-  function formatCustomDate(date: Date) {
-    return isThisYear(date)
-      ? format(date, "MMMM d")
-      : format(date, "MMMM d, yyyy");
-  }
+  }, [
+    data.uuid,
+    isSaved,
+    saveMutation,
+    unsaveMutation,
+    utils,
+    savePost,
+    unsavePost,
+    user?.id,
+  ]);
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd(() => {
       runOnJS(handleSaveToggle)();
     });
+
+  function formatCustomDate(date: Date) {
+    return isThisYear(date)
+      ? format(date, "MMMM d")
+      : format(date, "MMMM d, yyyy");
+  }
 
   return (
     <GestureDetector gesture={doubleTap}>
@@ -93,23 +89,10 @@ export default function HomePost({ data }: { data: THomePost }) {
             colors={["rgb(0, 0, 0)", "transparent"]}
             start={{ x: 0, y: 1 }}
             end={{ x: 0, y: 0 }}
-            style={{
-              left: 0,
-              right: 0,
-              height: 250,
-              bottom: -2,
-              position: "absolute",
-            }}
+            style={styles.gradient}
           />
         </View>
-        <View
-          style={{
-            flex: 1,
-            bottom: 0,
-            padding: 16,
-            position: "absolute",
-          }}
-        >
+        <View style={styles.infoContainer}>
           <View style={{ flexDirection: "row" }}>
             <View style={{ flex: 1, alignSelf: "flex-end" }}>
               <View style={styles.textContainer}>
@@ -239,7 +222,7 @@ export default function HomePost({ data }: { data: THomePost }) {
     </GestureDetector>
   );
 }
-
+export default React.memo(HomePost);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -276,5 +259,18 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
     backgroundColor: "white",
     paddingHorizontal: 30,
+  },
+  gradient: {
+    left: 0,
+    right: 0,
+    height: 250,
+    bottom: -2,
+    position: "absolute",
+  },
+  infoContainer: {
+    flex: 1,
+    bottom: 0,
+    padding: 16,
+    position: "absolute",
   },
 });

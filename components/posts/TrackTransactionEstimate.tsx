@@ -7,18 +7,27 @@ import { ServiceFee } from "@/constants/Rates";
 
 export default function TrackTransactionEstimate({
   data,
+  type = "accept",
 }: {
   data?: TransactionEstimate;
+  type?: "accept" | "approve";
 }) {
+  if (type === "accept")
+    return (
+      <View>
+        <PriceRow title="Job rate" rate={data?.rate!} />
+        <PriceRow
+          title={`Service fee (${ServiceFee * 100}%)`}
+          rate={data?.service_fee!}
+          isFee
+        />
+        <PriceRow title="Total" rate={data?.total!} isTotal />
+      </View>
+    );
+
   return (
     <View>
-      <PriceRow title="Job rate" rate={data?.rate ?? 55.5} />
-      <PriceRow
-        title={`Service fee (${ServiceFee * 100}%)`}
-        rate={data?.service_fee ?? 2.4}
-        isFee
-      />
-      <PriceRow title="Total" rate={data?.total ?? 53.1} isTotal />
+      <PriceRow title="Total" rate={data?.rate!} isTotal />
     </View>
   );
 }

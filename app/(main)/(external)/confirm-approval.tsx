@@ -68,7 +68,7 @@ export default function AcceptScreen() {
   // get transaction estimate
   const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
     {
-      job_post_uuid: "230f993e-1ea0-475e-ab74-b55f690d29d7",
+      job_post_uuid: uuid as string,
     }
   );
 
@@ -109,7 +109,7 @@ export default function AcceptScreen() {
           </Text>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
             Once you approve this worker for a job you cannot unapprove this
-            person unless and all payments our finals.
+            person and ALL payments our finals.
           </Text>
         </View>
         <View
@@ -121,7 +121,7 @@ export default function AcceptScreen() {
           <Text weight="semibold" size="lg">
             How much you'll pay
           </Text>
-          <TrackTransactionEstimate data={data} />
+          <TrackTransactionEstimate data={data} type="approve" />
         </View>
 
         <View

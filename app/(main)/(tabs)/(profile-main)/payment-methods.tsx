@@ -52,7 +52,7 @@ export default function PaymentMethodsScreen() {
   if (isLoading) {
     return (
       <>
-        <SimpleHeader title="Payment Methods" />
+        <SimpleHeader title="Payment methods" />
         <LoadingView />
       </>
     );

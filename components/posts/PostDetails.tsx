@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
@@ -36,6 +36,12 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   const savePost = usePostStore((state) => state.savePost);
   const unsavePost = usePostStore((state) => state.unsavePost);
   const isSaved = usePostStore((state) => state.isSavedPost(uuid));
+
+  useEffect(() => {
+    if (data?.is_liked) {
+      savePost(data.uuid);
+    }
+  }, [data]);
 
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;

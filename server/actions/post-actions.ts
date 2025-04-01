@@ -124,21 +124,6 @@ export async function updatePost(
       }
     }
 
-    // if (image_buffers) {
-    //   await db.delete(post_images).where(eq(post_images.post_uuid, uuid));
-    //   await Promise.all(
-    //     image_buffers.map(async (image, index) => {
-    //       await uploadImage(`${uuid}-${index}`, image);
-    //       await db.insert(post_images).values({
-    //         image_url: `${
-    //           process.env.EXPO_PUBLIC_AWS_IMAGE_BASE_URL
-    //         }/${uuid}-${index}?=${new Date().getTime()}`,
-    //         post_uuid: uuid,
-    //       });
-    //     })
-    //   );
-    // }
-
     await db.delete(post_tags).where(eq(post_tags.post_uuid, uuid));
     await Promise.all(
       tags.map((tag) =>

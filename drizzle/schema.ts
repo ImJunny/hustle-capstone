@@ -140,6 +140,7 @@ export const messages = app_schema.table("messages", {
     .references(() => message_types.name)
     .default("text"),
   post_uuid: uuid("post_uuid").references(() => posts.uuid),
+  is_read: boolean("is_read").default(false),
 });
 
 export const chats = app_schema.table("chats", {

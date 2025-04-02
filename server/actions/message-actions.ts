@@ -1,35 +1,13 @@
 import { db } from "../../drizzle/db";
 import {
   post_images,
-  post_tags,
   users,
   posts,
-  addresses,
   messages,
   initiated_jobs,
-  message_types,
   chats,
 } from "../../drizzle/schema";
-import {
-  eq,
-  ilike,
-  or,
-  asc,
-  desc,
-  not,
-  and,
-  ne,
-  gt,
-  gte,
-  lte,
-  sql,
-  inArray,
-} from "drizzle-orm/sql";
-import { uploadImage } from "./s3-actions";
-import { v4 as uuidv4 } from "uuid";
-import { create } from "react-test-renderer";
-import { time } from "drizzle-orm/mysql-core";
-import { messageTypes } from "@/drizzle/db-types";
+import { eq, or, and, ne, desc } from "drizzle-orm/sql";
 
 export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
   try {
@@ -163,7 +141,10 @@ export async function getMessagePreviews(user_uuid: string) {
         receiver_display_name: users.display_name,
         receiver_avatar_url: users.avatar_url,
         last_message: messages.message,
+        last_message_uuid: messages.uuid,
         last_message_timestamp: messages.created_at,
+        last_message_receiver_uuid: messages.receiver_uuid,
+        is_read: messages.is_read,
       })
       .from(chats)
       .innerJoin(messages, eq(chats.last_message_uuid, messages.uuid))
@@ -180,7 +161,8 @@ export async function getMessagePreviews(user_uuid: string) {
             eq(messages.receiver_uuid, user_uuid)
           )
         )
-      );
+      )
+      .orderBy(desc(messages.created_at));
     return result;
   } catch (error) {
     console.log(error);
@@ -240,5 +222,23 @@ export async function sendTextMessage(
   } catch (error) {
     console.error("Error sending message:", error);
     throw new Error("Failed to send message.");
+  }
+}
+
+// MARK MESSAGE AS READ; marks the RECEIVER's messages as read
+export async function markAsRead(sender_uuid: string, receiver_uuid: string) {
+  try {
+    await db
+      .update(messages)
+      .set({ is_read: true })
+      .where(
+        and(
+          eq(messages.receiver_uuid, sender_uuid),
+          eq(messages.sender_uuid, receiver_uuid)
+        )
+      );
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to mark message as read.");
   }
 }

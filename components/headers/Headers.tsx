@@ -15,6 +15,7 @@ import { CreatePostSchema } from "@/zod/zod-schemas";
 import Toast from "react-native-toast-message";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 interface IndexHeaderProps {
   index: number;

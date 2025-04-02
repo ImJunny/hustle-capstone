@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import View from "@/components/ui/View";
 import ScrollView from "@/components/ui/ScrollView";
@@ -6,65 +6,77 @@ import {
   SingleMessageFooter,
   SingleMessageHeader,
 } from "@/components/headers/Headers";
-import { KeyboardAvoidingView, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { format, isToday, isThisYear } from "date-fns";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
-import { Platform } from "react-native";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
 
-  // Check if the date is today or in the current year using date-fns
-  const options = {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  };
-
   if (isToday(date)) {
-    return format(date, "p"); // Only show time if today
+    return format(date, "p");
   } else if (isThisYear(date)) {
-    return format(date, "MMM dd, p"); // Show date without year (e.g., "Mar 23, 2:30 PM")
+    return format(date, "MMM dd, p");
   } else {
-    return format(date, "MMM dd, yyyy, p"); // Show date with year (e.g., "Mar 23, 2022, 2:30 PM")
+    return format(date, "MMM dd, yyyy, p");
   }
+};
+
+type Message = {
+  sender_uuid: string;
+  chat_type: string;
+  message: string;
+  timestamp: string;
+  message_uuid: string;
 };
 
 export default function MessageScreen() {
   const { uuid } = useLocalSearchParams();
-
   const { user } = useAuthData();
+  const utils = trpc.useUtils();
   if (!user) return;
   const { data, isLoading } = trpc.messages.get_chat_info.useQuery({
     sender_uuid: user.id as string,
     receiver_uuid: uuid as string,
   });
 
-  const [messages, setMessages] = useState<
-    {
-      sender_uuid: string;
-      chat_type: string;
-      message: string;
-      timestamp: string;
-    }[]
-  >([]);
+  const { mutate: markAsRead } = trpc.messages.mark_as_read.useMutation({
+    onSuccess: () => {
+      utils.messages.get_message_previews.invalidate();
+    },
+  });
 
+  const [messages, setMessages] = useState<Message[]>([]);
+  const addReadChat = useMessageStore((state) => state.addReadChat);
   // Supabase Realtime
   const channelName = [user.id, uuid].sort().join(".");
   const channel = useMemo(() => supabase.channel(channelName), [channelName]);
 
   useEffect(() => {
     if (data) setMessages(data.chats);
+    if (data?.receiver_info.receiver_uuid) {
+      addReadChat(data.receiver_info.receiver_uuid);
+      markAsRead({
+        sender_uuid: user.id,
+        receiver_uuid: data?.receiver_info.receiver_uuid,
+      });
+    }
   }, [data]);
 
   useEffect(() => {
     channel.on("broadcast", { event: "message" }, (payload) => {
       setMessages((prev: any) => [...prev, payload.payload]);
+      if (data?.receiver_info.receiver_uuid) {
+        markAsRead({
+          sender_uuid: user.id,
+          receiver_uuid: data?.receiver_info.receiver_uuid,
+        });
+      }
     });
 
     channel.subscribe();
@@ -83,7 +95,6 @@ export default function MessageScreen() {
       </>
     );
   }
-
   return (
     <>
       <SingleMessageHeader

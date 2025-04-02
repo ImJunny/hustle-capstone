@@ -507,7 +507,11 @@ export async function getActivePostCounts(user_uuid: string) {
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.type, "work"),
-          ne(initiated_jobs.progress_type, "accepted")
+          or(
+            eq(initiated_jobs.progress_type, "in progress"),
+            eq(initiated_jobs.progress_type, "approved"),
+            eq(initiated_jobs.progress_type, "accepted")
+          )
         )
       )
       .where(eq(initiated_jobs.worker_uuid, user_uuid))
@@ -521,7 +525,11 @@ export async function getActivePostCounts(user_uuid: string) {
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.user_uuid, user_uuid),
-          eq(initiated_jobs.progress_type, "in progress"),
+          or(
+            eq(initiated_jobs.progress_type, "in progress"),
+            eq(initiated_jobs.progress_type, "approved"),
+            eq(initiated_jobs.progress_type, "accepted")
+          ),
           ne(posts.status_type, "hidden")
         )
       )

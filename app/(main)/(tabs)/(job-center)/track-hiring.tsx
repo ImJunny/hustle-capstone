@@ -15,6 +15,20 @@ export default function TrackHireScreen() {
     user_uuid: user?.id!,
   });
 
+  const sortedData = data?.sort((a, b) => {
+    const progressOrder = [
+      "in progress",
+      "approved",
+      "accepted",
+      "complete",
+      "paid",
+    ];
+    return (
+      progressOrder.indexOf((a as any).progress) -
+      progressOrder.indexOf((b as any).progress)
+    );
+  });
+
   if (!user || isLoading) {
     return (
       <>
@@ -49,7 +63,7 @@ export default function TrackHireScreen() {
     <>
       <SimpleHeader title="Track hiring" />
       <ScrollView>
-        {data?.map((post, i) => (
+        {sortedData?.map((post, i) => (
           <TrackPost
             key={i}
             data={post as TrackPostType}
@@ -57,6 +71,7 @@ export default function TrackHireScreen() {
               borderBottomWidth: 1,
             }}
             type="hire"
+            self
           />
         ))}
       </ScrollView>

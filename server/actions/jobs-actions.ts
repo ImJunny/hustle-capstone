@@ -306,7 +306,6 @@ export async function getTrackHiringDetails(
       .where(eq(posts.uuid, job_post_uuid))
       .limit(1)
       .then(([result]) => result);
-
     return { ...data_without_user, is_approved: false };
   } catch (error) {
     console.error(error);
@@ -442,3 +441,21 @@ export type AcceptedUser = {
     title: string;
   } | null;
 };
+
+// UPDATE JOB PROGRESS
+export async function updateJobProgress(
+  uuid: string,
+  progress: "approved" | "in progress" | "complete"
+) {
+  try {
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: progress === "approved" ? "in progress" : "complete",
+      })
+      .where(eq(initiated_jobs.uuid, uuid));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to update progress.");
+  }
+}

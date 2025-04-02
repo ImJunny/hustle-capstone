@@ -5,6 +5,7 @@ import { Modal, Pressable, TouchableOpacity } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function PostDetailsDeleteModal({
   uuid,
@@ -34,7 +35,7 @@ export default function PostDetailsDeleteModal({
       });
     },
   });
-
+  const themeColor = useThemeColor();
   return (
     <View>
       <Modal
@@ -59,7 +60,10 @@ export default function PostDetailsDeleteModal({
                 padding: 24,
                 alignItems: "center",
                 gap: 12,
-                width: 340,
+                width: "90%",
+                borderColor: themeColor.border,
+                borderWidth: 1,
+                borderRadius: 8,
               }}
             >
               <Text size="xl" weight="semibold" color="red">

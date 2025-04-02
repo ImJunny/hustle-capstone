@@ -3,18 +3,23 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
 import { format, isSameYear } from "date-fns";
-import e from "express";
 
 export type TrackJobPostProps = {
   data: TrackPostType;
   type: "work" | "hire";
+  self?: boolean;
 } & ViewProps;
 
-export default function TrackPost({ data, style, type }: TrackJobPostProps) {
+export default function TrackPost({
+  data,
+  style,
+  type,
+  self,
+}: TrackJobPostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   const dueDate = new Date(data.due_date!);
@@ -45,17 +50,21 @@ export default function TrackPost({ data, style, type }: TrackJobPostProps) {
           </Text>
 
           {data.progress === "in progress" ? (
-            <Text>In progress</Text>
+            <Text weight="semibold">In progress</Text>
           ) : data.progress === "accepted" ? (
-            <Text color="muted">Accepted, awaiting approval</Text>
-          ) : data.progress === "awaiting" ? (
-            <Text color="yellow">Awaiting payment from employer</Text>
-          ) : data.progress === "overdue" ? (
-            <Text color="red">Overdue</Text>
-          ) : data.progress === "completed" ? (
-            <Text color="green">Paid</Text>
+            <Text weight="semibold">Accepted</Text>
+          ) : data.progress === "approved" ? (
+            <Text weight="semibold">Approved</Text>
+          ) : data.progress === "complete" ? (
+            <Text weight="semibold" color="yellow">
+              Completed, {`${self ? "pay now" : "awaiting payment"}`}
+            </Text>
+          ) : data.progress === "paid" ? (
+            <Text color="green" weight="semibold">
+              Payment {`${self ? "sent" : "received"}`}
+            </Text>
           ) : (
-            <Text color="muted">{data.progress}</Text>
+            <Text weight="semibold">{data.progress}</Text>
           )}
         </View>
       </View>

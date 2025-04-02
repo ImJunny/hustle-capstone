@@ -10,6 +10,7 @@ import {
   getTransactionEstimate,
   unacceptJob,
   approveJob,
+  updateJobProgress,
 } from "../actions/jobs-actions";
 
 export const jobRouter = createTRPCRouter({
@@ -117,5 +118,15 @@ export const jobRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const result = await getAcceptedUsers(input.job_post_uuid);
       return result;
+    }),
+  update_job_progress: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+        progress: z.enum(["approved", "in progress", "complete"]),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await updateJobProgress(input.uuid, input.progress);
     }),
 });

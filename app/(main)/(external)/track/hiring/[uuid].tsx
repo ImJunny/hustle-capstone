@@ -7,23 +7,21 @@ import ScrollView from "@/components/ui/ScrollView";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import TrackingProgressBar from "@/components/posts/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
-import Toast from "react-native-toast-message";
 import LoadingPost from "@/components/posts/LoadingPost";
+import StarDisplay from "@/components/ui/StarDisplay";
+import { TrackHiringLabels } from "@/constants/Tracking";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
   const { user } = useAuthData();
-  const utils = trpc.useUtils();
-  const themeColor = useThemeColor();
 
   const {
     data = null,
@@ -55,26 +53,19 @@ export default function TrackWorkingDetailsScreen() {
     { enabled: !!user }
   );
 
-  let progressDescription =
-    "This job post is public for anyone to accept. Approve a worker to proceed.";
+  const description = data?.is_approved
+    ? TrackHiringLabels[(data as any).progress]
+    : "";
 
-  if (isLoading || estimateLoading || !data) {
+  // Fallbacks
+  if (isLoading || estimateLoading || !data || error || estimateError) {
     return (
-      <>
-        <SimpleHeader title="Tracking details" />
-        <LoadingView />
-      </>
-    );
-  } else if (error || estimateError) {
-    return (
-      <>
-        <SimpleHeader title="Tracking details" />
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>Encountered an error getting job information</Text>
-        </View>
-      </>
+      <LoadingScreen
+        data={data}
+        loads={[isLoading, estimateLoading]}
+        errors={[error, estimateError]}
+        header={<SimpleHeader title="Tracking details" />}
+      />
     );
   }
 
@@ -98,11 +89,23 @@ export default function TrackWorkingDetailsScreen() {
             </Text>
             <Text>Due {formattedDueDate}</Text>
           </View>
-
           {data.is_approved ? (
             <>
-              <TrackingProgressBar progress="accepted" />
-              <Text color="muted">{progressDescription}</Text>
+              {(data as any).progress !== "paid" ? (
+                <>
+                  <TrackingProgressBar progress={(data as any).progress} />
+                  <View style={{ alignSelf: "flex-start" }}>
+                    <Text color="muted">{description}</Text>
+                  </View>
+                  {(data as any).progress === "complete" && (
+                    <Button>Pay now</Button>
+                  )}
+                </>
+              ) : (
+                <Text color="green" weight="semibold" size="lg">
+                  Payment sent
+                </Text>
+              )}
             </>
           ) : (
             <>
@@ -132,7 +135,10 @@ export default function TrackWorkingDetailsScreen() {
                       <Text size="2xl" weight="semibold">
                         {data.accepted_count as number} Accepted
                       </Text>
-                      <Text color="muted">{progressDescription}</Text>
+                      <Text color="muted">
+                        This job post is public for anyone to accept. Approve a
+                        worker to proceed.
+                      </Text>
                     </View>
                     <Icon name="chevron-forward" size="xl" />
                   </View>
@@ -142,8 +148,8 @@ export default function TrackWorkingDetailsScreen() {
           )}
         </View>
 
+        {/**TRANSACTION ESTIMATE SECTION */}
         <Separator />
-
         <View style={styles.transactionSection}>
           <Text size="lg" weight="semibold">
             Transaction estimate
@@ -151,50 +157,46 @@ export default function TrackWorkingDetailsScreen() {
           <TrackTransactionEstimate data={estimateData} />
         </View>
 
+        {/** LOCATION SECTION */}
         <Separator />
-
         <View style={styles.locationSection}>
           <View>
             <Text size="lg" weight="semibold">
               Job location
             </Text>
-            {/* <Text color="muted">
-              {`308 Negra Arroyo Lane\nAlbuquerque, New Mexico\n87104`}
-            </Text> */}
-            <Text color="muted">
-              Location is hidden to everyone except the approved worker.
-            </Text>
+            <Text color="muted">Location is hidden until you are approved</Text>
           </View>
-
-          {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
+        {/** YOUR LINKED SERVICE SECTION*/}
         {data.is_approved && (
           <>
             {(data as any).service_uuid && (
               <View style={styles.serviceSection}>
                 <Text size="lg" weight="semibold">
-                  Their linked service
+                  Your linked service
                 </Text>
 
                 <LoadingPost uuid={(data as any).service_uuid} />
 
                 <Text color="muted">
-                  They linked a service to this job. Your review will apply to
-                  both them and their service.
+                  You linked a service which is viewable to the employer. Their
+                  review will be applied to both you and your service.
                 </Text>
               </View>
             )}
 
-            <Pressable
-              onPress={() => {
-                router.push(`/profile/${(data as any).user_uuid}` as any);
-              }}
-            >
-              <View style={styles.employerSection}>
-                <Text size="lg" weight="semibold">
-                  Worker
-                </Text>
+            {/** EMPLOYER SECTION */}
+            <Separator />
+            <View style={styles.employerSection}>
+              <Text size="lg" weight="semibold">
+                Employer
+              </Text>
+              <Pressable
+                onPress={() => {
+                  router.push(`/profile/${(data as any).user_uuid}` as any);
+                }}
+              >
                 <View style={styles.employerRow}>
                   <Image
                     source={
@@ -208,16 +210,7 @@ export default function TrackWorkingDetailsScreen() {
                     <Text weight="semibold">
                       @{(data as any).user_username}
                     </Text>
-                    <View style={styles.employerStarsRow}>
-                      <Icon name="star" />
-                      <Icon name="star" />
-                      <Icon name="star" />
-                      <Icon name="star" />
-                      <Icon name="star" />
-                      <Text size="sm" style={{ marginLeft: 4 }}>
-                        4
-                      </Text>
-                    </View>
+                    <StarDisplay rating={3.5} count={15} />
                   </View>
 
                   <Button
@@ -231,8 +224,8 @@ export default function TrackWorkingDetailsScreen() {
                     Message
                   </Button>
                 </View>
-              </View>
-            </Pressable>
+              </Pressable>
+            </View>
           </>
         )}
       </ScrollView>

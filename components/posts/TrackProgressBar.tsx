@@ -7,27 +7,27 @@ import { IconSizes } from "@/constants/Sizes";
 export default function TrackingProgressBar({
   progress,
 }: {
-  progress: "accepted" | "in progress" | "completed";
+  progress: "approved" | "in progress" | "complete";
 }) {
   const width =
-    progress === "accepted"
+    progress === "approved"
       ? "33%"
       : progress === "in progress"
       ? "66%"
       : "100%";
   const checkmarkCount =
-    progress === "accepted" ? 1 : progress === "in progress" ? 2 : 3;
+    progress === "approved" ? 1 : progress === "in progress" ? 2 : 3;
 
   return (
     <View style={styles.container}>
       <View style={styles.textRow}>
-        <ProgressText text="Accepted" value="accepted" progress={progress} />
+        <ProgressText text="Approved" value="approved" progress={progress} />
         <ProgressText
           text="In progress"
           value="in progress"
           progress={progress}
         />
-        <ProgressText text="Completed" value="completed" progress={progress} />
+        <ProgressText text="Completed" value="complete" progress={progress} />
       </View>
       <View style={styles.barContainer}>
         <View style={styles.barOuter} color="background-variant">
@@ -56,8 +56,8 @@ function ProgressText({
   progress,
 }: {
   text: string;
-  value: "accepted" | "in progress" | "completed";
-  progress: "accepted" | "in progress" | "completed";
+  value: "approved" | "in progress" | "complete";
+  progress: "approved" | "in progress" | "complete";
 }) {
   return (
     <Text
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   textRow: {
     flexDirection: "row",
-    marginBottom: 16,
+    marginBottom: 24,
   },
   barContainer: {
     justifyContent: "center",
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   checkmarkContainer: {
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: "auto",
   },
   checkmarkBackdrop: {
     width: 30,

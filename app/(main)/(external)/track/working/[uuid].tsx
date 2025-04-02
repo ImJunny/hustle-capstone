@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -14,9 +14,14 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
-import { format, isThisYear } from "date-fns";
 import Toast from "react-native-toast-message";
 import LoadingPost from "@/components/posts/LoadingPost";
+import { getGeneralDate } from "@/utils/helpers";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import StarDisplay from "@/components/ui/StarDisplay";
+import { TrackWorkingLabels } from "@/constants/Tracking";
+import TrackJobStartButton from "@/components/posts/TrackJobStartButton";
+import TrackJobCompleteButton from "@/components/posts/TrackJobCompleteButton";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -35,11 +40,7 @@ export default function TrackWorkingDetailsScreen() {
     { enabled: !!user }
   );
 
-  const formattedDueDate = data?.due_date
-    ? isThisYear(new Date(data!.due_date!))
-      ? format(new Date(data?.due_date!), "MMMM d")
-      : format(new Date(data?.due_date!), "MMMM d, yyyy")
-    : null;
+  const date = getGeneralDate(data?.due_date!);
 
   const {
     data: estimateData,
@@ -83,33 +84,27 @@ export default function TrackWorkingDetailsScreen() {
     });
   };
 
-  let progressDescription =
-    "You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.";
+  const description = TrackWorkingLabels[data?.progress!] || "";
 
-  if (isLoading || estimateLoading || !data) {
+  // Fallbacks
+  if (isLoading || estimateLoading || !data || error || estimateError) {
     return (
-      <>
-        <SimpleHeader title="Tracking details" />
-        <LoadingView />
-      </>
-    );
-  } else if (error || estimateError) {
-    return (
-      <>
-        <SimpleHeader title="Tracking details" />
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>Encountered an error getting job information</Text>
-        </View>
-      </>
+      <LoadingScreen
+        data={data}
+        loads={[isLoading, estimateLoading]}
+        errors={[error, estimateError]}
+        header={<SimpleHeader title="Tracking details" />}
+      />
     );
   }
+
+  // Actual render
   return (
     <>
       <SimpleHeader title="Tracking details" />
       <ScrollView color="background" style={styles.container}>
-        <View style={styles.progressSection}>
+        {/**TOP SECTION */}
+        <View style={styles.topSection}>
           <TouchableOpacity
             onPress={() => router.push(`/post/${data.job_post_uuid}`)}
           >
@@ -118,22 +113,58 @@ export default function TrackWorkingDetailsScreen() {
               style={{ width: 100, height: 100 }}
             />
           </TouchableOpacity>
-
           <View style={styles.textHeader}>
             <Text size="lg" weight="semibold">
               {data.title}
             </Text>
-            <Text>Due {formattedDueDate}</Text>
+            <Text>Due {date}</Text>
           </View>
-          <TrackingProgressBar progress="accepted" />
-          <Text color="muted">{progressDescription}</Text>
-          <Button onPress={handleUnaccept} disabled={unacceptLoading}>
-            Unaccept
-          </Button>
+          {/**PROGRESS SECTION */}
+          <View style={styles.progressSection}>
+            {data.progress === "accepted" ? (
+              <>
+                <Text color="muted">{description}</Text>
+                <View style={{ alignItems: "center" }}>
+                  <Button onPress={handleUnaccept} disabled={unacceptLoading}>
+                    Unaccept
+                  </Button>
+                </View>
+              </>
+            ) : data.progress === "paid" ? (
+              <>
+                <Text
+                  color="green"
+                  weight="semibold"
+                  size="lg"
+                  style={{ textAlign: "center" }}
+                >
+                  Payment received
+                </Text>
+              </>
+            ) : (
+              <>
+                <TrackingProgressBar progress={data.progress as any} />
+                <Text color="muted">{description}</Text>
+                <View style={{ alignItems: "center" }}>
+                  {data.progress === "approved" ? (
+                    <TrackJobStartButton
+                      initiated_uuid={data.initiated_job_post_uuid}
+                      progress={data.progress as any}
+                    />
+                  ) : data.progress === "in progress" ? (
+                    <TrackJobCompleteButton
+                      initiated_uuid={data.initiated_job_post_uuid}
+                      progress={data.progress as any}
+                    />
+                  ) : null}
+                </View>
+              </>
+            )}
+          </View>
         </View>
 
+        {/**TRANSACTION ESTIMATE SECTION */}
         <Separator />
-
         <View style={styles.transactionSection}>
           <Text size="lg" weight="semibold">
             Transaction estimate
@@ -141,22 +172,18 @@ export default function TrackWorkingDetailsScreen() {
           <TrackTransactionEstimate data={estimateData} />
         </View>
 
+        {/** LOCATION SECTION */}
         <Separator />
-
         <View style={styles.locationSection}>
           <View>
             <Text size="lg" weight="semibold">
               Job location
             </Text>
-            {/* <Text color="muted">
-              {`308 Negra Arroyo Lane\nAlbuquerque, New Mexico\n87104`}
-            </Text> */}
             <Text color="muted">Location is hidden until you are approved</Text>
           </View>
-
-          {/* <Button type="variant">View in Maps</Button> */}
         </View>
 
+        {/** YOUR LINKED SERVICE SECTION*/}
         {data.service_uuid && (
           <View style={styles.serviceSection}>
             <Text size="lg" weight="semibold">
@@ -172,8 +199,8 @@ export default function TrackWorkingDetailsScreen() {
           </View>
         )}
 
+        {/** EMPLOYER SECTION */}
         <Separator />
-
         <View style={styles.employerSection}>
           <Text size="lg" weight="semibold">
             Employer
@@ -194,16 +221,7 @@ export default function TrackWorkingDetailsScreen() {
               />
               <View style={{ gap: 4 }}>
                 <Text weight="semibold">@{data.employer_username}</Text>
-                <View style={styles.employerStarsRow}>
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Icon name="star" />
-                  <Text size="sm" style={{ marginLeft: 4 }}>
-                    4
-                  </Text>
-                </View>
+                <StarDisplay rating={3.5} count={15} />
               </View>
 
               <Button
@@ -230,10 +248,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  progressSection: {
+  topSection: {
     alignItems: "center",
     gap: 32,
     paddingVertical: 52,
+  },
+  progressSection: {
+    gap: 32,
+    width: "100%",
   },
   transactionSection: {
     gap: 8,
@@ -259,11 +281,6 @@ const styles = StyleSheet.create({
   employerRow: {
     flexDirection: "row",
     gap: 16,
-    alignItems: "center",
-  },
-  employerStarsRow: {
-    flexDirection: "row",
-    gap: 4,
     alignItems: "center",
   },
   messageButton: {

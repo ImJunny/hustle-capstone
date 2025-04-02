@@ -13,6 +13,7 @@ import { format, isToday, isThisYear } from "date-fns";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -51,7 +52,7 @@ export default function MessageScreen() {
   });
 
   const [messages, setMessages] = useState<Message[]>([]);
-
+  const addReadChat = useMessageStore((state) => state.addReadChat);
   // Supabase Realtime
   const channelName = [user.id, uuid].sort().join(".");
   const channel = useMemo(() => supabase.channel(channelName), [channelName]);
@@ -59,7 +60,7 @@ export default function MessageScreen() {
   useEffect(() => {
     if (data) setMessages(data.chats);
     if (data?.receiver_info.receiver_uuid) {
-      console.log("read");
+      addReadChat(data.receiver_info.receiver_uuid);
       markAsRead({
         sender_uuid: user.id,
         receiver_uuid: data?.receiver_info.receiver_uuid,

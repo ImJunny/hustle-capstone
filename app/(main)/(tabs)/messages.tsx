@@ -1,5 +1,5 @@
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useEffect } from "react";
 import Message from "@/components/messages/Message";
 import { BackHeader, MessagesHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -8,6 +8,7 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { MessagePreview } from "@/server/actions/message-actions";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 export default function MessagesScreen() {
   const { user } = useAuthData();
@@ -15,6 +16,15 @@ export default function MessagesScreen() {
   const { data, isLoading } = trpc.messages.get_message_previews.useQuery({
     user_uuid: user?.id!,
   });
+
+  const addReadChat = useMessageStore((state) => state.addReadChat);
+  useEffect(() => {
+    if (data) {
+      data.forEach((chat) => {
+        if (chat.is_read) addReadChat(chat.receiver_uuid);
+      });
+    }
+  }, [data]);
 
   if (isLoading || !data) {
     return (

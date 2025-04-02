@@ -141,6 +141,7 @@ export async function getMessagePreviews(user_uuid: string) {
         receiver_display_name: users.display_name,
         receiver_avatar_url: users.avatar_url,
         last_message: messages.message,
+        last_message_uuid: messages.uuid,
         last_message_timestamp: messages.created_at,
         last_message_receiver_uuid: messages.receiver_uuid,
         is_read: messages.is_read,

@@ -7,22 +7,21 @@ import { router } from "expo-router";
 import { formatDistanceToNow } from "date-fns";
 import { MessagePreview } from "@/server/actions/message-actions";
 import { useAuthData } from "@/contexts/AuthContext";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 type MessageProps = {
   data: MessagePreview;
 } & ViewProps;
 
 export default function Message({ data }: MessageProps) {
-  const { user } = useAuthData();
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
   const formattedTime = formatDistanceToNow(
     new Date(data.last_message_timestamp)
   );
-
-  const isHighlighted =
-    (data.is_read && data.last_message_receiver_uuid === user?.id) ||
-    data.last_message_receiver_uuid !== user?.id;
+  const isRead = useMessageStore((state) =>
+    state.isReadChat(data.receiver_uuid)
+  );
 
   return (
     <TouchableOpacity
@@ -30,7 +29,7 @@ export default function Message({ data }: MessageProps) {
     >
       <View
         style={[styles.entry, { borderColor }]}
-        color={isHighlighted ? "background" : "base"}
+        color={isRead ? "background" : "base"}
       >
         <Image
           source={
@@ -64,7 +63,7 @@ export default function Message({ data }: MessageProps) {
             {formattedTime} ago
           </Text>
         </View>
-        {!isHighlighted ? (
+        {!isRead ? (
           <Text size="4xl" style={{ paddingLeft: 16, paddingRight: 8 }}>
             •
           </Text>

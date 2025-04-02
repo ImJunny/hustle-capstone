@@ -22,7 +22,12 @@ export const statusTypes = [
   "initiated",
   "complete",
 ] as const;
-export const progressTypes = ["accepted", "in progress", "complete"] as const;
+export const progressTypes = [
+  "accepted",
+  "approved",
+  "in progress",
+  "complete",
+] as const;
 export const onboardingPhaseTypes = [
   "date of birth",
   "username",

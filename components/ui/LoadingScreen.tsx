@@ -8,7 +8,7 @@ type LoadingScreenProps = {
   loads: boolean[];
   data: NonNullable<any>;
   header: React.ReactNode;
-  errors: any;
+  errors?: any;
 };
 
 export default function LoadingScreen({

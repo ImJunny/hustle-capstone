@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   getChatInfo,
   getMessagePreviews,
+  markAsRead,
   sendTextMessage,
 } from "../actions/message-actions";
 
@@ -42,5 +43,15 @@ export const messageRouter = createTRPCRouter({
         input.receiver_uuid,
         input.message
       );
+    }),
+  mark_as_read: protectedProcedure
+    .input(
+      z.object({
+        receiver_uuid: z.string(),
+        sender_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await markAsRead(input.sender_uuid, input.receiver_uuid);
     }),
 });

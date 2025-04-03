@@ -1,7 +1,10 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import Icon from "@/components/ui/Icon";
 import TabBar from "@/components/ui/TabBar";
+import { supabase } from "@/server/lib/supabase";
+import { useAuthData } from "@/contexts/AuthContext";
+import { trpc } from "@/server/lib/trpc-client";
 
 /* 
   Tab bar elements are based off files in the (tabs) directory. 
@@ -9,6 +12,29 @@ import TabBar from "@/components/ui/TabBar";
   is overridden by a custom component called TabBar.
  */
 export default function TabLayout() {
+  const utils = trpc.useUtils();
+  const { user } = useAuthData();
+  useEffect(() => {
+    const changes = supabase
+      .channel(`chatListenter-${user?.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "app",
+          table: "chats",
+        },
+        (payload) => {
+          utils.messages.invalidate();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      changes.unsubscribe();
+    };
+  }, [user]);
+
   return (
     <Tabs
       screenOptions={{ headerShown: false }}

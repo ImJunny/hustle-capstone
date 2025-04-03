@@ -20,7 +20,7 @@ export default function Message({ data }: MessageProps) {
     new Date(data.last_message_timestamp)
   );
   const isRead = useMessageStore((state) =>
-    state.isReadChat(data.receiver_uuid)
+    state.isReadChat(data.last_message_uuid)
   );
 
   return (
@@ -47,7 +47,7 @@ export default function Message({ data }: MessageProps) {
           </Text>
           <Text
             size="md"
-            weight="normal"
+            weight={!isRead ? "bold" : "normal"}
             color="foreground"
             numberOfLines={1}
             ellipsizeMode="tail"

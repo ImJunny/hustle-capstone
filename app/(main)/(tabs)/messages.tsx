@@ -21,7 +21,12 @@ export default function MessagesScreen() {
   useEffect(() => {
     if (data) {
       data.forEach((chat) => {
-        if (chat.is_read) addReadChat(chat.receiver_uuid);
+        if (
+          (chat.is_read && chat.last_message_receiver_uuid === user?.id) ||
+          chat.last_message_receiver_uuid !== user?.id
+        ) {
+          addReadChat(chat.last_message_uuid);
+        }
       });
     }
   }, [data]);

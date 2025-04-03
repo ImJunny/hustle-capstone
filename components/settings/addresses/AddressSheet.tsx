@@ -8,7 +8,7 @@ import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { router } from "expo-router";
 
-export default function ({
+export default function AddressSheet({
   uuid,
   sheetRef,
   setModalOpen,

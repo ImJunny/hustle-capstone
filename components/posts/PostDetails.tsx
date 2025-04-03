@@ -21,6 +21,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
 import { usePostStore } from "@/hooks/usePostStore";
+import { useCommentsStore } from "@/hooks/useCommentsStore";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const { user } = useAuthData();
@@ -71,6 +72,9 @@ export default function PostDetails({ uuid }: { uuid: string }) {
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const setPostUUID = useCommentsStore((state) => state.setPostUUID);
+  const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
@@ -176,7 +180,12 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             size="2xl"
             onPress={handleSaveToggle}
           />
-          <IconButton name="chatbubble-outline" size="2xl" flippedX />
+          <IconButton
+            name="chatbubble-outline"
+            size="2xl"
+            flippedX
+            onPress={() => commentsSheetRef?.current?.snapToIndex(2)}
+          />
           <IconButton name="paper-plane-outline" size="2xl" />
           <IconButton
             name="ellipsis-vertical"

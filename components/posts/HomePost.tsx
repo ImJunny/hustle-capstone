@@ -19,6 +19,7 @@ import Toast from "react-native-toast-message";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
+import { useCommentsStore } from "@/hooks/useCommentsStore";
 
 function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
@@ -72,6 +73,9 @@ function HomePost({ data }: { data: THomePost }) {
       ? format(date, "MMMM d")
       : format(date, "MMMM d, yyyy");
   }
+
+  const setPostUUID = useCommentsStore((state) => state.setPostUUID);
+  const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
 
   return (
     <GestureDetector gesture={doubleTap}>
@@ -160,6 +164,10 @@ function HomePost({ data }: { data: THomePost }) {
                   color="white"
                   size="2xl"
                   flippedX
+                  onPress={() => {
+                    setPostUUID(data.uuid);
+                    commentsSheetRef?.current?.snapToIndex(2);
+                  }}
                 />
               </View>
 

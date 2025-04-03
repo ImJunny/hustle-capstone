@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { compressImage, getImageHash } from "@/server/utils/image-methods";
+import AvatarImage from "@/components/ui/AvatarImage";
 
 type ImageEditorProps = {
   avatarUrl: string | null;
@@ -20,7 +21,7 @@ export default function ImageEditor({
   setImageUri,
   setIsNewImage,
 }: ImageEditorProps) {
-  // Function to chooses image
+  // Function to choose image
   async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -44,16 +45,7 @@ export default function ImageEditor({
   return (
     <View style={{}}>
       <TouchableOpacity onPress={pickImage} style={{ marginTop: 20 }}>
-        <Image
-          source={
-            imageUri
-              ? {
-                  uri: imageUri,
-                }
-              : require("@/assets/images/default-avatar-icon.jpg")
-          }
-          style={styles.image}
-        />
+        <AvatarImage url={imageUri} size={90} />
       </TouchableOpacity>
       <Pressable onPress={pickImage}>
         <View style={styles.cameraIconCircle} color="background-variant">
@@ -65,11 +57,6 @@ export default function ImageEditor({
 }
 
 const styles = StyleSheet.create({
-  image: {
-    borderRadius: 999,
-    width: 90,
-    height: 90,
-  },
   cameraIconCircle: {
     width: 34,
     height: 34,

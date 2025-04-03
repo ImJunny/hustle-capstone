@@ -665,7 +665,12 @@ export async function getSavedPosts(
           ORDER BY ${post_images.image_url} ASC
           LIMIT 1
         )`,
-        distance: sql`NULL`, // Add this to match the Post type
+        distance: sql`NULL`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(saved_posts)
       .innerJoin(posts, eq(saved_posts.post_uuid, posts.uuid))

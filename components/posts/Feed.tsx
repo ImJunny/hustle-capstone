@@ -1,5 +1,5 @@
 import { FlatList, Dimensions, RefreshControl } from "react-native";
-import React, { useMemo } from "react";
+import React from "react";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomePost from "./HomePost";
@@ -30,10 +30,6 @@ const Feed = <T extends { uuid: string }>({
     refetch().then(() => setRefreshing(false));
   }, []);
 
-  const renderItem = ({ item }: { item: T }) => (
-    <HomePost data={item as unknown as THomePost} />
-  );
-  const memoizedRenderItem = useMemo(() => renderItem, [data]);
   return (
     <FlatList
       refreshControl={
@@ -41,7 +37,9 @@ const Feed = <T extends { uuid: string }>({
       }
       bounces={false}
       data={data}
-      renderItem={memoizedRenderItem}
+      renderItem={({ item }) => (
+        <HomePost data={item as unknown as THomePost} />
+      )}
       keyExtractor={(item, index) => `${item.uuid}-${index}`}
       pagingEnabled
       snapToInterval={postHeight}

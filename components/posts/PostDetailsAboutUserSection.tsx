@@ -11,6 +11,7 @@ import { Image } from "expo-image";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "../ui/IconButton";
+import AvatarImage from "../ui/AvatarImage";
 
 type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
@@ -41,16 +42,7 @@ export default function PostDetailsAboutUserSection({
         }}
       >
         <View style={styles.bottomContainer}>
-          <Image
-            source={
-              data.poster_info?.avatar_url
-                ? {
-                    uri: data.poster_info.avatar_url,
-                  }
-                : require("@/assets/images/default-avatar-icon.jpg")
-            }
-            style={{ width: 40, height: 40, borderRadius: 999 }}
-          />
+          <AvatarImage url={data.poster_info?.avatar_url} />
           <View style={styles.nameContainer}>
             <Text weight="semibold">@{data.poster_info?.username}</Text>
             <View

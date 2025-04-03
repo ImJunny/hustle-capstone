@@ -2,7 +2,7 @@ export const TrackWorkingLabels: Record<string, string | null> = {
   accepted: `You have accepted this job. This does not guarantee you as the worker. Please wait for the employer to approve you for the job.`,
   approved: `You have been approved for this job. Let them know when you have started the job.`,
   "in progress": `The job is in progress and the user is awaiting its completion. Let them know when you've completed the job.`,
-  complete: `The job has been marked as complete and you will receive your payment soon.`,
+  complete: `The job has been marked as complete. Expect to receive your payment soon.`,
   paid: null,
 };
 

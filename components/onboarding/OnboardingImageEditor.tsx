@@ -1,23 +1,20 @@
 import Icon from "@/components/ui/Icon";
 import View from "@/components/ui/View";
 import { Image } from "expo-image";
-import { Dispatch, SetStateAction, useState } from "react";
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { useState } from "react";
+import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import Text from "../ui/Text";
 import { useFormContext, UseFormReturn } from "react-hook-form";
-import { OnboardingFormType } from "@/contexts/OnboardingFormsContext";
 import { Buffer } from "buffer";
+import { OnboardingFormSchema } from "@/zod/zod-schemas";
+import { z } from "zod";
 
 // Component that allows user to edit their image
 export default function OnboardingImageEditor() {
-  const { setValue }: UseFormReturn<OnboardingFormType> = useFormContext();
+  const { setValue }: UseFormReturn<z.infer<typeof OnboardingFormSchema>> =
+    useFormContext();
   const [imageUri, setImageUri] = useState<string | undefined>();
   // Function to chooses image
   async function pickImage() {

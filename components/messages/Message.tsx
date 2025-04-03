@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { MessagePreview } from "@/server/actions/message-actions";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useMessageStore } from "@/hooks/useMessageStore";
+import AvatarImage from "../ui/AvatarImage";
 
 type MessageProps = {
   data: MessagePreview;
@@ -31,16 +32,7 @@ export default function Message({ data }: MessageProps) {
         style={[styles.entry, { borderColor }]}
         color={isRead ? "background" : "base"}
       >
-        <Image
-          source={
-            data?.receiver_avatar_url
-              ? {
-                  uri: data.receiver_avatar_url,
-                }
-              : require("@/assets/images/default-avatar-icon.jpg")
-          }
-          style={{ borderRadius: 999, width: 60, height: 60 }}
-        />
+        <AvatarImage url={data.receiver_avatar_url} />
         <View style={styles.entryContent}>
           <Text size="lg" weight="bold">
             {data.receiver_display_name}

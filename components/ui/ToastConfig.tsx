@@ -1,18 +1,9 @@
-import Toast, {
-  BaseToast,
-  BaseToastProps,
-  ErrorToast,
-  ToastConfig,
-  ToastConfigParams,
-  ToastProps,
-} from "react-native-toast-message";
+import { ToastConfig, ToastConfigParams } from "react-native-toast-message";
 import View from "./View";
 import Text from "./Text";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { Platform } from "react-native";
 
 const GenericToast = ({ ...props }: ToastConfigParams<any>) => {
-  const themeColor = useThemeColor(); // Call the hook here
   const marginTop = Platform.OS === "ios" ? 20 : 0;
 
   return (

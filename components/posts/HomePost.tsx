@@ -20,6 +20,7 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
+import AvatarImage from "../ui/AvatarImage";
 
 function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
@@ -39,7 +40,15 @@ function HomePost({ data }: { data: THomePost }) {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
-
+    newIsSaved
+      ? Toast.show({
+          text1: "Saved",
+          visibilityTime: 500,
+        })
+      : Toast.show({
+          text1: "Unsaved",
+          visibilityTime: 500,
+        });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: data.uuid, user_uuid: user?.id! },
@@ -202,16 +211,7 @@ function HomePost({ data }: { data: THomePost }) {
             }}
           >
             <View style={styles.bottomContainer}>
-              <Image
-                source={
-                  data?.user_avatar_url
-                    ? {
-                        uri: data.user_avatar_url,
-                      }
-                    : require("@/assets/images/default-avatar-icon.jpg")
-                }
-                style={{ width: 40, height: 40, borderRadius: 999 }}
-              />
+              <AvatarImage url={data?.user_avatar_url} />
               <View style={styles.nameContainer}>
                 <Text color="white" weight="semibold">
                   @{data.user_username}

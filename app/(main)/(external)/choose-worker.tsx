@@ -14,6 +14,7 @@ import { Image } from "expo-image";
 import { AcceptedUser } from "@/server/actions/jobs-actions";
 import Icon from "@/components/ui/Icon";
 import { formatDistanceToNow } from "date-fns";
+import AvatarImage from "@/components/ui/AvatarImage";
 
 // Addresses screen
 export default function ChooseWorkerScreen() {
@@ -127,14 +128,7 @@ function WorkerEntry({
           onPress={() => router.push(`/profile/${worker.user_uuid}`)}
         >
           <View style={{ flexDirection: "row", gap: 20 }}>
-            <Image
-              source={
-                worker.user_avatar_url
-                  ? { uri: worker.user_avatar_url }
-                  : require("@/assets/images/default-avatar-icon.jpg")
-              }
-              style={{ width: 70, height: 70, borderRadius: 999 }}
-            />
+            <AvatarImage url={worker.user_avatar_url} size={70} />
             <View style={{ justifyContent: "center" }}>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 6 }}

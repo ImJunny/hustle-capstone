@@ -189,10 +189,6 @@ function HomePost({ data }: { data: THomePost }) {
                   color="white"
                   size="2xl"
                   flippedX
-                  onPress={() => {
-                    setPostUUID(data.uuid);
-                    commentsSheetRef?.current?.expand();
-                  }}
                 />
                 {data.comment_count > 0 && (
                   <Text

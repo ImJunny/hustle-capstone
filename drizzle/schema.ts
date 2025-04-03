@@ -203,6 +203,7 @@ export const payment_methods = app_schema.table("payment_methods", {
   card_last4: text("card_last4").notNull(),
   is_default: boolean("is_default").default(false),
   visible: boolean("visible").default(true),
+  card_brand: text("card_brand").notNull(),
 });
 
 export const saved_posts = app_schema.table("saved_posts", {
@@ -236,7 +237,6 @@ export const payments = app_schema.table("payments", {
   payment_method_uuid: uuid("payment_method_uuid")
     .references(() => payment_methods.uuid)
     .notNull(),
-  card_brand: text("card_brand").notNull(),
 });
 
 // TABLES FOR TYPES

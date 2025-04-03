@@ -32,7 +32,7 @@ export default function Message({ data }: MessageProps) {
         style={[styles.entry, { borderColor }]}
         color={isRead ? "background" : "base"}
       >
-        <AvatarImage url={data.receiver_avatar_url} />
+        <AvatarImage url={data.receiver_avatar_url} size={60} />
         <View style={styles.entryContent}>
           <Text size="lg" weight="bold">
             {data.receiver_display_name}

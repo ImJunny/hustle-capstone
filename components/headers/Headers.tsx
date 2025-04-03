@@ -672,7 +672,7 @@ export function SingleMessageFooter({
               onSubmitEditing={handleSubmit}
             />
             <IconButton
-              name="send"
+              name="paper-plane"
               size="xl"
               onPress={handleSubmit}
               disabled={isLoading || text === ""}

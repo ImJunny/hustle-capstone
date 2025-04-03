@@ -38,19 +38,19 @@ export function ApproveButton({
       utils.job.invalidate();
       utils.post.invalidate();
       router.replace({
-        pathname: "/(main)/(external)/track/hiring/[uuid]", // Your specific route
+        pathname: "/(main)/(external)/track/hiring/[uuid]",
         params: {
-          uuid: jobPostUuid, // Required: add the uuid property
-          refresh: Date.now(), // Optional: force refresh
-          approved_job: jobPostUuid, // Optional: pass data
+          uuid: jobPostUuid,
+          refresh: Date.now(),
+          approved_job: jobPostUuid,
         },
       });
     },
   });
 
   const handlePayment = async () => {
-    if (!payment?.stripe_payment_method_id) {
-      Alert.alert("Payment Error", "No valid payment method selected");
+    if (!payment?.stripe_payment_method_id || !user?.id) {
+      Alert.alert("Error", "Payment method or user missing");
       return;
     }
 
@@ -58,35 +58,36 @@ export function ApproveButton({
     setShowConfirmModal(false);
 
     try {
-      // 1. Confirm payment directly with Stripe
-      const { paymentIntent, error } = await confirmPayment(
-        // Payment method ID from your PaymentMethod object
-        payment.stripe_payment_method_id,
+      // 1. Create a TEST Payment Intent (client-side for simplicity)
+      const testPaymentIntentParams = {
+        amount: amount * 100, // Convert to cents
+        currency: "usd",
+        paymentMethodId: payment.stripe_payment_method_id,
+        customerId: payment.stripe_customer_id,
+      };
+
+      // In test mode, we'll use a hardcoded test client secret
+      // Replace this with a real client secret from your test Payment Intent
+      const TEST_CLIENT_SECRET = "pi_example_test_secret_123";
+
+      // 2. Confirm the Payment Intent
+      const { error, paymentIntent } = await confirmPayment(
+        TEST_CLIENT_SECRET,
         {
           paymentMethodType: "Card",
           paymentMethodData: {
             billingDetails: {
-              name: payment.cardholder_name || "Hassan",
-              email: user?.email || "", // Strongly recommended
-              address: {
-                country: "US", // Required for some countries
-                postalCode: "12345",
-              },
+              name: payment.cardholder_name || "Test User",
+              email: user.email || "test@example.com",
             },
-            cvc: "424",
           },
         }
       );
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
+      if (!paymentIntent) throw new Error("Payment failed");
 
-      if (!paymentIntent) {
-        throw new Error("Payment failed - no payment intent returned");
-      }
-
-      // 2. Record payment in your database
+      // 3. Record payment in your database
       await new Promise<void>((resolve, reject) => {
         recordPayment(
           {
@@ -102,26 +103,25 @@ export function ApproveButton({
         );
       });
 
-      // 3. Approve the job
+      // 4. Approve the job
       approveJob({
-        user_uuid: user?.id!,
+        user_uuid: user.id,
         job_post_uuid: jobPostUuid,
         linked_payment_method_uuid: payment.uuid,
       });
 
       Toast.show({
-        text1: "Payment successful and worker approved!",
+        text1: "Test payment successful and worker approved!",
         type: "success",
       });
     } catch (error) {
-      let errorMessage = "Payment failed. Please try again.";
+      let errorMessage = "Test payment failed. Please try again.";
 
       if (error instanceof Error) {
         errorMessage = error.message;
-
+        console.log(error);
         if (error.message.includes("payment method")) {
-          errorMessage =
-            "Invalid payment method. Please update your payment details.";
+          errorMessage = "Invalid payment method. Please use a test card.";
         }
       }
 

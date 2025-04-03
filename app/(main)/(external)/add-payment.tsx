@@ -11,6 +11,8 @@ import { z } from "zod";
 
 export const CreatePaymentMethodSchema = z.object({
   cardholder_name: z.string().trim().min(1, "Cannot leave field empty"),
+  postal_code: z.string().min(1, "Postal code is required"),
+  country: z.string().min(1, "Country is required"),
   card_is_valid: z.boolean().default(false),
 });
 

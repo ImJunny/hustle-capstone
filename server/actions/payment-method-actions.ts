@@ -8,7 +8,8 @@ export async function createPaymentMethod(
   cardholder_name: string,
   stripe_payment_method_id: string,
   stripe_customer_id: string,
-  card_last4: string
+  card_last4: string,
+  card_brand: string
 ) {
   try {
     await db.insert(payment_methods).values({
@@ -19,6 +20,7 @@ export async function createPaymentMethod(
       stripe_customer_id,
       card_last4,
       visible: true,
+      card_brand,
     });
   } catch (error) {
     console.error("Error creating payment method:", error);

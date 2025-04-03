@@ -184,7 +184,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             name="chatbubble-outline"
             size="2xl"
             flippedX
-            onPress={() => commentsSheetRef?.current?.snapToIndex(2)}
+            onPress={() => commentsSheetRef?.current?.expand()}
           />
           <IconButton name="paper-plane-outline" size="2xl" />
           <IconButton

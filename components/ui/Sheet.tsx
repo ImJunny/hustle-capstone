@@ -20,7 +20,7 @@ export default function Sheet({
   handleComponent,
   ...props
 }: {
-  title: string;
+  title?: string;
   sheetRef: React.RefObject<BottomSheetMethods>;
   children: ReactNode;
 } & BottomSheetProps) {
@@ -102,7 +102,7 @@ export default function Sheet({
         borderTopWidth: 1,
         borderColor: themeColor.border,
       }}
-      handleComponent={handleComponent === null ? undefined : HandleComponent}
+      handleComponent={handleComponent ?? HandleComponent}
       handleIndicatorStyle={{
         backgroundColor: themeColor["background-variant"],
       }}

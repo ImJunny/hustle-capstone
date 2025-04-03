@@ -166,7 +166,7 @@ function HomePost({ data }: { data: THomePost }) {
                   flippedX
                   onPress={() => {
                     setPostUUID(data.uuid);
-                    commentsSheetRef?.current?.snapToIndex(2);
+                    commentsSheetRef?.current?.expand();
                   }}
                 />
               </View>

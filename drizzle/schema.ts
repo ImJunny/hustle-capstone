@@ -201,6 +201,27 @@ export const saved_posts = app_schema.table("saved_posts", {
     .notNull(),
 });
 
+export const payments = app_schema.table("payments", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  job_uuid: uuid("job_uuid")
+    .references(() => initiated_jobs.uuid)
+    .notNull(),
+  amount: integer("amount").notNull(), // Stored in cents
+  stripe_payment_intent_id: text("stripe_payment_intent_id").notNull(),
+  status: text("status", {
+    enum: ["pending", "succeeded", "failed", "refunded"],
+  }).notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  payment_method_uuid: uuid("payment_method_uuid")
+    .references(() => payment_methods.uuid)
+    .notNull(),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

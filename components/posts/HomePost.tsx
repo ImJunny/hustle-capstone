@@ -75,6 +75,11 @@ function HomePost({ data }: { data: THomePost }) {
   }
 
   const setPostUUID = useCommentsStore((state) => state.setPostUUID);
+  useEffect(() => {
+    const postUUID = useCommentsStore.getState().postUUID;
+    if (!postUUID) setPostUUID(data.uuid);
+  }, [data.uuid]);
+
   const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
 
   return (
@@ -169,6 +174,15 @@ function HomePost({ data }: { data: THomePost }) {
                     commentsSheetRef?.current?.expand();
                   }}
                 />
+                {data.comment_count > 0 && (
+                  <Text
+                    style={{ textAlign: "center", marginTop: 6 }}
+                    weight="bold"
+                    size="sm"
+                  >
+                    {data.comment_count}
+                  </Text>
+                )}
               </View>
 
               <IconButton

@@ -1,9 +1,9 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
 import { comments, users } from "@/drizzle/schema";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 
-// UPDATE JOB PROGRESS
+// GET COMMENTS
 export async function getComments(post_uuid: string, user_uuid: string) {
   try {
     const result = await db
@@ -16,7 +16,8 @@ export async function getComments(post_uuid: string, user_uuid: string) {
       })
       .from(comments)
       .where(eq(comments.post_uuid, post_uuid))
-      .innerJoin(users, eq(users.uuid, comments.user_uuid));
+      .innerJoin(users, eq(users.uuid, comments.user_uuid))
+      .orderBy(desc(comments.timestamp));
     return result;
   } catch (error) {
     console.error(error);
@@ -24,3 +25,21 @@ export async function getComments(post_uuid: string, user_uuid: string) {
   }
 }
 export type Comment = Awaited<ReturnType<typeof getComments>>[number];
+
+// SEND COMMENT
+export async function sendComment(
+  post_uuid: string,
+  user_uuid: string,
+  comment: string
+) {
+  try {
+    await db.insert(comments).values({
+      post_uuid,
+      user_uuid,
+      comment,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to send comment.");
+  }
+}

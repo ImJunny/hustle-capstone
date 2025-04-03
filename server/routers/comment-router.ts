@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
-import { getComments } from "../actions/comment-actions";
+import { getComments, sendComment } from "../actions/comment-actions";
 
 export const commentRouter = createTRPCRouter({
   get_comments: protectedProcedure
@@ -12,5 +12,16 @@ export const commentRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getComments(input.post_uuid, input.user_uuid);
+    }),
+  send_comment: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string(),
+        user_uuid: z.string(),
+        comment: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await sendComment(input.post_uuid, input.user_uuid, input.comment);
     }),
 });

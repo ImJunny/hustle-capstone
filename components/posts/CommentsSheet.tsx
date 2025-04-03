@@ -1,25 +1,21 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { TColors } from "@/constants/Colors";
-import { Keyboard, TouchableOpacity } from "react-native";
-import { Dispatch, RefObject, SetStateAction, useEffect, useRef } from "react";
+import { Keyboard } from "react-native";
+import { useEffect, useRef } from "react";
 import { BottomSheetFooter, BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
-import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { router } from "expo-router";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import View from "../ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Input from "../ui/Input";
-import { KeyboardAvoidingView } from "react-native";
-import Button from "../ui/Button";
-import { Platform } from "react-native";
 import IconButton from "../ui/IconButton";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { Comment as CommentType } from "@/server/actions/comment-actions";
 import { formatDistanceToNow } from "date-fns";
+import CommentsSheetFooter from "./CommentsSheetFooter";
+import { Image } from "expo-image";
+import LoadingView from "../ui/LoadingView";
+import { FlatList } from "react-native-gesture-handler";
 
 export default function CommentsSheet() {
   const { user } = useAuthData();
@@ -37,16 +33,21 @@ export default function CommentsSheet() {
 
   const uuid = useCommentsStore((state) => state.postUUID);
 
-  const { data, isLoading } = trpc.comment.get_comments.useQuery({
-    post_uuid: uuid ?? "",
-    user_uuid: user?.id ?? "",
-  });
+  const { data, isLoading } = trpc.comment.get_comments.useQuery(
+    {
+      post_uuid: uuid!,
+      user_uuid: user?.id ?? "",
+    },
+    { enabled: !!uuid }
+  );
 
   if (!uuid || !user) return;
+
   return (
     <Sheet
+      keyboardBehavior="extend"
       sheetRef={ref}
-      snapPoints={[1, "50%", "80%"]}
+      snapPoints={[1, "100%"]}
       handleComponent={() => (
         <View>
           <View
@@ -72,19 +73,24 @@ export default function CommentsSheet() {
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text size="xl" weight="semibold">
-                Comments
-              </Text>
-              <Text
-                size="xl"
-                weight="semibold"
-                style={{ marginLeft: 10, marginRight: 6 }}
-              >
-                •
-              </Text>
-              <Text size="xl" weight="semibold">
-                {data?.length}
-              </Text>
+              {!isLoading && (
+                <>
+                  <Text size="xl" weight="semibold">
+                    Comments
+                  </Text>
+
+                  <Text
+                    size="xl"
+                    weight="semibold"
+                    style={{ marginLeft: 10, marginRight: 6 }}
+                  >
+                    •
+                  </Text>
+                  <Text size="xl" weight="semibold">
+                    {data?.length}
+                  </Text>
+                </>
+              )}
             </View>
 
             <IconButton
@@ -107,34 +113,25 @@ export default function CommentsSheet() {
       }}
       footerComponent={({ animatedFooterPosition }) => (
         <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ backgroundColor: themeColor.background }}
-          >
-            <View
-              style={{ padding: 16, borderTopWidth: 1, flexDirection: "row" }}
-            >
-              <Input placeholder="Comment..." />
-              <View
-                style={{ borderRadius: 999, width: 40, height: 40 }}
-                color="foreground"
-              >
-                <IconButton name="paper-plane" color="background" />
-              </View>
-            </View>
-          </KeyboardAvoidingView>
+          <CommentsSheetFooter uuid={uuid} />
         </BottomSheetFooter>
       )}
     >
-      <BottomSheetView style={{ flex: 1, padding: 0 }}>
-        {!data || data.length === 0 ? (
-          <Text style={{ textAlign: "center", paddingTop: 16 }}>
+      <BottomSheetView style={{ flex: 1 }}>
+        {isLoading ? (
+          <LoadingView style={{ flex: 0, paddingTop: 32 }} />
+        ) : !data || data.length === 0 ? (
+          <Text style={{ textAlign: "center", paddingTop: 32 }}>
             No comments yet
           </Text>
         ) : (
-          data?.map((comment) => (
-            <Comment data={comment as unknown as CommentType} />
-          ))
+          <FlatList
+            contentContainerStyle={{ paddingBottom: 72 }}
+            data={data}
+            renderItem={({ item }) => (
+              <Comment data={{ ...item } as unknown as CommentType} />
+            )}
+          />
         )}
       </BottomSheetView>
     </Sheet>
@@ -164,7 +161,14 @@ function Comment({ data }: { data: CommentType }) {
         gap: 16,
       }}
     >
-      <ImagePlaceholder width={40} height={40} style={{ borderRadius: 999 }} />
+      <Image
+        source={
+          data.user_avatar_url
+            ? { uri: data.user_avatar_url }
+            : require("@/assets/images/default-avatar-icon.jpg")
+        }
+        style={{ width: 40, height: 40, borderRadius: 999 }}
+      />
       <View style={{ gap: 8 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <Text color="muted" size="sm">
@@ -174,6 +178,7 @@ function Comment({ data }: { data: CommentType }) {
             • {formattedTimeAgo}
           </Text>
         </View>
+
         <Text>{data.comment}</Text>
       </View>
     </View>

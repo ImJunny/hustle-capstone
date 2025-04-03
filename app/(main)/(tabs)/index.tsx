@@ -1,14 +1,11 @@
 import { Dimensions } from "react-native";
 import Feed from "@/components/posts/Feed";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { IndexHeader } from "@/components/headers/Headers";
 import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { usePostStore } from "@/hooks/usePostStore";
-import BottomSheet from "@gorhom/bottom-sheet";
-import CommentsSheet from "@/components/posts/CommentsSheet";
-import { useCommentsStore } from "@/hooks/useCommentsStore";
 
 interface Route {
   key: string;

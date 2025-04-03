@@ -180,12 +180,23 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             size="2xl"
             onPress={handleSaveToggle}
           />
-          <IconButton
-            name="chatbubble-outline"
-            size="2xl"
-            flippedX
-            onPress={() => commentsSheetRef?.current?.expand()}
-          />
+          <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+            <IconButton
+              name="chatbubble-outline"
+              size="2xl"
+              flippedX
+              onPress={() => {
+                setPostUUID(uuid);
+                commentsSheetRef?.current?.expand();
+              }}
+            />
+            {data.comment_count > 0 && (
+              <Text style={{ textAlign: "center" }} weight="bold">
+                {data.comment_count}
+              </Text>
+            )}
+          </View>
+
           <IconButton name="paper-plane-outline" size="2xl" />
           <IconButton
             name="ellipsis-vertical"

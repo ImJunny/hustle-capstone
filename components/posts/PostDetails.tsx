@@ -2,7 +2,7 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import ScrollView from "@/components/ui/ScrollView";
-import { Dimensions } from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
@@ -22,6 +22,7 @@ import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
+import Icon from "../ui/Icon";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const { user } = useAuthData();
@@ -185,30 +186,28 @@ export default function PostDetails({ uuid }: { uuid: string }) {
         >
           <IconButton
             name={isSaved ? "add-circle-sharp" : "add-circle-outline"}
-            size="2xl"
+            size="xl"
             onPress={handleSaveToggle}
           />
-          <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
-            <IconButton
-              name="chatbubble-outline"
-              size="2xl"
-              flippedX
-              onPress={() => {
-                setPostUUID(uuid);
-                commentsSheetRef?.current?.expand();
-              }}
-            />
+          <TouchableOpacity
+            style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+            onPress={() => {
+              setPostUUID(uuid);
+              commentsSheetRef?.current?.expand();
+            }}
+          >
+            <Icon name="chatbubble-outline" size="xl" flippedX />
             {data.comment_count > 0 && (
-              <Text style={{ textAlign: "center" }} weight="bold">
+              <Text style={{ textAlign: "center" }} weight="bold" size="sm">
                 {data.comment_count}
               </Text>
             )}
-          </View>
+          </TouchableOpacity>
 
-          <IconButton name="paper-plane-outline" size="2xl" />
+          <IconButton name="paper-plane-outline" size="xl" />
           <IconButton
             name="ellipsis-vertical"
-            size="2xl"
+            size="xl"
             style={{ marginLeft: "auto" }}
             onPress={() => bottomSheetRef.current?.expand()}
           />

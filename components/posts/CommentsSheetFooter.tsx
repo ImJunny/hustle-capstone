@@ -58,11 +58,12 @@ export default function CommentsSheetFooter({ uuid }: { uuid: string }) {
           flexDirection: "row",
           alignItems: "center",
           gap: 12,
+          width: "100%",
         }}
       >
         <Input
           placeholder="Comment..."
-          style={{ flexGrow: 1 }}
+          style={{ flex: 1 }}
           value={text}
           onChangeText={(value) => setText(value)}
         />

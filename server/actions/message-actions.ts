@@ -66,6 +66,7 @@ export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
           message: chat.message,
           timestamp: chat.created_at,
           chat_type: chat.type,
+          message_uuid: chat.uuid,
         };
 
         // Fetch image URL if this message is related to a post (i.e., chat.post_uuid is not null)
@@ -105,7 +106,6 @@ export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
         return chatData;
       })
     );
-
     const result = {
       avatar_url: avatar_url[0].avatar_url,
       receiver_info: receiver_info[0],

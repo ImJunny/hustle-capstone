@@ -47,7 +47,7 @@ export default function MessageScreen() {
 
   const { mutate: markAsRead } = trpc.messages.mark_as_read.useMutation({
     onSuccess: () => {
-      utils.messages.get_message_previews.invalidate();
+      utils.messages.get_chat_info.invalidate();
     },
   });
 
@@ -59,8 +59,8 @@ export default function MessageScreen() {
 
   useEffect(() => {
     if (data) setMessages(data.chats);
-    if (data?.receiver_info.receiver_uuid) {
-      addReadChat(data.receiver_info.receiver_uuid);
+    if (data?.receiver_info.receiver_uuid && data.chats.length > 0) {
+      addReadChat(data.chats[data.chats.length - 1].message_uuid);
       markAsRead({
         sender_uuid: user.id,
         receiver_uuid: data?.receiver_info.receiver_uuid,
@@ -71,7 +71,8 @@ export default function MessageScreen() {
   useEffect(() => {
     channel.on("broadcast", { event: "message" }, (payload) => {
       setMessages((prev: any) => [...prev, payload.payload]);
-      if (data?.receiver_info.receiver_uuid) {
+      if (data?.receiver_info.receiver_uuid && data.chats.length > 0) {
+        addReadChat(data.chats[data.chats.length - 1].message_uuid);
         markAsRead({
           sender_uuid: user.id,
           receiver_uuid: data?.receiver_info.receiver_uuid,

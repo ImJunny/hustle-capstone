@@ -36,12 +36,13 @@ export default function CommentsSheet() {
   const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
 
   const uuid = useCommentsStore((state) => state.postUUID);
-  if (!uuid || !user) return;
+
   const { data, isLoading } = trpc.comment.get_comments.useQuery({
-    post_uuid: uuid,
-    user_uuid: user?.id,
+    post_uuid: uuid ?? "",
+    user_uuid: user?.id ?? "",
   });
 
+  if (!uuid || !user) return;
   return (
     <Sheet
       sheetRef={ref}
@@ -110,8 +111,16 @@ export default function CommentsSheet() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ backgroundColor: themeColor.background }}
           >
-            <View style={{ padding: 16, borderTopWidth: 1 }}>
+            <View
+              style={{ padding: 16, borderTopWidth: 1, flexDirection: "row" }}
+            >
               <Input placeholder="Comment..." />
+              <View
+                style={{ borderRadius: 999, width: 40, height: 40 }}
+                color="foreground"
+              >
+                <IconButton name="paper-plane" color="background" />
+              </View>
             </View>
           </KeyboardAvoidingView>
         </BottomSheetFooter>

@@ -12,6 +12,7 @@ export async function getComments(post_uuid: string, user_uuid: string) {
         timestamp: comments.timestamp,
         comment: comments.comment,
         user_username: users.username,
+        user_avatar_url: users.avatar_url,
       })
       .from(comments)
       .where(eq(comments.post_uuid, post_uuid))

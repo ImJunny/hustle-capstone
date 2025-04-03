@@ -21,6 +21,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
 import { usePostStore } from "@/hooks/usePostStore";
+import { useCommentsStore } from "@/hooks/useCommentsStore";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const { user } = useAuthData();
@@ -46,7 +47,15 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(uuid) : unsavePost(uuid);
-
+    newIsSaved
+      ? Toast.show({
+          text1: "Saved",
+          visibilityTime: 500,
+        })
+      : Toast.show({
+          text1: "Unsaved",
+          visibilityTime: 500,
+        });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: uuid, user_uuid: user?.id! },
@@ -71,6 +80,9 @@ export default function PostDetails({ uuid }: { uuid: string }) {
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const setPostUUID = useCommentsStore((state) => state.setPostUUID);
+  const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
@@ -176,7 +188,23 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             size="2xl"
             onPress={handleSaveToggle}
           />
-          <IconButton name="chatbubble-outline" size="2xl" flippedX />
+          <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+            <IconButton
+              name="chatbubble-outline"
+              size="2xl"
+              flippedX
+              onPress={() => {
+                setPostUUID(uuid);
+                commentsSheetRef?.current?.expand();
+              }}
+            />
+            {data.comment_count > 0 && (
+              <Text style={{ textAlign: "center" }} weight="bold">
+                {data.comment_count}
+              </Text>
+            )}
+          </View>
+
           <IconButton name="paper-plane-outline" size="2xl" />
           <IconButton
             name="ellipsis-vertical"

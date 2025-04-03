@@ -152,6 +152,22 @@ export const chats = app_schema.table("chats", {
     .notNull(),
 });
 
+export const comments = app_schema.table("comments", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  post_uuid: uuid("post_uuid")
+    .references(() => posts.uuid, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  user_uuid: uuid("user_uuid").references(() => users.uuid, {
+    onDelete: "set null",
+  }),
+  comment: text("comment"),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
 export const reviews = app_schema.table("reviews", {
   uuid: uuid("uuid")
     .primaryKey()

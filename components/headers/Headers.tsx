@@ -16,6 +16,7 @@ import Toast from "react-native-toast-message";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
+import AvatarImage from "../ui/AvatarImage";
 
 interface IndexHeaderProps {
   index: number;
@@ -588,16 +589,7 @@ export function SingleMessageHeader({
                 gap: 12,
               }}
             >
-              <Image
-                source={
-                  avatarUrl
-                    ? {
-                        uri: avatarUrl,
-                      }
-                    : require("@/assets/images/default-avatar-icon.jpg")
-                }
-                style={{ borderRadius: 999, width: 40, height: 40 }}
-              />
+              <AvatarImage url={avatarUrl} />
               <Text weight="semibold" size="xl">
                 {messenger}
               </Text>
@@ -680,7 +672,7 @@ export function SingleMessageFooter({
               onSubmitEditing={handleSubmit}
             />
             <IconButton
-              name="send"
+              name="paper-plane"
               size="xl"
               onPress={handleSubmit}
               disabled={isLoading || text === ""}

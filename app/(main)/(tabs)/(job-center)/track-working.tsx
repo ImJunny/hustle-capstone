@@ -32,7 +32,7 @@ export default function TrackWorkingScreen() {
   if (!user || isLoading) {
     return (
       <>
-        <SimpleHeader title="Track working" />
+        <SimpleHeader title="Jobs I'm working" />
         {isLoading ? (
           <LoadingView />
         ) : (
@@ -49,7 +49,7 @@ export default function TrackWorkingScreen() {
   if (data?.length === 0) {
     return (
       <>
-        <SimpleHeader title="Track working" />
+        <SimpleHeader title="Jobs I'm working" />
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
@@ -61,7 +61,7 @@ export default function TrackWorkingScreen() {
 
   return (
     <>
-      <SimpleHeader title="Track working" />
+      <SimpleHeader title="Jobs I'm working" />
       <ScrollView>
         {sortedData?.map((post, i) => (
           <TrackPost

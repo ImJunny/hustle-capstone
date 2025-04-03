@@ -34,82 +34,76 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
       (footerData?.initiated && param_type === undefined)
     ) {
       return (
-        <Button
-          style={{ marginLeft: "auto" }}
-          type="outline"
-          borderColor="foreground"
-          onPress={() => {
-            if (data.user_uuid === user?.id)
-              router.push(`/track/hiring/${data.uuid}`);
-            else router.push(`/track/working/${data.uuid}` as any);
-          }}
-        >
-          Manage
-        </Button>
-      );
-    } else if (init === "work") {
-      return (
-        <View style={{ flexDirection: "row", gap: 12 }}>
+        <Skeleton show={isLoading}>
           <Button
             style={{ marginLeft: "auto" }}
             type="outline"
             borderColor="foreground"
-            onPress={() => router.push(`/track/working/${data.uuid}` as any)}
-          >
-            Make offer
-          </Button>
-          <Button
-            style={{ marginLeft: "auto" }}
             onPress={() => {
-              router.push(`/accept/${data.uuid}` as any);
+              if (data.user_uuid === user?.id)
+                router.push(`/track/hiring/${data.uuid}`);
+              else router.push(`/track/working/${data.uuid}` as any);
             }}
           >
-            Accept job
+            Manage
           </Button>
-        </View>
+        </Skeleton>
+      );
+    } else if (init === "work") {
+      return (
+        <Skeleton show={isLoading}>
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <Button
+              style={{ marginLeft: "auto" }}
+              type="outline"
+              borderColor="foreground"
+              onPress={() => router.push(`/track/working/${data.uuid}` as any)}
+            >
+              Make offer
+            </Button>
+            <Button
+              style={{ marginLeft: "auto" }}
+              onPress={() => {
+                router.push(`/accept/${data.uuid}` as any);
+              }}
+            >
+              Accept job
+            </Button>
+          </View>
+        </Skeleton>
       );
     } else if (init === "hire") {
       return (
-        <Button
-          style={{ marginLeft: "auto" }}
-          borderColor="foreground"
-          onPress={() => {}}
-        >
-          Hire service
-        </Button>
+        <Skeleton show={isLoading}>
+          <Button
+            style={{ marginLeft: "auto" }}
+            borderColor="foreground"
+            onPress={() => {}}
+          >
+            Hire service
+          </Button>
+        </Skeleton>
       );
     }
   };
-
-  if (isLoading) {
-    return (
-      <View
-        style={[styles.actionsRow, { borderColor: themeColor.border }]}
-        color="background"
-      >
-        <View>
-          <Skeleton show width={80} height={12} />
-          <Skeleton width={80} height={26} />
-        </View>
-        <Skeleton show width={200} height={44} radius={8} />
-      </View>
-    );
-  }
 
   return (
     <View
       style={[styles.actionsRow, { borderColor: themeColor.border }]}
       color="background"
     >
-      <View>
-        <Text size="sm" weight="semibold">
-          Base rate
-        </Text>
-        <Text weight="semibold" size="xl">
-          ${footerData?.min_rate}
-          {footerData?.max_rate && " - " + `$${footerData?.max_rate}`}
-        </Text>
-      </View>
+      <Skeleton show={isLoading} width={120}>
+        <View>
+          <Text size="sm" weight="semibold">
+            Base rate
+          </Text>
+
+          <Text weight="semibold" size="xl">
+            ${footerData?.min_rate}
+            {footerData?.max_rate && " - " + `$${footerData?.max_rate}`}
+          </Text>
+        </View>
+      </Skeleton>
       {renderButton()}
     </View>
   );

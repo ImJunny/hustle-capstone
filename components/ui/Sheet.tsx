@@ -1,5 +1,6 @@
 import BottomSheet, {
   BottomSheetBackdrop,
+  BottomSheetHandleProps,
   BottomSheetProps,
 } from "@gorhom/bottom-sheet";
 import View from "../ui/View";
@@ -16,9 +17,10 @@ export default function Sheet({
   sheetRef,
   children,
   snapPoints,
+  handleComponent,
   ...props
 }: {
-  title: string;
+  title?: string;
   sheetRef: React.RefObject<BottomSheetMethods>;
   children: ReactNode;
 } & BottomSheetProps) {
@@ -62,6 +64,32 @@ export default function Sheet({
     return () => backHandler.remove();
   }, [isSheetOpen]);
 
+  const HandleComponent: React.FC<BottomSheetHandleProps> = () => (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        justifyContent: "space-between",
+        borderBottomWidth: 1,
+        borderColor: themeColor.border,
+      }}
+    >
+      <Text size="xl" weight="semibold">
+        {title}
+      </Text>
+      <IconButton
+        name="close-outline"
+        size="2xl"
+        onPress={() => {
+          sheetRef.current?.close();
+          Keyboard.dismiss();
+        }}
+      />
+    </View>
+  );
+
   return (
     <BottomSheet
       ref={sheetRef}
@@ -74,31 +102,10 @@ export default function Sheet({
         borderTopWidth: 1,
         borderColor: themeColor.border,
       }}
-      handleComponent={() => (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            justifyContent: "space-between",
-            borderBottomWidth: 1,
-            borderColor: themeColor.border,
-          }}
-        >
-          <Text size="xl" weight="semibold">
-            {title}
-          </Text>
-          <IconButton
-            name="close-outline"
-            size="2xl"
-            onPress={() => {
-              sheetRef.current?.close();
-              Keyboard.dismiss();
-            }}
-          />
-        </View>
-      )}
+      handleComponent={handleComponent ?? HandleComponent}
+      handleIndicatorStyle={{
+        backgroundColor: themeColor["background-variant"],
+      }}
       enablePanDownToClose
       backdropComponent={renderBackdrop}
       {...props}

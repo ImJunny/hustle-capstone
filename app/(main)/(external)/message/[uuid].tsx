@@ -6,7 +6,7 @@ import {
   SingleMessageFooter,
   SingleMessageHeader,
 } from "@/components/headers/Headers";
-import { StyleSheet } from "react-native";
+import { ScrollView as RNScrollView, StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import { useAuthData } from "@/contexts/AuthContext";
 import { format, isToday, isThisYear } from "date-fns";
@@ -15,24 +15,27 @@ import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
 import { useMessageStore } from "@/hooks/useMessageStore";
 
+// Format timestamp for display
 const formatTimestamp = (timestamp: string) => {
-  const date = new Date(timestamp);
-
-  if (isToday(date)) {
-    return format(date, "p");
-  } else if (isThisYear(date)) {
-    return format(date, "MMM dd, p");
-  } else {
-    return format(date, "MMM dd, yyyy, p");
-  }
+  return format(timestamp, "p");
 };
 
-type Message = {
-  sender_uuid: string;
-  chat_type: string;
-  message: string;
-  timestamp: string;
-  message_uuid: string;
+const formatDate = (date: string) => {
+  return isToday(date)
+    ? `Today, ${format(date, "MMMM d")}`
+    : isThisYear(date)
+    ? format(date, "MMM d")
+    : format(date, "MMM d, yyyy");
+};
+
+// Group messages by day
+const groupMessagesByDate = (messages: any[]) => {
+  return messages.reduce((groups: any, message) => {
+    const date = formatDate(message.timestamp);
+    if (!groups[date]) groups[date] = [];
+    groups[date].push(message);
+    return groups;
+  }, {});
 };
 
 export default function MessageScreen() {
@@ -40,6 +43,7 @@ export default function MessageScreen() {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
   if (!user) return;
+
   const { data, isLoading } = trpc.messages.get_chat_info.useQuery({
     sender_uuid: user.id as string,
     receiver_uuid: uuid as string,
@@ -51,14 +55,17 @@ export default function MessageScreen() {
     },
   });
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [groupedMessages, setGroupedMessages] = useState<any>({});
   const addReadChat = useMessageStore((state) => state.addReadChat);
   // Supabase Realtime
   const channelName = [user.id, uuid].sort().join(".");
   const channel = useMemo(() => supabase.channel(channelName), [channelName]);
 
   useEffect(() => {
-    if (data) setMessages(data.chats);
+    if (data) {
+      const grouped = groupMessagesByDate(data.chats);
+      setGroupedMessages(grouped);
+    }
     if (data?.receiver_info.receiver_uuid && data.chats.length > 0) {
       addReadChat(data.chats[data.chats.length - 1].message_uuid);
       markAsRead({
@@ -70,7 +77,16 @@ export default function MessageScreen() {
 
   useEffect(() => {
     channel.on("broadcast", { event: "message" }, (payload) => {
-      setMessages((prev: any) => [...prev, payload.payload]);
+      const newMessage = payload.payload;
+      setGroupedMessages((prev: any) => {
+        const updatedMessages = { ...prev };
+        const date = formatDate(newMessage.timestamp);
+
+        if (!updatedMessages[date]) updatedMessages[date] = [];
+        updatedMessages[date].push(newMessage);
+        return updatedMessages;
+      });
+
       if (data?.receiver_info.receiver_uuid && data.chats.length > 0) {
         addReadChat(data.chats[data.chats.length - 1].message_uuid);
         markAsRead({
@@ -87,6 +103,17 @@ export default function MessageScreen() {
     };
   }, [channel]);
 
+  const scrollViewRef = useRef<RNScrollView>(null);
+
+  const [isLayoutDone, setIsLayoutDone] = useState(false);
+
+  const onLayout = () => {
+    setIsLayoutDone(true);
+  };
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: false });
+  }, [groupedMessages, isLayoutDone]);
+
   if (isLoading) {
     return <LoadingView />;
   } else if (!data) {
@@ -96,6 +123,7 @@ export default function MessageScreen() {
       </>
     );
   }
+
   return (
     <>
       <SingleMessageHeader
@@ -104,57 +132,76 @@ export default function MessageScreen() {
         user_uuid={data.receiver_info.receiver_uuid}
       />
       <ScrollView
-        contentContainerStyle={styles.scrollContainer}
         style={{ flex: 1 }}
         color="background"
+        ref={scrollViewRef}
+        onLayout={onLayout}
       >
         <View style={styles.messageContainer}>
-          {messages.map((message, index) => {
-            const formattedTimestamp = formatTimestamp(message.timestamp);
+          {Object.keys(groupedMessages).map((date) => (
+            <View key={date}>
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginVertical: 44,
+                  marginTop: 44,
+                }}
+                color="muted"
+                size="sm"
+              >
+                {date}
+              </Text>
 
-            return (
-              <View key={index} style={styles.messageWrapper}>
-                <Text style={styles.timestampText} color="muted" size="sm">
-                  {formattedTimestamp}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "flex-end",
-                    alignSelf:
-                      message.sender_uuid === user.id
-                        ? "flex-end"
-                        : "flex-start",
-                  }}
-                >
-                  <View
-                    style={[
-                      styles.message,
-                      message.sender_uuid === user.id
-                        ? styles.sentMessage
-                        : styles.receivedMessage,
-                    ]}
-                    color={
-                      message.sender_uuid === user.id
-                        ? "foreground"
-                        : "background-variant"
-                    }
-                  >
-                    <Text
-                      size="md"
-                      color={
-                        message.sender_uuid === user.id
-                          ? "background"
-                          : "foreground"
-                      }
-                    >
-                      {message.message}
-                    </Text>
-                  </View>
-                </View>
+              <View style={{ gap: 20 }}>
+                {groupedMessages[date].map((message: any, index: number) => {
+                  const formattedTimestamp = formatTimestamp(message.timestamp);
+
+                  return (
+                    <View key={index}>
+                      <View
+                        style={{
+                          flexDirection:
+                            message.sender_uuid === user.id
+                              ? "row-reverse"
+                              : "row",
+                          gap: 12,
+                          alignItems: "flex-end",
+
+                          alignSelf:
+                            message.sender_uuid === user.id
+                              ? "flex-end"
+                              : "flex-start",
+                        }}
+                      >
+                        <View
+                          style={[styles.message]}
+                          color={
+                            message.sender_uuid === user.id
+                              ? "foreground"
+                              : "background-variant"
+                          }
+                        >
+                          <Text
+                            size="md"
+                            color={
+                              message.sender_uuid === user.id
+                                ? "background"
+                                : "foreground"
+                            }
+                          >
+                            {message.message}
+                          </Text>
+                        </View>
+                        <Text color="muted" size="sm">
+                          {formattedTimestamp}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
-            );
-          })}
+            </View>
+          ))}
         </View>
       </ScrollView>
       <SingleMessageFooter
@@ -167,32 +214,14 @@ export default function MessageScreen() {
 
 const styles = StyleSheet.create({
   messageContainer: {
-    padding: 16,
-    gap: 20,
-  },
-  messageWrapper: {
-    alignItems: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   message: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    maxWidth: 300,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  sentMessage: {
-    alignSelf: "flex-end",
-    borderBottomLeftRadius: 10,
-  },
-  receivedMessage: {
-    alignSelf: "flex-start",
-    borderBottomRightRadius: 10,
-  },
-  timestampText: {
-    marginBottom: 6,
-    textAlign: "center",
-  },
-  scrollContainer: {
-    paddingBottom: 20,
+    maxWidth: "75%",
+    borderRadius: 999,
   },
 });

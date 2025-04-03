@@ -7,6 +7,7 @@ import {
   addresses,
   initiated_jobs,
   saved_posts,
+  comments,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -236,6 +237,11 @@ export async function getPostDetailsInfo(
           FROM ${post_images}
           WHERE ${post_images.post_uuid} = ${posts.uuid}
       )`,
+        comment_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${comments}
+        WHERE ${comments.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -458,24 +464,29 @@ export async function getHomePosts(
         location_type: posts.location_type,
         due_date: posts.due_date,
         image_url: sql`(
-        SELECT ${post_images.image_url}
-        FROM ${post_images}
-        WHERE ${post_images.post_uuid} = ${posts.uuid}
-        ORDER BY ${post_images.image_url} ASC
-        LIMIT 1
+      SELECT ${post_images.image_url}
+      FROM ${post_images}
+      WHERE ${post_images.post_uuid} = ${posts.uuid}
+      ORDER BY ${post_images.image_url} ASC
+      LIMIT 1
       )`,
         user_avatar_url: users.avatar_url,
         user_username: users.username,
         tags: sql<string[]>`(
-        SELECT ARRAY_AGG(${post_tags.tag_type})
-        FROM ${post_tags}
-        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      SELECT ARRAY_AGG(${post_tags.tag_type})
+      FROM ${post_tags}
+      WHERE ${post_tags.post_uuid} = ${posts.uuid}
       )`,
         is_liked: sql<boolean>`EXISTS(
-        SELECT 1
-        FROM ${saved_posts}
-        WHERE ${saved_posts.post_uuid} = ${posts.uuid}
-        AND ${saved_posts.user_uuid} = ${user_uuid}
+      SELECT 1
+      FROM ${saved_posts}
+      WHERE ${saved_posts.post_uuid} = ${posts.uuid}
+      AND ${saved_posts.user_uuid} = ${user_uuid}
+      )`,
+        comment_count: sql<number>`(
+      SELECT COUNT(*)
+      FROM ${comments}
+      WHERE ${comments.post_uuid} = ${posts.uuid}
       )`,
       })
       .from(posts)
@@ -486,8 +497,8 @@ export async function getHomePosts(
           ne(posts.status_type, "hidden"),
           eq(posts.type, type)
         )
-      );
-
+      )
+      .orderBy(desc(posts.created_at));
     return result;
   } catch (error) {
     console.log(error);
@@ -654,7 +665,12 @@ export async function getSavedPosts(
           ORDER BY ${post_images.image_url} ASC
           LIMIT 1
         )`,
-        distance: sql`NULL`, // Add this to match the Post type
+        distance: sql`NULL`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
       })
       .from(saved_posts)
       .innerJoin(posts, eq(saved_posts.post_uuid, posts.uuid))

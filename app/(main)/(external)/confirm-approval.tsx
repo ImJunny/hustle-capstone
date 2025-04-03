@@ -8,7 +8,6 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Post } from "@/server/actions/post-actions";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { useLocalSearchParams } from "expo-router";
@@ -16,6 +15,8 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import { ApproveButton } from "@/components/approve/ApproveSubmitButton";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
@@ -34,38 +35,6 @@ export default function AcceptScreen() {
     }
   }, [selected_payment]);
 
-  // function to handle confirm accept
-  const { mutate: approveJob, isLoading: acceptLoading } =
-    trpc.job.approve_job.useMutation({
-      onSuccess: () => {
-        Toast.show({
-          text1: "Approved job",
-          swipeable: false,
-        });
-        utils.job.invalidate();
-        utils.post.invalidate();
-        router.back();
-        router.setParams({
-          param_type: "manage",
-        });
-      },
-      onError: (error) => {
-        Toast.show({
-          text1: error.message,
-          swipeable: false,
-          type: "error",
-        });
-      },
-    });
-  const handleAccept = () => {
-    approveJob({
-      user_uuid: user?.id!,
-      job_post_uuid: uuid as string,
-      linked_payment_method_uuid: payment?.uuid ?? null,
-    });
-  };
-
-  // get transaction estimate
   const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
     {
       job_post_uuid: uuid as string,
@@ -82,7 +51,12 @@ export default function AcceptScreen() {
     );
   } else if (error) {
     return (
-      <>
+      <StripeProvider
+        publishableKey={
+          process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
+        }
+        merchantIdentifier="merchant.com.your-app" // required for Apple Pay
+      >
         <SimpleHeader title="Confirm approval" />
 
         <View
@@ -90,12 +64,15 @@ export default function AcceptScreen() {
         >
           <Text>Encountered an error getting job information</Text>
         </View>
-      </>
+      </StripeProvider>
     );
   }
 
   return (
-    <>
+    <StripeProvider
+      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
+      merchantIdentifier="merchant.com.your-app" // required for Apple Pay
+    >
       <SimpleHeader title="Confirm approval" />
       <ScrollView style={styles.page} color="background">
         <View
@@ -159,15 +136,15 @@ export default function AcceptScreen() {
         </View>
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
-        <Button
-          style={styles.button}
-          onPress={handleAccept}
-          disabled={acceptLoading}
-        >
-          Approve
-        </Button>
+        <ApproveButton
+          jobPostUuid={uuid as string}
+          payment={payment}
+          amount={data?.rate || 0}
+          jobTitle={"this job"}
+          workerName={"the worker"}
+        />
       </View>
-    </>
+    </StripeProvider>
   );
 }
 

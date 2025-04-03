@@ -1,4 +1,9 @@
-import { StyleSheet, Dimensions, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React, { useState, useCallback, useEffect, useMemo } from "react";
@@ -172,16 +177,18 @@ function HomePost({ data }: { data: THomePost }) {
                 size="2xl"
                 onPress={handleSaveToggle}
               />
-              <View style={styles.iconButton}>
-                <IconButton
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => {
+                  setPostUUID(data.uuid);
+                  commentsSheetRef?.current?.expand();
+                }}
+              >
+                <Icon
                   name={"chatbubble-outline"}
                   color="white"
                   size="2xl"
                   flippedX
-                  onPress={() => {
-                    setPostUUID(data.uuid);
-                    commentsSheetRef?.current?.expand();
-                  }}
                 />
                 {data.comment_count > 0 && (
                   <Text
@@ -192,7 +199,7 @@ function HomePost({ data }: { data: THomePost }) {
                     {data.comment_count}
                   </Text>
                 )}
-              </View>
+              </TouchableOpacity>
 
               <IconButton
                 name={"paper-plane-outline"}

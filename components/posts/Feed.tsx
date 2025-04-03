@@ -4,6 +4,7 @@ import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomePost from "./HomePost";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
+import { QueryObserverResult } from "@tanstack/react-query";
 
 const useFeedHeight = () => {
   const insets = useSafeAreaInsets();
@@ -14,7 +15,7 @@ const useFeedHeight = () => {
 
 interface FeedListProps<T> {
   data: T[];
-  refetch: () => Promise<void>;
+  refetch: QueryObserverResult["refetch"];
 }
 
 const Feed = <T extends { uuid: string }>({
@@ -55,4 +56,4 @@ const Feed = <T extends { uuid: string }>({
   );
 };
 
-export default Feed;
+export default React.memo(Feed);

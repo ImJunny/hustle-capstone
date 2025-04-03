@@ -306,7 +306,6 @@ export async function getTrackHiringDetails(
       .where(eq(posts.uuid, job_post_uuid))
       .limit(1)
       .then(([result]) => result);
-
     return { ...data_without_user, is_approved: false };
   } catch (error) {
     console.error(error);
@@ -330,20 +329,14 @@ export async function unacceptJob(initiated_job_post_uuid: string) {
 export async function getTrackHiringPosts(user_uuid: string) {
   try {
     const result = await db
-      .select({
+      .selectDistinctOn([posts.uuid], {
         uuid: posts.uuid,
         title: posts.title,
         due_date: posts.due_date,
-        image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        image_url: post_images.image_url, // Get image_url from the JOIN
       })
       .from(posts)
-      .innerJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid)) // LEFT JOIN for post images
       .where(
         and(
           eq(posts.user_uuid, user_uuid),
@@ -354,6 +347,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
       .then(async (posts) =>
         Promise.all(
           posts.map(async (post) => {
+            // Fetch job progress
             const approvedJob = await db
               .select({ progress: initiated_jobs.progress_type })
               .from(initiated_jobs)
@@ -365,6 +359,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
               )
               .limit(1)
               .then((jobs) => jobs[0]);
+
             if (approvedJob) {
               return {
                 ...post,
@@ -372,6 +367,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
               };
             }
 
+            // Count accepted jobs
             const acceptedJobCount = await db
               .select({ count: sql`COUNT(*)` })
               .from(initiated_jobs)
@@ -445,3 +441,21 @@ export type AcceptedUser = {
     title: string;
   } | null;
 };
+
+// UPDATE JOB PROGRESS
+export async function updateJobProgress(
+  uuid: string,
+  progress: "approved" | "in progress" | "complete"
+) {
+  try {
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: progress === "approved" ? "in progress" : "complete",
+      })
+      .where(eq(initiated_jobs.uuid, uuid));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to update progress.");
+  }
+}

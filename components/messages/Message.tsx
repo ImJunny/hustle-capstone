@@ -3,11 +3,11 @@ import { StyleSheet, TouchableOpacity, Image } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import View, { ViewProps } from "../ui/View";
-import ImagePlaceholder from "../ui/ImagePlaceholder";
-import { TMessage } from "@/server/utils/example-data";
 import { router } from "expo-router";
-import { formatDistanceStrict, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { MessagePreview } from "@/server/actions/message-actions";
+import { useAuthData } from "@/contexts/AuthContext";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 type MessageProps = {
   data: MessagePreview;
@@ -19,12 +19,18 @@ export default function Message({ data }: MessageProps) {
   const formattedTime = formatDistanceToNow(
     new Date(data.last_message_timestamp)
   );
+  const isRead = useMessageStore((state) =>
+    state.isReadChat(data.last_message_uuid)
+  );
 
   return (
     <TouchableOpacity
       onPress={() => router.push(`/message/${data.receiver_uuid} ` as any)}
     >
-      <View style={[styles.entry, { borderColor }]} color="background">
+      <View
+        style={[styles.entry, { borderColor }]}
+        color={isRead ? "background" : "base"}
+      >
         <Image
           source={
             data?.receiver_avatar_url
@@ -41,7 +47,7 @@ export default function Message({ data }: MessageProps) {
           </Text>
           <Text
             size="md"
-            weight="normal"
+            weight={!isRead ? "bold" : "normal"}
             color="foreground"
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -57,6 +63,11 @@ export default function Message({ data }: MessageProps) {
             {formattedTime} ago
           </Text>
         </View>
+        {!isRead ? (
+          <Text size="4xl" style={{ paddingLeft: 16, paddingRight: 8 }}>
+            •
+          </Text>
+        ) : null}
       </View>
     </TouchableOpacity>
   );

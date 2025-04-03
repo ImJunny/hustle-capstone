@@ -1,7 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useRef, useState, useEffect, useCallback } from "react";
-import { BackHeader, DetailsHeader } from "@/components/headers/Headers";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
@@ -16,72 +15,69 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import PostDetailsSheet from "./PostDetailsSheet";
 import PostDetailsDeleteModal from "./PostDetailsDeleteModal";
 import IconButton from "../ui/IconButton";
-import { StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import PostDetailsButton from "./PostDetailsFooter";
 import Toast from "react-native-toast-message";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import PostDetailsFooter from "./PostDetailsFooter";
+import { usePostStore } from "@/hooks/usePostStore";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
-  const themeColor = useThemeColor();
-  const { width } = Dimensions.get("window");
   const { user } = useAuthData();
+  const utils = trpc.useUtils();
+  const { width } = Dimensions.get("window");
   const { data, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid,
+    user_uuid: user?.id as string,
   });
-
-  // State to track if post is saved
-  const [isSaved, setIsSaved] = useState(data?.is_liked);
-  const utils = trpc.useUtils();
 
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
+  const savePost = usePostStore((state) => state.savePost);
+  const unsavePost = usePostStore((state) => state.unsavePost);
+  const isSaved = usePostStore((state) => state.isSavedPost(uuid));
+
+  useEffect(() => {
+    if (data?.is_liked) {
+      savePost(data.uuid);
+    }
+  }, [data]);
 
   const handleSaveToggle = useCallback(() => {
-    if (!user) {
-      Toast.show({
-        text1: "You need to be logged in to save posts",
-        type: "error",
-      });
-      return;
-    }
-
-    // Optimistic Update
-    setIsSaved((prev) => !prev);
     const newIsSaved = !isSaved;
+    newIsSaved ? savePost(uuid) : unsavePost(uuid);
 
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
+    mutation.mutate(
+      { post_uuid: uuid, user_uuid: user?.id! },
+      {
+        onSuccess: () => utils.post.invalidate(),
+        onError: (error) => {
+          Toast.show({ text1: error.message, swipeable: false, type: "error" });
+          newIsSaved ? unsavePost(uuid) : savePost(uuid);
+        },
+      }
+    );
+  }, [
+    uuid,
+    isSaved,
+    saveMutation,
+    unsaveMutation,
+    utils,
+    savePost,
+    unsavePost,
+    user?.id,
+  ]);
 
-    if (data)
-      mutation.mutate(
-        { post_uuid: data.uuid, user_uuid: user.id },
-        {
-          onSuccess: () => {
-            utils.post.get_saved_posts.invalidate();
-            utils.post.get_post_details_info.invalidate({ uuid: data.uuid });
-          },
-          onError: (error) => {
-            Toast.show({
-              text1: error.message,
-              swipeable: false,
-              type: "error",
-            });
-            setIsSaved((prev) => !prev); // Revert on failure
-          },
-        }
-      );
-  }, [isSaved, user, data?.uuid, saveMutation, unsaveMutation, utils]);
-
-  // Sheet ref to open/close
   const bottomSheetRef = useRef<BottomSheet>(null);
-
-  // Modal state to open/close
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Fallback renders
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd(() => {
+      runOnJS(handleSaveToggle)();
+    });
+
   if (isLoading) {
     return (
       <>
@@ -127,12 +123,6 @@ export default function PostDetails({ uuid }: { uuid: string }) {
       </>
     );
   }
-
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd(() => {
-      runOnJS(handleSaveToggle)();
-    });
 
   return (
     <>

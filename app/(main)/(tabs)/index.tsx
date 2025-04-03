@@ -1,32 +1,47 @@
 import { Dimensions } from "react-native";
-import HomePost from "@/components/posts/HomePost";
 import Feed from "@/components/posts/Feed";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IndexHeader } from "@/components/headers/Headers";
-import View from "@/components/ui/View";
 import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
-import { HomePost as THomePost } from "@/server/actions/post-actions";
+import { useAuthData } from "@/contexts/AuthContext";
+import { usePostStore } from "@/hooks/usePostStore";
 
 interface Route {
   key: string;
   title: string;
 }
 
-const WorkRoute = () => {
-  const { data: workPosts, refetch } = trpc.post.get_home_posts.useQuery({
-    type: "work",
+const useFetchPosts = (type: "work" | "hire") => {
+  const { user } = useAuthData();
+  const { data: posts, refetch } = trpc.post.get_home_posts.useQuery({
+    type,
+    user_uuid: user?.id,
   });
 
-  return <Feed data={workPosts!} refetch={() => refetch().then(() => {})} />;
+  const savePost = usePostStore((state) => state.savePost);
+
+  useEffect(() => {
+    if (posts) {
+      posts.forEach((post) => {
+        if (post.is_liked) {
+          savePost(post.uuid);
+        }
+      });
+    }
+  }, [posts]);
+
+  return { posts, refetch };
+};
+
+const WorkRoute = () => {
+  const { posts, refetch } = useFetchPosts("work");
+  return <Feed data={posts!} refetch={refetch} />;
 };
 
 const HireRoute = () => {
-  const { data: hirePosts, refetch } = trpc.post.get_home_posts.useQuery({
-    type: "hire",
-  });
-
-  return <Feed data={hirePosts!} refetch={() => refetch().then(() => {})} />;
+  const { posts, refetch } = useFetchPosts("hire");
+  return <Feed data={posts!} refetch={refetch} />;
 };
 
 const renderScene = ({ route }: { route: Route }) => {

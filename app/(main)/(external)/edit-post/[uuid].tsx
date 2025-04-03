@@ -12,11 +12,14 @@ import { useLocalSearchParams } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { FlatList } from "react-native-gesture-handler";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function CreatePostForm() {
   const { uuid } = useLocalSearchParams();
+  const { user } = useAuthData();
   const { data } = trpc.post.get_post_details_info.useQuery({
     uuid: uuid as string,
+    user_uuid: user?.id as string,
   });
   const themeColor = useThemeColor();
 
@@ -32,6 +35,7 @@ export default function CreatePostForm() {
     },
     { id: "form", component: <PostForm /> },
   ];
+
   return (
     <CreatePostProvider data={data as unknown as PostDetailsInfo}>
       <SimpleHeader title="Edit post" />

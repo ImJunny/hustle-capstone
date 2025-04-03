@@ -236,6 +236,7 @@ export const payments = app_schema.table("payments", {
   payment_method_uuid: uuid("payment_method_uuid")
     .references(() => payment_methods.uuid)
     .notNull(),
+  card_brand: text("card_brand").notNull(),
 });
 
 // TABLES FOR TYPES

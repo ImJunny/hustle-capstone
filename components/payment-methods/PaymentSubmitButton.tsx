@@ -3,9 +3,9 @@ import Toast from "react-native-toast-message";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { Dispatch, SetStateAction } from "react";
-import { CreatePaymentMethodSchema } from "@/zod/zod-schemas";
 import { trpc } from "@/server/lib/trpc-client";
 import { PaymentMethod } from "@/server/actions/payment-method-actions";
+import { CreatePaymentMethodSchema } from "@/app/(main)/(external)/add-payment";
 
 type PaymentMethodSubmitButtonProps = {
   data?: any; // Define your data type if needed (e.g., payment method data)

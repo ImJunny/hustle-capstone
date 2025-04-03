@@ -12,6 +12,7 @@ import { z } from "zod";
 import { CreatePaymentMethodSchema } from "@/app/(main)/(external)/add-payment";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { router } from "expo-router";
+import Dropdown from "@/components/ui/Dropdown";
 
 type PaymentMethodFormProps = {
   formMethods: UseFormReturn<z.infer<typeof CreatePaymentMethodSchema>>;
@@ -20,70 +21,95 @@ type PaymentMethodFormProps = {
 export default function AddPaymentForm({
   formMethods,
 }: PaymentMethodFormProps) {
-  const { user } = useAuthData() as { user: { id: string } | undefined };
+  const { user } = useAuthData();
   const { createPaymentMethod } = useStripe();
   const [loading, setLoading] = useState(false);
+  const [isCardValid, setIsCardValid] = useState(false);
   const utils = trpc.useUtils();
+  const themeColor = useThemeColor();
+
+  const countries = [
+    { code: "US", name: "United States" },
+    { code: "CA", name: "Canada" },
+    { code: "GB", name: "United Kingdom" },
+    { code: "AU", name: "Australia" },
+    { code: "DE", name: "Germany" },
+  ];
 
   const { mutate: createMethod } =
     trpc.payment_methods.create_payment_method.useMutation({
       onSuccess: () => {
         Toast.show({
-          text1: `Successfully added payment method`,
-          swipeable: false,
+          text1: "Payment method added successfully",
+          type: "success",
         });
-        router.back();
         utils.payment_methods.invalidate();
+        router.back();
       },
       onError: (error) => {
         Toast.show({
           text1: error.message,
           type: "error",
-          swipeable: false,
         });
       },
-      onSettled: () => {
-        setLoading(false);
-      },
+      onSettled: () => setLoading(false),
     });
-
-  if (!user) {
-    return <Text>No user data found</Text>;
-  }
 
   const handleAddPayment = async () => {
-    setLoading(true);
-
-    const { paymentMethod, error } = await createPaymentMethod({
-      paymentMethodType: "Card",
-      paymentMethodData: {
-        billingDetails: {
-          name: "Test User", // Replace with actual user data
-        },
-      },
-    });
-
-    if (error || !paymentMethod) {
+    if (!user?.id) {
       Toast.show({
-        text1: error.message,
+        text1: "User not authenticated",
         type: "error",
-        swipeable: false,
       });
+      return;
     }
 
-    if (user?.id && paymentMethod) {
+    setLoading(true);
+
+    try {
+      // 1. Create payment method with Stripe
+      const { paymentMethod, error } = await createPaymentMethod({
+        paymentMethodType: "Card",
+        paymentMethodData: {
+          billingDetails: {
+            name: formMethods.getValues("cardholder_name"),
+            email: user.email || "", // Add if available
+            address: {
+              country: formMethods.getValues("country"), // Required for some countries
+              postalCode: formMethods.getValues("postal_code"),
+            },
+          },
+        },
+      });
+
+      if (error || !paymentMethod?.id) {
+        throw new Error(error?.message || "Failed to create payment method");
+      }
+
+      if (!paymentMethod.Card?.last4) {
+        throw new Error("Card details incomplete");
+      }
+
+      // 2. Save to our database
       createMethod({
         user_uuid: user.id,
         cardholder_name: formMethods.getValues("cardholder_name"),
         stripe_payment_method_id: paymentMethod.id,
-        stripe_customer_id: "1",
-        card_last4: paymentMethod.Card?.last4 ?? "0000",
+        stripe_customer_id: `cus_${user.id}`, // Should use real customer ID
+        card_last4: paymentMethod.Card?.last4 || "••••",
+        card_brand: paymentMethod.Card.brand || "unknown",
       });
+    } catch (error) {
+      Toast.show({
+        text1: "Payment Method Error",
+        text2: error instanceof Error ? error.message : "Invalid card details",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
-  const [isCardValid, setIsCardValid] = useState(false);
 
-  const themeColor = useThemeColor();
   return (
     <View style={{ padding: 16, gap: 20 }}>
       <View style={{ gap: 4 }}>
@@ -93,15 +119,20 @@ export default function AddPaymentForm({
         <Controller
           control={formMethods.control}
           name="cardholder_name"
-          render={({ field: { onChange, value } }) => (
-            <Input type="outline" value={value} onChangeText={onChange} />
+          render={({ field, fieldState }) => (
+            <>
+              <Input
+                type="outline"
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="Name on card"
+              />
+              {fieldState.error && (
+                <Text color="red">{fieldState.error.message}</Text>
+              )}
+            </>
           )}
         />
-        {formMethods.formState.errors.cardholder_name && (
-          <Text color="red" style={{ marginTop: 4 }}>
-            {formMethods.formState.errors.cardholder_name.message}
-          </Text>
-        )}
       </View>
 
       <View style={{ gap: 4 }}>
@@ -111,41 +142,62 @@ export default function AddPaymentForm({
         <Controller
           control={formMethods.control}
           name="card_is_valid"
-          render={({ field: { onChange }, fieldState: { error } }) => (
+          render={({ field, fieldState }) => (
             <>
               <CardField
+                postalCodeEnabled={true}
                 onCardChange={(cardDetails) => {
                   const isValid = cardDetails.complete;
                   setIsCardValid(isValid);
-                  onChange(isValid);
+                  field.onChange(isValid);
+                  formMethods.clearErrors("card_is_valid");
 
-                  // Trigger error in real-time
-                  if (!isValid) {
-                    formMethods.setError("card_is_valid", {
-                      type: "manual",
-                      message: "Please enter a valid card",
-                    });
-                  } else {
-                    formMethods.clearErrors("card_is_valid");
+                  if (cardDetails.postalCode) {
+                    formMethods.setValue("postal_code", cardDetails.postalCode);
                   }
                 }}
-                postalCodeEnabled={false}
-                placeholders={{
-                  number: "4242 4242 4242 4242",
-                }}
                 cardStyle={{
-                  borderRadius: 6,
-                  textColor: themeColor.foreground,
-                  placeholderColor: themeColor.muted,
                   backgroundColor: themeColor.background,
+                  textColor: themeColor.foreground,
                   borderWidth: 1,
-                  borderColor: themeColor.foreground,
+                  borderColor: fieldState.error ? "red" : themeColor.border,
+                  borderRadius: 8,
                 }}
-                style={{ height: 40 }}
+                style={{
+                  height: 50,
+                  width: "100%",
+                }}
               />
-              {error && (
+              {fieldState.error && (
+                <Text color="red">{fieldState.error.message}</Text>
+              )}
+            </>
+          )}
+        />
+      </View>
+
+      <View>
+        <Text weight="semibold" size="lg">
+          Country/Region
+        </Text>
+        <Controller
+          control={formMethods.control}
+          name="country"
+          render={({ field: { onChange, value }, fieldState }) => (
+            <>
+              <Dropdown
+                style={{ marginTop: 4 }}
+                borderColor={fieldState.error ? "red" : "background-variant"}
+                data={countries.map(({ code, name }) => ({
+                  value: code,
+                  label: name,
+                }))}
+                value={value}
+                onChange={onChange}
+              />
+              {fieldState.error && (
                 <Text color="red" style={{ marginTop: 4 }}>
-                  {error.message}
+                  {fieldState.error.message}
                 </Text>
               )}
             </>
@@ -154,19 +206,10 @@ export default function AddPaymentForm({
       </View>
 
       <Button
-        onPress={formMethods.handleSubmit((data) => {
-          if (!isCardValid) {
-            formMethods.setError("card_is_valid", {
-              type: "manual",
-              message: "Please enter a valid card.",
-            });
-            return;
-          }
-          handleAddPayment();
-        })}
-        disabled={loading}
+        onPress={formMethods.handleSubmit(handleAddPayment)}
+        disabled={loading || !isCardValid}
       >
-        {loading ? "Processing..." : "Add payment method"}
+        {loading ? "Saving..." : "Add Payment Method"}
       </Button>
     </View>
   );

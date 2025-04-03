@@ -22,6 +22,7 @@ export const paymentMethodsRouter = createTRPCRouter({
           .string()
           .length(4, "Card number must be 4 digits")
           .regex(/^\d{4}$/, "Card number must be only digits"),
+        card_brand: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -31,7 +32,8 @@ export const paymentMethodsRouter = createTRPCRouter({
           input.cardholder_name,
           input.stripe_payment_method_id,
           input.stripe_customer_id,
-          input.card_last4
+          input.card_last4,
+          input.card_brand
         );
         return { success: true };
       } catch (error) {

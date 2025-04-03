@@ -106,6 +106,16 @@ type PaymentEntryProps = {
 
 function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
   const themeColor = useThemeColor();
+  const cardBrands: Record<string, string> = {
+    visa: "Visa",
+    mastercard: "Mastercard",
+    amex: "American Express",
+    discover: "Discover",
+    diners: "Diners Club",
+    jcb: "JCB",
+    unionpay: "UnionPay",
+    unknown: "Card",
+  };
 
   return (
     <View
@@ -114,7 +124,10 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
     >
       <View>
         <Text weight="semibold">{paymentMethod.cardholder_name}</Text>
-        <Text>Card ending in ****{paymentMethod.card_last4}</Text>
+        <Text>
+          {cardBrands[paymentMethod.card_brand]} ending in{" "}
+          {paymentMethod.card_last4}
+        </Text>
       </View>
 
       <IconButton name="ellipsis-vertical" onPress={openSheet} />

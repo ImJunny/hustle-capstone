@@ -7,8 +7,20 @@ import { supabase } from "@/server/lib/supabase";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
+import { usePostStore } from "@/hooks/usePostStore";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
+import { useMessageStore } from "@/hooks/useMessageStore";
 
 export default function LogOut() {
+  const resetPosts = usePostStore((state) => state.reset);
+  const resetMessages = useMessageStore((state) => state.reset);
+  const resetFollowed = useFollowedStore((state) => state.reset);
+  const resetStores = () => {
+    resetPosts();
+    resetMessages();
+    resetFollowed();
+  };
+
   async function handleSignout() {
     const { error } = await supabase.auth.signOut();
     Toast.show({
@@ -20,6 +32,7 @@ export default function LogOut() {
     router.replace("/signin");
     const utils = trpc.useUtils();
     await utils.invalidate();
+    resetStores();
   }
 
   return (

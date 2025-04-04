@@ -23,6 +23,7 @@ import PostDetailsFooter from "./PostDetailsFooter";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import Icon from "../ui/Icon";
+import { useSharePostStore } from "@/hooks/useSharePostStore";
 
 export default function PostDetails({ uuid }: { uuid: string }) {
   const { user } = useAuthData();
@@ -48,15 +49,15 @@ export default function PostDetails({ uuid }: { uuid: string }) {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(uuid) : unsavePost(uuid);
-    newIsSaved
-      ? Toast.show({
-          text1: "Saved",
-          visibilityTime: 500,
-        })
-      : Toast.show({
-          text1: "Unsaved",
-          visibilityTime: 500,
-        });
+    // newIsSaved
+    //   ? Toast.show({
+    //       text1: "Saved",
+    //       visibilityTime: 500,
+    //     })
+    //   : Toast.show({
+    //       text1: "Unsaved",
+    //       visibilityTime: 500,
+    //     });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: uuid, user_uuid: user?.id! },
@@ -84,6 +85,10 @@ export default function PostDetails({ uuid }: { uuid: string }) {
 
   const setPostUUID = useCommentsStore((state) => state.setPostUUID);
   const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
+  const setSharePostUUID = useSharePostStore((state) => state.setPostUUID);
+  const sharePostSheetRef = useSharePostStore(
+    (state) => state.sharePostSheetRef
+  );
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
@@ -186,7 +191,7 @@ export default function PostDetails({ uuid }: { uuid: string }) {
         >
           <IconButton
             name={isSaved ? "add-circle-sharp" : "add-circle-outline"}
-            size="xl"
+            size={30}
             onPress={handleSaveToggle}
           />
           <TouchableOpacity
@@ -204,7 +209,14 @@ export default function PostDetails({ uuid }: { uuid: string }) {
             )}
           </TouchableOpacity>
 
-          <IconButton name="paper-plane-outline" size="xl" />
+          <IconButton
+            name="paper-plane-outline"
+            size="xl"
+            onPress={() => {
+              setSharePostUUID(uuid);
+              sharePostSheetRef?.current?.snapToIndex(1);
+            }}
+          />
           <IconButton
             name="ellipsis-vertical"
             size="xl"

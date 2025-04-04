@@ -12,12 +12,11 @@ import { ViewProps } from "./View";
 export type IconSymbolName = React.ComponentProps<typeof Ionicons>["name"];
 type IconProps = {
   name: IconSymbolName;
-  size?: TIconSizes;
+  size?: TIconSizes | number;
   color?: TColors;
   weight?: SymbolWeight;
   flippedX?: boolean;
-  style?: StyleProp<TextStyle>;
-};
+} & ViewProps;
 
 export default function Icon({
   name,
@@ -28,12 +27,13 @@ export default function Icon({
 }: IconProps) {
   const themeColor = useThemeColor();
 
+  const iconSize = typeof size === "number" ? size : IconSizes[size];
   return (
     <Ionicons
       name={name}
       style={[
         flippedX && { transform: [{ scaleX: -1 }] },
-        { fontSize: IconSizes[size] },
+        { fontSize: iconSize },
         style,
       ]}
       color={themeColor[color]}

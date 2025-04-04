@@ -13,7 +13,7 @@ import Icon, { IconSymbolName } from "./Icon";
 
 type IconButtonProps = {
   name: IconSymbolName;
-  size?: TIconSizes;
+  size?: TIconSizes | number;
   color?: TColors;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;

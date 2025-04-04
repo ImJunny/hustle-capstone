@@ -671,12 +671,7 @@ export function SingleMessageFooter({
               onChangeText={(value) => setText(value)}
               onSubmitEditing={handleSubmit}
             />
-            <IconButton
-              name="paper-plane"
-              size="xl"
-              onPress={handleSubmit}
-              disabled={isLoading || text === ""}
-            />
+            <IconButton name="paper-plane" size="xl" onPress={handleSubmit} />
           </View>
         ),
       }}

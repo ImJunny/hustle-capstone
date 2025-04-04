@@ -9,6 +9,7 @@ type FollowedStore = {
   dataUpdatedAt: number;
   setDataUpdatedAt: (timestamp: number) => void;
   fetchedFollowed: boolean;
+  reset: () => void;
 };
 
 export const useFollowedStore = create<FollowedStore>((set, get) => ({
@@ -34,4 +35,11 @@ export const useFollowedStore = create<FollowedStore>((set, get) => ({
       return { dataUpdatedAt: timestamp };
     }),
   fetchedFollowed: false,
+  reset: () =>
+    set({
+      followed: new Set(),
+      fetched: new Set(),
+      dataUpdatedAt: 0,
+      fetchedFollowed: false,
+    }),
 }));

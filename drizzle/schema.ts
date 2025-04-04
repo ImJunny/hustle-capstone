@@ -134,7 +134,7 @@ export const messages = app_schema.table("messages", {
   receiver_uuid: uuid("receiver_uuid")
     .references(() => users.uuid)
     .notNull(),
-  message: text("message").notNull(),
+  message: text("message"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   type: text("type")
     .references(() => message_types.name)

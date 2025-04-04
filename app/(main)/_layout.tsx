@@ -1,4 +1,5 @@
 import CommentsSheet from "@/components/posts/CommentsSheet";
+import SharePostSheet from "@/components/posts/SharePostSheet";
 import Text from "@/components/ui/Text";
 import { Stack } from "expo-router";
 import React from "react";
@@ -46,6 +47,7 @@ export default function Layout() {
         />
       </Stack>
       <CommentsSheet />
+      <SharePostSheet />
     </>
   );
 }

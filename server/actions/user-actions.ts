@@ -1,5 +1,5 @@
 import { db } from "../../drizzle/db";
-import { following, users } from "../../drizzle/schema";
+import { following, messages, users } from "../../drizzle/schema";
 import { and, desc, eq, sql } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 
@@ -198,3 +198,38 @@ export async function getFollowing(user_uuid: string) {
   }
 }
 export type SimpleUserData = Awaited<ReturnType<typeof getFollowing>>[number];
+
+// GET USERS TO SHARE POST TO
+export async function getShareUsers(user_uuid: string) {
+  try {
+    const result = await db
+      .select({
+        uuid: users.uuid,
+        username: users.username,
+        display_name: users.display_name,
+        avatar_url: users.avatar_url,
+      })
+      .from(users)
+      .where(
+        sql`(${users.uuid} IN (
+        SELECT ${following.followed_uuid}
+        FROM ${following}
+        WHERE ${following.follower_uuid} = ${user_uuid}
+      ) OR ${users.uuid} IN (
+        SELECT DISTINCT receiver_uuid
+        FROM ${messages}
+        WHERE sender_uuid = ${user_uuid}
+        UNION
+        SELECT DISTINCT sender_uuid
+        FROM ${messages}
+        WHERE receiver_uuid = ${user_uuid}
+      ))`
+      );
+
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error getting share users.");
+  }
+}
+export type ShareUser = Awaited<ReturnType<typeof getShareUsers>>[number];

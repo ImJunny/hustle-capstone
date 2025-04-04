@@ -14,6 +14,7 @@ import { trpc } from "@/server/lib/trpc-client";
 import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
 import { useMessageStore } from "@/hooks/useMessageStore";
+import PostMessage from "@/components/messages/PostMessage";
 
 // Format timestamp for display
 const formatTimestamp = (timestamp: string) => {
@@ -133,7 +134,7 @@ export default function MessageScreen() {
       />
       <ScrollView
         style={{ flex: 1 }}
-        color="background"
+        color="base"
         ref={scrollViewRef}
         onLayout={onLayout}
       >
@@ -173,25 +174,29 @@ export default function MessageScreen() {
                               : "flex-start",
                         }}
                       >
-                        <View
-                          style={[styles.message]}
-                          color={
-                            message.sender_uuid === user.id
-                              ? "foreground"
-                              : "background-variant"
-                          }
-                        >
-                          <Text
-                            size="md"
+                        {message.chat_type === "text" ? (
+                          <View
+                            style={[styles.message]}
                             color={
                               message.sender_uuid === user.id
-                                ? "background"
-                                : "foreground"
+                                ? "foreground"
+                                : "background-variant"
                             }
                           >
-                            {message.message}
-                          </Text>
-                        </View>
+                            <Text
+                              size="md"
+                              color={
+                                message.sender_uuid === user.id
+                                  ? "background"
+                                  : "foreground"
+                              }
+                            >
+                              {message.message}
+                            </Text>
+                          </View>
+                        ) : (
+                          <PostMessage uuid={message.post_uuid} />
+                        )}
                         <Text
                           color="muted"
                           size="sm"
@@ -225,6 +230,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     maxWidth: "75%",
-    borderRadius: 999,
+    borderRadius: 16,
   },
 });

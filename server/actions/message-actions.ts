@@ -6,8 +6,9 @@ import {
   messages,
   initiated_jobs,
   chats,
+  post_tags,
 } from "../../drizzle/schema";
-import { eq, or, and, ne, desc } from "drizzle-orm/sql";
+import { eq, or, and, ne, desc, sql } from "drizzle-orm/sql";
 
 export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
   try {
@@ -67,6 +68,7 @@ export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
           timestamp: chat.created_at,
           chat_type: chat.type,
           message_uuid: chat.uuid,
+          post_uuid: chat.post_uuid,
         };
 
         // Fetch image URL if this message is related to a post (i.e., chat.post_uuid is not null)
@@ -145,6 +147,7 @@ export async function getMessagePreviews(user_uuid: string) {
         last_message_timestamp: messages.created_at,
         last_message_receiver_uuid: messages.receiver_uuid,
         is_read: messages.is_read,
+        last_message_type: messages.type,
       })
       .from(chats)
       .innerJoin(messages, eq(chats.last_message_uuid, messages.uuid))
@@ -163,6 +166,7 @@ export async function getMessagePreviews(user_uuid: string) {
         )
       )
       .orderBy(desc(messages.created_at));
+
     return result;
   } catch (error) {
     console.log(error);
@@ -240,5 +244,88 @@ export async function markAsRead(sender_uuid: string, receiver_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to mark message as read.");
+  }
+}
+
+export async function sendPostMessage(
+  sender_uuid: string,
+  receiver_uuids: string[],
+  post_uuid: string
+) {
+  try {
+    Promise.all(
+      receiver_uuids.map(async (receiver_uuid) => {
+        // Insert the message and retrieve the inserted message's UUID
+        const [newMessage] = await db
+          .insert(messages)
+          .values({
+            sender_uuid,
+            receiver_uuid,
+            post_uuid,
+            type: "post",
+          })
+          .returning({ uuid: messages.uuid });
+
+        // Determine if a chat entry has already been made
+        const [chat] = await db
+          .select()
+          .from(chats)
+          .innerJoin(messages, eq(chats.last_message_uuid, messages.uuid))
+          .where(
+            and(
+              or(
+                eq(messages.sender_uuid, sender_uuid),
+                eq(messages.receiver_uuid, sender_uuid)
+              ),
+              or(
+                eq(messages.sender_uuid, receiver_uuid),
+                eq(messages.receiver_uuid, receiver_uuid)
+              )
+            )
+          )
+          .limit(1);
+
+        if (chat)
+          await db
+            .update(chats)
+            .set({
+              last_message_uuid: newMessage.uuid,
+            })
+            .where(eq(chats.uuid, chat.chats.uuid));
+        else
+          await db.insert(chats).values({
+            last_message_uuid: newMessage.uuid,
+          });
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to send post message.");
+  }
+}
+
+export async function getPostMessageInfo(post_uuid: string) {
+  try {
+    let result = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
+      })
+      .from(posts)
+      .leftJoin(users, eq(users.uuid, posts.user_uuid))
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(eq(posts.uuid, post_uuid))
+      .groupBy(posts.uuid)
+      .then(([result]) => result);
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get post message info.");
   }
 }

@@ -5,6 +5,7 @@ type PostStore = {
   savePost: (uuid: string) => void;
   unsavePost: (uuid: string) => void;
   isSavedPost: (uuid: string) => boolean;
+  reset: () => void;
 };
 
 export const usePostStore = create<PostStore>((set, get) => ({
@@ -21,4 +22,5 @@ export const usePostStore = create<PostStore>((set, get) => ({
     });
   },
   isSavedPost: (uuid: string) => get().savedPosts.has(uuid),
+  reset: () => set({ savedPosts: new Set() }),
 }));

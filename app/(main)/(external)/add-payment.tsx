@@ -14,6 +14,7 @@ export const CreatePaymentMethodSchema = z.object({
   postal_code: z.string().min(1, "Postal code is required"),
   country: z.string().min(1, "Country is required"),
   card_is_valid: z.boolean().default(false),
+  card_last4: z.string(),
 });
 
 export default function CreateAddressForm() {

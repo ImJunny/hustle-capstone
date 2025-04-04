@@ -21,6 +21,10 @@ type PaymentMethodFormProps = {
 export default function AddPaymentForm({
   formMethods,
 }: PaymentMethodFormProps) {
+  const {
+    handleSubmit,
+    formState: { isValid },
+  } = formMethods;
   const { user } = useAuthData();
   const { createPaymentMethod } = useStripe();
   const [loading, setLoading] = useState(false);
@@ -51,11 +55,11 @@ export default function AddPaymentForm({
           text1: error.message,
           type: "error",
         });
+        setLoading(false);
       },
-      onSettled: () => setLoading(false),
     });
 
-  const handleAddPayment = async () => {
+  const onSubmit = async (data: z.infer<typeof CreatePaymentMethodSchema>) => {
     if (!user?.id) {
       Toast.show({
         text1: "User not authenticated",
@@ -72,11 +76,11 @@ export default function AddPaymentForm({
         paymentMethodType: "Card",
         paymentMethodData: {
           billingDetails: {
-            name: formMethods.getValues("cardholder_name"),
-            email: user.email || "", // Add if available
+            name: data.cardholder_name,
+            email: user.email || "",
             address: {
-              country: formMethods.getValues("country"), // Required for some countries
-              postalCode: formMethods.getValues("postal_code"),
+              country: data.country,
+              postalCode: data.postal_code,
             },
           },
         },
@@ -86,18 +90,14 @@ export default function AddPaymentForm({
         throw new Error(error?.message || "Failed to create payment method");
       }
 
-      if (!paymentMethod.Card?.last4) {
-        throw new Error("Card details incomplete");
-      }
-
       // 2. Save to our database
       createMethod({
         user_uuid: user.id,
-        cardholder_name: formMethods.getValues("cardholder_name"),
+        cardholder_name: data.cardholder_name,
         stripe_payment_method_id: paymentMethod.id,
-        stripe_customer_id: `cus_${user.id}`, // Should use real customer ID
+        stripe_customer_id: `cus_${user.id}`,
         card_last4: paymentMethod.Card?.last4 || "••••",
-        card_brand: paymentMethod.Card.brand || "unknown",
+        card_brand: paymentMethod.Card?.brand || "unknown",
       });
     } catch (error) {
       Toast.show({
@@ -105,7 +105,6 @@ export default function AddPaymentForm({
         text2: error instanceof Error ? error.message : "Invalid card details",
         type: "error",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -206,7 +205,7 @@ export default function AddPaymentForm({
       </View>
 
       <Button
-        onPress={formMethods.handleSubmit(handleAddPayment)}
+        onPress={formMethods.handleSubmit(onSubmit)}
         disabled={loading || !isCardValid}
       >
         {loading ? "Saving..." : "Add Payment Method"}

@@ -1,6 +1,11 @@
 import { db } from "@/drizzle/db";
 import { initiated_jobs, payments } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.EXPO_PUBLIC_STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-02-24.acacia",
+});
 
 type RecordPaymentParams = {
   paymentIntentId: string;
@@ -9,6 +14,29 @@ type RecordPaymentParams = {
   userId: string;
   paymentMethodId: string;
 };
+
+export async function createPaymentIntent(
+  amount: number,
+  currency: string,
+  paymentMethodId: string,
+  customerId?: string,
+  metadata?: Record<string, string>
+) {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      customer: customerId,
+      payment_method: paymentMethodId,
+      confirm: false,
+      metadata,
+    });
+    return { clientSecret: paymentIntent.client_secret };
+  } catch (error) {
+    console.error("Stripe error:", error);
+    throw new Error("Payment Intent creation failed");
+  }
+}
 
 export async function recordPayment({
   paymentIntentId,

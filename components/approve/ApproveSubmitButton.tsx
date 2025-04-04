@@ -6,7 +6,7 @@ import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ApproveConfirmationModal from "./ApproveConfirmationModal";
 import { router } from "expo-router";
 
@@ -31,8 +31,16 @@ export function ApproveButton({
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [processing, setProcessing] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      setProcessing(false);
+    };
+  }, []);
+
   const { mutate: recordPayment } =
     trpc.confirm_payment.recordPayment.useMutation();
+  const { mutate: createPaymentIntent } =
+    trpc.confirm_payment.createPaymentIntent.useMutation();
   const { mutate: approveJob } = trpc.job.approve_job.useMutation({
     onSuccess: () => {
       utils.job.invalidate();
@@ -59,39 +67,66 @@ export function ApproveButton({
 
     try {
       // 1. Create a TEST Payment Intent (client-side for simplicity)
-      const testPaymentIntentParams = {
-        amount: amount * 100, // Convert to cents
-        currency: "usd",
-        paymentMethodId: payment.stripe_payment_method_id,
-        customerId: payment.stripe_customer_id,
-      };
-
-      // In test mode, we'll use a hardcoded test client secret
-      // Replace this with a real client secret from your test Payment Intent
-      const TEST_CLIENT_SECRET = "pi_example_test_secret_123";
+      const { clientSecret } = await new Promise<{ clientSecret: string }>(
+        (resolve, reject) => {
+          createPaymentIntent(
+            {
+              amount: Math.round(amount * 100), // Ensure integer cents
+              currency: "usd",
+              paymentMethodId: payment.stripe_payment_method_id,
+              customerId: payment.stripe_customer_id,
+              jobPostUuid,
+            },
+            {
+              onSuccess: (data) => {
+                if (data.clientSecret) {
+                  resolve({ clientSecret: data.clientSecret });
+                } else {
+                  reject(new Error("Client secret is null"));
+                }
+              },
+              onError: (error) => reject(new Error(error.message)),
+            }
+          );
+        }
+      );
 
       // 2. Confirm the Payment Intent
-      const { error, paymentIntent } = await confirmPayment(
-        TEST_CLIENT_SECRET,
+      const { error, paymentIntent: confirmedIntent } = await confirmPayment(
+        clientSecret,
         {
           paymentMethodType: "Card",
           paymentMethodData: {
             billingDetails: {
               name: payment.cardholder_name || "Test User",
-              email: user.email || "test@example.com",
+              email: user.email || "customer@example.com",
+              address: {
+                country: "US",
+                postalCode: "12345",
+              },
             },
           },
         }
       );
 
-      if (error) throw new Error(error.message);
-      if (!paymentIntent) throw new Error("Payment failed");
+      if (error) throw error;
+      if (
+        !confirmedIntent ||
+        confirmedIntent.status !==
+          ("succeeded" as typeof confirmedIntent.status)
+      ) {
+        throw new Error(
+          confirmedIntent?.status
+            ? `Payment status: ${confirmedIntent.status}`
+            : "Payment failed"
+        );
+      }
 
       // 3. Record payment in your database
       await new Promise<void>((resolve, reject) => {
         recordPayment(
           {
-            paymentIntentId: paymentIntent.id,
+            paymentIntentId: confirmedIntent.id,
             amount,
             jobPostUuid,
             paymentMethodId: payment.uuid,
@@ -115,23 +150,31 @@ export function ApproveButton({
         type: "success",
       });
     } catch (error) {
-      let errorMessage = "Test payment failed. Please try again.";
+      const defaultMessage = "Payment failed. Please try again.";
+      let userMessage = defaultMessage;
 
       if (error instanceof Error) {
-        errorMessage = error.message;
-        console.log(error);
-        if (error.message.includes("payment method")) {
-          errorMessage = "Invalid payment method. Please use a test card.";
+        console.error("Payment error:", error);
+
+        // User-friendly messages for specific errors
+        if (error.message.includes("card_declined")) {
+          userMessage =
+            "Your card was declined. Please try another payment method.";
+        } else if (/insufficient_funds|limit_exceeded/i.test(error.message)) {
+          userMessage = "Insufficient funds or limit exceeded.";
+        } else if (/network|timeout/i.test(error.message)) {
+          userMessage = "Network error. Please check your connection.";
         }
       }
 
       Toast.show({
-        text1: errorMessage,
-        text2: "Payment Error",
         type: "error",
+        text1: userMessage,
+        text2: "Payment Error",
         visibilityTime: 5000,
       });
     } finally {
+      if (!processing) return; // Component might have unmounted
       setProcessing(false);
     }
   };
@@ -156,7 +199,7 @@ export function ApproveButton({
 
   return (
     <>
-      <View style={[styles.footer, { borderColor: useThemeColor().border }]}>
+      <View>
         <Button
           style={styles.button}
           onPress={handleApprovePress}

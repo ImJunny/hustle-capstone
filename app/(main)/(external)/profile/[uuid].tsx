@@ -4,25 +4,42 @@ import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
 import ProfileSection from "@/components/profile/ProfileSection";
-import { ProfileHeader, ProfileSelfHeader } from "@/components/headers/Headers";
+import { ProfileHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
 import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
+import { useAuthData } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function ProfileScreen() {
+  const { user } = useAuthData();
   const { uuid } = useLocalSearchParams();
-  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
-    uuid: uuid as string,
-  });
+  const checked = useFollowedStore((state) => state.isChecked(uuid as string));
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery(
+    {
+      uuid: user?.id!,
+      their_uuid: uuid as string,
+    },
+    { enabled: !checked }
+  );
+
   const { data: posts, isLoading: postsLoading } =
     trpc.post.get_user_posts.useQuery({
       uuid: uuid as string,
     });
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
+
+  const follow = useFollowedStore((state) => state.follow);
+  if (data?.is_following) follow(uuid as string);
+
+  useEffect(() => {
+    if (uuid) useFollowedStore.getState().addChecked(uuid as string);
+  }, [uuid]);
 
   if (error) {
     return (
@@ -32,7 +49,7 @@ export default function ProfileScreen() {
     );
   }
 
-  if (isLoading || postsLoading) {
+  if (isLoading || postsLoading || !checked) {
     return <LoadingView />;
   }
   if (!posts || posts.length === 0) {
@@ -85,15 +102,3 @@ export default function ProfileScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 16,
-  },
-  completedContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-  },
-});

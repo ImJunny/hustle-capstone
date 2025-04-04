@@ -51,7 +51,7 @@ export default function SavedJobsScreen() {
   return (
     <ScrollView>
       {savedJobs.map((post, i) => (
-        <Post key={post.uuid} data={post as TPost} type={post.type} />
+        <Post key={i} data={post as TPost} type={post.type} />
       ))}
     </ScrollView>
   );

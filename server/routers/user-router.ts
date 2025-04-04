@@ -1,8 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   createUser,
+  followUser,
+  getFollowing,
   getPersonalInfo,
   getUserData,
+  unfollowUser,
   updateUserProfile,
 } from "../actions/user-actions";
 import { z } from "zod";
@@ -21,9 +24,9 @@ export const userRouter = createTRPCRouter({
     }),
 
   get_user_data: protectedProcedure
-    .input(z.object({ uuid: z.string() }))
+    .input(z.object({ uuid: z.string(), their_uuid: z.string().optional() }))
     .query(async ({ input }) => {
-      const result = await getUserData(input.uuid);
+      const result = await getUserData(input.uuid, input.their_uuid);
       return result;
     }),
 
@@ -51,6 +54,22 @@ export const userRouter = createTRPCRouter({
     .input(z.object({ uuid: z.string() }))
     .query(async ({ input }) => {
       const result = await getPersonalInfo(input.uuid);
+      return result;
+    }),
+  follow_user: protectedProcedure
+    .input(z.object({ follower_uuid: z.string(), following_uuid: z.string() }))
+    .mutation(async ({ input }) => {
+      await followUser(input.follower_uuid, input.following_uuid);
+    }),
+  unfollow_user: protectedProcedure
+    .input(z.object({ follower_uuid: z.string(), following_uuid: z.string() }))
+    .mutation(async ({ input }) => {
+      await unfollowUser(input.follower_uuid, input.following_uuid);
+    }),
+  get_following: protectedProcedure
+    .input(z.object({ user_uuid: z.string() }))
+    .query(async ({ input }) => {
+      const result = await getFollowing(input.user_uuid);
       return result;
     }),
 });

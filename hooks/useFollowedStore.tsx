@@ -8,6 +8,7 @@ type FollowedStore = {
   setFetched: (user_uuid: string) => void;
   dataUpdatedAt: number;
   setDataUpdatedAt: (timestamp: number) => void;
+  fetchedFollowed: boolean;
 };
 
 export const useFollowedStore = create<FollowedStore>((set, get) => ({
@@ -32,4 +33,5 @@ export const useFollowedStore = create<FollowedStore>((set, get) => ({
     set(() => {
       return { dataUpdatedAt: timestamp };
     }),
+  fetchedFollowed: false,
 }));

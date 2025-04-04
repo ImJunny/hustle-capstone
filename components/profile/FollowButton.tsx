@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
@@ -16,37 +15,36 @@ export default function FollowButton({
 } & ViewProps) {
   const { user } = useAuthData();
   const utils = trpc.useUtils();
-  const { mutate: followUser } = trpc.user.follow_user.useMutation();
-  const { mutate: unfollowUser } = trpc.user.unfollow_user.useMutation();
+  const { mutateAsync: followUser } = trpc.user.follow_user.useMutation();
+  const { mutateAsync: unfollowUser } = trpc.user.unfollow_user.useMutation();
 
   const setFollowed = useFollowedStore((state) => state.setFollowed);
-  const isFollowed = useFollowedStore((state) => state.isFollowed(user_uuid));
+  const isFollowed =
+    useFollowedStore((state) => state.isFollowed(user_uuid)) ?? true;
 
-  const toggleFollow = () => {
+  const toggleFollow = async () => {
     const newIsFollowing = !isFollowed;
     setFollowed(user_uuid, newIsFollowing);
 
     const mutation = newIsFollowing ? followUser : unfollowUser;
-    mutation(
-      { follower_uuid: user?.id!, following_uuid: user_uuid },
-      {
-        onSuccess: () => {
-          if (invalidate) {
-            utils.user.get_following.invalidate();
-            utils.user.get_user_data.invalidate();
-          }
-        },
-        onError: (error) => {
-          setFollowed(user_uuid, !newIsFollowing);
-          Toast.show({
-            text1: error.message,
-            type: "error",
-            visibilityTime: 1000,
-            swipeable: false,
-          });
-        },
+    await mutation({ follower_uuid: user?.id!, following_uuid: user_uuid });
+
+    try {
+      await mutation({ follower_uuid: user?.id!, following_uuid: user_uuid });
+
+      if (invalidate) {
+        utils.user.get_following.invalidate();
+        utils.user.get_user_data.invalidate();
       }
-    );
+    } catch (error: any) {
+      setFollowed(user_uuid, !newIsFollowing);
+      Toast.show({
+        text1: error.message,
+        type: "error",
+        visibilityTime: 1000,
+        swipeable: false,
+      });
+    }
   };
 
   return (

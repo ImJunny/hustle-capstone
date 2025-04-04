@@ -18,27 +18,36 @@ import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function FollowingScreen() {
   const { user } = useAuthData();
-  const { data, isLoading, error, dataUpdatedAt, isFetched } =
-    trpc.user.get_following.useQuery({
-      user_uuid: user?.id!,
-    });
+  const {
+    data,
+    isLoading,
+    error,
+    dataUpdatedAt,
+    isFetched,
+    isFetchedAfterMount,
+  } = trpc.user.get_following.useQuery({
+    user_uuid: user?.id!,
+  });
 
   const setFollowed = useFollowedStore((state) => state.setFollowed);
   const lastUpdated = useFollowedStore((state) => state.dataUpdatedAt);
   const setLastUpdated = useFollowedStore((state) => state.setDataUpdatedAt);
 
   useEffect(() => {
-    if (isFetched && dataUpdatedAt != lastUpdated) {
+    if (isFetched && dataUpdatedAt !== lastUpdated) {
       data?.forEach((user) => setFollowed(user.uuid, true));
       setLastUpdated(dataUpdatedAt);
+      useFollowedStore.setState({ fetchedFollowed: true });
     }
-  }, [dataUpdatedAt, data]);
+  }, [dataUpdatedAt, isFetched, data]);
 
-  if (!user || !data || isLoading || error) {
+  const fetchedFollowed = useFollowedStore((state) => state.fetchedFollowed);
+
+  if (!user || isLoading || error || !fetchedFollowed) {
     return (
       <LoadingScreen
         data={data}
-        loads={[isLoading]}
+        loads={[isLoading, !fetchedFollowed]}
         errors={[error]}
         header={<SimpleHeader title="Users you're following" />}
       />

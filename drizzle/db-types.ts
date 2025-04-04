@@ -45,12 +45,10 @@ export const tagTypes = [
   { name: "pets", value: "pets" },
   { name: "music", value: "music" },
   { name: "cleaning", value: "cleaning" },
-  { name: "transportation", value: "transportation" },
   { name: "repairs", value: "repairs" },
   { name: "photography", value: "photography" },
   { name: "writing", value: "writing" },
   { name: "fitness", value: "fitness" },
   { name: "cooking", value: "cooking" },
-  { name: "events", values: "events" },
-  { name: "fitness", values: "fitness" },
+  { name: "events", value: "events" },
 ] as const;

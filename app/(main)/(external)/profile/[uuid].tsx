@@ -12,14 +12,20 @@ import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
 import { useAuthData } from "@/contexts/AuthContext";
+import { useEffect } from "react";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function ProfileScreen() {
   const { user } = useAuthData();
   const { uuid } = useLocalSearchParams();
-  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
-    uuid: user?.id!,
-    their_uuid: uuid as string,
-  });
+  const checked = useFollowedStore((state) => state.isChecked(uuid as string));
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery(
+    {
+      uuid: user?.id!,
+      their_uuid: uuid as string,
+    },
+    { enabled: !checked }
+  );
 
   const { data: posts, isLoading: postsLoading } =
     trpc.post.get_user_posts.useQuery({
@@ -27,6 +33,16 @@ export default function ProfileScreen() {
     });
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
+
+  const follow = useFollowedStore((state) => state.follow);
+  const unfollow = useFollowedStore((state) => state.unfollow);
+
+  useEffect(() => {
+    if (data) {
+      if (data?.is_following) follow(data.uuid);
+      else if (!data?.is_following) unfollow(data!.uuid);
+    }
+  }, [data, follow, unfollow]);
 
   if (error) {
     return (
@@ -89,15 +105,3 @@ export default function ProfileScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 16,
-  },
-  completedContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-  },
-});

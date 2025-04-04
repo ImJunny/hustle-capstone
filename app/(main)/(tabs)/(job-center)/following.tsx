@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PostList from "@/components/posts/PostList";
 import { exampleJobPosts } from "@/server/utils/example-data";
 import { SimpleHeader } from "@/components/headers/Headers";
@@ -12,8 +12,9 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import AvatarImage from "@/components/ui/AvatarImage";
 import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
-import { StyleSheet } from "react-native";
 import StarDisplay from "@/components/ui/StarDisplay";
+import FollowButton from "@/components/profile/FollowButton";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function FollowingScreen() {
   const { user } = useAuthData();
@@ -21,13 +22,22 @@ export default function FollowingScreen() {
     user_uuid: user?.id!,
   });
 
+  const follow = useFollowedStore((state) => state.follow);
+  useEffect(() => {
+    if (data) {
+      data.forEach((user) => {
+        follow(user.uuid);
+      });
+    }
+  }, [data]);
+
   if (!user || !data || isLoading || error) {
     return (
       <LoadingScreen
         data={data}
         loads={[isLoading]}
         errors={[error]}
-        header={<SimpleHeader title="Users I'm following" />}
+        header={<SimpleHeader title="Users you're following" />}
       />
     );
   }
@@ -35,7 +45,7 @@ export default function FollowingScreen() {
   if (data.length === 0)
     return (
       <>
-        <SimpleHeader title="Users I'm following" />
+        <SimpleHeader title="Users you're following" />
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
@@ -45,7 +55,7 @@ export default function FollowingScreen() {
     );
   return (
     <>
-      <SimpleHeader title="Users I'm following" />
+      <SimpleHeader title="Users you're following" />
       <FlatList
         data={data}
         renderItem={({ item }) => <User data={item} />}
@@ -62,8 +72,8 @@ function User({ data }: { data: SimpleUserData }) {
       style={{ padding: 16, borderBottomWidth: 1, gap: 8 }}
     >
       <TouchableOpacity onPress={() => router.push(`/profile/${data.uuid}`)}>
-        <View style={{ flexDirection: "row", gap: 20 }}>
-          <AvatarImage url={data.avatar_url} size={70} />
+        <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>
+          <AvatarImage url={data.avatar_url} size={64} />
           <View style={{ justifyContent: "center" }}>
             <Text weight="semibold" size="lg">
               {data.display_name}
@@ -74,6 +84,12 @@ function User({ data }: { data: SimpleUserData }) {
               <StarDisplay rating={4.5} count={5} />
             </View>
           </View>
+          <FollowButton
+            user_uuid={data.uuid}
+            following={true}
+            style={{ flex: 0, width: 100, marginLeft: "auto" }}
+            invalidate={false}
+          />
         </View>
       </TouchableOpacity>
     </View>

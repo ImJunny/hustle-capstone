@@ -32,7 +32,7 @@ export default function TrackHireScreen() {
   if (!user || isLoading) {
     return (
       <>
-        <SimpleHeader title="Jobs I'm hiring" />
+        <SimpleHeader title="Jobs you're hiring" />
         {isLoading ? (
           <LoadingView />
         ) : (
@@ -49,7 +49,7 @@ export default function TrackHireScreen() {
   if (data?.length === 0) {
     return (
       <>
-        <SimpleHeader title="Jobs I'm hiring" />
+        <SimpleHeader title="Jobs you're hiring" />
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
@@ -61,7 +61,7 @@ export default function TrackHireScreen() {
 
   return (
     <>
-      <SimpleHeader title="Jobs I'm hiring" />
+      <SimpleHeader title="Jobs you're hiring" />
       <ScrollView>
         {sortedData?.map((post, i) => (
           <TrackPost

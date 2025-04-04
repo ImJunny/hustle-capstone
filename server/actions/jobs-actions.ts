@@ -344,6 +344,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
           ne(posts.status_type, "hidden")
         )
       )
+      .orderBy(posts.uuid, post_images.image_url)
       .then(async (posts) =>
         Promise.all(
           posts.map(async (post) => {

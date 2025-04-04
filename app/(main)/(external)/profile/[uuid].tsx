@@ -36,6 +36,9 @@ export default function ProfileScreen() {
 
   const follow = useFollowedStore((state) => state.follow);
   if (data?.is_following) follow(uuid as string);
+  useEffect(() => {
+    if (data?.is_following) follow(uuid as string);
+  }, [uuid]);
 
   useEffect(() => {
     if (uuid) useFollowedStore.getState().addChecked(uuid as string);

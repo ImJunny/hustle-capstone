@@ -10,8 +10,6 @@ import IconButton from "../ui/IconButton";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "../ui/LoadingView";
 import { useSharePostStore } from "@/hooks/useSharePostStore";
-import Input from "../ui/Input";
-import Button from "../ui/Button";
 import Icon from "../ui/Icon";
 import { trpc } from "@/server/lib/trpc-client";
 import { ShareUser } from "@/server/actions/user-actions";
@@ -43,17 +41,17 @@ export default function SharePostSheet() {
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const sharePostUUID = useSharePostStore((state) => state.postUUID);
+
   useEffect(() => {
     setSelected(new Set());
   }, [sharePostUUID]);
+
   const handleSelect = (value: string) => {
     setSelected((prevSelected) => {
       const newSelected = new Set(prevSelected);
-      if (newSelected.has(value)) {
-        newSelected.delete(value);
-      } else {
-        newSelected.add(value);
-      }
+      if (newSelected.has(value)) newSelected.delete(value);
+      else newSelected.add(value);
+
       return newSelected;
     });
   };
@@ -90,7 +88,11 @@ export default function SharePostSheet() {
       )}
       footerComponent={({ animatedFooterPosition }) => (
         <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
-          <SharePostSheetFooter count={selected.size} selected={selected} />
+          <SharePostSheetFooter
+            count={selected.size}
+            selected={selected}
+            setSelected={setSelected}
+          />
         </BottomSheetFooter>
       )}
       sheetRef={ref}

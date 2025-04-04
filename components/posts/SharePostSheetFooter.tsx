@@ -8,13 +8,16 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { Keyboard } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import { Dispatch, SetStateAction } from "react";
 
 export default function SharePostSheetFooter({
   count,
   selected,
+  setSelected,
 }: {
   count: number;
   selected: Set<string>;
+  setSelected: Dispatch<SetStateAction<Set<string>>>;
 }) {
   const uuid = useSharePostStore((state) => state.postUUID);
   const sharePostSheetRef = useSharePostStore(
@@ -28,7 +31,7 @@ export default function SharePostSheetFooter({
       onSuccess: () => {
         sharePostSheetRef?.current?.close();
         Keyboard.dismiss();
-        selected = new Set();
+        setSelected(new Set());
         Toast.show({
           text1: "You shared a post",
           swipeable: false,

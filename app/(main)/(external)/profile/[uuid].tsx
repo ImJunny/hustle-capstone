@@ -4,19 +4,23 @@ import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
 import ProfileSection from "@/components/profile/ProfileSection";
-import { ProfileHeader, ProfileSelfHeader } from "@/components/headers/Headers";
+import { ProfileHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
 import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function ProfileScreen() {
+  const { user } = useAuthData();
   const { uuid } = useLocalSearchParams();
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
-    uuid: uuid as string,
+    uuid: user?.id!,
+    their_uuid: uuid as string,
   });
+
   const { data: posts, isLoading: postsLoading } =
     trpc.post.get_user_posts.useQuery({
       uuid: uuid as string,

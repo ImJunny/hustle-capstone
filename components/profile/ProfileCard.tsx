@@ -4,9 +4,10 @@ import Text from "../ui/Text";
 import View from "../ui/View";
 import { StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { Image } from "expo-image";
 import { UserData } from "@/server/actions/user-actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import FollowButton from "./FollowButton";
+import AvatarImage from "../ui/AvatarImage";
 
 export default function ProfileCard({
   data,
@@ -21,16 +22,7 @@ export default function ProfileCard({
     <View style={[styles.profileCard, { borderColor }]} color="background">
       <View style={styles.top}>
         <View>
-          <Image
-            source={
-              data?.avatar_url
-                ? {
-                    uri: data.avatar_url,
-                  }
-                : require("@/assets/images/default-avatar-icon.jpg")
-            }
-            style={{ borderRadius: 999, width: 96, height: 96 }}
-          />
+          <AvatarImage url={data.avatar_url} size={96} />
         </View>
 
         <View style={styles.topInnerRight}>
@@ -58,7 +50,15 @@ export default function ProfileCard({
             >
               {isSelf ? "Edit profile" : "Message"}
             </Button>
-            <Button style={{ flex: 1, height: 32 }}>Share</Button>
+
+            {isSelf ? (
+              <Button style={{ flex: 1, height: 32 }}>Share</Button>
+            ) : (
+              <FollowButton
+                following={data.is_following as boolean}
+                user_uuid={data.uuid}
+              />
+            )}
           </View>
         </View>
       </View>

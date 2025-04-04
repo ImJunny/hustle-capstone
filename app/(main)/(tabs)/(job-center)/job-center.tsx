@@ -71,6 +71,11 @@ export default function JobCenterScreen() {
             title="Recently viewed"
             href="/recently-viewed"
           />
+          <LinkEntry
+            iconName="people-outline"
+            title="Following"
+            href="/following"
+          />
           <Button
             isFullWidth
             style={{ marginTop: 16 }}

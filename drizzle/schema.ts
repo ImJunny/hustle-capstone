@@ -239,6 +239,15 @@ export const payments = app_schema.table("payments", {
     .notNull(),
 });
 
+export const following = app_schema.table("following", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  follower_uuid: uuid("follower_uuid"),
+  followed_uuid: uuid("followed_uuid"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
 // TABLES FOR TYPES
 export const location_types = app_schema.table("location_types", {
   id: serial("id").primaryKey(),

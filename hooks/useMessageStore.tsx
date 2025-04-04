@@ -4,6 +4,7 @@ type MessageStore = {
   readChats: Set<string>;
   addReadChat: (uuid: string) => void;
   isReadChat: (uuid: string) => boolean;
+  fetchedChats: boolean;
 };
 
 export const useMessageStore = create<MessageStore>((set, get) => ({
@@ -13,4 +14,5 @@ export const useMessageStore = create<MessageStore>((set, get) => ({
       readChats: new Set(state.readChats).add(uuid),
     })),
   isReadChat: (uuid: string) => get().readChats.has(uuid),
+  fetchedChats: false,
 }));

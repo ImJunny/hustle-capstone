@@ -6,7 +6,6 @@ import View, { ViewProps } from "../ui/View";
 import { router } from "expo-router";
 import { formatDistanceToNow } from "date-fns";
 import { MessagePreview } from "@/server/actions/message-actions";
-import { useAuthData } from "@/contexts/AuthContext";
 import { useMessageStore } from "@/hooks/useMessageStore";
 import AvatarImage from "../ui/AvatarImage";
 

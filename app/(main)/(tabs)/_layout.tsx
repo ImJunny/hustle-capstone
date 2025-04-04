@@ -5,6 +5,8 @@ import TabBar from "@/components/ui/TabBar";
 import { supabase } from "@/server/lib/supabase";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
+import View from "@/components/ui/View";
+import Text from "@/components/ui/Text";
 
 /* 
   Tab bar elements are based off files in the (tabs) directory. 
@@ -75,13 +77,32 @@ export default function TabLayout() {
         options={{
           title: "Messages",
           tabBarIcon: ({ focused }) => (
-            <Icon
-              name={
-                focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"
-              }
-              size="xl"
-              flippedX
-            />
+            <View style={{ position: "relative" }}>
+              <Icon
+                name={
+                  focused
+                    ? "chatbubble-ellipses"
+                    : "chatbubble-ellipses-outline"
+                }
+                size="xl"
+                flippedX
+              />
+              {false && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    backgroundColor: "red",
+                    borderRadius: 10,
+                    width: 8,
+                    height: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                />
+              )}
+            </View>
           ),
         }}
       />

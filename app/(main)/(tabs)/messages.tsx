@@ -9,6 +9,7 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { MessagePreview } from "@/server/actions/message-actions";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useMessageStore } from "@/hooks/useMessageStore";
+import { useStore } from "zustand";
 
 export default function MessagesScreen() {
   const { user } = useAuthData();
@@ -28,12 +29,19 @@ export default function MessagesScreen() {
           addReadChat(chat.last_message_uuid);
         }
       });
+      useMessageStore.setState({ fetchedChats: true });
     }
   }, [data]);
 
-  if (isLoading || !data) {
+  const fetchedChats = useMessageStore((state) => state.fetchedChats);
+
+  if (isLoading || !data || !fetchedChats) {
     return (
-      <LoadingScreen loads={[isLoading]} data={data} header={<BackHeader />} />
+      <LoadingScreen
+        loads={[isLoading, !fetchedChats]}
+        data={data}
+        header={<BackHeader />}
+      />
     );
   }
 

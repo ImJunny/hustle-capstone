@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PostList from "@/components/posts/PostList";
 import { exampleJobPosts } from "@/server/utils/example-data";
 import { SimpleHeader } from "@/components/headers/Headers";
@@ -18,25 +18,36 @@ import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function FollowingScreen() {
   const { user } = useAuthData();
-  const { data, isLoading, error } = trpc.user.get_following.useQuery({
+  const {
+    data,
+    isLoading,
+    error,
+    dataUpdatedAt,
+    isFetched,
+    isFetchedAfterMount,
+  } = trpc.user.get_following.useQuery({
     user_uuid: user?.id!,
   });
 
-  const follow = useFollowedStore((state) => state.follow);
-  const isChecked = useFollowedStore((state) => state.isChecked);
-  useEffect(() => {
-    if (data) {
-      data.forEach((user) => {
-        if (!isChecked(user.uuid)) follow(user.uuid);
-      });
-    }
-  }, [data]);
+  const setFollowed = useFollowedStore((state) => state.setFollowed);
+  const lastUpdated = useFollowedStore((state) => state.dataUpdatedAt);
+  const setLastUpdated = useFollowedStore((state) => state.setDataUpdatedAt);
 
-  if (!user || !data || isLoading || error) {
+  useEffect(() => {
+    if (isFetched && dataUpdatedAt !== lastUpdated) {
+      data?.forEach((user) => setFollowed(user.uuid, true));
+      setLastUpdated(dataUpdatedAt);
+      useFollowedStore.setState({ fetchedFollowed: true });
+    }
+  }, [dataUpdatedAt, isFetched, data]);
+
+  const fetchedFollowed = useFollowedStore((state) => state.fetchedFollowed);
+
+  if (!user || isLoading || error || !fetchedFollowed) {
     return (
       <LoadingScreen
         data={data}
-        loads={[isLoading]}
+        loads={[isLoading, !fetchedFollowed]}
         errors={[error]}
         header={<SimpleHeader title="Users you're following" />}
       />
@@ -87,7 +98,6 @@ function User({ data }: { data: SimpleUserData }) {
           </View>
           <FollowButton
             user_uuid={data.uuid}
-            following={true}
             style={{ flex: 0, width: 100, marginLeft: "auto" }}
             invalidate={false}
           />

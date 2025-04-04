@@ -28,7 +28,7 @@ export default function SharePostSheetFooter({
       onSuccess: () => {
         sharePostSheetRef?.current?.close();
         Keyboard.dismiss();
-        selected.clear();
+        selected = new Set();
         Toast.show({
           text1: "You shared a post",
           swipeable: false,

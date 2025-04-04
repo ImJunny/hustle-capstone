@@ -42,6 +42,10 @@ export default function SharePostSheet() {
   );
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const sharePostUUID = useSharePostStore((state) => state.postUUID);
+  useEffect(() => {
+    setSelected(new Set());
+  }, [sharePostUUID]);
   const handleSelect = (value: string) => {
     setSelected((prevSelected) => {
       const newSelected = new Set(prevSelected);

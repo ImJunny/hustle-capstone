@@ -8,6 +8,9 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { supabase } from "@/server/lib/supabase";
 import Toast from "react-native-toast-message";
 import { trpc } from "@/server/lib/trpc-client";
+import { usePostStore } from "@/hooks/usePostStore";
+import { useMessageStore } from "@/hooks/useMessageStore";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 // Define the onboarding steps in order
 export const onboardingSteps = [
@@ -32,6 +35,14 @@ export default function Layout() {
       ? (onboardingSteps[currentIndex + 1] as (typeof onboardingSteps)[number])
       : null;
 
+  const resetPosts = usePostStore((state) => state.reset);
+  const resetMessages = useMessageStore((state) => state.reset);
+  const resetFollowed = useFollowedStore((state) => state.reset);
+  const resetStores = () => {
+    resetPosts();
+    resetMessages();
+    resetFollowed();
+  };
   async function handleSignout() {
     const { error } = await supabase.auth.signOut();
     Toast.show({
@@ -43,6 +54,7 @@ export default function Layout() {
     router.replace("/signin");
     const utils = trpc.useUtils();
     await utils.invalidate();
+    resetStores();
   }
 
   return (

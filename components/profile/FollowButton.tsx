@@ -7,7 +7,7 @@ import { ViewProps } from "../ui/View";
 import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function FollowButton({
-  following,
+  following = true,
   user_uuid,
   style,
   invalidate = true,
@@ -17,23 +17,23 @@ export default function FollowButton({
   invalidate?: boolean;
 } & ViewProps) {
   const { user } = useAuthData();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
   const { mutate: followUser } = trpc.user.follow_user.useMutation();
   const { mutate: unfollowUser } = trpc.user.unfollow_user.useMutation();
 
   const follow = useFollowedStore((state) => state.follow);
   const unfollow = useFollowedStore((state) => state.unfollow);
+  const [localFollowed, setLocalFollowed] = useState(following);
   const isFollowed = useFollowedStore((state) => state.isFollowed(user_uuid));
 
-  const [localFollowing, setLocalFollowing] = useState(following);
   useEffect(() => {
-    setLocalFollowing(isFollowed);
-  }, [isFollowed]);
+    setLocalFollowed(following);
+  }, [following]);
 
   const toggleFollow = () => {
     const newIsFollowing = !isFollowed;
+    newIsFollowing ? setLocalFollowed(true) : setLocalFollowed(false);
     newIsFollowing ? follow(user_uuid) : unfollow(user_uuid);
-
     const mutation = newIsFollowing ? followUser : unfollowUser;
     mutation(
       { follower_uuid: user?.id!, following_uuid: user_uuid },
@@ -60,10 +60,10 @@ export default function FollowButton({
   return (
     <Button
       onPress={toggleFollow}
-      type={localFollowing ? "variant" : "primary"}
+      type={localFollowed ? "variant" : "primary"}
       style={[{ flex: 1, height: 32 }, style]}
     >
-      {localFollowing ? "Following" : "Follow"}
+      {localFollowed ? "Following" : "Follow"}
     </Button>
   );
 }

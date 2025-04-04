@@ -8,6 +8,7 @@ import { UserData } from "@/server/actions/user-actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import FollowButton from "./FollowButton";
 import AvatarImage from "../ui/AvatarImage";
+import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function ProfileCard({
   data,
@@ -18,6 +19,9 @@ export default function ProfileCard({
 }) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+
+  const isFollowed = useFollowedStore((state) => state.isFollowed(data.uuid));
+
   return (
     <View style={[styles.profileCard, { borderColor }]} color="background">
       <View style={styles.top}>
@@ -54,10 +58,7 @@ export default function ProfileCard({
             {isSelf ? (
               <Button style={{ flex: 1, height: 32 }}>Share</Button>
             ) : (
-              <FollowButton
-                following={data.is_following as boolean}
-                user_uuid={data.uuid}
-              />
+              <FollowButton following={isFollowed} user_uuid={data.uuid} />
             )}
           </View>
         </View>

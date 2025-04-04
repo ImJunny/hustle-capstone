@@ -12,7 +12,7 @@ import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function ProfileScreen() {
@@ -35,14 +35,11 @@ export default function ProfileScreen() {
   const servicePosts = posts?.filter((post) => post.type === "hire");
 
   const follow = useFollowedStore((state) => state.follow);
-  const unfollow = useFollowedStore((state) => state.unfollow);
+  if (data?.is_following) follow(uuid as string);
 
   useEffect(() => {
-    if (data) {
-      if (data?.is_following) follow(data.uuid);
-      else if (!data?.is_following) unfollow(data!.uuid);
-    }
-  }, [data, follow, unfollow]);
+    if (uuid) useFollowedStore.getState().addChecked(uuid as string);
+  }, [uuid]);
 
   if (error) {
     return (
@@ -52,7 +49,7 @@ export default function ProfileScreen() {
     );
   }
 
-  if (isLoading || postsLoading) {
+  if (isLoading || postsLoading || !checked) {
     return <LoadingView />;
   }
   if (!posts || posts.length === 0) {

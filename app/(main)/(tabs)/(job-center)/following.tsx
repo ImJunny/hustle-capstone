@@ -23,10 +23,11 @@ export default function FollowingScreen() {
   });
 
   const follow = useFollowedStore((state) => state.follow);
+  const isChecked = useFollowedStore((state) => state.isChecked);
   useEffect(() => {
     if (data) {
       data.forEach((user) => {
-        follow(user.uuid);
+        if (!isChecked(user.uuid)) follow(user.uuid);
       });
     }
   }, [data]);

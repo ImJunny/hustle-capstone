@@ -192,7 +192,11 @@ export default function MessageScreen() {
                             {message.message}
                           </Text>
                         </View>
-                        <Text color="muted" size="sm">
+                        <Text
+                          color="muted"
+                          size="sm"
+                          style={{ marginBottom: 4 }}
+                        >
                           {formattedTimestamp}
                         </Text>
                       </View>
@@ -214,8 +218,7 @@ export default function MessageScreen() {
 
 const styles = StyleSheet.create({
   messageContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingBottom: 32,
   },
   message: {

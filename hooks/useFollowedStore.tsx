@@ -2,36 +2,34 @@ import { create } from "zustand";
 
 type FollowedStore = {
   followed: Set<string>;
-  follow: (uuid: string) => void;
-  unfollow: (uuid: string) => void;
   isFollowed: (uuid: string) => boolean;
-  checked: Set<string>;
-  addChecked: (uuid: string) => void;
-  isChecked: (uuid: string) => boolean;
+  setFollowed: (user_uuid: string, is_following: boolean) => void;
+  fetched: Set<string>;
+  setFetched: (user_uuid: string) => void;
+  dataUpdatedAt: number;
+  setDataUpdatedAt: (timestamp: number) => void;
 };
 
 export const useFollowedStore = create<FollowedStore>((set, get) => ({
   followed: new Set(),
-  follow: (uuid) =>
+  isFollowed: (uuid) => get().followed.has(uuid),
+  setFollowed: (user_uuid, is_following) =>
     set((state) => {
       const newFollowed = new Set(state.followed);
-      newFollowed.add(uuid);
+      if (is_following) newFollowed.add(user_uuid);
+      else newFollowed.delete(user_uuid);
       return { followed: newFollowed };
     }),
-  unfollow: (uuid: string) =>
+  fetched: new Set(),
+  setFetched: (user_uuid) =>
     set((state) => {
-      const newFollowed = new Set(state.followed);
-      newFollowed.delete(uuid);
-      return { followed: newFollowed };
+      const newFetched = new Set(state.fetched);
+      newFetched.add(user_uuid);
+      return { fetched: newFetched };
     }),
-  isFollowed: (uuid: string) => get().followed.has(uuid),
-  checked: new Set(),
-  addChecked: (uuid: string) => {
-    set((state) => {
-      const newChecked = new Set(state.checked);
-      newChecked.add(uuid);
-      return { checked: newChecked };
-    });
-  },
-  isChecked: (uuid: string) => get().checked.has(uuid),
+  dataUpdatedAt: 0,
+  setDataUpdatedAt: (timestamp) =>
+    set(() => {
+      return { dataUpdatedAt: timestamp };
+    }),
 }));

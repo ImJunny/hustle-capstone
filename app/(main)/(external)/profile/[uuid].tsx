@@ -1,6 +1,5 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { StyleSheet } from "react-native";
 import ScrollView from "@/components/ui/ScrollView";
 import LoadingView from "@/components/ui/LoadingView";
 import ProfileSection from "@/components/profile/ProfileSection";
@@ -12,37 +11,46 @@ import Separator from "@/components/ui/Separator";
 import { useLocalSearchParams } from "expo-router";
 import ProfileCard from "@/components/profile/ProfileCard";
 import { useAuthData } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function ProfileScreen() {
   const { user } = useAuthData();
   const { uuid } = useLocalSearchParams();
-  const checked = useFollowedStore((state) => state.isChecked(uuid as string));
-  const { data, error, isLoading } = trpc.user.get_user_data.useQuery(
-    {
-      uuid: user?.id!,
-      their_uuid: uuid as string,
-    },
-    { enabled: !checked }
-  );
+
+  const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
+    uuid: user?.id!,
+    their_uuid: uuid as string,
+  });
 
   const { data: posts, isLoading: postsLoading } =
     trpc.post.get_user_posts.useQuery({
       uuid: uuid as string,
     });
+
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
 
-  const follow = useFollowedStore((state) => state.follow);
-  if (data?.is_following) follow(uuid as string);
-  useEffect(() => {
-    if (data?.is_following) follow(uuid as string);
-  }, [uuid]);
+  const setFollowed = useFollowedStore((state) => state.setFollowed);
+  const isFetched = useFollowedStore((state) =>
+    state.fetched.has(uuid as string)
+  );
+  const setFetched = useFollowedStore((state) => state.setFetched);
 
   useEffect(() => {
-    if (uuid) useFollowedStore.getState().addChecked(uuid as string);
-  }, [uuid]);
+    if (data) {
+      if (!isFetched) {
+        setFollowed(uuid as string, data.is_following);
+        setFetched(uuid as string);
+      }
+
+      const timeout = setTimeout(() => {
+        setFollowed(uuid as string, data.is_following);
+      }, 2500);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [data?.is_following, uuid]);
 
   if (error) {
     return (
@@ -52,7 +60,7 @@ export default function ProfileScreen() {
     );
   }
 
-  if (isLoading || postsLoading || !checked) {
+  if (isLoading || postsLoading || !isFetched) {
     return <LoadingView />;
   }
   if (!posts || posts.length === 0) {

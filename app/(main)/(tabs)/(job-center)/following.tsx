@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PostList from "@/components/posts/PostList";
 import { exampleJobPosts } from "@/server/utils/example-data";
 import { SimpleHeader } from "@/components/headers/Headers";
@@ -18,19 +18,21 @@ import { useFollowedStore } from "@/hooks/useFollowedStore";
 
 export default function FollowingScreen() {
   const { user } = useAuthData();
-  const { data, isLoading, error } = trpc.user.get_following.useQuery({
-    user_uuid: user?.id!,
-  });
+  const { data, isLoading, error, dataUpdatedAt, isFetched } =
+    trpc.user.get_following.useQuery({
+      user_uuid: user?.id!,
+    });
 
-  const follow = useFollowedStore((state) => state.follow);
-  const isChecked = useFollowedStore((state) => state.isChecked);
+  const setFollowed = useFollowedStore((state) => state.setFollowed);
+  const lastUpdated = useFollowedStore((state) => state.dataUpdatedAt);
+  const setLastUpdated = useFollowedStore((state) => state.setDataUpdatedAt);
+
   useEffect(() => {
-    if (data) {
-      data.forEach((user) => {
-        if (!isChecked(user.uuid)) follow(user.uuid);
-      });
+    if (isFetched && dataUpdatedAt != lastUpdated) {
+      data?.forEach((user) => setFollowed(user.uuid, true));
+      setLastUpdated(dataUpdatedAt);
     }
-  }, [data]);
+  }, [dataUpdatedAt, data]);
 
   if (!user || !data || isLoading || error) {
     return (
@@ -87,7 +89,6 @@ function User({ data }: { data: SimpleUserData }) {
           </View>
           <FollowButton
             user_uuid={data.uuid}
-            following={true}
             style={{ flex: 0, width: 100, marginLeft: "auto" }}
             invalidate={false}
           />

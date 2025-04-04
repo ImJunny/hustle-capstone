@@ -197,7 +197,6 @@ export default function MessageScreen() {
                         ) : (
                           <PostMessage uuid={message.post_uuid} />
                         )}
-
                         <Text
                           color="muted"
                           size="sm"

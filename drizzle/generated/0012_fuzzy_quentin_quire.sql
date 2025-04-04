@@ -1,0 +1,1 @@
+ALTER TABLE "app"."messages" ALTER COLUMN "message" DROP NOT NULL;

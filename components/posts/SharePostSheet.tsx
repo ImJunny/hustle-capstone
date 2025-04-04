@@ -13,6 +13,10 @@ import { useSharePostStore } from "@/hooks/useSharePostStore";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import Icon from "../ui/Icon";
+import { trpc } from "@/server/lib/trpc-client";
+import { ShareUser } from "@/server/actions/user-actions";
+import AvatarImage from "../ui/AvatarImage";
+import SharePostSheetFooter from "./SharePostSheetFooter";
 
 export default function SharePostSheet() {
   const { user } = useAuthData();
@@ -30,15 +34,12 @@ export default function SharePostSheet() {
     (state) => state.sharePostSheetRef
   );
 
-  const uuid = useSharePostStore((state) => state.postUUID);
-
-  // const { data, isLoading } = trpc.comment.get_comments.useQuery(
-  //   {
-  //     post_uuid: uuid!,
-  //     user_uuid: user?.id ?? "",
-  //   },
-  //   { enabled: !!uuid }
-  // );
+  const { data, isLoading } = trpc.user.get_share_users.useQuery(
+    {
+      user_uuid: user?.id ?? "",
+    },
+    { enabled: true }
+  );
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const handleSelect = (value: string) => {
@@ -53,7 +54,7 @@ export default function SharePostSheet() {
     });
   };
 
-  if (!uuid || !user) return;
+  if (!user) return;
 
   return (
     <Sheet
@@ -85,7 +86,7 @@ export default function SharePostSheet() {
       )}
       footerComponent={({ animatedFooterPosition }) => (
         <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
-          <Footer count={selected.size} />
+          <SharePostSheetFooter count={selected.size} selected={selected} />
         </BottomSheetFooter>
       )}
       sheetRef={ref}
@@ -93,27 +94,28 @@ export default function SharePostSheet() {
       keyboardBehavior="extend"
     >
       <BottomSheetView style={{ flex: 1, padding: 16 }}>
-        {false ? (
+        {isLoading ? (
           <LoadingView style={{ flex: 0, paddingTop: 32 }} />
         ) : (
           <>
             {/* <Input placeholder="Search users..." /> */}
-            <View style={{ flexDirection: "row", marginTop: 16 }}>
-              <User
-                value="abcd"
-                selected={selected}
-                handleSelect={handleSelect}
-              />
-              <User
-                value="efgh"
-                selected={selected}
-                handleSelect={handleSelect}
-              />
-              <User
-                value="ijkl"
-                selected={selected}
-                handleSelect={handleSelect}
-              />
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 16,
+                flexWrap: "wrap",
+                rowGap: 24,
+              }}
+            >
+              {data?.map((user) => (
+                <User
+                  key={user.uuid}
+                  data={user}
+                  value={user.uuid}
+                  selected={selected}
+                  handleSelect={handleSelect}
+                />
+              ))}
             </View>
           </>
         )}
@@ -126,22 +128,27 @@ function User({
   value,
   selected,
   handleSelect,
+  data,
 }: {
   value: string;
   selected: Set<string>;
   handleSelect: (value: string) => void;
+  data: ShareUser;
 }) {
   const themeColor = useThemeColor();
   return (
-    <View style={{ gap: 12, alignItems: "center", flex: 1 }}>
+    <View
+      style={{
+        gap: 12,
+        alignItems: "center",
+        width: "33.33%",
+      }}
+    >
       <TouchableOpacity
         style={{ position: "relative" }}
         onPress={() => handleSelect(value)}
       >
-        <View
-          style={{ width: 80, height: 80, borderRadius: 999 }}
-          color="red"
-        />
+        <AvatarImage url={data.avatar_url} size={80} />
         {selected.has(value) && (
           <View style={{ position: "absolute" }}>
             <View
@@ -156,36 +163,7 @@ function User({
           </View>
         )}
       </TouchableOpacity>
-      <Text size="sm">John Smith</Text>
-    </View>
-  );
-}
-
-function Footer({ count }: { count: number }) {
-  return (
-    <View
-      color="background"
-      style={{
-        padding: 16,
-        borderTopWidth: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-        width: "100%",
-        justifyContent: "space-between",
-      }}
-    >
-      <Text
-        weight="semibold"
-        size="lg"
-        color={count > 0 ? "foreground" : "muted"}
-      >
-        {count} selected
-      </Text>
-      <Button style={{ gap: 12 }} disabled={count == 0}>
-        Share
-        <Icon name="paper-plane-outline" size="xl" color="background" />
-      </Button>
+      <Text size="sm">@{data.username}</Text>
     </View>
   );
 }

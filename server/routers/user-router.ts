@@ -4,6 +4,7 @@ import {
   followUser,
   getFollowing,
   getPersonalInfo,
+  getShareUsers,
   getUserData,
   unfollowUser,
   updateUserProfile,
@@ -70,6 +71,12 @@ export const userRouter = createTRPCRouter({
     .input(z.object({ user_uuid: z.string() }))
     .query(async ({ input }) => {
       const result = await getFollowing(input.user_uuid);
+      return result;
+    }),
+  get_share_users: protectedProcedure
+    .input(z.object({ user_uuid: z.string() }))
+    .query(async ({ input }) => {
+      const result = await getShareUsers(input.user_uuid);
       return result;
     }),
 });

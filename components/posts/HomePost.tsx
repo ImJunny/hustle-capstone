@@ -214,7 +214,10 @@ function HomePost({ data }: { data: THomePost }) {
                 style={styles.iconButton}
                 color="white"
                 size="3xl"
-                onPress={() => sharePostSheetRef?.current?.snapToIndex(1)}
+                onPress={() => {
+                  setSharePostUUID(data.uuid);
+                  sharePostSheetRef?.current?.snapToIndex(1);
+                }}
               />
             </View>
           </View>

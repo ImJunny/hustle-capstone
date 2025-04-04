@@ -26,6 +26,8 @@ import { runOnJS } from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import AvatarImage from "../ui/AvatarImage";
+import StarDisplay from "../ui/StarDisplay";
+import { useSharePostStore } from "@/hooks/useSharePostStore";
 
 function HomePost({ data }: { data: THomePost }) {
   const insets = useSafeAreaInsets();
@@ -45,15 +47,15 @@ function HomePost({ data }: { data: THomePost }) {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
-    newIsSaved
-      ? Toast.show({
-          text1: "Saved",
-          visibilityTime: 500,
-        })
-      : Toast.show({
-          text1: "Unsaved",
-          visibilityTime: 500,
-        });
+    // newIsSaved
+    //   ? Toast.show({
+    //       text1: "Saved",
+    //       visibilityTime: 500,
+    //     })
+    //   : Toast.show({
+    //       text1: "Unsaved",
+    //       visibilityTime: 500,
+    //     });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: data.uuid, user_uuid: user?.id! },
@@ -89,12 +91,18 @@ function HomePost({ data }: { data: THomePost }) {
   }
 
   const setPostUUID = useCommentsStore((state) => state.setPostUUID);
+  const setSharePostUUID = useSharePostStore((state) => state.setPostUUID);
   useEffect(() => {
     const postUUID = useCommentsStore.getState().postUUID;
+    const sharePostUUID = useSharePostStore.getState().postUUID;
     if (!postUUID) setPostUUID(data.uuid);
+    if (!sharePostUUID) setSharePostUUID(data.uuid);
   }, [data.uuid]);
 
   const commentsSheetRef = useCommentsStore((state) => state.commentsSheetRef);
+  const sharePostSheetRef = useSharePostStore(
+    (state) => state.sharePostSheetRef
+  );
 
   return (
     <GestureDetector gesture={doubleTap}>
@@ -174,7 +182,7 @@ function HomePost({ data }: { data: THomePost }) {
                 name={isSaved ? "add-circle-sharp" : "add-circle-outline"}
                 style={styles.iconButton}
                 color="white"
-                size="2xl"
+                size={44}
                 onPress={handleSaveToggle}
               />
               <TouchableOpacity
@@ -187,7 +195,7 @@ function HomePost({ data }: { data: THomePost }) {
                 <Icon
                   name={"chatbubble-outline"}
                   color="white"
-                  size="2xl"
+                  size="3xl"
                   flippedX
                 />
                 {data.comment_count > 0 && (
@@ -205,7 +213,8 @@ function HomePost({ data }: { data: THomePost }) {
                 name={"paper-plane-outline"}
                 style={styles.iconButton}
                 color="white"
-                size="2xl"
+                size="3xl"
+                onPress={() => sharePostSheetRef?.current?.snapToIndex(1)}
               />
             </View>
           </View>
@@ -223,18 +232,7 @@ function HomePost({ data }: { data: THomePost }) {
                 <Text color="white" weight="semibold">
                   @{data.user_username}
                 </Text>
-                <View
-                  style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-                >
-                  <Icon name={"star"} color="white" />
-                  <Icon name={"star"} color="white" />
-                  <Icon name={"star"} color="white" />
-                  <Icon name={"star"} color="white" />
-                  <Icon name={"star"} color="white" />
-                  <Text style={{ marginLeft: 4 }} size="sm">
-                    1
-                  </Text>
-                </View>
+                <StarDisplay rating={4.3} count={3} />
               </View>
               <Button
                 style={styles.viewButton}
@@ -276,6 +274,8 @@ const styles = StyleSheet.create({
   iconButtonsContainer: {
     marginLeft: 20,
     marginTop: "auto",
+    alignItems: "center",
+    marginRight: -4,
   },
   bottomContainer: {
     flexDirection: "row",

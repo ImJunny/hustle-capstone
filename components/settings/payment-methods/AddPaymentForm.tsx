@@ -97,7 +97,7 @@ export default function AddPaymentForm({
             onPress={handleAddPayment}
             disabled={isLoading}
           >
-            {isLoading ? "Saving..." : "Add payment method"}
+            {isLoading || loading ? "Saving..." : "Add payment method"}
           </Button>
         </View>
       </View>

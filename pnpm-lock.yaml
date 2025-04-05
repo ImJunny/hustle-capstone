@@ -47,6 +47,12 @@ dependencies:
   '@rneui/themed':
     specifier: 4.0.0-rc.8
     version: 4.0.0-rc.8(@rneui/base@4.0.0-rc.7)
+  '@stripe/react-stripe-js':
+    specifier: ^3.6.0
+    version: 3.6.0(@stripe/stripe-js@7.0.0)(react-dom@18.3.1)(react@18.3.1)
+  '@stripe/stripe-js':
+    specifier: ^7.0.0
+    version: 7.0.0
   '@stripe/stripe-react-native':
     specifier: 0.38.6
     version: 0.38.6(expo@52.0.33)(react-native@0.76.7)(react@18.3.1)
@@ -5099,6 +5105,24 @@ packages:
       '@smithy/abort-controller': 4.0.1
       '@smithy/types': 4.1.0
       tslib: 2.8.1
+    dev: false
+
+  /@stripe/react-stripe-js@3.6.0(@stripe/stripe-js@7.0.0)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-zEnaUmTOsu7zhl3RWbZ0l1dRiad+QIbcAYzQfF+yYelURJowhAwesRHKWH+qGAIBEpkO6/VCLFHhVLH9DtPlnw==}
+    peerDependencies:
+      '@stripe/stripe-js': '>=1.44.1 <8.0.0'
+      react: '>=16.8.0 <20.0.0'
+      react-dom: '>=16.8.0 <20.0.0'
+    dependencies:
+      '@stripe/stripe-js': 7.0.0
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@stripe/stripe-js@7.0.0:
+    resolution: {integrity: sha512-0AWkP+hoIXB5O34FGY7jh687ZPlOqLqMkJDkiSXcp4TaWWidnxjsZSp0xkjyAWbIz4+j1BFXDAK01Rqb7ceBRA==}
+    engines: {node: '>=12.16'}
     dev: false
 
   /@stripe/stripe-react-native@0.38.6(expo@52.0.33)(react-native@0.76.7)(react@18.3.1):

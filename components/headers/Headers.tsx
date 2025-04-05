@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo } from "react";
 import HeaderWrapper from "./HeaderWrapper";
 import Text from "../ui/Text";
 import IconButton from "../ui/IconButton";
@@ -678,9 +678,14 @@ export function SingleMessageFooter({
     />
   );
 }
-export function PaymentMethodsHeader() {
+export function PaymentMethodsHeader({
+  setFormVisible,
+}: {
+  setFormVisible: Dispatch<SetStateAction<boolean>>;
+}) {
   return (
     <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
       options={{
         left: (
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
@@ -690,9 +695,7 @@ export function PaymentMethodsHeader() {
             </Text>
           </View>
         ),
-        right: (
-          <IconButton name="add" onPress={() => router.push("/add-payment")} />
-        ),
+        right: <IconButton name="add" onPress={() => setFormVisible(true)} />,
       }}
     />
   );

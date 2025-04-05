@@ -11,7 +11,6 @@ export default function TabBar({
 }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
   const themeColor = useThemeColor();
-
   return (
     <View
       style={{

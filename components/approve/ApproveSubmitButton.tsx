@@ -5,6 +5,7 @@ import Toast from "react-native-toast-message";
 import * as Linking from "expo-linking";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ApproveSubmitButton({
   initiatedJobUuid,
@@ -14,12 +15,16 @@ export function ApproveSubmitButton({
   amount: number;
 }) {
   const { user } = useAuthData();
+  const { data: userData } = trpc.user.get_user_data.useQuery({
+    uuid: user!.id,
+  });
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const { data } = trpc.payment.process_payment.useQuery({
     user_uuid: user!.id,
     amount,
   });
 
+  const themeColor = useThemeColor();
   // Initialize payment sheet
   const handleInitPaymentSheet = async (data: any) => {
     const { error } = await initPaymentSheet({
@@ -29,6 +34,27 @@ export function ApproveSubmitButton({
       paymentIntentClientSecret: data?.paymentIntent!,
       allowsDelayedPaymentMethods: true,
       returnURL: Linking.createURL("stripe-redirect"),
+      appearance: {
+        colors: {
+          background: themeColor.background,
+          componentBackground: themeColor["background-variant"],
+          componentText: themeColor.foreground,
+          componentBorder: themeColor["background-variant"],
+          secondaryText: themeColor.muted,
+        },
+        primaryButton: {
+          colors: {
+            background: themeColor.foreground,
+            text: themeColor.background,
+          },
+          shapes: {
+            borderRadius: 8,
+          },
+        },
+        shapes: {
+          borderRadius: 8,
+        },
+      },
       applePay: {
         merchantCountryCode: "US",
       },

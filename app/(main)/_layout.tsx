@@ -46,8 +46,8 @@ export default function Layout() {
           options={{ animation: "ios_from_right" }}
         />
       </Stack>
-      <CommentsSheet />
-      <SharePostSheet />
+      {/* <CommentsSheet />
+      <SharePostSheet /> */}
     </>
   );
 }

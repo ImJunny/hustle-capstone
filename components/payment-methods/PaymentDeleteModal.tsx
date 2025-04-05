@@ -23,7 +23,7 @@ export default function PaymentDeleteModal({
       onSuccess: () => {
         utils.payment.invalidate();
         Toast.show({
-          text1: "Successfully deleted payment method",
+          text1: "Deleted payment method",
           swipeable: false,
         });
       },

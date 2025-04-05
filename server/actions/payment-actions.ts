@@ -20,7 +20,7 @@ export async function processPayment(user_uuid: string, amount: number) {
       automatic_payment_methods: {
         enabled: true,
       },
-      // payment_method_types: ["card"],
+
       // capture_method: "manual",
     });
 

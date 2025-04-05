@@ -6,7 +6,7 @@ import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "@/components/ui/IconButton";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import PaymentMethodSheet from "@/components/settings/payment-methods/PaymentMethodSheet";
 import { StyleSheet } from "react-native";
@@ -15,6 +15,8 @@ import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
 import { PaymentMethod } from "@/server/actions/payment-actions";
+import AddPaymentForm from "@/components/settings/payment-methods/AddPaymentForm";
+import ScrollView from "@/components/ui/ScrollView";
 
 export default function PaymentMethodsScreen() {
   const { user } = useAuthData();
@@ -48,6 +50,7 @@ export default function PaymentMethodsScreen() {
   }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [formVisible, setFormVisible] = useState(false);
 
   if (isLoading) {
     return (
@@ -58,26 +61,15 @@ export default function PaymentMethodsScreen() {
     );
   }
 
-  if (!paymentMethods || paymentMethods.length === 0) {
-    return (
-      <>
-        <PaymentMethodsHeader />
-        <View style={styles.centerPage}>
-          <Text weight="semibold" size="2xl">
-            No payment methods available
-          </Text>
-          <Text>
-            Add a payment method by clicking the add button at the top
-          </Text>
-        </View>
-      </>
-    );
-  }
-
   return (
     <>
-      <PaymentMethodsHeader />
-      <View style={{ flex: 1 }} color="base">
+      <PaymentMethodsHeader setFormVisible={setFormVisible} />
+      <View style={{ padding: 16, borderBottomWidth: 1 }}>
+        <Text size="sm" color="muted">
+          You can quickly manage card payment methods here or at checkout.
+        </Text>
+      </View>
+      <ScrollView style={{ flex: 1 }} color="background">
         {paymentMethods.map((paymentMethod, i) => (
           <PaymentEntry
             key={i}
@@ -85,7 +77,9 @@ export default function PaymentMethodsScreen() {
             openSheet={() => openSheet(paymentMethod.id)}
           />
         ))}
-      </View>
+        {formVisible && <AddPaymentForm setFormVisible={setFormVisible} />}
+      </ScrollView>
+
       <PaymentMethodSheet
         sheetRef={paymentMethodSheetRef}
         setModalOpen={setModalOpen}
@@ -123,17 +117,13 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
       style={[styles.entry, { borderColor: themeColor.border }]}
     >
       <View>
-        <Text size="lg" weight="semibold">
-          {paymentMethod.name}
-        </Text>
-        <Text>
+        <Text weight="semibold" size="lg">
           {cardBrands[paymentMethod.brand]} ending in {paymentMethod.last4}
         </Text>
         <Text>
           Expires {paymentMethod.exp_month}/{paymentMethod.exp_year}
         </Text>
       </View>
-
       <IconButton name="ellipsis-vertical" onPress={openSheet} />
     </View>
   );

@@ -127,6 +127,7 @@ export default function FilterSheet({
                 style={styles.typeButton}
                 type={postType === type ? "primary" : "outline"}
                 onPress={() => setPostType(type)}
+                borderColor="foreground"
               >
                 {type === "all" ? "Any" : type === "work" ? "Jobs" : "Services"}
               </Button>
@@ -147,6 +148,7 @@ export default function FilterSheet({
                   style={styles.typeButton}
                   type={locationType === type ? "primary" : "outline"}
                   onPress={() => setLocationType(type)}
+                  borderColor="foreground"
                 >
                   {type === "all"
                     ? "Any"

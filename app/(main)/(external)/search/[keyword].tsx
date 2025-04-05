@@ -10,12 +10,10 @@ import { useLocalSearchParams } from "expo-router";
 import { Post as TPost } from "@/server/actions/post-actions";
 import "react-native-reanimated";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
 import { useAuthData } from "@/contexts/AuthContext";
-import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
-import { preventAutoHideAsync } from "expo-router/build/utils/splash";
 
 export default function SearchedPage() {
   const { keyword } = useLocalSearchParams();

@@ -15,6 +15,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
 import Button from "@/components/ui/Button";
+import Separator from "@/components/ui/Separator";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -65,14 +66,14 @@ export default function ExploreScreen() {
               <Text color="white" weight="semibold" size="3xl">
                 Find what works for you.
               </Text>
-              <Text color="white" size="lg">
+              <Text color="white" size="lg" weight="semibold">
                 Discover from many categories, jobs, services, and more.
               </Text>
             </View>
           </View>
           <ScrollView
             style={{
-              paddingHorizontal: 16,
+              paddingLeft: 16,
               position: "absolute",
               bottom: 0,
               gap: 16,
@@ -80,9 +81,11 @@ export default function ExploreScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
           >
-            {explore_categories.map((category, i) => (
-              <CategoryCard key={i} data={category} />
-            ))}
+            <View style={{ flexDirection: "row", paddingRight: 16 }}>
+              {explore_categories.map((category, i) => (
+                <CategoryCard key={i} data={category} />
+              ))}
+            </View>
           </ScrollView>
         </View>
         <View>
@@ -93,6 +96,10 @@ export default function ExploreScreen() {
             <Post key={i} data={post as TPost} type={post.type} />
           ))}
         </View>
+        <View style={{ paddingHorizontal: 16 }}>
+          <Separator />
+        </View>
+
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Services suggested for you

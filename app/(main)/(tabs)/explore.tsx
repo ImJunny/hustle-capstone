@@ -9,6 +9,7 @@ import { categories } from "@/server/utils/example-data";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { explore_categories } from "@/constants/Data";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -59,8 +60,8 @@ export default function ExploreScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
           >
-            {categories.map((category, i) => (
-              <CategoryCard key={i} title={category.title} />
+            {explore_categories.map((category, i) => (
+              <CategoryCard key={i} data={category} />
             ))}
           </ScrollView>
         </View>

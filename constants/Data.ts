@@ -98,3 +98,36 @@ export const countries = [
   { label: "United States", value: "united_states" },
   { label: "Vietnam", value: "vietnam" },
 ];
+
+export const explore_categories = [
+  {
+    label: "Tech",
+    value: "tech",
+    image: require(`@/assets/images/explore/category-tech.jpg`),
+  },
+  {
+    label: "Health",
+    value: "health",
+    image: require(`@/assets/images/explore/category-health.jpg`),
+  },
+  {
+    label: "Home",
+    value: "home",
+    image: require(`@/assets/images/explore/category-home.jpg`),
+  },
+  {
+    label: "Food",
+    value: "food",
+    image: require(`@/assets/images/explore/category-food.jpg`),
+  },
+  {
+    label: "Education",
+    value: "education",
+    image: require(`@/assets/images/explore/category-education.jpg`),
+  },
+  {
+    label: "Gaming",
+    value: "gaming",
+    image: require(`@/assets/images/explore/category-gaming.jpg`),
+  },
+];

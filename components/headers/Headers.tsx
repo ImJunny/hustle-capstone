@@ -299,6 +299,7 @@ export function MessagesHeader() {
             <Input
               placeholder="Search users, jobs, services..."
               style={{ width: "100%", borderRadius: 999 }}
+              autoCapitalize="none"
             />
           ),
         }}
@@ -310,6 +311,7 @@ export function MessagesHeader() {
 export function ExploreHeader() {
   return (
     <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
       options={{
         center: (
           <Pressable
@@ -362,6 +364,7 @@ export function SearchingHeader() {
               value={value}
               onChangeText={(value) => setValue(value)}
               onSubmitEditing={handleSearch}
+              autoCapitalize="none"
             />
             <IconButton name="ellipsis-vertical" size="xl" />
           </View>
@@ -405,7 +408,7 @@ export function SearchedHeader({
                 value={text}
                 editable={false}
                 placeholder="Search users, jobs, services..."
-                style={{ width: "100%" }}
+                style={{ width: "100%", borderRadius: 999 }}
               />
             </Pressable>
           </View>

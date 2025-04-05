@@ -79,7 +79,8 @@ export default function SharePostSheet() {
               name="close-outline"
               size="2xl"
               onPress={() => {
-                sharePostSheetRef?.current?.close();
+                sharePostSheetRef?.current?.forceClose();
+                sharePostSheetRef?.current?.snapToPosition(0);
                 Keyboard.dismiss();
               }}
             />

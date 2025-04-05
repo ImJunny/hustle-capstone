@@ -29,7 +29,7 @@ export default function SharePostSheetFooter({
   const { mutate: sharePost, isLoading } =
     trpc.messages.send_post_message.useMutation({
       onSuccess: () => {
-        sharePostSheetRef?.current?.close();
+        sharePostSheetRef?.current?.forceClose();
         Keyboard.dismiss();
         setSelected(new Set());
         Toast.show({

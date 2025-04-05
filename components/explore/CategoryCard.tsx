@@ -30,7 +30,7 @@ export default function CategoryCard({ data, style }: CategoryCardProps) {
           style={{
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0,0,0,0.4)",
+            backgroundColor: "rgba(0,0,0,0.35)",
             position: "absolute",
           }}
         />
@@ -38,7 +38,7 @@ export default function CategoryCard({ data, style }: CategoryCardProps) {
           style={{ textAlign: "center" }}
           color="white"
           weight="bold"
-          size="md"
+          size="lg"
         >
           {data.label}
         </Text>

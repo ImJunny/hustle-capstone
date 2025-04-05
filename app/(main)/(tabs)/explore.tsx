@@ -5,15 +5,36 @@ import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
 import { StyleSheet } from "react-native";
 import { ExploreHeader } from "@/components/headers/Headers";
-import { categories } from "@/server/utils/example-data";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { explore_categories } from "@/constants/Data";
 import { Image } from "expo-image";
+import { trpc } from "@/server/lib/trpc-client";
+import { useAuthData } from "@/contexts/AuthContext";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import Post from "@/components/posts/Post";
+import { Post as TPost } from "@/server/actions/post-actions";
+import Button from "@/components/ui/Button";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
+  const { user } = useAuthData();
+  const { data, isLoading, error } = trpc.post.get_explore_posts.useQuery({
+    uuid: user?.id!,
+  });
+  const jobPosts = data?.jobs?.filter((post) => post.type === "work");
+  const servicePosts = data?.services?.filter((post) => post.type === "hire");
+
+  if (isLoading || !data) {
+    return (
+      <LoadingScreen
+        loads={[isLoading]}
+        errors={[error]}
+        data={data}
+        header={<ExploreHeader />}
+      />
+    );
+  }
   return (
     <>
       <ExploreHeader />
@@ -42,7 +63,7 @@ export default function ExploreScreen() {
                 }}
               />
               <Text color="white" weight="semibold" size="3xl">
-                Find the right job for you.
+                Find what works for you.
               </Text>
               <Text color="white" size="lg">
                 Discover from many categories, jobs, services, and more.
@@ -64,37 +85,21 @@ export default function ExploreScreen() {
             ))}
           </ScrollView>
         </View>
-
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Jobs you might like
           </Text>
-          {/* {exampleJobPosts.map((post, i) => (
-            <Post
-              key={i}
-              uuid={post.uuid}
-              type={post.type}
-              style={{
-                borderTopWidth: i == 0 ? 1 : 0,
-                borderBottomWidth: 1,
-              }}
-            />
-          ))} */}
+          {jobPosts?.map((post, i) => (
+            <Post key={i} data={post as TPost} type={post.type} />
+          ))}
         </View>
         <View>
           <Text size="xl" weight="bold" style={styles.sectionTitle}>
             Services suggested for you
           </Text>
-          {/* {exampleServicePosts.map((post, i) => (
-            <Post
-              key={i}
-              data={post}
-              style={{
-                borderTopWidth: i == 0 ? 1 : 0,
-                borderBottomWidth: i != exampleServicePosts.length - 1 ? 1 : 0,
-              }}
-            />
-          ))} */}
+          {servicePosts?.map((post, i) => (
+            <Post key={i} data={post as TPost} type="hire" />
+          ))}
         </View>
       </ScrollView>
     </>

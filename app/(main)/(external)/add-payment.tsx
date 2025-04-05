@@ -11,8 +11,6 @@ import { z } from "zod";
 
 export const CreatePaymentMethodSchema = z.object({
   cardholder_name: z.string().trim().min(1, "Cannot leave field empty"),
-  postal_code: z.string().min(1, "Postal code is required"),
-  country: z.string().min(1, "Country is required"),
   card_is_valid: z.boolean().default(false),
 });
 
@@ -22,10 +20,7 @@ export default function CreateAddressForm() {
   });
 
   return (
-    <StripeProvider
-      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-      merchantIdentifier="merchant.com.your-app" // required for Apple Pay
-    >
+    <>
       <SimpleHeader title="Add new payment method" />
       <KeyboardAvoidingView
         style={styles.avoidingView}
@@ -37,7 +32,7 @@ export default function CreateAddressForm() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </StripeProvider>
+    </>
   );
 }
 

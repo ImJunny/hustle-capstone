@@ -24,7 +24,7 @@ export default function PaymentMethodsScreen() {
     data: paymentMethods,
     isLoading,
     error,
-  } = trpc.payment_methods.get_user_payment_methods.useQuery({
+  } = trpc.payment.get_user_payment_methods.useQuery({
     user_uuid: user.id,
   });
 
@@ -33,7 +33,7 @@ export default function PaymentMethodsScreen() {
       <>
         <SimpleHeader title="Payment Methods" />
         <View style={styles.centerPage}>
-          <Text color="red">Error loading payment methods</Text>
+          <Text>Error loading payment methods</Text>
         </View>
       </>
     );

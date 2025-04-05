@@ -20,7 +20,7 @@ export default function ExpoStripeProvider(
     <StripeProvider
       publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
       merchantIdentifier={merchantId}
-      urlScheme={Linking.createURL("/").split(":")[0]} // required for 3D Secure and bank redirects
+      urlScheme={Linking.createURL("/").split(":")[0]}
       {...props}
     ></StripeProvider>
   );

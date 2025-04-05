@@ -19,7 +19,7 @@ export default function PaymentDeleteModal({
 
   // Mutation to delete payment method
   const { mutate: deletePaymentMethod } =
-    trpc.payment_methods.delete_payment_method.useMutation({
+    trpc.payment.delete_payment_method.useMutation({
       onSuccess: () => {
         utils.payment_methods.invalidate();
         Toast.show({

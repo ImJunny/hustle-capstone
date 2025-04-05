@@ -1,22 +1,20 @@
 import { SimpleHeader } from "@/components/headers/Headers";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
-import Button from "@/components/ui/Button";
-import Icon from "@/components/ui/Icon";
 import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { useLocalSearchParams } from "expo-router";
-import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import Toast from "react-native-toast-message";
-import StripeProvider from "@/components/stripe-provider";
+import { StyleSheet } from "react-native";
+import StripeProvider from "@/contexts/StripeContext";
 import { ApproveButton } from "@/components/approve/ApproveSubmitButton";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import { PaymentElement } from "@stripe/react-stripe-js";
+import { PaymentMethod } from "@/server/actions/payment-actions";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
@@ -41,25 +39,14 @@ export default function AcceptScreen() {
     }
   );
 
-  // render page
-  if (isLoading) {
+  if (error || !data || isLoading) {
     return (
-      <>
-        <SimpleHeader title="Confirm approval" />
-        <LoadingView />
-      </>
-    );
-  } else if (error) {
-    return (
-      <StripeProvider>
-        <SimpleHeader title="Confirm approval" />
-
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>Encountered an error getting job information</Text>
-        </View>
-      </StripeProvider>
+      <LoadingScreen
+        data={data}
+        loads={[isLoading]}
+        errors={[error]}
+        header={<SimpleHeader title="Confirm approval" />}
+      />
     );
   }
 
@@ -74,13 +61,32 @@ export default function AcceptScreen() {
           }}
         >
           <Text weight="semibold" size="lg">
+            Pay now
+          </Text>
+          <Text size="sm" style={{ marginTop: 4 }} color="muted">
+            To ensure the worker gets paid after a successful job, you must
+            process the transaction now. We'll hold your funds until you confirm
+            the job is complete.
+          </Text>
+        </View>
+        <View
+          color="background"
+          style={{
+            padding: 26,
+            paddingTop: 0,
+          }}
+        >
+          <Text weight="semibold" size="lg">
             Disclaimer
           </Text>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            Once you approve this worker for a job you cannot unapprove this
-            person and ALL payments our finals.
+            Transactions are automatically processed after 5 days of the job's
+            due date only if it has been marked as complete. However you can
+            choose to pay them earlier. Should there be a dispute, reach out to
+            us and we'll help you sort it out.
           </Text>
         </View>
+
         <View
           color="background"
           style={{
@@ -90,7 +96,7 @@ export default function AcceptScreen() {
           <Text weight="semibold" size="lg">
             How much you'll pay
           </Text>
-          <TrackTransactionEstimate data={data} type="approve" />
+          <TrackTransactionEstimate data={data} type="approve" totalOnly />
         </View>
 
         {/* <View
@@ -128,12 +134,10 @@ export default function AcceptScreen() {
         </View> */}
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
-        <ApproveButton
-          jobPostUuid={uuid as string}
-          amount={data?.rate || 0}
-          jobTitle={"this job"}
-          workerName={"the worker"}
-        />
+        <Text weight="semibold" size="lg">
+          Step 2 of 2
+        </Text>
+        <ApproveButton jobPostUuid={uuid as string} amount={data?.rate || 0} />
       </View>
     </StripeProvider>
   );
@@ -161,6 +165,9 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
     borderTopWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   button: {
     alignSelf: "flex-end",

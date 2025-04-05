@@ -27,6 +27,7 @@ export const users = app_schema.table("users", {
   onboarding_phase: text("onboarding_phase").references(
     () => onboarding_phase_types.name
   ),
+  stripe_customer_id: text("stripe_customer_id"),
 });
 
 export const posts = app_schema.table("posts", {
@@ -199,7 +200,6 @@ export const payment_methods = app_schema.table("payment_methods", {
     .notNull(),
   cardholder_name: text("cardholder_name").notNull(),
   stripe_payment_method_id: text("stripe_payment_method_id").notNull(),
-  stripe_customer_id: text("stripe_customer_id").notNull(),
   card_last4: text("card_last4").notNull(),
   is_default: boolean("is_default").default(false),
   visible: boolean("visible").default(true),

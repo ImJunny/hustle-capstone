@@ -3,12 +3,33 @@ import { z } from "zod";
 import {
   createPaymentMethod,
   deletePaymentMethod,
-  getUserPaymentMethods,
+  getCustomerId,
   getPaymentMethodInfo,
-  updatePaymentMethod,
-} from "../actions/payment-method-actions";
+  getUserPaymentMethods,
+  processPayment,
+} from "../actions/payment-actions";
 
-export const paymentMethodsRouter = createTRPCRouter({
+export const paymentRouter = createTRPCRouter({
+  process_payment: protectedProcedure
+    .input(
+      z.object({
+        amount: z.number().min(0),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await processPayment(input.amount);
+      return result;
+    }),
+  create_customer: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const result = await getCustomerId(input.user_uuid);
+      return result;
+    }),
   create_payment_method: protectedProcedure
     .input(
       z.object({
@@ -17,7 +38,6 @@ export const paymentMethodsRouter = createTRPCRouter({
         stripe_payment_method_id: z
           .string()
           .min(1, "Stripe Payment Method ID is required"),
-        stripe_customer_id: z.string().min(1, "Stripe Customer ID is required"),
         card_last4: z
           .string()
           .length(4, "Card number must be 4 digits")
@@ -31,7 +51,6 @@ export const paymentMethodsRouter = createTRPCRouter({
           input.user_uuid,
           input.cardholder_name,
           input.stripe_payment_method_id,
-          input.stripe_customer_id,
           input.card_last4,
           input.card_brand
         );
@@ -72,16 +91,5 @@ export const paymentMethodsRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getPaymentMethodInfo(input.uuid);
-    }),
-
-  update_payment_method: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-        is_default: z.boolean().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      await updatePaymentMethod(input.uuid, input.is_default);
     }),
 });

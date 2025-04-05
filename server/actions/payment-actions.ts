@@ -1,13 +1,83 @@
 import { db } from "@/drizzle/db";
-import { payment_methods } from "@/drizzle/schema";
-import { eq, and, is } from "drizzle-orm";
+import { payment_methods, users } from "@/drizzle/schema";
+import { stripe } from "@/stripe-server";
+import { and, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
+// Process payment; gets info to be passed in StripeProvider
+export async function processPayment(amount: number) {
+  try {
+    const customer = await stripe.customers.create();
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      { customer: customer.id },
+      { apiVersion: "2025-02-24.acacia" }
+    );
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.floor(amount * 100),
+      currency: "usd",
+      customer: customer.id,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      payment_method_types: ["card"],
+      // capture_method: "manual",
+    });
+
+    return {
+      paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      publishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    };
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    throw new Error("Failed to process payment.");
+  }
+}
+// Gets customer ID; creates one if it doesn't exist
+export async function getCustomerId(user_uuid: string) {
+  try {
+    const customerId = await db
+      .select({ customer_id: users.stripe_customer_id })
+      .from(users)
+      .where(eq(users.uuid, user_uuid))
+      .then(([result]) => result?.customer_id);
+
+    if (customerId) return customerId;
+
+    const userData = await db
+      .select({
+        email: users.email,
+      })
+      .from(users)
+      .where(eq(users.uuid, user_uuid))
+      .then(([result]) => result);
+
+    const customer = await stripe.customers.create({
+      metadata: {
+        user_uuid: user_uuid,
+        created_at: new Date().toISOString(),
+      },
+      email: userData?.email,
+    });
+
+    await db
+      .update(users)
+      .set({ stripe_customer_id: customer.id })
+      .where(eq(users.uuid, user_uuid));
+    return customer.id;
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    throw new Error("Failed to create customer.");
+  }
+}
+
+// Creates payment method; attaches it to customer in Stripe
 export async function createPaymentMethod(
   user_uuid: string,
   cardholder_name: string,
   stripe_payment_method_id: string,
-  stripe_customer_id: string,
   card_last4: string,
   card_brand: string
 ) {
@@ -17,10 +87,14 @@ export async function createPaymentMethod(
       user_uuid,
       cardholder_name,
       stripe_payment_method_id,
-      stripe_customer_id,
       card_last4,
       visible: true,
       card_brand,
+    });
+
+    const customerId = await getCustomerId(user_uuid);
+    await stripe.paymentMethods.attach(stripe_payment_method_id, {
+      customer: customerId,
     });
   } catch (error) {
     console.error("Error creating payment method:", error);

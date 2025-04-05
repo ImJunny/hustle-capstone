@@ -85,10 +85,6 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
     () => posts.uuid,
     { onDelete: "set null" }
   ),
-  linked_payment_method_uuid: uuid("linked_payment_method_uuid").references(
-    () => payment_methods.uuid,
-    { onDelete: "set null" }
-  ),
   created_at: timestamp("created_at").notNull().defaultNow(),
   progress_type: text("progress_type").references(() => progress_types.name),
   rate: integer("rate").notNull(),
@@ -191,21 +187,6 @@ export const reviews = app_schema.table("reviews", {
   rating: integer("rating").notNull(),
 });
 
-export const payment_methods = app_schema.table("payment_methods", {
-  uuid: uuid("uuid")
-    .primaryKey()
-    .default(sql`uuid_generate_v4()`),
-  user_uuid: uuid("user_uuid")
-    .references(() => users.uuid, { onDelete: "cascade" })
-    .notNull(),
-  cardholder_name: text("cardholder_name").notNull(),
-  stripe_payment_method_id: text("stripe_payment_method_id").notNull(),
-  card_last4: text("card_last4").notNull(),
-  is_default: boolean("is_default").default(false),
-  visible: boolean("visible").default(true),
-  card_brand: text("card_brand").notNull(),
-});
-
 export const saved_posts = app_schema.table("saved_posts", {
   uuid: uuid("uuid")
     .primaryKey()
@@ -234,9 +215,6 @@ export const payments = app_schema.table("payments", {
     enum: ["pending", "succeeded", "failed", "refunded"],
   }).notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
-  payment_method_uuid: uuid("payment_method_uuid")
-    .references(() => payment_methods.uuid)
-    .notNull(),
 });
 
 export const following = app_schema.table("following", {

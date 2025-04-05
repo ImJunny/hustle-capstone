@@ -12,9 +12,9 @@ import PaymentMethodSheet from "@/components/settings/payment-methods/PaymentMet
 import { StyleSheet } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import LoadingView from "@/components/ui/LoadingView";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
+import { PaymentMethod } from "@/server/actions/payment-actions";
 
 export default function PaymentMethodsScreen() {
   const { user } = useAuthData();
@@ -81,8 +81,8 @@ export default function PaymentMethodsScreen() {
         {paymentMethods.map((paymentMethod, i) => (
           <PaymentEntry
             key={i}
-            paymentMethod={paymentMethod}
-            openSheet={() => openSheet(paymentMethod.uuid)}
+            paymentMethod={paymentMethod as PaymentMethod}
+            openSheet={() => openSheet(paymentMethod.id)}
           />
         ))}
       </View>
@@ -123,10 +123,14 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
       style={[styles.entry, { borderColor: themeColor.border }]}
     >
       <View>
-        <Text weight="semibold">{paymentMethod.cardholder_name}</Text>
+        <Text size="lg" weight="semibold">
+          {paymentMethod.name}
+        </Text>
         <Text>
-          {cardBrands[paymentMethod.card_brand]} ending in{" "}
-          {paymentMethod.card_last4}
+          {cardBrands[paymentMethod.brand]} ending in {paymentMethod.last4}
+        </Text>
+        <Text>
+          Expires {paymentMethod.exp_month}/{paymentMethod.exp_year}
         </Text>
       </View>
 

@@ -4,7 +4,6 @@ import {
   createPaymentMethod,
   deletePaymentMethod,
   getCustomerId,
-  getPaymentMethodInfo,
   getUserPaymentMethods,
   processPayment,
 } from "../actions/payment-actions";
@@ -13,11 +12,12 @@ export const paymentRouter = createTRPCRouter({
   process_payment: protectedProcedure
     .input(
       z.object({
+        user_uuid: z.string(),
         amount: z.number().min(0),
       })
     )
     .query(async ({ input }) => {
-      const result = await processPayment(input.amount);
+      const result = await processPayment(input.user_uuid, input.amount);
       return result;
     }),
   create_customer: protectedProcedure
@@ -34,25 +34,14 @@ export const paymentRouter = createTRPCRouter({
     .input(
       z.object({
         user_uuid: z.string(),
-        cardholder_name: z.string(),
-        stripe_payment_method_id: z
-          .string()
-          .min(1, "Stripe Payment Method ID is required"),
-        card_last4: z
-          .string()
-          .length(4, "Card number must be 4 digits")
-          .regex(/^\d{4}$/, "Card number must be only digits"),
-        card_brand: z.string(),
+        stripe_payment_method_id: z.string(),
       })
     )
     .mutation(async ({ input }) => {
       try {
         await createPaymentMethod(
           input.user_uuid,
-          input.cardholder_name,
-          input.stripe_payment_method_id,
-          input.card_last4,
-          input.card_brand
+          input.stripe_payment_method_id
         );
         return { success: true };
       } catch (error) {
@@ -66,11 +55,11 @@ export const paymentRouter = createTRPCRouter({
   delete_payment_method: protectedProcedure
     .input(
       z.object({
-        uuid: z.string(),
+        method_id: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      await deletePaymentMethod(input.uuid);
+      await deletePaymentMethod(input.method_id);
     }),
 
   get_user_payment_methods: protectedProcedure
@@ -81,15 +70,5 @@ export const paymentRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getUserPaymentMethods(input.user_uuid);
-    }),
-
-  get_payment_method_info: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-      })
-    )
-    .query(async ({ input }) => {
-      return await getPaymentMethodInfo(input.uuid);
     }),
 });

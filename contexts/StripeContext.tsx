@@ -1,5 +1,5 @@
 import * as Linking from "expo-linking";
-import { StripeProvider } from "@stripe/stripe-react-native";
+import { StripeProvider as NativeStripeProvider } from "@stripe/stripe-react-native";
 import Constants from "expo-constants";
 
 const merchantId = Constants.expoConfig?.plugins?.find(
@@ -10,18 +10,18 @@ if (!merchantId) {
   throw new Error('Missing Expo config for "@stripe/stripe-react-native"');
 }
 
-export default function ExpoStripeProvider(
+export default function StripeProvider(
   props: Omit<
-    React.ComponentProps<typeof StripeProvider>,
+    React.ComponentProps<typeof NativeStripeProvider>,
     "publishableKey" | "merchantIdentifier"
   >
 ) {
   return (
-    <StripeProvider
+    <NativeStripeProvider
       publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
       merchantIdentifier={merchantId}
       urlScheme={Linking.createURL("/").split(":")[0]}
       {...props}
-    ></StripeProvider>
+    />
   );
 }

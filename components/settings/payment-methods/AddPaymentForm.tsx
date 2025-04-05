@@ -1,12 +1,8 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import Button from "@/components/ui/Button";
-import {
-  useStripe,
-  CardField,
-  StripeProvider,
-} from "@stripe/stripe-react-native";
-import { useEffect, useState } from "react";
+import { useStripe, CardField } from "@stripe/stripe-react-native";
+import { useState } from "react";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
@@ -16,6 +12,7 @@ import { z } from "zod";
 import { CreatePaymentMethodSchema } from "@/app/(main)/(external)/add-payment";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { router } from "expo-router";
+import StripeProvider from "@/contexts/StripeContext";
 
 type PaymentMethodFormProps = {
   formMethods: UseFormReturn<z.infer<typeof CreatePaymentMethodSchema>>;
@@ -37,7 +34,7 @@ export default function AddPaymentForm({
           text1: "Payment method added successfully",
           type: "success",
         });
-        utils.payment_methods.invalidate();
+        utils.payment.invalidate();
         router.back();
       },
       onError: (error) => {
@@ -60,13 +57,9 @@ export default function AddPaymentForm({
     });
 
     if (paymentMethod) {
-      console.log(paymentMethod);
       createMethod({
         user_uuid: user!.id,
-        cardholder_name: formMethods.getValues("cardholder_name"),
         stripe_payment_method_id: paymentMethod.id,
-        card_last4: paymentMethod.Card?.last4!,
-        card_brand: paymentMethod.Card.brand!,
       });
     }
     if (error) {
@@ -79,10 +72,7 @@ export default function AddPaymentForm({
   };
 
   return (
-    <StripeProvider
-      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-      // merchantIdentifier="merchant.com.your-app"
-    >
+    <StripeProvider>
       <View style={{ gap: 20 }}>
         <View style={{ gap: 4 }}>
           <Text size="lg" weight="semibold">

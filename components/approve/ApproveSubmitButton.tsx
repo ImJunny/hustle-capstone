@@ -2,20 +2,21 @@ import Button from "@/components/ui/Button";
 import { useStripe } from "@stripe/stripe-react-native";
 import { View, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
-import { router } from "expo-router";
 import * as Linking from "expo-linking";
 import { trpc } from "@/server/lib/trpc-client";
-import { useState } from "react";
+import { useAuthData } from "@/contexts/AuthContext";
 
-export function ApproveButton({
-  jobPostUuid,
+export function ApproveSubmitButton({
+  initiatedJobUuid,
   amount,
 }: {
-  jobPostUuid: string;
+  initiatedJobUuid: string;
   amount: number;
 }) {
+  const { user } = useAuthData();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const { data, isLoading } = trpc.payment.process_payment.useQuery({
+  const { data } = trpc.payment.process_payment.useQuery({
+    user_uuid: user!.id,
     amount,
   });
 
@@ -39,26 +40,16 @@ export function ApproveButton({
   // Present payment sheet
   const handlePresentPaymentSheet = async () => {
     const { error } = await presentPaymentSheet();
-    if (error) Toast.show({ text1: "Payment canceled" });
-    else {
+    if (!error)
       Toast.show({
         text1: "Processed payment",
         type: "success",
       });
-    }
-  };
-
-  const handleConfirm = async () => {
-    handlePresentPaymentSheet();
   };
 
   return (
     <View>
-      <Button
-        style={styles.button}
-        onPress={handleConfirm}
-        disabled={isLoading}
-      >
+      <Button style={styles.button} onPress={handlePresentPaymentSheet}>
         Pay and approve
       </Button>
     </View>

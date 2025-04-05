@@ -1,33 +1,33 @@
 import { db } from "@/drizzle/db";
-import { payment_methods, users } from "@/drizzle/schema";
+import { users } from "@/drizzle/schema";
 import { stripe } from "@/stripe-server";
-import { and, eq } from "drizzle-orm";
-import { v4 as uuidv4 } from "uuid";
+import { eq } from "drizzle-orm";
 
 // Process payment; gets info to be passed in StripeProvider
-export async function processPayment(amount: number) {
+export async function processPayment(user_uuid: string, amount: number) {
   try {
-    const customer = await stripe.customers.create();
+    const customerId = await getCustomerId(user_uuid);
+
     const ephemeralKey = await stripe.ephemeralKeys.create(
-      { customer: customer.id },
+      { customer: customerId },
       { apiVersion: "2025-02-24.acacia" }
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.floor(amount * 100),
       currency: "usd",
-      customer: customer.id,
+      customer: customerId,
       automatic_payment_methods: {
         enabled: true,
       },
-      payment_method_types: ["card"],
+      // payment_method_types: ["card"],
       // capture_method: "manual",
     });
 
     return {
       paymentIntent: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
-      customer: customer.id,
+      customer: customerId,
       publishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     };
   } catch (error) {
@@ -76,22 +76,9 @@ export async function getCustomerId(user_uuid: string) {
 // Creates payment method; attaches it to customer in Stripe
 export async function createPaymentMethod(
   user_uuid: string,
-  cardholder_name: string,
-  stripe_payment_method_id: string,
-  card_last4: string,
-  card_brand: string
+  stripe_payment_method_id: string
 ) {
   try {
-    await db.insert(payment_methods).values({
-      uuid: uuidv4(),
-      user_uuid,
-      cardholder_name,
-      stripe_payment_method_id,
-      card_last4,
-      visible: true,
-      card_brand,
-    });
-
     const customerId = await getCustomerId(user_uuid);
     await stripe.paymentMethods.attach(stripe_payment_method_id, {
       customer: customerId,
@@ -102,12 +89,9 @@ export async function createPaymentMethod(
   }
 }
 
-export async function deletePaymentMethod(uuid: string) {
+export async function deletePaymentMethod(id: string) {
   try {
-    await db
-      .update(payment_methods)
-      .set({ visible: false }) // Soft delete: set visible flag to false
-      .where(eq(payment_methods.uuid, uuid));
+    await stripe.paymentMethods.detach(id);
   } catch (error) {
     console.error("Error deleting payment method:", error);
     throw new Error("Failed to delete payment method.");
@@ -116,51 +100,25 @@ export async function deletePaymentMethod(uuid: string) {
 
 export async function getUserPaymentMethods(user_uuid: string) {
   try {
-    const result = await db
-      .select()
-      .from(payment_methods)
-      .where(
-        and(
-          eq(payment_methods.user_uuid, user_uuid),
-          eq(payment_methods.visible, true)
-        )
-      );
-    return result;
+    const customerId = await getCustomerId(user_uuid);
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: customerId,
+      type: "card",
+    });
+
+    return paymentMethods.data.map((method) => ({
+      id: method.id,
+      name: method.billing_details.name,
+      brand: method!.card!.brand,
+      last4: method!.card!.last4,
+      exp_month: method!.card!.exp_month,
+      exp_year: method!.card!.exp_year,
+    }));
   } catch (error) {
     console.error("Error fetching user payment methods:", error);
     throw new Error("Failed to fetch user payment methods.");
   }
 }
-
 export type PaymentMethod = Awaited<
   ReturnType<typeof getUserPaymentMethods>
 >[number];
-
-export async function getPaymentMethodInfo(uuid: string) {
-  try {
-    const result = await db
-      .select()
-      .from(payment_methods)
-      .where(eq(payment_methods.uuid, uuid))
-      .limit(1);
-    if (result.length > 0) return result[0];
-    return null;
-  } catch (error) {
-    console.error("Error fetching payment method info:", error);
-    throw new Error("Failed to fetch payment method info.");
-  }
-}
-
-export async function updatePaymentMethod(uuid: string, is_default?: boolean) {
-  try {
-    if (is_default !== undefined) {
-      await db
-        .update(payment_methods)
-        .set({ is_default })
-        .where(eq(payment_methods.uuid, uuid));
-    }
-  } catch (error) {
-    console.error("Error updating payment method:", error);
-    throw new Error("Failed to update payment method.");
-  }
-}

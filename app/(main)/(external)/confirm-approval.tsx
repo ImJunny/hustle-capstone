@@ -1,37 +1,19 @@
 import { SimpleHeader } from "@/components/headers/Headers";
 import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
-import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { trpc } from "@/server/lib/trpc-client";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import StripeProvider from "@/contexts/StripeContext";
-import { ApproveButton } from "@/components/approve/ApproveSubmitButton";
+import { ApproveSubmitButton } from "@/components/approve/ApproveSubmitButton";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import { PaymentElement } from "@stripe/react-stripe-js";
-import { PaymentMethod } from "@/server/actions/payment-actions";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
-  const { uuid, selected_payment } = useLocalSearchParams();
-  const utils = trpc.useUtils();
-  const { user } = useAuthData();
-
-  // get selected service
-  const [payment, setPayment] = useState<PaymentMethod | null>(null);
-  useEffect(() => {
-    if (selected_payment) {
-      const parsedPayment = JSON.parse(
-        selected_payment as string
-      ) as PaymentMethod;
-      setPayment(parsedPayment);
-    }
-  }, [selected_payment]);
+  const { uuid } = useLocalSearchParams();
 
   const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
     {
@@ -98,46 +80,15 @@ export default function AcceptScreen() {
           </Text>
           <TrackTransactionEstimate data={data} type="approve" totalOnly />
         </View>
-
-        {/* <View
-          color="background"
-          style={{
-            padding: 26,
-          }}
-        >
-          <Text weight="semibold" size="lg">
-            Payment method
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "/choose-payment",
-                params: {
-                  selected_payment: JSON.stringify(payment),
-                },
-              });
-            }}
-            style={[styles.linker, { borderColor: themeColor.foreground }]}
-          >
-            <View>
-              {payment ? (
-                <View>
-                  <Text>Card ending in {payment.card_last4}</Text>
-                </View>
-              ) : (
-                <Text color="muted">None</Text>
-              )}
-            </View>
-
-            <Icon name="chevron-forward" size="xl" />
-          </TouchableOpacity>
-        </View> */}
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
         <Text weight="semibold" size="lg">
           Step 2 of 2
         </Text>
-        <ApproveButton jobPostUuid={uuid as string} amount={data?.rate || 0} />
+        <ApproveSubmitButton
+          initiatedJobUuid={uuid as string}
+          amount={data?.rate}
+        />
       </View>
     </StripeProvider>
   );

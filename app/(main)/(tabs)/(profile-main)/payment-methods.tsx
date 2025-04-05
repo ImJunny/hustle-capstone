@@ -6,15 +6,17 @@ import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "@/components/ui/IconButton";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import PaymentMethodSheet from "@/components/settings/payment-methods/PaymentMethodSheet";
 import { StyleSheet } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import { PaymentMethod } from "@/server/actions/payment-method-actions";
 import LoadingView from "@/components/ui/LoadingView";
 import PaymentDeleteModal from "@/components/payment-methods/PaymentDeleteModal";
+import { PaymentMethod } from "@/server/actions/payment-actions";
+import AddPaymentForm from "@/components/settings/payment-methods/AddPaymentForm";
+import ScrollView from "@/components/ui/ScrollView";
 
 export default function PaymentMethodsScreen() {
   const { user } = useAuthData();
@@ -24,7 +26,7 @@ export default function PaymentMethodsScreen() {
     data: paymentMethods,
     isLoading,
     error,
-  } = trpc.payment_methods.get_user_payment_methods.useQuery({
+  } = trpc.payment.get_user_payment_methods.useQuery({
     user_uuid: user.id,
   });
 
@@ -33,7 +35,7 @@ export default function PaymentMethodsScreen() {
       <>
         <SimpleHeader title="Payment Methods" />
         <View style={styles.centerPage}>
-          <Text color="red">Error loading payment methods</Text>
+          <Text>Error loading payment methods</Text>
         </View>
       </>
     );
@@ -48,6 +50,7 @@ export default function PaymentMethodsScreen() {
   }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [formVisible, setFormVisible] = useState(false);
 
   if (isLoading) {
     return (
@@ -58,34 +61,25 @@ export default function PaymentMethodsScreen() {
     );
   }
 
-  if (!paymentMethods || paymentMethods.length === 0) {
-    return (
-      <>
-        <PaymentMethodsHeader />
-        <View style={styles.centerPage}>
-          <Text weight="semibold" size="2xl">
-            No payment methods available
-          </Text>
-          <Text>
-            Add a payment method by clicking the add button at the top
-          </Text>
-        </View>
-      </>
-    );
-  }
-
   return (
     <>
-      <PaymentMethodsHeader />
-      <View style={{ flex: 1 }} color="base">
+      <PaymentMethodsHeader setFormVisible={setFormVisible} />
+      <View style={{ padding: 16, borderBottomWidth: 1 }}>
+        <Text size="sm" color="muted">
+          You can quickly manage card payment methods here or at checkout.
+        </Text>
+      </View>
+      <ScrollView style={{ flex: 1 }} color="background">
         {paymentMethods.map((paymentMethod, i) => (
           <PaymentEntry
             key={i}
-            paymentMethod={paymentMethod}
-            openSheet={() => openSheet(paymentMethod.uuid)}
+            paymentMethod={paymentMethod as PaymentMethod}
+            openSheet={() => openSheet(paymentMethod.id)}
           />
         ))}
-      </View>
+        {formVisible && <AddPaymentForm setFormVisible={setFormVisible} />}
+      </ScrollView>
+
       <PaymentMethodSheet
         sheetRef={paymentMethodSheetRef}
         setModalOpen={setModalOpen}
@@ -123,13 +117,13 @@ function PaymentEntry({ paymentMethod, openSheet }: PaymentEntryProps) {
       style={[styles.entry, { borderColor: themeColor.border }]}
     >
       <View>
-        <Text weight="semibold">{paymentMethod.cardholder_name}</Text>
+        <Text weight="semibold" size="lg">
+          {cardBrands[paymentMethod.brand]} ending in {paymentMethod.last4}
+        </Text>
         <Text>
-          {cardBrands[paymentMethod.card_brand]} ending in{" "}
-          {paymentMethod.card_last4}
+          Expires {paymentMethod.exp_month}/{paymentMethod.exp_year}
         </Text>
       </View>
-
       <IconButton name="ellipsis-vertical" onPress={openSheet} />
     </View>
   );

@@ -19,11 +19,11 @@ export default function PaymentDeleteModal({
 
   // Mutation to delete payment method
   const { mutate: deletePaymentMethod } =
-    trpc.payment_methods.delete_payment_method.useMutation({
+    trpc.payment.delete_payment_method.useMutation({
       onSuccess: () => {
-        utils.payment_methods.invalidate();
+        utils.payment.invalidate();
         Toast.show({
-          text1: "Successfully deleted payment method",
+          text1: "Deleted payment method",
           swipeable: false,
         });
       },
@@ -91,7 +91,7 @@ export default function PaymentDeleteModal({
                 <TouchableOpacity
                   onPress={() => {
                     setModalOpen(false);
-                    if (uuid) deletePaymentMethod({ uuid });
+                    if (uuid) deletePaymentMethod({ method_id: uuid });
                   }}
                 >
                   <Text weight="semibold">OK</Text>

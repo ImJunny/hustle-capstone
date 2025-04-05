@@ -3,45 +3,50 @@ import Text from "../ui/Text";
 import View from "../ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TransactionEstimate } from "@/server/actions/jobs-actions";
-import { ServiceFee } from "@/constants/Rates";
 
 export default function TrackTransactionEstimate({
   data,
   type = "accept",
+  totalOnly = false,
 }: {
-  data?: TransactionEstimate;
+  data: TransactionEstimate;
   type?: "accept" | "approve";
+  totalOnly?: boolean;
 }) {
-  if (type === "accept")
-    return (
-      <View>
-        <PriceRow title="Job rate" rate={data?.rate!} />
-        <PriceRow
-          title={`Service fee (${ServiceFee * 100}%)`}
-          rate={data?.service_fee!}
-          isFee
-        />
-        <PriceRow title="Total" rate={data?.total!} isTotal />
-      </View>
-    );
+  if (totalOnly) {
+    if (type === "accept") {
+      return (
+        <PriceRow title="Total" value={data.total - data.service_fee} isTotal />
+      );
+    } else {
+      return <PriceRow title="Total" value={data.rate} isTotal />;
+    }
+  }
 
   return (
-    <View>
-      <PriceRow title="Total" rate={data?.rate!} isTotal />
+    <View style={{ width: "100%" }}>
+      <PriceRow title="Total" value={data.rate} />
+      <PriceRow
+        title="Service fee"
+        value={data.service_fee}
+        isDeduction={true}
+      />
+      <PriceRow title="You receive" value={data.total} isTotal />
     </View>
   );
 }
 
 function PriceRow({
   title,
-  rate,
+  value,
+
+  isDeduction,
   isTotal,
-  isFee,
 }: {
   title: string;
-  rate: number;
+  value: number;
+  isDeduction?: boolean;
   isTotal?: boolean;
-  isFee?: boolean;
 }) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
@@ -58,7 +63,7 @@ function PriceRow({
         weight={isTotal ? "semibold" : "normal"}
         color={isTotal ? "foreground" : "muted"}
       >
-        {isFee && "-"}${rate}
+        {isDeduction && "-"}${value}
       </Text>
     </View>
   );

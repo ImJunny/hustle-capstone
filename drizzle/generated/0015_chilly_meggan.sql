@@ -1,0 +1,1 @@
+ALTER TABLE "app"."payment_methods" DROP COLUMN "stripe_customer_id";

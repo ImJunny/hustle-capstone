@@ -21,11 +21,10 @@ export default function ChooseWorkerScreen() {
   const themeColor = useThemeColor();
   const { user } = useAuthData();
   const { job_post_uuid } = useLocalSearchParams();
+
   if (!user) return;
 
-  const { data: workers, isLoading } = trpc.job.get_accepted_users.useQuery<
-    AcceptedUser[]
-  >(
+  const { data: workers, isLoading } = trpc.job.get_accepted_users.useQuery(
     {
       job_post_uuid: job_post_uuid as string,
     },
@@ -68,7 +67,7 @@ export default function ChooseWorkerScreen() {
         {workers.map((worker, i) => (
           <WorkerEntry
             key={i}
-            worker={worker as AcceptedUser}
+            worker={worker as unknown as AcceptedUser}
             currentWorker={currentWorker}
             setCurrentWorker={setCurrentWorker}
           />
@@ -84,7 +83,9 @@ export default function ChooseWorkerScreen() {
         <Button
           disabled={!currentWorker}
           onPress={() => {
-            router.push(`/confirm-approval?uuid=${job_post_uuid}`);
+            router.push(
+              `/confirm-approval?uuid=${job_post_uuid}&initiated_uuid=${currentWorker?.initiated_job_uuid}`
+            );
           }}
         >
           Continue to approval
@@ -174,9 +175,9 @@ function WorkerEntry({
           </View>
         </TouchableOpacity>
       </View>
-      {worker.service && (
+      {(worker.service as any) && (
         <TouchableOpacity
-          onPress={() => router.push(`/post/${worker.service?.uuid}`)}
+          onPress={() => router.push(`/post/${(worker.service as any).uuid}`)}
         >
           <View
             style={{
@@ -192,7 +193,7 @@ function WorkerEntry({
               style={{ flexDirection: "row", gap: 20, alignItems: "center" }}
             >
               <Image
-                source={{ uri: worker.service.image_url }}
+                source={{ uri: (worker.service as any).image_url }}
                 style={{ width: 40, height: 40, borderRadius: 4 }}
               />
               <View>
@@ -202,7 +203,7 @@ function WorkerEntry({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {worker.service.title}
+                  {(worker.service as any).title}
                 </Text>
                 <Text size="sm">Linked service</Text>
               </View>

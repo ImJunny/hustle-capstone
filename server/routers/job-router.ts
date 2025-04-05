@@ -9,7 +9,6 @@ import {
   getTrackWorkingPosts,
   getTransactionEstimate,
   unacceptJob,
-  approveJob,
   updateJobProgress,
 } from "../actions/jobs-actions";
 
@@ -37,21 +36,6 @@ export const jobRouter = createTRPCRouter({
         input.user_uuid,
         input.job_post_uuid,
         input.linked_service_post_uuid
-      );
-    }),
-  approve_job: protectedProcedure
-    .input(
-      z.object({
-        user_uuid: z.string(),
-        job_post_uuid: z.string(),
-        linked_payment_method_uuid: z.string().nullable(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await approveJob(
-        input.user_uuid,
-        input.job_post_uuid,
-        input.linked_payment_method_uuid
       );
     }),
   get_track_working_posts: protectedProcedure
@@ -123,7 +107,13 @@ export const jobRouter = createTRPCRouter({
     .input(
       z.object({
         uuid: z.string(),
-        progress: z.enum(["approved", "in progress", "complete"]),
+        progress: z.enum([
+          "accepted",
+          "approved",
+          "in progress",
+          "complete",
+          "paid",
+        ]),
       })
     )
     .mutation(async ({ input }) => {

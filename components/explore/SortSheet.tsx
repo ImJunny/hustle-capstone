@@ -1,39 +1,36 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import Sheet from "../ui/Sheet";
-import { Dispatch, RefObject, SetStateAction } from "react";
+import { RefObject } from "react";
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { TouchableOpacity } from "react-native";
 import Text from "../ui/Text";
 import { trpc } from "@/server/lib/trpc-client";
 import { TColors } from "@/constants/Colors";
-import Icon, { IconSymbolName } from "../ui/Icon";
+import Icon from "../ui/Icon";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function SortSheet({
   sheetRef,
-  sort,
-  setSort,
 }: {
   sheetRef: RefObject<BottomSheetMethods>;
-  sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
-  setSort: Dispatch<
-    SetStateAction<
-      "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
-    >
-  >;
 }) {
   const utils = trpc.useUtils();
+  const { sort } = useLocalSearchParams();
 
   function handleSort(
-    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
+    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | "relevance"
   ) {
-    setSort(type);
+    router.setParams({
+      sort: type,
+    });
+
     utils.post.get_posts_by_filters.invalidate();
   }
 
   return (
     <Sheet sheetRef={sheetRef} title="Sort" snapPoints={[1, "35%"]}>
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
-        <SheetOption text="Relevance" type={undefined} />
+        <SheetOption text="Relevance" type={"relevance"} />
         <SheetOption text="$ - Low to high" type="asc-rate" />
         <SheetOption text="$ - High to low" type="desc-rate" />
         <SheetOption text="Distance - Nearest" type="asc-dist" />
@@ -49,7 +46,7 @@ export default function SortSheet({
   }: {
     text: string;
     color?: TColors;
-    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
+    type: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | "relevance";
   }) {
     return (
       <TouchableOpacity

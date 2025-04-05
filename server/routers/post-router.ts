@@ -116,7 +116,7 @@ export const postRouter = createTRPCRouter({
   get_posts_by_filters: protectedProcedure
     .input(
       z.object({
-        keyword: z.string(),
+        keyword: z.string().optional(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
         min_distance: z.number(),

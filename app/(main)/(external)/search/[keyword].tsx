@@ -14,66 +14,44 @@ import { Dispatch, SetStateAction, useRef, useState } from "react";
 import FilterSheet from "@/components/explore/FilterSheet";
 import SortSheet from "@/components/explore/SortSheet";
 import { useAuthData } from "@/contexts/AuthContext";
+import { safeJsonParse } from "@/utils/helpers";
 
 export default function SearchedPage() {
-  const { keyword } = useLocalSearchParams();
-  const MIN_CONSTANT = 0;
-  const MAX_CONSTANT = 400;
-
   const { geocode: expoGeocode } = useAuthData();
 
-  const [filters, setFilters] = useState<{
-    type: "all" | "work" | "hire";
-    min: number;
-    max: number;
-    minDistance: number;
-    maxDistance: number;
-    locationType: "all" | "remote" | "local";
-    sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined;
-    geocode: [number, number] | undefined;
-    tags: string[];
-  }>({
-    type: "all",
-    min: MIN_CONSTANT,
-    max: MAX_CONSTANT,
-    minDistance: 0,
-    maxDistance: 100000,
-    locationType: "all",
-    sort: undefined,
-    geocode: expoGeocode ?? undefined,
-    tags: [],
-  });
-
-  const filterSetters = {
-    setMin: (min: number) => setFilters((prev) => ({ ...prev, min })),
-    setMax: (max: number) => setFilters((prev) => ({ ...prev, max })),
-    setMinDistance: (minDistance: number) =>
-      setFilters((prev) => ({ ...prev, minDistance })),
-    setMaxDistance: (maxDistance: number) =>
-      setFilters((prev) => ({ ...prev, maxDistance })),
-    setLocationType: (locationType: "remote" | "local" | "all") =>
-      setFilters((prev) => ({ ...prev, locationType })),
-    setType: (type: "work" | "hire" | "all") =>
-      setFilters((prev) => ({ ...prev, type })),
-    setSort: (
-      sort: "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
-    ) => setFilters((prev) => ({ ...prev, sort })),
-    setGeocode: (lat: number, lng: number) =>
-      setFilters((prev) => ({ ...prev, geocode: [lat, lng] })),
-    setTags: (tags: string[]) => setFilters((prev) => ({ ...prev, tags })),
-  };
+  const {
+    keyword,
+    min_rate,
+    max_rate,
+    min_distance,
+    max_distance,
+    location_type,
+    type,
+    sort,
+    geocode,
+    tags,
+  } = useLocalSearchParams();
+  const geocodeArray = safeJsonParse<[number, number] | undefined>(
+    geocode as string,
+    undefined
+  );
+  const tagsArray = safeJsonParse<string[]>(tags as string, []);
 
   const { data, isLoading } = trpc.post.get_posts_by_filters.useQuery({
     keyword: keyword as string,
-    min_rate: filters.min,
-    max_rate: filters.max,
-    min_distance: filters.minDistance,
-    max_distance: filters.maxDistance,
-    location_type: filters.locationType,
-    type: filters.type,
-    sort: filters.sort,
-    geocode: filters.geocode,
-    tags: filters.tags,
+    min_rate: parseInt((min_rate as string) ?? "0"),
+    max_rate: typeof max_rate === "string" ? parseInt(max_rate) : undefined,
+    min_distance: parseInt((min_distance as string) ?? "0"),
+    max_distance:
+      typeof max_distance === "string" ? parseInt(max_distance) : 100000,
+    location_type: (location_type as "all" | "remote" | "local") ?? undefined,
+    type: (type as "all" | "work" | "hire") ?? undefined,
+    sort:
+      sort === "relevance"
+        ? undefined
+        : (sort as "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist"),
+    geocode: geocodeArray ?? expoGeocode ?? undefined,
+    tags: tagsArray ?? [],
   });
 
   // Sheet refs to open/close
@@ -113,18 +91,8 @@ export default function SearchedPage() {
         </ScrollView>
       )}
 
-      <SortSheet
-        sheetRef={sortSheetRef}
-        sort={filters.sort}
-        setSort={
-          filterSetters.setSort as Dispatch<
-            SetStateAction<
-              "asc-rate" | "desc-rate" | "asc-dist" | "desc-dist" | undefined
-            >
-          >
-        }
-      />
-      <FilterSheet sheetRef={filterSheetRef} filterSetters={filterSetters} />
+      <SortSheet sheetRef={sortSheetRef} />
+      <FilterSheet sheetRef={filterSheetRef} />
     </>
   );
 }

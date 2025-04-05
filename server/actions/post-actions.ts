@@ -301,7 +301,7 @@ export async function getPostInfo(uuid: string) {
 
 // Get posts by filters
 export async function getPostsByFilters(
-  keyword: string,
+  keyword: string | undefined,
   min_rate: number | undefined,
   max_rate: number | undefined,
   min_distance: number,
@@ -349,10 +349,12 @@ export async function getPostsByFilters(
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid)) // Join address location
       .where(
         and(
-          or(
-            ilike(posts.title, `%${keyword}%`),
-            ilike(posts.description, `%${keyword}%`)
-          ),
+          keyword && keyword.length > 0
+            ? or(
+                ilike(posts.title, `%${keyword}%`),
+                ilike(posts.description, `%${keyword}%`)
+              )
+            : sql`TRUE`,
           gte(posts.min_rate, min_rate ?? 0),
           or(
             max_rate === null

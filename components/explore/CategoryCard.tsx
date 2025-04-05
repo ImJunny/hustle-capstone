@@ -16,44 +16,45 @@ type CategoryCardProps = {
 
 export default function CategoryCard({ data, style }: CategoryCardProps) {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        router.push(`/search?tags=["${data.value}"]`);
-      }}
+    <View
+      color="background"
+      style={{ marginRight: 10, borderRadius: 4, overflow: "hidden" }}
     >
-      <View
-        style={[
-          { marginRight: 10, borderRadius: 4, overflow: "hidden" },
-          style,
-        ]}
+      <TouchableOpacity
+        onPress={() => {
+          router.push(`/search?tags=["${data.value}"]`);
+        }}
+        activeOpacity={0.6}
       >
-        <ImageBackground
-          source={data.image}
-          style={{
-            width: 100,
-            height: 100,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <View
+        <View style={[{}, style]}>
+          <ImageBackground
+            source={data.image}
             style={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0,0,0,0.35)",
-              position: "absolute",
+              width: 100,
+              height: 100,
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
-          <Text
-            style={{ textAlign: "center" }}
-            color="white"
-            weight="bold"
-            size="lg"
           >
-            {data.label}
-          </Text>
-        </ImageBackground>
-      </View>
-    </TouchableOpacity>
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0,0,0,0.35)",
+                position: "absolute",
+              }}
+            />
+            <Text
+              style={{ textAlign: "center" }}
+              color="white"
+              weight="bold"
+              size="lg"
+            >
+              {data.label}
+            </Text>
+          </ImageBackground>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }

@@ -11,6 +11,8 @@ import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
 import Separator from "@/components/ui/Separator";
 import ProfileCard from "@/components/profile/ProfileCard";
+import { useState } from "react";
+import Button from "@/components/ui/Button";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -62,25 +64,24 @@ export default function ProfileMainScreen() {
     <>
       <ProfileSelfHeader username={data?.username!} />
       <ScrollView>
-        <View color="base">
-          <ProfileCard data={data as unknown as UserData} isSelf />
-          <View>
-            {jobPosts && jobPosts.length > 0 && (
-              <ProfileSection
-                title="Jobs I need help with"
-                type="work"
-                posts={jobPosts as unknown as Post[]}
-              />
-            )}
-            <Separator />
-            {servicePosts && servicePosts.length > 0 && (
-              <ProfileSection
-                title="Services I provide"
-                type="hire"
-                posts={servicePosts as unknown as Post[]}
-              />
-            )}
-          </View>
+        <ProfileCard data={data as unknown as UserData} isSelf />
+
+        <View>
+          {jobPosts && jobPosts.length > 0 && (
+            <ProfileSection
+              title="Jobs I need help with"
+              type="work"
+              posts={jobPosts as unknown as Post[]}
+            />
+          )}
+
+          {servicePosts && servicePosts.length > 0 && (
+            <ProfileSection
+              title="Services I provide"
+              type="hire"
+              posts={servicePosts as unknown as Post[]}
+            />
+          )}
         </View>
       </ScrollView>
     </>
@@ -96,5 +97,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
+  },
+  button: {
+    paddingHorizontal: 20,
+    height: 34,
+    borderRadius: 999,
   },
 });

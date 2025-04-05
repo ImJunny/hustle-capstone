@@ -97,7 +97,7 @@ export default function CommentsSheet() {
               name="close-outline"
               size="2xl"
               onPress={() => {
-                commentsSheetRef?.current?.close();
+                commentsSheetRef?.current?.forceClose();
                 Keyboard.dismiss();
               }}
             />

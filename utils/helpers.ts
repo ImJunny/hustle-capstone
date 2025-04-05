@@ -7,3 +7,11 @@ export const getGeneralDate = (date: string) => {
       : format(new Date(date), "MMMM d, yyyy")
     : null;
 };
+
+export function safeJsonParse<T>(input: string | undefined, fallback: T): T {
+  try {
+    return input ? JSON.parse(input) : fallback;
+  } catch {
+    return fallback;
+  }
+}

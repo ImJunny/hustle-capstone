@@ -26,22 +26,12 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
 import TagFilterInput from "../ui/TagFilterInput";
 import { tagTypes } from "@/drizzle/db-types";
+import { router } from "expo-router";
 
 export default function FilterSheet({
   sheetRef,
-  filterSetters,
 }: {
   sheetRef: RefObject<BottomSheetMethods>;
-  filterSetters: {
-    setMin: (min: number) => void;
-    setMax: (max: number) => void;
-    setMinDistance: (minDistance: number) => void;
-    setMaxDistance: (maxDistance: number) => void;
-    setLocationType: (locationType: "all" | "remote" | "local") => void;
-    setType: (type: "all" | "work" | "hire") => void;
-    setGeocode: (lat: number, lng: number) => void;
-    setTags: (tags: string[]) => void;
-  };
 }) {
   const themeColor = useThemeColor();
   const postTypes: Array<"work" | "hire" | "all"> = ["all", "work", "hire"];
@@ -73,29 +63,25 @@ export default function FilterSheet({
   useEffect(() => {
     if (geocode === null && expoGeocode) {
       setGeocode(expoGeocode);
-      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
+      router.setParams({
+        geocode: JSON.stringify(expoGeocode),
+      });
     }
   }, [expoGeocode]);
 
   const googleInputRef = useRef<GooglePlacesAutocompleteRef>(null);
 
-  // save query filters
   function handleSave() {
-    filterSetters.setMin(min);
-    filterSetters.setMax(max);
-    filterSetters.setType(postType);
-    filterSetters.setMinDistance(minDistance);
-    filterSetters.setMaxDistance(maxDistance == 55 ? 100000 : maxDistance);
-    filterSetters.setLocationType(locationType);
-    if (googleInputRef.current?.getAddressText() === "" && expoGeocode) {
-      filterSetters.setGeocode(expoGeocode[0], expoGeocode[1]);
-    } else if (geocode) {
-      const [lat, lng] = geocode;
-      filterSetters.setGeocode(lat, lng);
-    }
-    if (filterSetters.setTags) {
-      filterSetters.setTags(tags);
-    }
+    router.setParams({
+      min_rate: min,
+      max_rate: max,
+      min_distance: minDistance,
+      max_distance: maxDistance == 55 ? 100000 : maxDistance,
+      location_type: locationType,
+      type: postType,
+      geocode: geocode ? JSON.stringify(geocode) : undefined,
+      tags: tags.length > 0 ? JSON.stringify(tags) : undefined,
+    });
     utils.post.get_posts_by_filters.invalidate();
     sheetRef.current?.close();
     Keyboard.dismiss();
@@ -127,6 +113,7 @@ export default function FilterSheet({
                 style={styles.typeButton}
                 type={postType === type ? "primary" : "outline"}
                 onPress={() => setPostType(type)}
+                borderColor="foreground"
               >
                 {type === "all" ? "Any" : type === "work" ? "Jobs" : "Services"}
               </Button>
@@ -147,6 +134,7 @@ export default function FilterSheet({
                   style={styles.typeButton}
                   type={locationType === type ? "primary" : "outline"}
                   onPress={() => setLocationType(type)}
+                  borderColor="foreground"
                 >
                   {type === "all"
                     ? "Any"

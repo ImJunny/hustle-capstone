@@ -298,7 +298,8 @@ export function MessagesHeader() {
           center: (
             <Input
               placeholder="Search users, jobs, services..."
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: 999 }}
+              autoCapitalize="none"
             />
           ),
         }}
@@ -310,6 +311,7 @@ export function MessagesHeader() {
 export function ExploreHeader() {
   return (
     <HeaderWrapper
+      style={{ borderBottomWidth: 0 }}
       options={{
         center: (
           <Pressable
@@ -322,7 +324,7 @@ export function ExploreHeader() {
               editable={false}
               pointerEvents="none"
               placeholder="Search users, jobs, services..."
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: 999 }}
             />
           </Pressable>
         ),
@@ -335,7 +337,7 @@ export function SearchingHeader() {
   const [value, setValue] = useState(text as string);
 
   async function handleSearch() {
-    if (value.length > 0) router.replace(`/search/${value}`);
+    if (value.length > 0) router.replace(`/search?keyword=${value}`);
   }
   return (
     <HeaderWrapper
@@ -357,11 +359,12 @@ export function SearchingHeader() {
             />
             <Input
               placeholder="Search users, jobs, services..."
-              style={{ flex: 1 }}
+              style={{ flex: 1, borderRadius: 999 }}
               autoFocus
               value={value}
               onChangeText={(value) => setValue(value)}
               onSubmitEditing={handleSearch}
+              autoCapitalize="none"
             />
             <IconButton name="ellipsis-vertical" size="xl" />
           </View>
@@ -405,7 +408,7 @@ export function SearchedHeader({
                 value={text}
                 editable={false}
                 placeholder="Search users, jobs, services..."
-                style={{ width: "100%" }}
+                style={{ width: "100%", borderRadius: 999 }}
               />
             </Pressable>
           </View>
@@ -666,7 +669,7 @@ export function SingleMessageFooter({
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
             <Input
               placeholder="Send a message..."
-              style={{ flexGrow: 1 }}
+              style={{ flexGrow: 1, borderRadius: 999 }}
               value={text}
               onChangeText={(value) => setText(value)}
               onSubmitEditing={handleSubmit}

@@ -301,7 +301,7 @@ export async function getPostInfo(uuid: string) {
 
 // Get posts by filters
 export async function getPostsByFilters(
-  keyword: string,
+  keyword: string | undefined,
   min_rate: number | undefined,
   max_rate: number | undefined,
   min_distance: number,
@@ -349,10 +349,12 @@ export async function getPostsByFilters(
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid)) // Join address location
       .where(
         and(
-          or(
-            ilike(posts.title, `%${keyword}%`),
-            ilike(posts.description, `%${keyword}%`)
-          ),
+          keyword && keyword.length > 0
+            ? or(
+                ilike(posts.title, `%${keyword}%`),
+                ilike(posts.description, `%${keyword}%`)
+              )
+            : sql`TRUE`,
           gte(posts.min_rate, min_rate ?? 0),
           or(
             max_rate === null
@@ -685,5 +687,75 @@ export async function getSavedPosts(
   } catch (error) {
     console.error("Failed to get saved posts:", error);
     throw new Error("Failed to retrieve saved posts");
+  }
+}
+
+// Get explore posts; TEMPORARY BEFORE ALGORITHM
+export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
+  try {
+    let jobs = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
+      })
+      .from(posts)
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(
+        and(
+          ne(posts.user_uuid, uuid),
+          ne(posts.status_type, "hidden"),
+          eq(posts.type, "work")
+        )
+      )
+      .groupBy(posts.uuid)
+      .orderBy(desc(posts.created_at))
+      .limit(4);
+
+    let services = await db
+      .select({
+        uuid: posts.uuid,
+        type: posts.type,
+        title: posts.title,
+        due_date: posts.due_date,
+        min_rate: posts.min_rate,
+        max_rate: posts.max_rate,
+        location_type: posts.location_type,
+        image_url: sql<string | null>`MIN(${post_images.image_url})`,
+        tags: sql<string[]>`(
+          SELECT ARRAY_AGG(${post_tags.tag_type})
+          FROM ${post_tags}
+          WHERE ${post_tags.post_uuid} = ${posts.uuid}
+        )`,
+      })
+      .from(posts)
+      .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(
+        and(
+          ne(posts.user_uuid, uuid),
+          ne(posts.status_type, "hidden"),
+          eq(posts.type, "hire")
+        )
+      )
+      .groupBy(posts.uuid)
+      .orderBy(desc(posts.created_at))
+      .limit(4);
+
+    return { jobs, services };
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get explore posts.");
   }
 }

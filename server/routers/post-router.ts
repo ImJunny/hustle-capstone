@@ -14,6 +14,7 @@ import {
   unsavePost,
   getSavedPosts,
   getPostDetailsFooterInfo,
+  getExplorePosts,
 } from "../actions/post-actions";
 import Input from "@/components/ui/Input";
 
@@ -115,7 +116,7 @@ export const postRouter = createTRPCRouter({
   get_posts_by_filters: protectedProcedure
     .input(
       z.object({
-        keyword: z.string(),
+        keyword: z.string().optional(),
         min_rate: z.number().optional(),
         max_rate: z.number().optional(),
         min_distance: z.number(),
@@ -216,5 +217,15 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getSavedPosts(input.user_uuid, input.type);
+    }),
+  get_explore_posts: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+        type: z.enum(["work", "hire"]).optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getExplorePosts(input.uuid, input.type);
     }),
 });

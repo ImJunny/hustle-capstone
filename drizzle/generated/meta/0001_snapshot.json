@@ -1,6 +1,6 @@
 {
-  "id": "be830608-a617-4f67-a7fa-c3bc99ee9ef3",
-  "prevId": "8cbb0b17-45bc-4b91-8a3c-0a55965f18e1",
+  "id": "b58cd3cc-71de-4144-96aa-5c84bc3db691",
+  "prevId": "381348b3-646c-4470-9081-e135e689e85b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -82,16 +82,16 @@
         "addresses_user_uuid_users_uuid_fk": {
           "name": "addresses_user_uuid_users_uuid_fk",
           "tableFrom": "addresses",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -123,18 +123,131 @@
         "chats_last_message_uuid_messages_uuid_fk": {
           "name": "chats_last_message_uuid_messages_uuid_fk",
           "tableFrom": "chats",
-          "tableTo": "messages",
-          "schemaTo": "app",
           "columnsFrom": [
             "last_message_uuid"
           ],
+          "tableTo": "messages",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "app.comments": {
+      "name": "comments",
+      "schema": "app",
+      "columns": {
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_uuid": {
+          "name": "user_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "comments_post_uuid_posts_uuid_fk": {
+          "name": "comments_post_uuid_posts_uuid_fk",
+          "tableFrom": "comments",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "tableTo": "posts",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "comments_user_uuid_users_uuid_fk": {
+          "name": "comments_user_uuid_users_uuid_fk",
+          "tableFrom": "comments",
+          "columnsFrom": [
+            "user_uuid"
+          ],
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "app.following": {
+      "name": "following",
+      "schema": "app",
+      "columns": {
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "follower_uuid": {
+          "name": "follower_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "followed_uuid": {
+          "name": "followed_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -195,58 +308,58 @@
         "initiated_jobs_worker_uuid_users_uuid_fk": {
           "name": "initiated_jobs_worker_uuid_users_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "worker_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "initiated_jobs_job_post_uuid_posts_uuid_fk": {
           "name": "initiated_jobs_job_post_uuid_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "job_post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "initiated_jobs_linked_service_post_uuid_posts_uuid_fk": {
           "name": "initiated_jobs_linked_service_post_uuid_posts_uuid_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "linked_service_post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         },
         "initiated_jobs_progress_type_progress_types_name_fk": {
           "name": "initiated_jobs_progress_type_progress_types_name_fk",
           "tableFrom": "initiated_jobs",
-          "tableTo": "progress_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "progress_type"
           ],
+          "tableTo": "progress_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -278,10 +391,10 @@
       "uniqueConstraints": {
         "location_types_name_unique": {
           "name": "location_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -311,10 +424,10 @@
       "uniqueConstraints": {
         "message_types_name_unique": {
           "name": "message_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -348,7 +461,7 @@
           "name": "message",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -369,6 +482,13 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
+        },
+        "is_read": {
+          "name": "is_read",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         }
       },
       "indexes": {},
@@ -376,58 +496,58 @@
         "messages_sender_uuid_users_uuid_fk": {
           "name": "messages_sender_uuid_users_uuid_fk",
           "tableFrom": "messages",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "sender_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "messages_receiver_uuid_users_uuid_fk": {
           "name": "messages_receiver_uuid_users_uuid_fk",
           "tableFrom": "messages",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "receiver_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "messages_type_message_types_name_fk": {
           "name": "messages_type_message_types_name_fk",
           "tableFrom": "messages",
-          "tableTo": "message_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "type"
           ],
+          "tableTo": "message_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "messages_post_uuid_posts_uuid_fk": {
           "name": "messages_post_uuid_posts_uuid_fk",
           "tableFrom": "messages",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -459,12 +579,98 @@
       "uniqueConstraints": {
         "onboarding_phase_types_name_unique": {
           "name": "onboarding_phase_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "app.payments": {
+      "name": "payments",
+      "schema": "app",
+      "columns": {
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "user_uuid": {
+          "name": "user_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "job_uuid": {
+          "name": "job_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_payment_intent_id": {
+          "name": "stripe_payment_intent_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payments_user_uuid_users_uuid_fk": {
+          "name": "payments_user_uuid_users_uuid_fk",
+          "tableFrom": "payments",
+          "columnsFrom": [
+            "user_uuid"
+          ],
+          "tableTo": "users",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "payments_job_uuid_initiated_jobs_uuid_fk": {
+          "name": "payments_job_uuid_initiated_jobs_uuid_fk",
+          "tableFrom": "payments",
+          "columnsFrom": [
+            "job_uuid"
+          ],
+          "tableTo": "initiated_jobs",
+          "schemaTo": "app",
+          "columnsTo": [
+            "uuid"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -498,16 +704,16 @@
         "post_images_post_uuid_posts_uuid_fk": {
           "name": "post_images_post_uuid_posts_uuid_fk",
           "tableFrom": "post_images",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -545,30 +751,30 @@
         "post_tags_tag_type_tag_types_name_fk": {
           "name": "post_tags_tag_type_tag_types_name_fk",
           "tableFrom": "post_tags",
-          "tableTo": "tag_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "tag_type"
           ],
+          "tableTo": "tag_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "post_tags_post_uuid_posts_uuid_fk": {
           "name": "post_tags_post_uuid_posts_uuid_fk",
           "tableFrom": "post_tags",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -661,58 +867,58 @@
         "posts_user_uuid_users_uuid_fk": {
           "name": "posts_user_uuid_users_uuid_fk",
           "tableFrom": "posts",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "posts_location_type_location_types_name_fk": {
           "name": "posts_location_type_location_types_name_fk",
           "tableFrom": "posts",
-          "tableTo": "location_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "location_type"
           ],
+          "tableTo": "location_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "posts_address_uuid_addresses_uuid_fk": {
           "name": "posts_address_uuid_addresses_uuid_fk",
           "tableFrom": "posts",
-          "tableTo": "addresses",
-          "schemaTo": "app",
           "columnsFrom": [
             "address_uuid"
           ],
+          "tableTo": "addresses",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "posts_status_type_status_types_name_fk": {
           "name": "posts_status_type_status_types_name_fk",
           "tableFrom": "posts",
-          "tableTo": "status_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "status_type"
           ],
+          "tableTo": "status_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
@@ -744,10 +950,10 @@
       "uniqueConstraints": {
         "progress_types_name_unique": {
           "name": "progress_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -777,10 +983,10 @@
       "uniqueConstraints": {
         "reviewer_types_name_unique": {
           "name": "reviewer_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -847,58 +1053,58 @@
         "reviews_reviewer_uuid_users_uuid_fk": {
           "name": "reviews_reviewer_uuid_users_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "reviewer_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "reviews_reviewee_uuid_users_uuid_fk": {
           "name": "reviews_reviewee_uuid_users_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "reviewee_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "reviews_type_reviewer_types_name_fk": {
           "name": "reviews_type_reviewer_types_name_fk",
           "tableFrom": "reviews",
-          "tableTo": "reviewer_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "type"
           ],
+          "tableTo": "reviewer_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "reviews_job_uuid_posts_uuid_fk": {
           "name": "reviews_job_uuid_posts_uuid_fk",
           "tableFrom": "reviews",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "job_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -936,30 +1142,30 @@
         "saved_posts_user_uuid_users_uuid_fk": {
           "name": "saved_posts_user_uuid_users_uuid_fk",
           "tableFrom": "saved_posts",
-          "tableTo": "users",
-          "schemaTo": "app",
           "columnsFrom": [
             "user_uuid"
           ],
+          "tableTo": "users",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "saved_posts_post_uuid_posts_uuid_fk": {
           "name": "saved_posts_post_uuid_posts_uuid_fk",
           "tableFrom": "saved_posts",
-          "tableTo": "posts",
-          "schemaTo": "app",
           "columnsFrom": [
             "post_uuid"
           ],
+          "tableTo": "posts",
+          "schemaTo": "app",
           "columnsTo": [
             "uuid"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -991,10 +1197,10 @@
       "uniqueConstraints": {
         "status_types_name_unique": {
           "name": "status_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -1024,10 +1230,10 @@
       "uniqueConstraints": {
         "tag_types_name_unique": {
           "name": "tag_types_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -1092,6 +1298,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "stripe_customer_id": {
+          "name": "stripe_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1099,26 +1311,26 @@
         "users_onboarding_phase_onboarding_phase_types_name_fk": {
           "name": "users_onboarding_phase_onboarding_phase_types_name_fk",
           "tableFrom": "users",
-          "tableTo": "onboarding_phase_types",
-          "schemaTo": "app",
           "columnsFrom": [
             "onboarding_phase"
           ],
+          "tableTo": "onboarding_phase_types",
+          "schemaTo": "app",
           "columnsTo": [
             "name"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_uuid_unique": {
           "name": "users_uuid_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       },
       "policies": {},
@@ -1130,10 +1342,10 @@
   "schemas": {
     "app": "app"
   },
+  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
-  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

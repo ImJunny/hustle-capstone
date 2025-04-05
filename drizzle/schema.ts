@@ -209,7 +209,7 @@ export const payments = app_schema.table("payments", {
   job_uuid: uuid("job_uuid")
     .references(() => initiated_jobs.uuid)
     .notNull(),
-  amount: integer("amount").notNull(), // Stored in cents
+  amount: integer("amount").notNull(),
   stripe_payment_intent_id: text("stripe_payment_intent_id").notNull(),
   status: text("status", {
     enum: ["pending", "succeeded", "failed", "refunded"],

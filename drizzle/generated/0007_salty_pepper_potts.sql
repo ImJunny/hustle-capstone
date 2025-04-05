@@ -1,1 +1,0 @@
-ALTER TABLE "app"."messages" ADD COLUMN "is_read" boolean DEFAULT false;

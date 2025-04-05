@@ -1,1 +1,0 @@
-ALTER TABLE "app"."users" RENAME COLUMN "stripe_customer_ui" TO "stripe_customer_id";

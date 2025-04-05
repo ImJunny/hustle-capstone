@@ -1,1 +1,0 @@
-ALTER TABLE "app"."payment_methods" ADD COLUMN "cardholder_name" text NOT NULL;

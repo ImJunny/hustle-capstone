@@ -29,6 +29,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(Hustle) to use your location."
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.hustlecapstone.hustlecapstone",
+          "publishableKey": "pk_test_51R7shhH130nkwZNkHH9spOQYzZuq52x7lpPwh3hEmKSZpdQwW8OGhk1WOU5LoU5gjUYpddjIbKQFUlj43bNxrieT00Lr2sSw66"
+        }
       ]
     ],
     "experiments": {

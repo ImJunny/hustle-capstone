@@ -10,6 +10,7 @@ import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { explore_categories } from "@/constants/Data";
+import { Image } from "expo-image";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
@@ -23,11 +24,9 @@ export default function ExploreScreen() {
       >
         <View style={{ paddingBottom: 40 }}>
           <View style={{ height: 260 }}>
-            <ImagePlaceholder
-              width={600}
-              height={260}
-              style={{ height: "100%", position: "absolute" }}
-              isDark
+            <Image
+              source={require("@/assets/images/explore/explore-hero.jpg")}
+              style={{ height: 260, position: "absolute", width: "100%" }}
             />
             <View style={{ flex: 1, paddingTop: 70, paddingHorizontal: 16 }}>
               <LinearGradient

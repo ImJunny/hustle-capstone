@@ -298,7 +298,7 @@ export function MessagesHeader() {
           center: (
             <Input
               placeholder="Search users, jobs, services..."
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: 999 }}
             />
           ),
         }}
@@ -322,7 +322,7 @@ export function ExploreHeader() {
               editable={false}
               pointerEvents="none"
               placeholder="Search users, jobs, services..."
-              style={{ width: "100%" }}
+              style={{ width: "100%", borderRadius: 999 }}
             />
           </Pressable>
         ),
@@ -357,7 +357,7 @@ export function SearchingHeader() {
             />
             <Input
               placeholder="Search users, jobs, services..."
-              style={{ flex: 1 }}
+              style={{ flex: 1, borderRadius: 999 }}
               autoFocus
               value={value}
               onChangeText={(value) => setValue(value)}
@@ -666,7 +666,7 @@ export function SingleMessageFooter({
           <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
             <Input
               placeholder="Send a message..."
-              style={{ flexGrow: 1 }}
+              style={{ flexGrow: 1, borderRadius: 999 }}
               value={text}
               onChangeText={(value) => setText(value)}
               onSubmitEditing={handleSubmit}

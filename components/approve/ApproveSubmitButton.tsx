@@ -9,34 +9,72 @@ import Toast from "react-native-toast-message";
 import { useState } from "react";
 import ApproveConfirmationModal from "./ApproveConfirmationModal";
 import { router } from "expo-router";
+import * as Linking from "expo-linking";
+
+async function fetchPaymentSheetParams(amount: number): Promise<{
+  paymentIntent: string;
+  ephemeralKey: string;
+  customer: string;
+}> {
+  return fetch("/api/payment-sheet", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount }),
+  }).then((res) => res.json());
+}
 
 export function ApproveButton({
   jobPostUuid,
-  payment,
   amount,
   isLoading = false,
   jobTitle = "this job",
   workerName = "the worker",
 }: {
   jobPostUuid: string;
-  payment: PaymentMethod | null;
   amount: number;
   isLoading?: boolean;
   jobTitle?: string;
   workerName?: string;
 }) {
-  const { confirmPayment } = useStripe();
-  const { user } = useAuthData();
-  const utils = trpc.useUtils();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [loading, setLoading] = useState(false);
 
-  const { mutate: recordPayment } =
-    trpc.confirm_payment.recordPayment.useMutation();
-  const { mutate: approveJob } = trpc.job.approve_job.useMutation({
-    onSuccess: () => {
-      utils.job.invalidate();
-      utils.post.invalidate();
+  const initializePaymentSheet = async () => {
+    const { paymentIntent, ephemeralKey, customer } =
+      await fetchPaymentSheetParams(amount);
+    const { error } = await initPaymentSheet({
+      merchantDisplayName: "Your Company",
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+      allowsDelayedPaymentMethods: true,
+      defaultBillingDetails: {
+        name: "Test User",
+        email: "test.user@example.com",
+        phone: "888-888-8888",
+      },
+      returnURL: Linking.createURL("stripe-redirect"),
+
+      applePay: {
+        merchantCountryCode: "US",
+      },
+    });
+    if (!error) {
+      setLoading(true);
+    }
+  };
+
+  const openPaymentSheet = async () => {
+    const { error } = await presentPaymentSheet();
+    if (error) {
+      console.log("Error presenting payment sheet:", error);
+      throw new Error(error.message);
+    } else {
+      console.log("Payment successful!");
+      Toast.show({
+        text1: "Test payment successful and worker approved!",
+        type: "success",
+      });
       router.replace({
         pathname: "/(main)/(external)/track/hiring/[uuid]",
         params: {
@@ -45,128 +83,152 @@ export function ApproveButton({
           approved_job: jobPostUuid,
         },
       });
-    },
-  });
-
-  const handlePayment = async () => {
-    if (!payment?.stripe_payment_method_id || !user?.id) {
-      Alert.alert("Error", "Payment method or user missing");
-      return;
-    }
-
-    setProcessing(true);
-    setShowConfirmModal(false);
-
-    try {
-      // 1. Create a TEST Payment Intent (client-side for simplicity)
-      const testPaymentIntentParams = {
-        amount: amount * 100, // Convert to cents
-        currency: "usd",
-        paymentMethodId: payment.stripe_payment_method_id,
-        customerId: payment.stripe_customer_id,
-      };
-
-      // In test mode, we'll use a hardcoded test client secret
-      // Replace this with a real client secret from your test Payment Intent
-      const TEST_CLIENT_SECRET = "pi_example_test_secret_123";
-
-      // 2. Confirm the Payment Intent
-      const { error, paymentIntent } = await confirmPayment(
-        TEST_CLIENT_SECRET,
-        {
-          paymentMethodType: "Card",
-          paymentMethodData: {
-            billingDetails: {
-              name: payment.cardholder_name || "Test User",
-              email: user.email || "test@example.com",
-            },
-          },
-        }
-      );
-
-      if (error) throw new Error(error.message);
-      if (!paymentIntent) throw new Error("Payment failed");
-
-      // 3. Record payment in your database
-      await new Promise<void>((resolve, reject) => {
-        recordPayment(
-          {
-            paymentIntentId: paymentIntent.id,
-            amount,
-            jobPostUuid,
-            paymentMethodId: payment.uuid,
-          },
-          {
-            onSuccess: () => resolve(),
-            onError: (error) => reject(new Error(error.message)),
-          }
-        );
-      });
-
-      // 4. Approve the job
-      approveJob({
-        user_uuid: user.id,
-        job_post_uuid: jobPostUuid,
-        linked_payment_method_uuid: payment.uuid,
-      });
-
-      Toast.show({
-        text1: "Test payment successful and worker approved!",
-        type: "success",
-      });
-    } catch (error) {
-      let errorMessage = "Test payment failed. Please try again.";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        console.log(error);
-        if (error.message.includes("payment method")) {
-          errorMessage = "Invalid payment method. Please use a test card.";
-        }
-      }
-
-      Toast.show({
-        text1: errorMessage,
-        text2: "Payment Error",
-        type: "error",
-        visibilityTime: 5000,
-      });
-    } finally {
-      setProcessing(false);
     }
   };
 
-  const handleApprovePress = () => {
-    if (!payment) {
-      Alert.alert(
-        "Payment Method Required",
-        "Please select a payment method before approving",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Choose Payment",
-            onPress: () => router.push("/choose-payment"),
-          },
-        ]
-      );
-      return;
-    }
-    setShowConfirmModal(true);
+  const handleInitAndOpen = () => {
+    initializePaymentSheet();
+    openPaymentSheet();
   };
+
+  // const { confirmPayment } = useStripe();
+  // const { user } = useAuthData();
+  // const utils = trpc.useUtils();
+  // const [showConfirmModal, setShowConfirmModal] = useState(false);
+  // const [processing, setProcessing] = useState(false);
+
+  // const { mutate: recordPayment } =
+  //   trpc.confirm_payment.recordPayment.useMutation();
+  // const { mutate: approveJob } = trpc.job.approve_job.useMutation({
+  //   onSuccess: () => {
+  //     utils.job.invalidate();
+  //     utils.post.invalidate();
+  //     router.replace({
+  //       pathname: "/(main)/(external)/track/hiring/[uuid]",
+  //       params: {
+  //         uuid: jobPostUuid,
+  //         refresh: Date.now(),
+  //         approved_job: jobPostUuid,
+  //       },
+  //     });
+  //   },
+  // });
+
+  // const handlePayment = async () => {
+  //   if (!payment?.stripe_payment_method_id || !user?.id) {
+  //     Alert.alert("Error", "Payment method or user missing");
+  //     return;
+  //   }
+
+  //   setProcessing(true);
+  //   setShowConfirmModal(false);
+
+  //   try {
+  //     // 1. Create a TEST Payment Intent (client-side for simplicity)
+  //     const testPaymentIntentParams = {
+  //       amount: amount * 100, // Convert to cents
+  //       currency: "usd",
+  //       paymentMethodId: payment.stripe_payment_method_id,
+  //       customerId: payment.stripe_customer_id,
+  //     };
+
+  //     // In test mode, we'll use a hardcoded test client secret
+  //     // Replace this with a real client secret from your test Payment Intent
+  //     const TEST_CLIENT_SECRET = "pi_example_test_secret_123";
+
+  //     // 2. Confirm the Payment Intent
+  //     const { error, paymentIntent } = await confirmPayment(
+  //       TEST_CLIENT_SECRET,
+  //       {
+  //         paymentMethodType: "Card",
+  //         paymentMethodData: {
+  //           billingDetails: {
+  //             name: payment.cardholder_name || "Test User",
+  //             email: user.email || "test@example.com",
+  //           },
+  //         },
+  //       }
+  //     );
+
+  //     if (error) throw new Error(error.message);
+  //     if (!paymentIntent) throw new Error("Payment failed");
+
+  //     // 3. Record payment in your database
+  //     await new Promise<void>((resolve, reject) => {
+  //       recordPayment(
+  //         {
+  //           paymentIntentId: paymentIntent.id,
+  //           amount,
+  //           jobPostUuid,
+  //           paymentMethodId: payment.uuid,
+  //         },
+  //         {
+  //           onSuccess: () => resolve(),
+  //           onError: (error) => reject(new Error(error.message)),
+  //         }
+  //       );
+  //     });
+
+  //     // 4. Approve the job
+  //     approveJob({
+  //       user_uuid: user.id,
+  //       job_post_uuid: jobPostUuid,
+  //       linked_payment_method_uuid: payment.uuid,
+  //     });
+
+  //     Toast.show({
+  //       text1: "Test payment successful and worker approved!",
+  //       type: "success",
+  //     });
+  //   } catch (error) {
+  //     let errorMessage = "Test payment failed. Please try again.";
+
+  //     if (error instanceof Error) {
+  //       errorMessage = error.message;
+  //       console.log(error);
+  //       if (error.message.includes("payment method")) {
+  //         errorMessage = "Invalid payment method. Please use a test card.";
+  //       }
+  //     }
+
+  //     Toast.show({
+  //       text1: errorMessage,
+  //       text2: "Payment Error",
+  //       type: "error",
+  //       visibilityTime: 5000,
+  //     });
+  //   } finally {
+  //     setProcessing(false);
+  //   }
+  // };
+
+  // const handleApprovePress = () => {
+  //   if (!payment) {
+  //     Alert.alert(
+  //       "Payment Method Required",
+  //       "Please select a payment method before approving",
+  //       [
+  //         { text: "Cancel", style: "cancel" },
+  //         {
+  //           text: "Choose Payment",
+  //           onPress: () => router.push("/choose-payment"),
+  //         },
+  //       ]
+  //     );
+  //     return;
+  //   }
+  //   setShowConfirmModal(true);
+  // };
 
   return (
     <>
-      <View style={[styles.footer, { borderColor: useThemeColor().border }]}>
-        <Button
-          style={styles.button}
-          onPress={handleApprovePress}
-          disabled={processing || isLoading || !payment}
-        >
-          {processing ? "Processing..." : "Approve & Pay"}
+      <View>
+        <Button style={styles.button} onPress={handleInitAndOpen}>
+          {"Approve & Pay"}
         </Button>
       </View>
 
-      <ApproveConfirmationModal
+      {/* <ApproveConfirmationModal
         visible={showConfirmModal}
         title="Confirm Approval"
         message={`You're about to approve ${workerName} for ${jobTitle} and pay $${amount.toFixed(
@@ -176,7 +238,7 @@ export function ApproveButton({
         cancelText="Cancel"
         onConfirm={handlePayment}
         onCancel={() => setShowConfirmModal(false)}
-      />
+      /> */}
     </>
   );
 }

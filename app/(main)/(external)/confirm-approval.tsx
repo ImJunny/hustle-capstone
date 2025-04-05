@@ -15,7 +15,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
-import { StripeProvider } from "@stripe/stripe-react-native";
+import StripeProvider from "@/components/stripe-provider";
 import { ApproveButton } from "@/components/approve/ApproveSubmitButton";
 
 export default function AcceptScreen() {
@@ -51,12 +51,7 @@ export default function AcceptScreen() {
     );
   } else if (error) {
     return (
-      <StripeProvider
-        publishableKey={
-          process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
-        }
-        merchantIdentifier="merchant.com.your-app" // required for Apple Pay
-      >
+      <StripeProvider>
         <SimpleHeader title="Confirm approval" />
 
         <View
@@ -69,10 +64,7 @@ export default function AcceptScreen() {
   }
 
   return (
-    <StripeProvider
-      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-      merchantIdentifier="merchant.com.your-app" // required for Apple Pay
-    >
+    <StripeProvider>
       <SimpleHeader title="Confirm approval" />
       <ScrollView style={styles.page} color="background">
         <View
@@ -101,7 +93,7 @@ export default function AcceptScreen() {
           <TrackTransactionEstimate data={data} type="approve" />
         </View>
 
-        <View
+        {/* <View
           color="background"
           style={{
             padding: 26,
@@ -133,12 +125,11 @@ export default function AcceptScreen() {
 
             <Icon name="chevron-forward" size="xl" />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
         <ApproveButton
           jobPostUuid={uuid as string}
-          payment={payment}
           amount={data?.rate || 0}
           jobTitle={"this job"}
           workerName={"the worker"}

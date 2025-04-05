@@ -38,16 +38,12 @@ export default function Layout() {
           options={{ animation: "fade_from_bottom" }}
         />
         <Stack.Screen
-          name="(external)/choose-payment"
-          options={{ animation: "fade_from_bottom" }}
-        />
-        <Stack.Screen
           name="(external)/confirm-approval"
           options={{ animation: "ios_from_right" }}
         />
       </Stack>
-      {/* <CommentsSheet />
-      <SharePostSheet /> */}
+      <CommentsSheet />
+      <SharePostSheet />
     </>
   );
 }

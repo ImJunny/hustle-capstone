@@ -13,8 +13,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function AcceptScreen() {
   const themeColor = useThemeColor();
-  const { uuid } = useLocalSearchParams();
-
+  const { uuid, initiated_uuid } = useLocalSearchParams();
   const { data, isLoading, error } = trpc.job.get_transaction_estimate.useQuery(
     {
       job_post_uuid: uuid as string,
@@ -86,7 +85,7 @@ export default function AcceptScreen() {
           Step 2 of 2
         </Text>
         <ApproveSubmitButton
-          initiatedJobUuid={uuid as string}
+          initiatedJobUuid={initiated_uuid as string}
           amount={data?.rate}
         />
       </View>

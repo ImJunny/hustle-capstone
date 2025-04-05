@@ -6,6 +6,7 @@ import * as Linking from "expo-linking";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { router } from "expo-router";
 
 export function ApproveSubmitButton({
   initiatedJobUuid,
@@ -14,17 +15,37 @@ export function ApproveSubmitButton({
   initiatedJobUuid: string;
   amount: number;
 }) {
+  const themeColor = useThemeColor();
+  const utils = trpc.useUtils();
   const { user } = useAuthData();
-  const { data: userData } = trpc.user.get_user_data.useQuery({
-    uuid: user!.id,
-  });
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const { data } = trpc.payment.process_payment.useQuery({
     user_uuid: user!.id,
     amount,
   });
 
-  const themeColor = useThemeColor();
+  const { mutate: updateJobProgress } =
+    trpc.job.update_job_progress.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: "Payment successful",
+          type: "success",
+          swipeable: false,
+        });
+        utils.post.invalidate();
+        utils.job.invalidate();
+        router.back();
+        router.back();
+      },
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          type: "error",
+          swipeable: false,
+        });
+      },
+    });
+
   // Initialize payment sheet
   const handleInitPaymentSheet = async (data: any) => {
     const { error } = await initPaymentSheet({
@@ -66,11 +87,15 @@ export function ApproveSubmitButton({
   // Present payment sheet
   const handlePresentPaymentSheet = async () => {
     const { error } = await presentPaymentSheet();
-    if (!error)
-      Toast.show({
-        text1: "Processed payment",
-        type: "success",
-      });
+    if (error) return;
+    Toast.show({
+      text1: "Processed payment",
+      type: "success",
+    });
+    updateJobProgress({
+      uuid: initiatedJobUuid,
+      progress: "accepted",
+    });
   };
 
   return (

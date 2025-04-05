@@ -69,7 +69,7 @@ export async function acceptJob(
   job_post_uuid: string,
   linked_service_post_uuid: string | null
 ) {
-  // temprorarily get min rate; use offer lookup later
+  // temporarily get min rate; use offer lookup later
   try {
     const is_already_accepted = await db
       .select()
@@ -101,46 +101,6 @@ export async function acceptJob(
     if (error instanceof Error && error.message === "already_accepted")
       throw new Error("Already accepted this job");
     throw new Error("Failed to apply for job");
-  }
-}
-
-export async function approveJob(
-  user_uuid: string,
-  job_post_uuid: string,
-  linked_payment_method_uuid: string | null
-) {
-  // temprorarily get min rate; use offer lookup later
-  try {
-    const is_already_approved = await db
-      .select()
-      .from(initiated_jobs)
-      .where(
-        and(
-          eq(initiated_jobs.job_post_uuid, job_post_uuid),
-          eq(initiated_jobs.worker_uuid, user_uuid)
-        )
-      )
-      .limit(1)
-      .then((posts) => posts.length > 0);
-    if (is_already_approved) throw new Error("already_approved");
-
-    await db.insert(initiated_jobs).values({
-      rate: await db
-        .select({ rate: posts.min_rate })
-        .from(posts)
-        .where(eq(posts.uuid, job_post_uuid))
-        .limit(1)
-        .then(([post_rate]) => post_rate.rate),
-      job_post_uuid,
-      linked_payment_method_uuid,
-      worker_uuid: user_uuid,
-      progress_type: "accepted",
-    });
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error && error.message === "already_accepted")
-      throw new Error("Already approved this job");
-    throw new Error("Failed to approve this job");
   }
 }
 
@@ -404,6 +364,7 @@ export async function getAcceptedUsers(job_post_uuid: string) {
         user_display_name: users.display_name,
         user_avatar_url: users.avatar_url, // This correctly retrieves the avatar URL
         created_at: initiated_jobs.created_at,
+        initiated_job_uuid: initiated_jobs.uuid,
         service: sql`(
         SELECT json_build_object(
           'uuid', ${posts.uuid},
@@ -430,29 +391,32 @@ export async function getAcceptedUsers(job_post_uuid: string) {
     throw new Error("Failed to get accepted users.");
   }
 }
-export type AcceptedUser = {
-  user_uuid: string;
-  user_username: string | null;
-  user_display_name: string | null;
-  user_avatar_url: string | null;
-  created_at: string;
-  service: {
-    uuid: string;
-    image_url: string;
-    title: string;
-  } | null;
-};
+export type AcceptedUser = Awaited<ReturnType<typeof getAcceptedUsers>>[number];
 
-// UPDATE JOB PROGRESS
+// UPDATE JOB PROGRESS from CURRENT PROGRESS
 export async function updateJobProgress(
   uuid: string,
-  progress: "approved" | "in progress" | "complete"
+  progress: "accepted" | "approved" | "in progress" | "complete" | "paid"
 ) {
   try {
+    const progressOrder = [
+      "accepted",
+      "approved",
+      "in progress",
+      "complete",
+      "paid",
+    ];
+    const currentIndex = progressOrder.indexOf(progress);
+    if (currentIndex === -1 || currentIndex === progressOrder.length - 1) {
+      throw new Error("Invalid or final progress type.");
+    }
+
+    const nextProgress = progressOrder[currentIndex + 1];
+
     await db
       .update(initiated_jobs)
       .set({
-        progress_type: progress === "approved" ? "in progress" : "complete",
+        progress_type: nextProgress,
       })
       .where(eq(initiated_jobs.uuid, uuid));
   } catch (error) {

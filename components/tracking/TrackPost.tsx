@@ -63,6 +63,14 @@ export default function TrackPost({
             <Text color="green" weight="semibold">
               Payment {`${self ? "sent" : "received"}`}
             </Text>
+          ) : data.progress === "cancelled" ? (
+            <Text color="muted" weight="semibold">
+              Cancelled
+            </Text>
+          ) : data.progress === "closed" ? (
+            <Text color="muted" weight="semibold">
+              Closed
+            </Text>
           ) : (
             <Text weight="semibold">{data.progress}</Text>
           )}

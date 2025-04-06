@@ -41,6 +41,10 @@ export default function Layout() {
           name="(external)/confirm-approval"
           options={{ animation: "ios_from_right" }}
         />
+        <Stack.Screen
+          name="(external)/cancel-job"
+          options={{ animation: "ios_from_right" }}
+        />
       </Stack>
       <CommentsSheet />
       <SharePostSheet />

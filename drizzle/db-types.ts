@@ -12,6 +12,8 @@ export const progressTypes = [
   "in progress",
   "complete",
   "paid",
+  "cancelled",
+  "closed",
 ] as const;
 export const onboardingPhaseTypes = [
   "date of birth",

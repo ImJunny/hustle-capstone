@@ -7,9 +7,9 @@ import ScrollView from "@/components/ui/ScrollView";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import TrackingProgressBar from "@/components/posts/TrackProgressBar";
+import TrackingProgressBar from "@/components/tracking/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
-import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
+import TrackTransactionEstimate from "@/components/tracking/TrackTransactionEstimate";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { Image } from "expo-image";
@@ -18,6 +18,7 @@ import LoadingPost from "@/components/posts/LoadingPost";
 import StarDisplay from "@/components/ui/StarDisplay";
 import { TrackHiringLabels } from "@/constants/Tracking";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import TrackCancelButton from "@/components/tracking/TrackCancelButton";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -91,7 +92,29 @@ export default function TrackWorkingDetailsScreen() {
           </View>
           {data.is_approved ? (
             <>
-              {(data as any).progress !== "paid" ? (
+              {(data as any).progress === "cancelled" ? (
+                <>
+                  <Text
+                    color="muted"
+                    weight="semibold"
+                    size="lg"
+                    style={{ textAlign: "center" }}
+                  >
+                    Canceled
+                  </Text>
+                </>
+              ) : (data as any).progress === "closed" ? (
+                <>
+                  <Text
+                    color="muted"
+                    weight="semibold"
+                    size="lg"
+                    style={{ textAlign: "center" }}
+                  >
+                    Closed
+                  </Text>
+                </>
+              ) : (data as any).progress !== "paid" ? (
                 <>
                   <TrackingProgressBar progress={(data as any).progress} />
                   <View style={{ alignSelf: "flex-start" }}>
@@ -147,6 +170,16 @@ export default function TrackWorkingDetailsScreen() {
             </>
           )}
         </View>
+
+        {/**CANCEL SECTION */}
+        {((data as any).progress as any) === "approved" && (
+          <View>
+            <Separator />
+            <TrackCancelButton
+              initiated_uuid={(data as any).initiated_job_post_uuid}
+            />
+          </View>
+        )}
 
         {/**TRANSACTION ESTIMATE SECTION */}
         <Separator />

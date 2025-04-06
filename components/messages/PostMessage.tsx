@@ -10,10 +10,9 @@ import StarDisplay from "../ui/StarDisplay";
 import { format, isThisYear } from "date-fns";
 
 export default function PostMessage({ uuid }: { uuid: string }) {
-  const { data, isLoading, isFetchedAfterMount } =
-    trpc.messages.get_post_message_info.useQuery({
-      post_uuid: uuid,
-    });
+  const { data, isLoading } = trpc.messages.get_post_message_info.useQuery({
+    post_uuid: uuid,
+  });
 
   function formatCustomDate(date: Date) {
     return isThisYear(date)
@@ -27,7 +26,7 @@ export default function PostMessage({ uuid }: { uuid: string }) {
         onPress={() => router.push(`/post/${data?.uuid}`)}
         activeOpacity={0.8}
       >
-        <Skeleton show={isLoading} colorMode="light">
+        <Skeleton show={isLoading} colorMode="dark">
           <Image
             source={{ uri: data?.image_url }}
             style={{ width: 240, height: 240 }}

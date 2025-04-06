@@ -6,7 +6,7 @@ import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
-import TrackPost from "@/components/posts/TrackPost";
+import TrackPost from "@/components/tracking/TrackPost";
 
 export default function TrackWorkingScreen() {
   const { user } = useAuthData();

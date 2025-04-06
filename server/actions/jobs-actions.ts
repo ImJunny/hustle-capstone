@@ -1,6 +1,12 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
-import { initiated_jobs, post_images, posts, users } from "@/drizzle/schema";
+import {
+  initiated_jobs,
+  job_cancellations,
+  post_images,
+  posts,
+  users,
+} from "@/drizzle/schema";
 import { and, eq, ne, sql } from "drizzle-orm";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
@@ -411,6 +417,26 @@ export async function updateJobProgress(
       throw new Error("Invalid or final progress type.");
     }
 
+    if (progress === "accepted") {
+      const postUuid = await db
+        .select({ post_uuid: initiated_jobs.job_post_uuid })
+        .from(initiated_jobs)
+        .where(eq(initiated_jobs.uuid, uuid))
+        .then(([result]) => result.post_uuid);
+
+      await db
+        .update(initiated_jobs)
+        .set({
+          progress_type: "closed",
+        })
+        .where(
+          and(
+            eq(initiated_jobs.job_post_uuid, postUuid),
+            ne(initiated_jobs.uuid, uuid)
+          )
+        );
+    }
+
     const nextProgress = progressOrder[currentIndex + 1];
 
     await db
@@ -422,5 +448,48 @@ export async function updateJobProgress(
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update progress.");
+  }
+}
+
+// CANCEL JOB after cancellation
+export async function cancelJob(
+  initiated_uuid: string,
+  user_uuid: string,
+  cancellation_reason: string,
+  details: string | undefined
+) {
+  try {
+    const initiatedData = await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "cancelled",
+      })
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .returning({
+        post_uuid: initiated_jobs.job_post_uuid,
+        worker_uuid: initiated_jobs.worker_uuid,
+      })
+      .then(([result]) => result);
+
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "closed",
+      })
+      .where(
+        and(
+          eq(initiated_jobs.uuid, initiated_uuid),
+          ne(initiated_jobs.worker_uuid, initiatedData.worker_uuid)
+        )
+      );
+    await db.insert(job_cancellations).values({
+      job_uuid: initiated_uuid,
+      user_uuid: user_uuid,
+      type: cancellation_reason,
+      details,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to cancel job.");
   }
 }

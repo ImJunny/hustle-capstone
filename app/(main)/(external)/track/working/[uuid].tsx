@@ -1,18 +1,16 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "@/components/ui/Button";
-import Icon from "@/components/ui/Icon";
-import TrackingProgressBar from "@/components/posts/TrackProgressBar";
+import TrackingProgressBar from "@/components/tracking/TrackProgressBar";
 import Separator from "@/components/ui/Separator";
-import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
+import TrackTransactionEstimate from "@/components/tracking/TrackTransactionEstimate";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import Toast from "react-native-toast-message";
 import LoadingPost from "@/components/posts/LoadingPost";
@@ -20,8 +18,9 @@ import { getGeneralDate } from "@/utils/helpers";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import StarDisplay from "@/components/ui/StarDisplay";
 import { TrackWorkingLabels } from "@/constants/Tracking";
-import TrackJobStartButton from "@/components/posts/TrackJobStartButton";
-import TrackJobCompleteButton from "@/components/posts/TrackJobCompleteButton";
+import TrackJobStartButton from "@/components/tracking/TrackJobStartButton";
+import TrackJobCompleteButton from "@/components/tracking/TrackJobCompleteButton";
+import TrackCancelButton from "@/components/tracking/TrackCancelButton";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -141,6 +140,28 @@ export default function TrackWorkingDetailsScreen() {
                   Payment received
                 </Text>
               </>
+            ) : data.progress === "cancelled" ? (
+              <>
+                <Text
+                  color="muted"
+                  weight="semibold"
+                  size="lg"
+                  style={{ textAlign: "center" }}
+                >
+                  Canceled
+                </Text>
+              </>
+            ) : data.progress === "closed" ? (
+              <>
+                <Text
+                  color="muted"
+                  weight="semibold"
+                  size="lg"
+                  style={{ textAlign: "center" }}
+                >
+                  Closed
+                </Text>
+              </>
             ) : (
               <>
                 <TrackingProgressBar progress={data.progress as any} />
@@ -162,6 +183,14 @@ export default function TrackWorkingDetailsScreen() {
             )}
           </View>
         </View>
+
+        {/**CANCEL SECTION */}
+        {data.progress === "approved" && (
+          <View>
+            <Separator />
+            <TrackCancelButton initiated_uuid={data.initiated_job_post_uuid} />
+          </View>
+        )}
 
         {/**TRANSACTION ESTIMATE SECTION */}
         <Separator />

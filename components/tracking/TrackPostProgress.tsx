@@ -17,31 +17,37 @@ export default function TrackPostProgress({
   return (
     <View>
       {progress === "in progress" ? (
-        <Text weight="semibold">
+        <Text weight="semibold" size="lg">
           In progress{`${self ? ", awaiting completion" : ""}`}
         </Text>
       ) : progress === "accepted" ? (
-        <Text weight="semibold">Accepted</Text>
+        <Text weight="semibold" size="lg">
+          Accepted
+        </Text>
       ) : progress === "approved" ? (
-        <Text weight="semibold">Approved{self ? " the worker" : ""}</Text>
+        <Text weight="semibold" size="lg">
+          Approved{self ? " the worker" : ""}
+        </Text>
       ) : progress === "complete" ? (
-        <Text weight="semibold" color="yellow">
+        <Text weight="semibold" color="yellow" size="lg">
           Completed, {`${self ? "processing payment" : "processing payment"}`}
         </Text>
       ) : progress === "paid" ? (
-        <Text color="green" weight="semibold">
+        <Text color="green" weight="semibold" size="lg">
           Payment {`${self ? "sent" : "received"}`}
         </Text>
       ) : progress === "cancelled" ? (
-        <Text color="muted" weight="semibold">
+        <Text color="muted" weight="semibold" size="lg">
           Cancelled
         </Text>
       ) : progress === "closed" ? (
-        <Text color="muted" weight="semibold">
+        <Text color="muted" weight="semibold" size="lg">
           Closed
         </Text>
       ) : (
-        <Text weight="semibold">{progress}</Text>
+        <Text weight="semibold" size="lg">
+          {progress}
+        </Text>
       )}
     </View>
   );

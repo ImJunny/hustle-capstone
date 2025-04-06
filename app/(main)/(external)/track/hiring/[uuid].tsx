@@ -80,7 +80,7 @@ export default function TrackWorkingDetailsScreen() {
           >
             <Image
               source={{ uri: data.job_image_url }}
-              style={{ width: 100, height: 100 }}
+              style={{ width: 100, height: 100, borderRadius: 4 }}
             />
           </TouchableOpacity>
 

@@ -11,7 +11,7 @@ export const Colors = {
     black: "#000000",
     white: "#FFFFFF",
     red: "#E93030",
-    green: "#149D2D",
+    green: "#22A83A", //#149D2D
     yellow: "#F1AC16",
     base: "#F0F0F0",
     background: "#FFFFFF",
@@ -26,7 +26,7 @@ export const Colors = {
     black: "#000000",
     white: "#FFFFFF",
     red: "#E93030",
-    green: "#149D2D",
+    green: "#22A83A", //#149D2D
     yellow: "#F1AC16",
     base: "#141414",
     background: "#000000",

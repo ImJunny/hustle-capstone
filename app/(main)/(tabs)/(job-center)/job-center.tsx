@@ -12,9 +12,7 @@ import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
 import Separator from "@/components/ui/Separator";
-import { ScrollView } from "react-native-gesture-handler";
 import { useFeedHeight } from "@/components/posts/Feed";
-import { Image } from "expo-image";
 
 export default function JobCenterScreen() {
   const themeColor = useThemeColor();
@@ -58,8 +56,8 @@ export default function JobCenterScreen() {
   });
 
   const parallaxHeaderOpacity = scrollY.interpolate({
-    inputRange: [0, 100], // Adjust when the opacity changes
-    outputRange: [1, 50], // Fades out as the user scrolls
+    inputRange: [0, 150], // Adjust when the opacity changes
+    outputRange: [1, 0], // Fades out as the user scrolls
     extrapolate: "clamp",
   });
 
@@ -73,17 +71,6 @@ export default function JobCenterScreen() {
         }}
         scrollEventThrottle={16} // Update scroll position more frequently
       >
-        <Animated.Image
-          source={require("@/assets/images/job-center/job-center-hero.jpg")}
-          style={[
-            {
-              width: "100%",
-              height: 262,
-              position: "absolute",
-              opacity: imageOpacity,
-            },
-          ]}
-        />
         <Animated.View
           style={[
             styles.header,
@@ -91,26 +78,40 @@ export default function JobCenterScreen() {
               transform: [{ translateY: parallaxHeaderTranslate }],
               opacity: parallaxHeaderOpacity,
               backgroundColor: themeColor.background,
+              borderWidth: 2,
+              borderColor: themeColor.foreground,
             },
           ]}
         >
-          <TouchableOpacity activeOpacity={0.6}>
-            <Text>
-              Your{" "}
-              <Text size="lg" style={{ fontFamily: "Lexend-bold" }}>
-                Hustle
-              </Text>{" "}
-              Balance
-            </Text>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => router.push("/transactions")}
+          >
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                padding: 32,
+              }}
+            >
+              <Text>
+                Your{" "}
+                <Text size="lg" style={{ fontFamily: "Lexend-bold" }}>
+                  Hustle
+                </Text>{" "}
+                Balance
+              </Text>
 
-            <Text weight="semibold" size="4xl" style={{ marginTop: 4 }}>
-              $0.00
-            </Text>
-            <Separator
-              color="foreground"
-              style={{ marginTop: 4, marginBottom: 6 }}
-            />
-            <Text size="sm">View transactions</Text>
+              <Text weight="semibold" size="4xl" style={{ marginTop: 4 }}>
+                $0.00
+              </Text>
+              <Separator
+                color="foreground"
+                style={{ marginTop: 4, marginBottom: 6 }}
+              />
+              <Text size="sm">View transactions</Text>
+            </View>
           </TouchableOpacity>
         </Animated.View>
 
@@ -123,50 +124,54 @@ export default function JobCenterScreen() {
             },
           ]}
         >
+          <Button
+            isFullWidth
+            style={{ marginBottom: 26, borderRadius: 999 }}
+            onPress={() => router.push("/(main)/(external)/create-post")}
+          >
+            Create a post
+          </Button>
+
           <View style={styles.category}>
-            <Button
-              isFullWidth
-              style={{ marginBottom: 26, borderRadius: 999 }}
-              onPress={() => router.push("/(main)/(external)/create-post")}
-            >
-              Create a post
-            </Button>
             <Text size="xl" weight="semibold">
               Tracking
             </Text>
-            <LinkEntry
-              iconName="briefcase-outline"
-              title="Working"
-              href="/track-working"
-              active_count={data.active_working_count}
-            />
-            <LinkEntry
-              iconName="calendar-outline"
-              title="Hiring"
-              href="/track-hiring"
-              active_count={data.active_hiring_count}
-            />
+            <View style={{ gap: 10 }}>
+              <LinkEntry
+                iconName="briefcase-outline"
+                title="Working"
+                href="/track-working"
+                active_count={data.active_working_count}
+              />
+              <LinkEntry
+                iconName="calendar-outline"
+                title="Hiring"
+                href="/track-hiring"
+                active_count={data.active_hiring_count}
+              />
+            </View>
           </View>
-
           <View style={styles.category}>
             <Text size="xl" weight="semibold">
               Activity
             </Text>
-            <LinkEntry
-              iconName="add-circle-outline"
-              title="Saved"
-              href="/saved-jobs"
-            />
-            <LinkEntry
-              iconName="time-outline"
-              title="Recently viewed"
-              href="/recently-viewed"
-            />
-            <LinkEntry
-              iconName="people-outline"
-              title="Following"
-              href="/following"
-            />
+            <View style={{ gap: 10 }}>
+              <LinkEntry
+                iconName="add-circle-outline"
+                title="Saved"
+                href="/saved-jobs"
+              />
+              <LinkEntry
+                iconName="time-outline"
+                title="Recently viewed"
+                href="/recently-viewed"
+              />
+              <LinkEntry
+                iconName="people-outline"
+                title="Following"
+                href="/following"
+              />
+            </View>
           </View>
         </View>
       </Animated.ScrollView>
@@ -186,7 +191,7 @@ function LinkEntry({ iconName, title, href, active_count }: LinkEntryProps) {
 
   return (
     <Link href={href} asChild>
-      <TouchableOpacity>
+      <TouchableOpacity activeOpacity={0.6}>
         <View style={[styles.entry, { borderColor }]}>
           <Icon name={iconName} size="xl" />
           <Text style={styles.entryText}>{title}</Text>
@@ -209,18 +214,16 @@ const styles = StyleSheet.create({
   },
   categoryWrapper: {
     padding: 16,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    minHeight: 1000,
   },
   category: {
     marginBottom: 34,
+    gap: 10,
   },
   header: {
-    borderRadius: 20,
-    padding: 32,
+    borderRadius: 16,
     marginVertical: 16,
-    marginHorizontal: 48,
+    marginHorizontal: "auto",
+    width: 320,
     height: 200,
     justifyContent: "center",
   },
@@ -228,7 +231,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    borderBottomWidth: 1,
+    borderWidth: 1,
+    borderRadius: 12,
   },
   entryText: {
     marginLeft: 12,

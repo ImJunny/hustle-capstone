@@ -307,7 +307,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
         and(
           eq(posts.user_uuid, user_uuid),
           eq(posts.type, "work"),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "deleted")
         )
       )
       .orderBy(posts.uuid, post_images.image_url)

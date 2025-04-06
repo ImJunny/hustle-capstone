@@ -62,7 +62,7 @@ export default function ExploreScreen() {
                 style={{
                   left: 0,
                   right: 0,
-                  height: 30,
+                  height: 64,
                   bottom: 0,
                   position: "absolute",
                 }}

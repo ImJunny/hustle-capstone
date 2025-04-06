@@ -47,7 +47,12 @@ export default function ExploreScreen() {
           <View style={{ height: 260 }}>
             <Image
               source={require("@/assets/images/explore/explore-hero.jpg")}
-              style={{ height: 260, position: "absolute", width: "100%" }}
+              style={{
+                height: 260,
+                position: "absolute",
+                width: "100%",
+                opacity: 0.8,
+              }}
             />
             <View style={{ flex: 1, paddingTop: 70, paddingHorizontal: 16 }}>
               <LinearGradient

@@ -1,7 +1,7 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Animated, StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Icon, { IconSymbolName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
@@ -11,13 +11,20 @@ import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
-import GoogleAutoInput from "@/components/ui/GoogleAutoInput";
+import Separator from "@/components/ui/Separator";
+import { ScrollView } from "react-native-gesture-handler";
+import { useFeedHeight } from "@/components/posts/Feed";
+import { Image } from "expo-image";
 
 export default function JobCenterScreen() {
+  const themeColor = useThemeColor();
+  const contentHeight = useFeedHeight();
   const { user } = useAuthData();
   const { data, isLoading } = trpc.post.get_active_post_counts.useQuery({
     user_uuid: user?.id!,
   });
+
+  const [scrollY] = useState(new Animated.Value(0)); // Track scroll position
 
   if (!user || isLoading || !data) {
     return (
@@ -36,55 +43,133 @@ export default function JobCenterScreen() {
     );
   }
 
+  // Interpolate opacity of the image based on scrollY position
+  const imageOpacity = scrollY.interpolate({
+    inputRange: [0, 200], // Adjust when the opacity changes
+    outputRange: [1, 0], // Fades out as the user scrolls
+    extrapolate: "clamp",
+  });
+
+  // Parallax effect: Opacity and translation of the header based on scrollY
+  const parallaxHeaderTranslate = scrollY.interpolate({
+    inputRange: [0, 300], // Adjust to control when it disappears
+    outputRange: [0, -100], // Moves up as the user scrolls
+    extrapolate: "clamp", // Prevents the view from moving too far
+  });
+
+  const parallaxHeaderOpacity = scrollY.interpolate({
+    inputRange: [0, 100], // Adjust when the opacity changes
+    outputRange: [1, 50], // Fades out as the user scrolls
+    extrapolate: "clamp",
+  });
+
   return (
     <>
       <JobsCenterHeader />
-      <View style={styles.screen} color="background">
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
-            Tracking
-          </Text>
-          <LinkEntry
-            iconName="briefcase-outline"
-            title="Working"
-            href="/track-working"
-            active_count={data.active_working_count}
-          />
-          <LinkEntry
-            iconName="calendar-outline"
-            title="Hiring"
-            href="/track-hiring"
-            active_count={data.active_hiring_count}
-          />
+      <Animated.ScrollView
+        style={[styles.screen]}
+        onScroll={(event) => {
+          scrollY.setValue(event.nativeEvent.contentOffset.y); // Update scroll position
+        }}
+        scrollEventThrottle={16} // Update scroll position more frequently
+      >
+        <Animated.Image
+          source={require("@/assets/images/job-center/job-center-hero.jpg")}
+          style={[
+            {
+              width: "100%",
+              height: 262,
+              position: "absolute",
+              opacity: imageOpacity,
+            },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              transform: [{ translateY: parallaxHeaderTranslate }],
+              opacity: parallaxHeaderOpacity,
+              backgroundColor: themeColor.background,
+            },
+          ]}
+        >
+          <TouchableOpacity activeOpacity={0.6}>
+            <Text>
+              Your{" "}
+              <Text size="lg" style={{ fontFamily: "Lexend-bold" }}>
+                Hustle
+              </Text>{" "}
+              Balance
+            </Text>
+
+            <Text weight="semibold" size="4xl" style={{ marginTop: 4 }}>
+              $0.00
+            </Text>
+            <Separator
+              color="foreground"
+              style={{ marginTop: 4, marginBottom: 6 }}
+            />
+            <Text size="sm">View transactions</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <View
+          style={[
+            styles.categoryWrapper,
+            {
+              backgroundColor: themeColor.background,
+              minHeight: contentHeight,
+            },
+          ]}
+        >
+          <View style={styles.category}>
+            <Button
+              isFullWidth
+              style={{ marginBottom: 26, borderRadius: 999 }}
+              onPress={() => router.push("/(main)/(external)/create-post")}
+            >
+              Create a post
+            </Button>
+            <Text size="xl" weight="semibold">
+              Tracking
+            </Text>
+            <LinkEntry
+              iconName="briefcase-outline"
+              title="Working"
+              href="/track-working"
+              active_count={data.active_working_count}
+            />
+            <LinkEntry
+              iconName="calendar-outline"
+              title="Hiring"
+              href="/track-hiring"
+              active_count={data.active_hiring_count}
+            />
+          </View>
+
+          <View style={styles.category}>
+            <Text size="xl" weight="semibold">
+              Activity
+            </Text>
+            <LinkEntry
+              iconName="add-circle-outline"
+              title="Saved"
+              href="/saved-jobs"
+            />
+            <LinkEntry
+              iconName="time-outline"
+              title="Recently viewed"
+              href="/recently-viewed"
+            />
+            <LinkEntry
+              iconName="people-outline"
+              title="Following"
+              href="/following"
+            />
+          </View>
         </View>
-        <View style={styles.category}>
-          <Text size="xl" weight="semibold">
-            Activity
-          </Text>
-          <LinkEntry
-            iconName="add-circle-outline"
-            title="Saved"
-            href="/saved-jobs"
-          />
-          <LinkEntry
-            iconName="time-outline"
-            title="Recently viewed"
-            href="/recently-viewed"
-          />
-          <LinkEntry
-            iconName="people-outline"
-            title="Following"
-            href="/following"
-          />
-          <Button
-            isFullWidth
-            style={{ marginTop: 16 }}
-            onPress={() => router.push("/(main)/(external)/create-post")}
-          >
-            Create a post
-          </Button>
-        </View>
-      </View>
+      </Animated.ScrollView>
     </>
   );
 }
@@ -121,10 +206,23 @@ function LinkEntry({ iconName, title, href, active_count }: LinkEntryProps) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  categoryWrapper: {
     padding: 16,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    minHeight: 1000,
   },
   category: {
     marginBottom: 34,
+  },
+  header: {
+    borderRadius: 20,
+    padding: 32,
+    marginVertical: 16,
+    marginHorizontal: 48,
+    height: 200,
+    justifyContent: "center",
   },
   entry: {
     flexDirection: "row",

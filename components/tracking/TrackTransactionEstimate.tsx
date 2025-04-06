@@ -31,7 +31,11 @@ export default function TrackTransactionEstimate({
         value={data.service_fee}
         isDeduction={true}
       />
-      <PriceRow title="You receive" value={data.total} isTotal />
+      <PriceRow
+        title={type === "accept" ? "You receive" : "They receive"}
+        value={data.total}
+        isTotal
+      />
     </View>
   );
 }

@@ -1,29 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  View,
-  UIManager,
-  findNodeHandle,
-  TouchableOpacity,
-  ViewStyle,
-} from "react-native";
+import { useRef, useState } from "react";
+import { StyleSheet, Dimensions, View, ViewStyle } from "react-native";
 import { Dropdown as ElementDropdown } from "react-native-element-dropdown";
-import Text from "./Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { FontSizes } from "@/constants/Sizes";
 import { TColors } from "@/constants/Colors";
-
-const data = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
-];
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -36,9 +16,9 @@ export default function Dropdown({
 }: {
   borderColor?: TColors;
   data: { label: string; value: string }[];
-  value: string | undefined;
-  onChange: (item: { label: string; value: string }) => void;
-  style: ViewStyle;
+  value?: string | undefined;
+  onChange?: (item: { label: string; value: string }) => void;
+  style?: ViewStyle;
 }) {
   const [dropdownY, setDropdownY] = useState(0);
   const themeColor = useThemeColor();
@@ -92,7 +72,7 @@ export default function Dropdown({
         valueField="value"
         placeholder={value ?? "Select"}
         value={value}
-        onChange={(item) => onChange(item.value)}
+        onChange={(item) => onChange?.(item.value)}
       />
     </View>
   );

@@ -80,7 +80,7 @@ export default function TrackJobStartButton({
                 style={{
                   padding: 24,
                   gap: 12,
-                  width: "90%",
+                  maxWidth: "90%",
                   borderColor: themeColor.border,
                   borderWidth: 1,
                   borderRadius: 8,
@@ -91,8 +91,9 @@ export default function TrackJobStartButton({
                 </Text>
 
                 <Text>
-                  Starting the job will mark the job as in progress and notify
-                  the employer.
+                  Starting the job will mark the job as in progress. You will
+                  not be able to cancel the job after it has started. Should
+                  there be a dispute, you can reach out to us for help.
                 </Text>
 
                 <View

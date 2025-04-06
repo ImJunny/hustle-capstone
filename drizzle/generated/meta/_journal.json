@@ -15,6 +15,20 @@
       "when": 1743861452984,
       "tag": "0001_natural_gabe_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743895465442,
+      "tag": "0002_goofy_moon_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743896180222,
+      "tag": "0003_cheerful_may_parker",
+      "breakpoints": true
     }
   ]
 }

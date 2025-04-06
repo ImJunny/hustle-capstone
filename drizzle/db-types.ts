@@ -1,9 +1,9 @@
 export const locationTypes = ["remote", "local"] as const;
 export const statusTypes = [
-  "hidden",
+  "deleted",
   "draft",
   "open",
-  "initiated",
+  "in progress",
   "complete",
 ] as const;
 export const progressTypes = [
@@ -12,6 +12,8 @@ export const progressTypes = [
   "in progress",
   "complete",
   "paid",
+  "cancelled",
+  "closed",
 ] as const;
 export const onboardingPhaseTypes = [
   "date of birth",

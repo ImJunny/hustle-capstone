@@ -14,7 +14,6 @@ import { useAuthData } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
-import Button from "@/components/ui/Button";
 import Separator from "@/components/ui/Separator";
 
 export default function ExploreScreen() {

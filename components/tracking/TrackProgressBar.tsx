@@ -40,7 +40,7 @@ export default function TrackingProgressBar({
               <Icon
                 name="checkmark-circle"
                 style={styles.checkmark}
-                size="3xl"
+                size="2xl"
               />
             </View>
           ))}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
   barOuter: {
     width: "100%",
-    height: 14,
+    height: 10,
     borderRadius: 999,
     overflow: "hidden",
   },
@@ -103,8 +103,8 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
   },
   checkmarkBackdrop: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     borderRadius: 999,
     position: "absolute",
   },

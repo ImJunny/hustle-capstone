@@ -1,7 +1,13 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
-import { initiated_jobs, post_images, posts, users } from "@/drizzle/schema";
-import { and, eq, ne, sql } from "drizzle-orm";
+import {
+  initiated_jobs,
+  job_cancellations,
+  post_images,
+  posts,
+  users,
+} from "@/drizzle/schema";
+import { and, eq, ne, or, sql } from "drizzle-orm";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
@@ -104,7 +110,7 @@ export async function acceptJob(
   }
 }
 
-// Get track working posts
+// Get track working posts; omit in progress jobs that aren't for them
 export async function getTrackWorkingPosts(user_uuid: string) {
   try {
     const result = await db
@@ -112,24 +118,28 @@ export async function getTrackWorkingPosts(user_uuid: string) {
         uuid: posts.uuid,
         title: posts.title,
         due_date: posts.due_date,
+        status_type: posts.status_type,
         progress: initiated_jobs.progress_type,
         image_url: sql`(
-                  SELECT ${post_images.image_url}
-                  FROM ${post_images}
-                  WHERE ${post_images.post_uuid} = ${posts.uuid}
-                  ORDER BY ${post_images.image_url} ASC
-                  LIMIT 1
-                )`,
+            SELECT ${post_images.image_url}
+            FROM ${post_images}
+            WHERE ${post_images.post_uuid} = ${posts.uuid}
+            ORDER BY ${post_images.image_url} ASC
+            LIMIT 1
+          )`,
       })
       .from(initiated_jobs)
       .innerJoin(
         posts,
         and(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.type, "work")
+          eq(initiated_jobs.worker_uuid, user_uuid),
+          or(
+            eq(posts.status_type, "in progress"),
+            eq(posts.status_type, "complete")
+          )
         )
-      )
-      .where(eq(initiated_jobs.worker_uuid, user_uuid));
+      );
     return result;
   } catch (error) {
     console.error(error);
@@ -294,6 +304,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
         title: posts.title,
         due_date: posts.due_date,
         image_url: post_images.image_url, // Get image_url from the JOIN
+        status_type: posts.status_type,
       })
       .from(posts)
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid)) // LEFT JOIN for post images
@@ -301,7 +312,7 @@ export async function getTrackHiringPosts(user_uuid: string) {
         and(
           eq(posts.user_uuid, user_uuid),
           eq(posts.type, "work"),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "deleted")
         )
       )
       .orderBy(posts.uuid, post_images.image_url)
@@ -411,6 +422,44 @@ export async function updateJobProgress(
       throw new Error("Invalid or final progress type.");
     }
 
+    const postUuid = await db
+      .select({ post_uuid: initiated_jobs.job_post_uuid })
+      .from(initiated_jobs)
+      .where(eq(initiated_jobs.uuid, uuid))
+      .then(([result]) => result.post_uuid);
+
+    // If accepted->approved, close other initiated and mark
+    // post as in progress; should notify users it is closed
+    if (progress === "accepted") {
+      await db
+        .update(initiated_jobs)
+        .set({
+          progress_type: "closed",
+        })
+        .where(
+          and(
+            eq(initiated_jobs.job_post_uuid, postUuid),
+            ne(initiated_jobs.uuid, uuid)
+          )
+        );
+
+      await db
+        .update(posts)
+        .set({
+          status_type: "in progress",
+        })
+        .where(eq(posts.uuid, postUuid));
+    }
+    //If in progress->complete, mark post as complete
+    if (progress === "in progress") {
+      await db
+        .update(posts)
+        .set({
+          status_type: "complete",
+        })
+        .where(eq(posts.uuid, postUuid));
+    }
+
     const nextProgress = progressOrder[currentIndex + 1];
 
     await db
@@ -422,5 +471,49 @@ export async function updateJobProgress(
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update progress.");
+  }
+}
+
+// CANCEL JOB after cancellation
+export async function cancelJob(
+  initiated_uuid: string,
+  user_uuid: string,
+  cancellation_reason: string,
+  details: string | undefined
+) {
+  try {
+    const initiatedData = await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "cancelled",
+      })
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .returning({
+        post_uuid: initiated_jobs.job_post_uuid,
+        worker_uuid: initiated_jobs.worker_uuid,
+      })
+      .then(([result]) => result);
+
+    // is this needed?
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "closed",
+      })
+      .where(
+        and(
+          eq(initiated_jobs.uuid, initiated_uuid),
+          ne(initiated_jobs.worker_uuid, initiatedData.worker_uuid)
+        )
+      );
+    await db.insert(job_cancellations).values({
+      job_uuid: initiated_uuid,
+      user_uuid: user_uuid,
+      type: cancellation_reason,
+      details,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to cancel job.");
   }
 }

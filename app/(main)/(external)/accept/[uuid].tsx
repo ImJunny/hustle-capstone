@@ -1,5 +1,5 @@
 import { SimpleHeader } from "@/components/headers/Headers";
-import TrackTransactionEstimate from "@/components/posts/TrackTransactionEstimate";
+import TrackTransactionEstimate from "@/components/tracking/TrackTransactionEstimate";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import LoadingView from "@/components/ui/LoadingView";

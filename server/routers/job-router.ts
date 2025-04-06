@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   acceptJob,
+  cancelJob,
   getAcceptedUsers,
   getTrackHiringDetails,
   getTrackHiringPosts,
@@ -118,5 +119,22 @@ export const jobRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       await updateJobProgress(input.uuid, input.progress);
+    }),
+  cancel_job: protectedProcedure
+    .input(
+      z.object({
+        job_uuid: z.string(),
+        user_uuid: z.string(),
+        cancellation_reason: z.string(),
+        details: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await cancelJob(
+        input.job_uuid,
+        input.user_uuid,
+        input.cancellation_reason,
+        input.details
+      );
     }),
 });

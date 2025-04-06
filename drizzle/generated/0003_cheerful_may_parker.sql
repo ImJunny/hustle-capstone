@@ -1,0 +1,1 @@
+ALTER TABLE "app"."job_cancellations" RENAME COLUMN "reason" TO "details";

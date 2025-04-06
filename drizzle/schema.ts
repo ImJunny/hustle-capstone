@@ -165,6 +165,21 @@ export const comments = app_schema.table("comments", {
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
+export const job_cancellations = app_schema.table("job_cancellations", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  job_uuid: uuid("job_uuid").references(() => initiated_jobs.uuid, {
+    onDelete: "set null",
+  }),
+  user_uuid: uuid("user_uuid").references(() => users.uuid, {
+    onDelete: "set null",
+  }),
+  type: text("type").notNull(),
+  details: text("details"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const reviews = app_schema.table("reviews", {
   uuid: uuid("uuid")
     .primaryKey()

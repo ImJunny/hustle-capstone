@@ -165,7 +165,7 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
       .where(
         and(
           eq(posts.user_uuid, uuid),
-          ne(posts.status_type, "hidden"),
+          ne(posts.status_type, "deleted"),
           type ? eq(posts.type, type) : undefined
         )
       )
@@ -366,7 +366,7 @@ export async function getPostsByFilters(
           type === "all"
             ? or(eq(posts.type, "work"), eq(posts.type, "hire"))
             : eq(posts.type, type),
-          ne(posts.status_type, "hidden"),
+          ne(posts.status_type, "deleted"),
           location_type === "all"
             ? or(
                 eq(posts.location_type, "remote"),
@@ -440,7 +440,7 @@ export async function deletePost(uuid: string) {
     await db
       .update(posts)
       .set({
-        status_type: "hidden",
+        status_type: "deleted",
       })
       .where(eq(posts.uuid, uuid));
   } catch (error) {
@@ -496,7 +496,7 @@ export async function getHomePosts(
         users,
         and(
           eq(users.uuid, posts.user_uuid),
-          ne(posts.status_type, "hidden"),
+          ne(posts.status_type, "deleted"),
           eq(posts.type, type)
         )
       )
@@ -541,7 +541,7 @@ export async function getActivePostCounts(user_uuid: string) {
             eq(initiated_jobs.progress_type, "in progress"),
             eq(initiated_jobs.progress_type, "approved")
           ),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "deleted")
         )
       )
       .then((posts) => posts.length);
@@ -678,7 +678,7 @@ export async function getSavedPosts(
         and(
           eq(saved_posts.user_uuid, userUuid),
           eq(posts.type, type),
-          ne(posts.status_type, "hidden")
+          ne(posts.status_type, "deleted")
         )
       )
       .orderBy(desc(posts.created_at));
@@ -715,7 +715,7 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
       .where(
         and(
           ne(posts.user_uuid, uuid),
-          ne(posts.status_type, "hidden"),
+          ne(posts.status_type, "deleted"),
           eq(posts.type, "work")
         )
       )
@@ -745,7 +745,7 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
       .where(
         and(
           ne(posts.user_uuid, uuid),
-          ne(posts.status_type, "hidden"),
+          ne(posts.status_type, "deleted"),
           eq(posts.type, "hire")
         )
       )

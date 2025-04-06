@@ -13,6 +13,6 @@ export const TrackHiringLabels: Record<string, string | null> = {
   "in progress":
     "The worker has marked this job as in progress. Wait for them to complete the job.",
   complete:
-    "The job is marked as complete and the worker is awaiting your payment.",
+    "The job is marked as complete and the worker is awaiting the payment. They will automatically receive their payment 5 days after the due date. However, you can choose to pay them now.",
   paid: null,
 };

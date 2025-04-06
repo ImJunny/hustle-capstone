@@ -7,6 +7,9 @@ import { router } from "expo-router";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
 import { format, isSameYear } from "date-fns";
+import Icon from "../ui/Icon";
+import TrackPostImage from "./TrackPostImage";
+import TrackPostProgress from "./TrackPostProgress";
 
 export type TrackJobPostProps = {
   data: TrackPostType;
@@ -27,19 +30,16 @@ export default function TrackPost({
     ? format(dueDate, "MMMM d")
     : format(dueDate, "MMMM d, yyyy");
 
+  const handleRedirect = () => {
+    if (type === "work") router.push(`/track/working/${data.uuid}` as any);
+    else router.push(`/track/hiring/${data.uuid}` as any);
+  };
+
   return (
-    <TouchableOpacity
-      activeOpacity={0.65}
-      onPress={() => {
-        if (type === "work") router.push(`/track/working/${data.uuid}` as any);
-        else router.push(`/track/hiring/${data.uuid}` as any);
-      }}
-    >
+    <TouchableOpacity activeOpacity={0.65} onPress={handleRedirect}>
       <View style={[styles.entry, { borderColor }, style]} color="background">
-        <Image
-          source={{ uri: data.image_url }}
-          style={{ width: 80, height: 80, borderRadius: 4 }}
-        />
+        <TrackPostImage data={data} />
+
         <View style={styles.entryContent}>
           <Text weight="semibold" numberOfLines={1}>
             {data.title}
@@ -49,31 +49,7 @@ export default function TrackPost({
             Due {formattedDueDate}
           </Text>
 
-          {data.progress === "in progress" ? (
-            <Text weight="semibold">In progress</Text>
-          ) : data.progress === "accepted" ? (
-            <Text weight="semibold">Accepted</Text>
-          ) : data.progress === "approved" ? (
-            <Text weight="semibold">Approved</Text>
-          ) : data.progress === "complete" ? (
-            <Text weight="semibold" color="yellow">
-              Completed, {`${self ? "pay now" : "awaiting payment"}`}
-            </Text>
-          ) : data.progress === "paid" ? (
-            <Text color="green" weight="semibold">
-              Payment {`${self ? "sent" : "received"}`}
-            </Text>
-          ) : data.progress === "cancelled" ? (
-            <Text color="muted" weight="semibold">
-              Cancelled
-            </Text>
-          ) : data.progress === "closed" ? (
-            <Text color="muted" weight="semibold">
-              Closed
-            </Text>
-          ) : (
-            <Text weight="semibold">{data.progress}</Text>
-          )}
+          <TrackPostProgress data={data} self={self} />
         </View>
       </View>
     </TouchableOpacity>

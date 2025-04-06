@@ -106,7 +106,7 @@ export default function TrackJobCompleteButton({
                     <Text weight="semibold">CANCEL</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleClick}>
-                    <Text weight="semibold">START</Text>
+                    <Text weight="semibold">YES</Text>
                   </TouchableOpacity>
                 </View>
               </View>

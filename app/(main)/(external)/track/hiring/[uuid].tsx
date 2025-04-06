@@ -187,7 +187,7 @@ export default function TrackWorkingDetailsScreen() {
           <Text size="lg" weight="semibold">
             Transaction estimate
           </Text>
-          <TrackTransactionEstimate data={estimateData} />
+          <TrackTransactionEstimate data={estimateData} type="approve" />
         </View>
 
         {/** LOCATION SECTION */}

@@ -135,9 +135,11 @@ export async function getTrackWorkingPosts(user_uuid: string) {
           eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(initiated_jobs.worker_uuid, user_uuid),
           or(
+            eq(posts.status_type, "open"),
             eq(posts.status_type, "in progress"),
             eq(posts.status_type, "complete")
-          )
+          ),
+          ne(initiated_jobs.progress_type, "closed")
         )
       );
     return result;

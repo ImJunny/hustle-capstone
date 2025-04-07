@@ -614,7 +614,12 @@ export async function finalizeJob(initiated_uuid: string) {
       .set({
         status: "succeeded",
       })
-      .where(eq(payments.job_uuid, initiated_uuid));
+      .where(
+        and(
+          eq(payments.job_uuid, initiated_uuid),
+          eq(payments.status, "pending")
+        )
+      );
 
     await db
       .update(initiated_jobs)

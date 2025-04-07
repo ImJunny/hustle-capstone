@@ -11,9 +11,15 @@ export type TrackPostImageProps = {
 };
 
 export default function TrackPostImage({ data, self }: TrackPostImageProps) {
-  let { status_type } = data;
+  let { status_type, progress } = data;
+
   const renderOverlay = () => {
-    if (status_type === "complete" || status_type === "in progress") {
+    if (
+      status_type === "complete" ||
+      progress === "in progress" ||
+      progress === "complete" ||
+      progress === "paid"
+    ) {
       return (
         <View
           style={{
@@ -48,7 +54,9 @@ export default function TrackPostImage({ data, self }: TrackPostImageProps) {
           size="3xl"
           style={{ position: "absolute" }}
         />
-      ) : status_type === "complete" || status_type === "paid" ? (
+      ) : status_type === "complete" ||
+        progress === "complete" ||
+        progress === "paid" ? (
         <Icon name="checkmark" size="4xl" style={{ position: "absolute" }} />
       ) : null}
     </View>

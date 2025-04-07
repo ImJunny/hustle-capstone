@@ -1,123 +1,119 @@
+// Review.tsx
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
 import Icon from "@/components/ui/Icon";
-import { exampleReview } from "@/server/utils/example-data";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useAuthData } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import LoadingView from "@/components/ui/LoadingView";
-// import { getUserData } from "@/server/utils/user";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
+import { format } from "date-fns";
+import {
+  UserReview,
+  JobReview,
+  ServiceReview,
+} from "@/server/actions/review-actions";
 
-interface ReviewProps {
-  displayImage: "user" | "service" | "none";
-}
-export default function Review({ displayImage }: ReviewProps) {
-  // const { id } = useLocalSearchParams();
-  // const review = exampleReview.find((review) => review.uuid === id);
-  // const themeColor = useThemeColor();
-  // const { user } = useAuthData();
-  // const { data, error, isLoading } = useQuery({
-  //   queryKey: ["userDataQuery", user],
-  //   queryFn: () => getUserData(user?.id!),
-  // });
+type ReviewProps = {
+  review: UserReview | JobReview | ServiceReview;
+  displayImage?: boolean;
+  showJobInfo?: boolean;
+};
 
-  return;
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>User not found.</Text>
-  //     </View>
-  //   );
-  // }
+export default function Review({
+  review,
+  displayImage = true,
+  showJobInfo = true,
+}: ReviewProps) {
+  const themeColor = useThemeColor();
 
-  // if (isLoading) {
-  //   return <LoadingView />;
-  // }
+  return (
+    <View style={[styles.container, { borderBottomColor: themeColor.border }]}>
+      <View style={styles.bottomContainer}>
+        {displayImage && (
+          <ImagePlaceholder
+            width={50}
+            height={50}
+            style={styles.imgStyle}
+            source={
+              review.reviewer.avatar_url
+                ? { uri: review.reviewer.avatar_url }
+                : undefined
+            }
+          />
+        )}
+        <View style={styles.nameContainer}>
+          <Text weight="semibold" size="md">
+            {review.reviewer.username}
+          </Text>
+          <Text color="muted" size="sm">
+            {format(new Date(review.created_at), "MMM d, yyyy")}
+          </Text>
+          <View style={styles.starsContainer}>
+            {[...Array(5)].map((_, i) => (
+              <Icon
+                key={i}
+                name={i < Math.floor(review.rating) ? "star" : "star-outline"}
+                size="lg"
+              />
+            ))}
+            <Text style={[styles.ratingText, { color: themeColor.foreground }]}>
+              {review.rating.toFixed(1)}/5
+            </Text>
+          </View>
+        </View>
+      </View>
 
-  // if (!review) {
-  //   return <Text>Review not found</Text>;
-  // }
+      {"job" in review && showJobInfo && review.job && (
+        <View style={styles.jobInfoContainer}>
+          <Text size="sm" color="muted">
+            Job: {review.job.title || "N/A"}
+          </Text>
+          <Text size="sm" color="muted">
+            Status: {review.job.progress_type || "N/A"}
+          </Text>
+        </View>
+      )}
 
-  // return (
-  //   <View style={styles.container}>
-  //     <View
-  //       style={{
-  //         padding: 15,
-  //         borderBottomColor: "grey",
-  //         borderBottomWidth: 2,
-  //       }}
-  //     >
-  //       <View style={styles.bottomContainer}>
-  //         <View style={styles.nameContainer}>
-  //           <Text color="white" weight="semibold" size="sm">
-  //             {review.user_name} | {review.date}
-  //           </Text>
-
-  //           <View style={styles.starsContainer}>
-  //             <Icon name="star" />
-  //             <Icon name="star" />
-  //             <Icon name="star" />
-  //             <Icon name="star" />
-  //             <Icon name="star" />
-  //             <Text style={styles.ratingText}>4.5/5</Text>
-  //           </View>
-  //         </View>
-  //         <View>
-  //           {displayImage === "user" && (
-  //             <ImagePlaceholder
-  //               width={100}
-  //               height={100}
-  //               style={styles.imgStyle}
-  //             />
-  //           )}
-  //         </View>
-  //       </View>
-
-  //       <View style={styles.descriptionContainer}>
-  //         <Text numberOfLines={15} ellipsizeMode="tail" color="muted-dark">
-  //           {review.description}
-  //         </Text>
-  //       </View>
-  //     </View>
-  //   </View>
-  // );
+      <View style={styles.descriptionContainer}>
+        <Text color="muted-dark">{review.review}</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    padding: 16,
+    borderBottomWidth: 1,
   },
   bottomContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    marginTop: 8,
+    gap: 12,
+    marginBottom: 12,
   },
   nameContainer: {
     flex: 1,
   },
   starsContainer: {
     flexDirection: "row",
-    gap: 2,
+    gap: 4,
     alignItems: "center",
-    marginVertical: 5,
+    marginTop: 4,
   },
   ratingText: {
-    marginHorizontal: 5,
-    color: "white",
+    marginLeft: 6,
     fontWeight: "semibold",
+    fontSize: 14,
   },
   imgStyle: {
-    borderRadius: 4,
+    borderRadius: 25,
   },
   descriptionContainer: {
-    flexDirection: "row",
-    marginVertical: 15,
-    marginBottom: 15,
+    marginTop: 8,
+  },
+  jobInfoContainer: {
+    marginBottom: 8,
+    gap: 4,
   },
 });

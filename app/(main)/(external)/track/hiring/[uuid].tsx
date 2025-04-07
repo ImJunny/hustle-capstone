@@ -22,6 +22,7 @@ import TrackCancelButton from "@/components/tracking/TrackCancelButton";
 import TrackJobPayNowButton from "@/components/tracking/TrackJobPayNowButton";
 import Skeleton from "@/components/ui/Skeleton";
 import { date } from "drizzle-orm/mysql-core";
+import TrackJobReviewSection from "@/components/tracking/TrackJobReviewSection";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -177,6 +178,16 @@ export default function TrackWorkingDetailsScreen() {
             </>
           )}
         </View>
+
+        {/**REVIEW SECTION */}
+        {/* {(data as any).progress === "paid" && (
+          <View>
+            <Separator />
+            <TrackJobReviewSection
+              initiated_uuid={(data as any).initiated_job_post_uuid}
+            />
+          </View>
+        )} */}
 
         {/**CANCEL SECTION */}
         {((data as any).progress as any) === "approved" && (

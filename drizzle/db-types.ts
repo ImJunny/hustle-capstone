@@ -23,7 +23,6 @@ export const onboardingPhaseTypes = [
   "completed",
 ];
 export const messageTypes = ["text", "post", "progress"] as const;
-export const reviewerTypes = ["employer", "employee"] as const;
 export const tagTypes = [
   { name: "home", value: "home" },
   { name: "tech", value: "tech" },

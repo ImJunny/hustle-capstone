@@ -1,0 +1,1 @@
+DROP TABLE "app"."reviewer_types" CASCADE;

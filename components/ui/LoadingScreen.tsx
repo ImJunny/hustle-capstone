@@ -5,8 +5,8 @@ import View from "./View";
 import { TRPCClientErrorLike } from "@trpc/react-query";
 
 type LoadingScreenProps = {
-  loads: boolean[];
-  data: NonNullable<any>;
+  loads: boolean[] | boolean;
+  data?: NonNullable<any>;
   header: React.ReactNode;
   errors?: any;
 };
@@ -17,7 +17,7 @@ export default function LoadingScreen({
   header,
   errors,
 }: LoadingScreenProps) {
-  if (loads.some((isLoading) => isLoading) || !data) {
+  if ((Array.isArray(loads) && loads.some((isLoading) => isLoading)) || !data) {
     return (
       <>
         {header}

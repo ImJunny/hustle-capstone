@@ -9,7 +9,7 @@ import AddressSuggestionsModal from "@/components/addresses/AddressSuggestionsMo
 import AddressSubmitButton from "@/components/addresses/AddressSubmitButton";
 import { CreateAddressProvider } from "@/contexts/CreateAddressContext";
 
-export default function CreateAddressForm() {
+export default function CreateAddressScreen() {
   const themeColor = useThemeColor();
 
   const [modalOpen, setModalOpen] = useState(false);

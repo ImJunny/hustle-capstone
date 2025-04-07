@@ -71,6 +71,34 @@
       "when": 1744015136522,
       "tag": "0009_thick_karen_page",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1744023782629,
+      "tag": "0010_dapper_wilson_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1744023799970,
+      "tag": "0011_lazy_iceman",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1744023892291,
+      "tag": "0012_minor_flatman",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1744024844578,
+      "tag": "0013_even_invaders",
+      "breakpoints": true
     }
   ]
 }

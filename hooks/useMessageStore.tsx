@@ -16,5 +16,5 @@ export const useMessageStore = create<MessageStore>((set, get) => ({
     })),
   isReadChat: (uuid: string) => get().readChats.has(uuid),
   fetchedChats: false,
-  reset: () => set({ readChats: new Set() }),
+  reset: () => set({ readChats: new Set(), fetchedChats: false }),
 }));

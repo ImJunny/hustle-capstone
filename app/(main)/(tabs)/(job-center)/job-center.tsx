@@ -39,6 +39,12 @@ export default function JobCenterScreen() {
     ? `$${balanceData.balance.toFixed(2)}`
     : "$0.00";
 
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+
   const [scrollY] = useState(new Animated.Value(0)); // Track scroll position
 
   if (!data || isLoading || balanceLoading || error || balanceError) {
@@ -64,11 +70,6 @@ export default function JobCenterScreen() {
     outputRange: [1, 1], // Fades out as the user scrolls
     extrapolate: "clamp",
   });
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    refetch().then(() => setRefreshing(false));
-  }, []);
 
   return (
     <>

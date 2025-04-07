@@ -1,9 +1,9 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import CategoryCard from "@/components/explore/CategoryCard";
-import { StyleSheet } from "react-native";
+import { PanResponder, RefreshControl, StyleSheet } from "react-native";
 import { ExploreHeader } from "@/components/headers/Headers";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -15,13 +15,20 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
 import Separator from "@/components/ui/Separator";
+import Animated, {
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
   const { user } = useAuthData();
-  const { data, isLoading, error } = trpc.post.get_explore_posts.useQuery({
-    uuid: user?.id!,
-  });
+  const { data, isLoading, error, refetch } =
+    trpc.post.get_explore_posts.useQuery({
+      uuid: user?.id!,
+    });
   const jobPosts = data?.jobs?.filter((post) => post.type === "work");
   const servicePosts = data?.services?.filter((post) => post.type === "hire");
 
@@ -35,13 +42,15 @@ export default function ExploreScreen() {
       />
     );
   }
+
   return (
     <>
       <ExploreHeader />
+
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        color="background"
+        refetch={refetch}
       >
         <View style={{ paddingBottom: 40 }}>
           <View style={{ height: 260 }}>

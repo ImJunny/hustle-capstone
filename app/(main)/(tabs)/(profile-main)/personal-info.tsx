@@ -9,10 +9,6 @@ import { trpc } from "@/server/lib/trpc-client";
 
 export default function PersonalInfo() {
   const { user } = useAuthData();
-  const [personalInfo, setPersonalInfo] = useState<{
-    email: string;
-    createdAt: string;
-  } | null>(null);
 
   const { data, isLoading } = trpc.user.get_personal_info.useQuery(
     { uuid: user?.id ?? "" },
@@ -42,7 +38,7 @@ export default function PersonalInfo() {
         </View>
         <View style={styles.infoEntry}>
           <Text weight="semibold" size="lg">
-            Account Created
+            Account created
           </Text>
           <Text color="muted">{fetchedPersonalInfo.createdAt}</Text>
         </View>

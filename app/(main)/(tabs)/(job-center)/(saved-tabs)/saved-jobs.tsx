@@ -13,6 +13,7 @@ export default function SavedJobsScreen() {
     data: savedJobs,
     isLoading,
     error,
+    refetch,
   } = trpc.post.get_saved_posts.useQuery({
     user_uuid: user?.id || "",
     type: "work",
@@ -49,7 +50,7 @@ export default function SavedJobsScreen() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView refetch={refetch}>
       {savedJobs.map((post, i) => (
         <Post key={i} data={post as TPost} type={post.type} />
       ))}

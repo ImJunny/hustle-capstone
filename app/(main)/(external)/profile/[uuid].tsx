@@ -23,10 +23,13 @@ export default function ProfileScreen() {
     their_uuid: uuid as string,
   });
 
-  const { data: posts, isLoading: postsLoading } =
-    trpc.post.get_user_posts.useQuery({
-      uuid: uuid as string,
-    });
+  const {
+    data: posts,
+    isLoading: postsLoading,
+    refetch,
+  } = trpc.post.get_user_posts.useQuery({
+    uuid: uuid as string,
+  });
 
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
@@ -88,7 +91,7 @@ export default function ProfileScreen() {
   return (
     <>
       <ProfileHeader username={data?.username!} />
-      <ScrollView>
+      <ScrollView refetch={refetch}>
         <View color="base">
           <ProfileCard data={data as unknown as UserData} />
           <View>

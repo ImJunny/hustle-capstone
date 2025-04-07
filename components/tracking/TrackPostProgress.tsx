@@ -17,51 +17,32 @@ export default function TrackPostProgress({
   return (
     <View>
       {progress === "in progress" ? (
-        <Text weight="semibold" size="lg">
+        <Text weight="semibold">
           In progress{`${self ? ", awaiting completion" : ""}`}
         </Text>
       ) : progress === "accepted" ? (
-        <Text weight="semibold" size="lg">
-          Accepted
-        </Text>
+        <Text weight="semibold">Accepted</Text>
       ) : progress === "approved" ? (
-        <Text weight="semibold" size="lg">
-          Approved{self ? " the worker" : ""}
-        </Text>
+        <Text weight="semibold">Approved{self ? " the worker" : ""}</Text>
       ) : progress === "complete" ? (
-        <Text weight="semibold" color="yellow" size="lg">
+        <Text weight="semibold" color="yellow">
           Completed, {`${self ? "processing payment" : "processing payment"}`}
         </Text>
       ) : progress === "paid" ? (
-        <Text color="green" weight="semibold" size="lg">
+        <Text color="green" weight="semibold">
           Payment {`${self ? "sent" : "received"}`}
         </Text>
       ) : progress === "cancelled" ? (
-        <Text color="muted" weight="semibold" size="lg">
+        <Text color="muted" weight="semibold">
           Cancelled
         </Text>
       ) : progress === "closed" ? (
-        <Text color="muted" weight="semibold" size="lg">
+        <Text color="muted" weight="semibold">
           Closed
         </Text>
       ) : (
-        <Text weight="semibold" size="lg">
-          {progress}
-        </Text>
+        <Text weight="semibold">{progress}</Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  entry: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 16,
-    gap: 16,
-  },
-  entryContent: {
-    flex: 1,
-    alignSelf: "stretch",
-  },
-});

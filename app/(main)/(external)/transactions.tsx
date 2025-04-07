@@ -3,41 +3,53 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React, { useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Icon, { IconSymbolName } from "@/components/ui/Icon";
-import Button from "@/components/ui/Button";
-import { JobsCenterHeader, SimpleHeader } from "@/components/headers/Headers";
-import { Href, Link } from "expo-router";
+import Icon from "@/components/ui/Icon";
+import { SimpleHeader } from "@/components/headers/Headers";
 import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import LoadingView from "@/components/ui/LoadingView";
 import Separator from "@/components/ui/Separator";
 import { useFeedHeight } from "@/components/posts/Feed";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import { TransactionType } from "@/server/actions/payment-actions";
+import { RefreshControl } from "react-native-gesture-handler";
 
 export default function TransactionsScreen() {
   const themeColor = useThemeColor();
   const contentHeight = useFeedHeight() + 57;
   const { user } = useAuthData();
-  const { data, isLoading } = trpc.post.get_active_post_counts.useQuery({
-    user_uuid: user?.id!,
+  const { data, isLoading, error, refetch } =
+    trpc.payment.get_transaction_data.useQuery({
+      user_uuid: user!.id,
+    });
+
+  const balance = data?.balance.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+  let pendingBalance = 0;
+  data?.transactions.forEach((transaction) => {
+    if (transaction.status === "pending" && transaction.type === "income")
+      pendingBalance += transaction.amount;
+  });
+  const groupedTransactions = groupTransactionsByMonth(
+    data?.transactions as any
+  );
+  const pending = pendingBalance.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
   });
 
   const [scrollY] = useState(new Animated.Value(0)); // Track scroll position
 
-  if (!user || isLoading || !data) {
+  if (!data || isLoading) {
     return (
-      <>
-        <JobsCenterHeader />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Error encountered</Text>
-          </View>
-        )}
-      </>
+      <LoadingScreen
+        loads={[isLoading]}
+        errors={[error]}
+        data={data}
+        header={<SimpleHeader title="Transactions" />}
+      />
     );
   }
 
@@ -60,11 +72,23 @@ export default function TransactionsScreen() {
     outputRange: ["transparent", themeColor.background], // From transparent to theme background
     extrapolate: "clamp",
   });
-
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
   return (
     <>
       <SimpleHeader title="Transactions" />
       <Animated.ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="transparent"
+            colors={["transparent"]}
+          />
+        }
         style={[styles.screen]}
         onScroll={(event) => {
           scrollY.setValue(event.nativeEvent.contentOffset.y); // Update scroll position
@@ -94,29 +118,67 @@ export default function TransactionsScreen() {
             </Text>
 
             <Text weight="semibold" size="4xl" style={{ marginTop: 4 }}>
-              $0.00
+              {balance}
             </Text>
-            <Separator color="foreground" style={{ marginTop: 4 }} />
+            <Separator
+              color="foreground"
+              style={{ marginTop: 4, marginBottom: 4 }}
+            />
+            {pendingBalance > 0 && (
+              <Text color="muted" size="sm">
+                ({pending} pending)
+              </Text>
+            )}
           </TouchableOpacity>
         </Animated.View>
-        <View
-          style={[
-            styles.categoryWrapper,
-            {
-              backgroundColor: themeColor.background,
-              minHeight: contentHeight,
-            },
-          ]}
-        >
-          <View>
-            <Text size="xl" weight="semibold">
-              April 2025
-            </Text>
-            <Transaction type="income" title="Payout" amount={10} />
-            <Transaction type="income" title="Hired" amount={40} />
-            <Transaction type="expense" title="Something service" amount={50} />
+        {data.transactions.length === 0 ? (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 32,
+            }}
+          >
+            <Text>No transactions yet</Text>
           </View>
-        </View>
+        ) : (
+          <View
+            style={[
+              styles.categoryWrapper,
+              {
+                backgroundColor: themeColor.background,
+                minHeight: contentHeight,
+              },
+            ]}
+          >
+            <View>
+              {Object.entries(groupedTransactions).map(
+                ([month, transactions]) => (
+                  <View key={month} style={{ marginBottom: 24 }}>
+                    <Text
+                      size="xl"
+                      weight="semibold"
+                      style={{ marginBottom: 8 }}
+                    >
+                      {month}
+                    </Text>
+                    <Separator />
+                    {transactions.map((transaction) => (
+                      <Transaction
+                        key={transaction.created_at}
+                        type={transaction.type}
+                        title={transaction.title}
+                        status={transaction.status}
+                        amount={transaction.amount}
+                        date={transaction.created_at}
+                      />
+                    ))}
+                  </View>
+                )
+              )}
+            </View>
+          </View>
+        )}
       </Animated.ScrollView>
     </>
   );
@@ -126,9 +188,20 @@ type TransactionProps = {
   type: "income" | "expense";
   title: string;
   amount: number;
+  status: string;
+  date: string | Date;
 };
 
-function Transaction({ type, title, amount }: TransactionProps) {
+function Transaction({ type, title, status, amount, date }: TransactionProps) {
+  const formattedAmount = amount.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
   return (
     <View>
       <View
@@ -142,20 +215,59 @@ function Transaction({ type, title, amount }: TransactionProps) {
           name={type == "income" ? "wallet-outline" : "cash-outline"}
           size="xl"
         />
-        <View style={{ marginLeft: 16, marginRight: "auto" }}>
-          <Text style={{}} size="lg" weight="semibold">
+        <View style={{ marginLeft: 20, marginRight: "auto" }}>
+          <Text
+            style={{
+              textTransform: "capitalize",
+            }}
+            size="lg"
+            weight="semibold"
+          >
             {title}
           </Text>
-          <Text>•••• 3421</Text>
-          <Text>4/18/25</Text>
+          <Text>{formattedDate}</Text>
         </View>
-        <Text weight="bold" color={type === "income" ? "green" : "muted"}>
-          {type === "income" ? "+" : "-"}${amount}
-        </Text>
+        <View style={{ alignItems: "flex-end" }}>
+          <Text
+            weight="bold"
+            color={
+              type === "income" && status === "succeeded"
+                ? "green"
+                : status === "pending"
+                ? "muted"
+                : "foreground"
+            }
+          >
+            {type === "income" ? "+" : "-"}
+            {formattedAmount}
+          </Text>
+
+          {status == "pending" && (
+            <Text color="muted" size="sm">
+              ({status})
+            </Text>
+          )}
+        </View>
       </View>
       <Separator />
     </View>
   );
+}
+
+function groupTransactionsByMonth(transactions: TransactionType[]) {
+  return transactions.reduce((groups, transaction) => {
+    const date = new Date(transaction.created_at);
+    const key = date.toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    }); // e.g. "April 2025"
+
+    if (!groups[key]) {
+      groups[key] = [];
+    }
+    groups[key].push(transaction);
+    return groups;
+  }, {} as Record<string, TransactionType[]>);
 }
 
 const styles = StyleSheet.create({

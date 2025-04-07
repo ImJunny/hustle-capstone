@@ -70,7 +70,7 @@ export default function HomeScreen() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get("window").width }}
-        renderTabBar={() => null} // Hide the default tab bar
+        renderTabBar={() => null}
       />
     </>
   );

@@ -39,7 +39,7 @@ export default function TrackPostImage({ data, self }: TrackPostImageProps) {
     >
       <Image
         source={{ uri: data.image_url }}
-        style={{ width: 110, height: 110, borderRadius: 4 }}
+        style={{ width: 90, height: 90, borderRadius: 4 }}
       />
       {renderOverlay()}
       {status_type === "in progress" ? (

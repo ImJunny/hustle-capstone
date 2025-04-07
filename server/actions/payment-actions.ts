@@ -1,10 +1,10 @@
 import { db } from "@/drizzle/db";
-import { users } from "@/drizzle/schema";
+import { payments, users } from "@/drizzle/schema";
 import { stripe } from "@/stripe-server";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, ne, or } from "drizzle-orm";
 
 // Process payment; gets info to be passed in StripeProvider
-export async function processPayment(user_uuid: string, amount: number) {
+export async function getPaymentIntent(user_uuid: string, amount: number) {
   try {
     const customerId = await getCustomerId(user_uuid);
 
@@ -25,7 +25,8 @@ export async function processPayment(user_uuid: string, amount: number) {
     });
 
     return {
-      paymentIntent: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      paymentIntentSecret: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: customerId,
       publishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY,
@@ -35,6 +36,7 @@ export async function processPayment(user_uuid: string, amount: number) {
     throw new Error("Failed to process payment.");
   }
 }
+
 // Gets customer ID; creates one if it doesn't exist
 export async function getCustomerId(user_uuid: string) {
   try {
@@ -122,3 +124,49 @@ export async function getUserPaymentMethods(user_uuid: string) {
 export type PaymentMethod = Awaited<
   ReturnType<typeof getUserPaymentMethods>
 >[number];
+
+// get TRANSACTION BALANCE AND HISTORY
+export async function getTransactionsData(user_uuid: string) {
+  try {
+    const transactions = await db
+      .select({
+        amount: payments.amount,
+        created_at: payments.created_at,
+        status: payments.status,
+        title: payments.title,
+        type: payments.type,
+      })
+      .from(payments)
+      .where(
+        and(
+          or(eq(payments.user_uuid, user_uuid)),
+          ne(payments.status, "refunded")
+        )
+      )
+      .orderBy(desc(payments.created_at))
+      .then((result) =>
+        result.map((transaction) => ({
+          ...transaction,
+          created_at: transaction.created_at.toISOString(),
+        }))
+      );
+
+    let balance = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.status === "succeeded" && transaction.type === "income") {
+        balance += transaction.amount;
+      }
+    });
+
+    return {
+      balance,
+      transactions,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error getting transaction data");
+  }
+}
+export type TransactionType = Awaited<
+  ReturnType<typeof getTransactionsData>
+>["transactions"][number];

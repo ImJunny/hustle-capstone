@@ -222,14 +222,18 @@ export const payments = app_schema.table("payments", {
     .references(() => users.uuid)
     .notNull(),
   job_uuid: uuid("job_uuid")
-    .references(() => initiated_jobs.uuid)
+    .references(() => initiated_jobs.uuid, { onDelete: "cascade" })
     .notNull(),
+  title: text("title").notNull(),
   amount: integer("amount").notNull(),
-  stripe_payment_intent_id: text("stripe_payment_intent_id").notNull(),
+  stripe_payment_intent_id: text("stripe_payment_intent_id"),
   status: text("status", {
     enum: ["pending", "succeeded", "failed", "refunded"],
   }).notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  type: text("type", {
+    enum: ["income", "expense"],
+  }).notNull(),
 });
 
 export const following = app_schema.table("following", {

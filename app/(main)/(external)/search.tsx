@@ -37,7 +37,7 @@ export default function SearchedPage() {
   );
   const tagsArray = safeJsonParse<string[]>(tags as string, []);
 
-  const { data, isLoading } = trpc.post.get_posts_by_filters.useQuery({
+  const { data, isLoading, refetch } = trpc.post.get_posts_by_filters.useQuery({
     keyword: keyword as string,
     min_rate: parseInt((min_rate as string) ?? "0"),
     max_rate: typeof max_rate === "string" ? parseInt(max_rate) : undefined,
@@ -84,7 +84,7 @@ export default function SearchedPage() {
           <Text>No posts found matching those keywords and filters</Text>
         </View>
       ) : (
-        <ScrollView>
+        <ScrollView refetch={refetch}>
           {data.map((post, i) => (
             <Post key={i} data={post as unknown as TPost} type={post.type} />
           ))}

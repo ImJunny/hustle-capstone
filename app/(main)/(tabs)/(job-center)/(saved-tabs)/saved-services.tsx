@@ -13,6 +13,7 @@ export default function SavedServicesScreen() {
     data: savedServices,
     isLoading,
     error,
+    refetch,
   } = trpc.post.get_saved_posts.useQuery({
     user_uuid: user?.id || "",
     type: "hire",
@@ -39,7 +40,7 @@ export default function SavedServicesScreen() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView refetch={refetch}>
       {savedServices.map((post, i) => (
         <Post key={i} data={post as TPost} type={post.type} />
       ))}

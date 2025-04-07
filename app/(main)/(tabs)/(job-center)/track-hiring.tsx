@@ -11,9 +11,11 @@ import TrackPost from "@/components/tracking/TrackPost";
 export default function TrackHireScreen() {
   const { user } = useAuthData();
 
-  const { data, isLoading } = trpc.job.get_track_hiring_posts.useQuery({
-    user_uuid: user?.id!,
-  });
+  const { data, isLoading, refetch } = trpc.job.get_track_hiring_posts.useQuery(
+    {
+      user_uuid: user?.id!,
+    }
+  );
 
   const sortedData = data?.sort((a, b) => {
     const progressOrder = [
@@ -62,7 +64,7 @@ export default function TrackHireScreen() {
   return (
     <>
       <SimpleHeader title="Jobs you're hiring" />
-      <ScrollView>
+      <ScrollView refetch={refetch}>
         {sortedData?.map((post, i) => (
           <TrackPost
             key={i}

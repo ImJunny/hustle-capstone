@@ -102,36 +102,45 @@ export default function AddressSuggestionsModal({
                 Suggested addresses
               </Text>
               <View style={{ gap: 24 }}>
-                {suggestions?.map((suggestion, i) => (
-                  <TouchableOpacity
-                    key={i}
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                    onPress={() => {
-                      setChoice(i);
-                      setSuggestion(suggestion);
-                    }}
-                  >
-                    <View>
-                      <Text>
-                        {suggestion.address_line_1}
-                        {suggestion.address_line_2 &&
-                          `, ${suggestion.address_line_2}`}
-                      </Text>
-                      <Text>
-                        {suggestion.city}, {suggestion.state}, {suggestion.zip}
-                      </Text>
-                      <Text>{suggestion.country}</Text>
-                    </View>
-                    <RadioButton
-                      value={String(i)}
-                      selected={String(choice)}
-                      disabled
-                    />
-                  </TouchableOpacity>
-                ))}
+                {suggestions?.map((suggestion, i) => {
+                  let primaryInfo = [];
+                  if (suggestion.address_line_1)
+                    primaryInfo.push(suggestion.address_line_1);
+                  if (suggestion.address_line_2)
+                    primaryInfo.push(suggestion.address_line_2);
+                  const primaryText = primaryInfo.join(", ");
+
+                  let secondaryInfo = [];
+                  if (suggestion.city) secondaryInfo.push(suggestion.city);
+                  if (suggestion.state) secondaryInfo.push(suggestion.state);
+                  if (suggestion.zip) secondaryInfo.push(suggestion.zip);
+                  const secondaryText = secondaryInfo.join(", ");
+
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                      onPress={() => {
+                        setChoice(i);
+                        setSuggestion(suggestion);
+                      }}
+                    >
+                      <View>
+                        <Text>{primaryText}</Text>
+                        <Text>{secondaryText}</Text>
+                        <Text>{suggestion.country}</Text>
+                      </View>
+                      <RadioButton
+                        value={String(i)}
+                        selected={String(choice)}
+                        disabled
+                      />
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
 
               <View

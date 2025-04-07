@@ -1,4 +1,9 @@
-import { Animated, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Animated,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React, { useState } from "react";
@@ -13,53 +18,57 @@ import { useAuthData } from "@/contexts/AuthContext";
 import LoadingView from "@/components/ui/LoadingView";
 import Separator from "@/components/ui/Separator";
 import { useFeedHeight } from "@/components/posts/Feed";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function JobCenterScreen() {
   const themeColor = useThemeColor();
   const contentHeight = useFeedHeight();
   const { user } = useAuthData();
-  const { data, isLoading } = trpc.post.get_active_post_counts.useQuery({
+  const { data, isLoading, error, refetch } =
+    trpc.post.get_active_post_counts.useQuery({
+      user_uuid: user?.id!,
+    });
+  const {
+    data: balanceData,
+    isLoading: balanceLoading,
+    error: balanceError,
+  } = trpc.payment.get_transaction_data.useQuery({
     user_uuid: user?.id!,
   });
+  const balance = balanceData?.balance
+    ? `$${balanceData.balance.toFixed(2)}`
+    : "$0.00";
 
   const [scrollY] = useState(new Animated.Value(0)); // Track scroll position
 
-  if (!user || isLoading || !data) {
+  if (!data || isLoading || balanceLoading || error || balanceError) {
     return (
-      <>
-        <JobsCenterHeader />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Error encountered</Text>
-          </View>
-        )}
-      </>
+      <LoadingScreen
+        loads={[isLoading, balanceLoading]}
+        errors={[error, balanceError]}
+        data={data}
+        header={<JobsCenterHeader />}
+      />
     );
   }
 
-  // Interpolate opacity of the image based on scrollY position
-  const imageOpacity = scrollY.interpolate({
-    inputRange: [0, 200], // Adjust when the opacity changes
-    outputRange: [1, 0], // Fades out as the user scrolls
-    extrapolate: "clamp",
-  });
-
   // Parallax effect: Opacity and translation of the header based on scrollY
   const parallaxHeaderTranslate = scrollY.interpolate({
-    inputRange: [0, 300], // Adjust to control when it disappears
+    inputRange: [0, 290], // Adjust to control when it disappears
     outputRange: [0, -100], // Moves up as the user scrolls
     extrapolate: "clamp", // Prevents the view from moving too far
   });
 
   const parallaxHeaderOpacity = scrollY.interpolate({
     inputRange: [0, 150], // Adjust when the opacity changes
-    outputRange: [1, 0], // Fades out as the user scrolls
+    outputRange: [1, 1], // Fades out as the user scrolls
     extrapolate: "clamp",
   });
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
 
   return (
     <>
@@ -67,9 +76,17 @@ export default function JobCenterScreen() {
       <Animated.ScrollView
         style={[styles.screen]}
         onScroll={(event) => {
-          scrollY.setValue(event.nativeEvent.contentOffset.y); // Update scroll position
+          scrollY.setValue(event.nativeEvent.contentOffset.y);
         }}
-        scrollEventThrottle={16} // Update scroll position more frequently
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="transparent"
+            colors={["transparent"]}
+          />
+        }
       >
         <Animated.View
           style={[
@@ -104,7 +121,7 @@ export default function JobCenterScreen() {
               </Text>
 
               <Text weight="semibold" size="4xl" style={{ marginTop: 4 }}>
-                $0.00
+                {balance}
               </Text>
               <Separator
                 color="foreground"
@@ -221,7 +238,8 @@ const styles = StyleSheet.create({
   },
   header: {
     borderRadius: 16,
-    marginVertical: 16,
+    marginTop: 32,
+    marginBottom: 16,
     marginHorizontal: "auto",
     width: 320,
     height: 200,

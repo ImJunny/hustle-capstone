@@ -1,20 +1,43 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Easing } from "react-native";
 import View from "../ui/View";
 import Text from "../ui/Text";
 import Icon from "../ui/Icon";
-import { IconSizes } from "@/constants/Sizes";
+import { useEffect, useRef } from "react";
+import { Animated } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function TrackingProgressBar({
   progress,
 }: {
   progress: "approved" | "in progress" | "complete";
 }) {
-  const width =
-    progress === "approved"
-      ? "33%"
-      : progress === "in progress"
-      ? "66%"
-      : "100%";
+  const themeColor = useThemeColor();
+  const progressMap = {
+    approved: 0.33,
+    "in progress": 0.66,
+    complete: 1,
+  };
+
+  const targetProgress = progressMap[progress];
+
+  const animatedWidth = useRef(
+    new Animated.Value(progressMap["approved"])
+  ).current;
+
+  useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: targetProgress,
+      duration: 500,
+      easing: Easing.inOut(Easing.ease), // Apply easing function here
+      useNativeDriver: false,
+    }).start();
+  }, [targetProgress]);
+
+  const barWidthInterpolated = animatedWidth.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
+  });
+
   const checkmarkCount =
     progress === "approved" ? 1 : progress === "in progress" ? 2 : 3;
 
@@ -29,21 +52,45 @@ export default function TrackingProgressBar({
         />
         <ProgressText text="Completed" value="complete" progress={progress} />
       </View>
+
       <View style={styles.barContainer}>
         <View style={styles.barOuter} color="background-variant">
-          <View style={[styles.barInner, { width }]} color="foreground" />
+          <Animated.View
+            style={[
+              styles.barInner,
+              {
+                width: barWidthInterpolated,
+                backgroundColor: themeColor.foreground,
+              },
+            ]}
+          />
         </View>
-        <View style={[styles.checkContainer, { width }]}>
-          {[...Array(checkmarkCount)].map((_item, i) => (
-            <View key={i} style={styles.checkmarkContainer}>
-              <View style={[styles.checkmarkBackdrop]} color="background" />
-              <Icon
-                name="checkmark-circle"
-                style={styles.checkmark}
-                size="2xl"
-              />
-            </View>
-          ))}
+
+        <View style={styles.checkContainer}>
+          {[0.165, 0.5, 0.835].slice(0, checkmarkCount).map((threshold, i) => {
+            const opacity = animatedWidth.interpolate({
+              inputRange: [0, threshold, threshold + 0.15],
+              outputRange: [0, 0, 1],
+              extrapolate: "clamp",
+            });
+
+            return (
+              <Animated.View
+                key={i}
+                style={[
+                  styles.checkmarkContainer,
+                  {
+                    left: `${threshold * 100}%`,
+                    transform: [{ translateX: -20 }],
+                    opacity,
+                  },
+                ]}
+              >
+                <View style={[styles.checkmarkBackdrop]} color="background" />
+                <Icon name="checkmark-circle" size="2xl" />
+              </Animated.View>
+            );
+          })}
         </View>
       </View>
     </View>
@@ -90,17 +137,19 @@ const styles = StyleSheet.create({
   },
   barInner: {
     height: "100%",
+    borderRadius: 999,
   },
   checkContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     position: "absolute",
+    width: "100%",
   },
   checkmarkContainer: {
+    position: "absolute",
+    bottom: -20,
+    width: 40,
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: "auto",
   },
   checkmarkBackdrop: {
     width: 20,
@@ -108,5 +157,4 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     position: "absolute",
   },
-  checkmark: { marginHorizontal: "auto" },
 });

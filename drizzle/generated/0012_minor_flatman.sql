@@ -1,0 +1,1 @@
+ALTER TABLE "app"."reviews" RENAME COLUMN "type" TO "reviewer_type";

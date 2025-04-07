@@ -3,11 +3,14 @@ import { db } from "@/drizzle/db";
 import {
   initiated_jobs,
   job_cancellations,
+  payments,
   post_images,
   posts,
   users,
 } from "@/drizzle/schema";
+import { stripe } from "@/stripe-server";
 import { and, eq, ne, or, sql } from "drizzle-orm";
+import { update } from "lodash";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
@@ -453,14 +456,14 @@ export async function updateJobProgress(
         .where(eq(posts.uuid, postUuid));
     }
     //If in progress->complete, mark post as complete
-    if (progress === "in progress") {
-      await db
-        .update(posts)
-        .set({
-          status_type: "complete",
-        })
-        .where(eq(posts.uuid, postUuid));
-    }
+    // if (progress === "in progress") {
+    //   await db
+    //     .update(posts)
+    //     .set({
+    //       status_type: "complete",
+    //     })
+    //     .where(eq(posts.uuid, postUuid));
+    // }
 
     const nextProgress = progressOrder[currentIndex + 1];
 
@@ -476,7 +479,8 @@ export async function updateJobProgress(
   }
 }
 
-// CANCEL JOB after cancellation
+// CANCEL JOB for APPROVED job; refund pending payments,
+// make job available again, and make post status in progress->open
 export async function cancelJob(
   initiated_uuid: string,
   user_uuid: string,
@@ -514,8 +518,128 @@ export async function cancelJob(
       type: cancellation_reason,
       details,
     });
+
+    // refund them
+    await db
+      .update(payments)
+      .set({
+        title: "Refund",
+        status: "refunded",
+      })
+      .where(eq(payments.job_uuid, initiated_uuid));
+
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "accepted",
+      })
+      .where(eq(initiated_jobs.uuid, initiated_uuid));
+
+    await db.update(posts).set({
+      status_type: "open",
+    });
   } catch (error) {
     console.error(error);
     throw new Error("Failed to cancel job.");
+  }
+}
+
+// APPROVE JOB should make payment entry and update job progress
+export async function approveJob(
+  initiated_uuid: string,
+  progress: "accepted" | "approved" | "in progress" | "complete" | "paid",
+  user_uuid: string,
+  payment_intent_id: string
+) {
+  try {
+    // amount is in cents; convert to dollars
+    const amount = await stripe.paymentIntents
+      .retrieve(payment_intent_id)
+      .then((intent) => intent.amount / 100);
+
+    const worker_uuid = await db
+      .select({ worker_uuid: initiated_jobs.worker_uuid })
+      .from(initiated_jobs)
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .then(([result]) => result.worker_uuid);
+
+    const job_title = await db
+      .select({ title: posts.title })
+      .from(posts)
+      .innerJoin(initiated_jobs, eq(posts.uuid, initiated_jobs.job_post_uuid))
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .then(([result]) => result.title);
+
+    // make pending payment to be updated later for BOTH parties
+    // hirer payment entry
+    await db.insert(payments).values({
+      job_uuid: initiated_uuid,
+      amount,
+      stripe_payment_intent_id: payment_intent_id,
+      title: job_title,
+      status: "pending",
+      user_uuid,
+      type: "expense",
+    });
+    const post_uuid = await db
+      .select({ post_uuid: initiated_jobs.job_post_uuid })
+      .from(initiated_jobs)
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .then(([result]) => result.post_uuid);
+
+    const workerCompensation = await getTransactionEstimate(post_uuid);
+    // worker payment entry
+    await db.insert(payments).values({
+      job_uuid: initiated_uuid,
+      amount: workerCompensation.total,
+      stripe_payment_intent_id: null,
+      title: job_title,
+      status: "pending",
+      user_uuid: worker_uuid,
+      type: "income",
+    });
+
+    await updateJobProgress(initiated_uuid, progress);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to approve job.");
+  }
+}
+
+// FINALIZE JOB should update payment to succeeded and update job progress to paid
+export async function finalizeJob(initiated_uuid: string) {
+  try {
+    await db
+      .update(payments)
+      .set({
+        status: "succeeded",
+      })
+      .where(eq(payments.job_uuid, initiated_uuid));
+
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "paid",
+      })
+      .where(eq(initiated_jobs.uuid, initiated_uuid));
+
+    await db
+      .update(posts)
+      .set({
+        status_type: "complete",
+      })
+      .where(
+        eq(
+          posts.uuid,
+          await db
+            .select({ post_uuid: initiated_jobs.job_post_uuid })
+            .from(initiated_jobs)
+            .where(eq(initiated_jobs.uuid, initiated_uuid))
+            .then(([result]) => result.post_uuid)
+        )
+      );
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to finalize job.");
   }
 }

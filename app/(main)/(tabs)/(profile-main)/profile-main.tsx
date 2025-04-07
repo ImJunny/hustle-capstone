@@ -9,10 +9,7 @@ import { ProfileSelfHeader } from "@/components/headers/Headers";
 import { UserData } from "@/server/actions/user-actions";
 import { trpc } from "@/server/lib/trpc-client";
 import { Post } from "@/server/actions/post-actions";
-import Separator from "@/components/ui/Separator";
 import ProfileCard from "@/components/profile/ProfileCard";
-import { useState } from "react";
-import Button from "@/components/ui/Button";
 
 export default function ProfileMainScreen() {
   const { user } = useAuthData();
@@ -20,10 +17,13 @@ export default function ProfileMainScreen() {
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
     uuid: user.id,
   });
-  const { data: posts, isLoading: postsLoading } =
-    trpc.post.get_user_posts.useQuery({
-      uuid: user.id,
-    });
+  const {
+    data: posts,
+    isLoading: postsLoading,
+    refetch,
+  } = trpc.post.get_user_posts.useQuery({
+    uuid: user.id,
+  });
   const jobPosts = posts?.filter((post) => post.type === "work");
   const servicePosts = posts?.filter((post) => post.type === "hire");
 
@@ -63,7 +63,7 @@ export default function ProfileMainScreen() {
   return (
     <>
       <ProfileSelfHeader username={data?.username!} />
-      <ScrollView>
+      <ScrollView refetch={refetch}>
         <ProfileCard data={data as unknown as UserData} isSelf />
 
         <View>
@@ -87,20 +87,3 @@ export default function ProfileMainScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    paddingBottom: 16,
-  },
-  completedContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-  },
-  button: {
-    paddingHorizontal: 20,
-    height: 34,
-    borderRadius: 999,
-  },
-});

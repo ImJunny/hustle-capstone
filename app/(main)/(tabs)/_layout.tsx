@@ -87,7 +87,7 @@ export default function TabLayout() {
                 size="xl"
                 flippedX
               />
-              {false && (
+              {/* {false && (
                 <View
                   style={{
                     position: "absolute",
@@ -101,7 +101,7 @@ export default function TabLayout() {
                     justifyContent: "center",
                   }}
                 />
-              )}
+              )} */}
             </View>
           ),
         }}

@@ -19,32 +19,31 @@ export function ApproveSubmitButton({
   const utils = trpc.useUtils();
   const { user } = useAuthData();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const { data } = trpc.payment.process_payment.useQuery({
+  const { data } = trpc.payment.get_payment_intent.useQuery({
     user_uuid: user!.id,
     amount,
   });
 
-  const { mutate: updateJobProgress } =
-    trpc.job.update_job_progress.useMutation({
-      onSuccess: () => {
-        Toast.show({
-          text1: "Payment successful",
-          type: "success",
-          swipeable: false,
-        });
-        utils.post.invalidate();
-        utils.job.invalidate();
-        router.back();
-        router.back();
-      },
-      onError: (error) => {
-        Toast.show({
-          text1: error.message,
-          type: "error",
-          swipeable: false,
-        });
-      },
-    });
+  const { mutate: approveJob } = trpc.job.approve_job.useMutation({
+    onSuccess: () => {
+      Toast.show({
+        text1: "Payment successful",
+        type: "success",
+        swipeable: false,
+      });
+      utils.post.invalidate();
+      utils.job.invalidate();
+      router.back();
+      router.back();
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message,
+        type: "error",
+        swipeable: false,
+      });
+    },
+  });
 
   // Initialize payment sheet
   const handleInitPaymentSheet = async (data: any) => {
@@ -52,7 +51,7 @@ export function ApproveSubmitButton({
       merchantDisplayName: "Hustle",
       customerId: data?.customer,
       customerEphemeralKeySecret: data?.ephemeralKey,
-      paymentIntentClientSecret: data?.paymentIntent!,
+      paymentIntentClientSecret: data?.paymentIntentSecret!,
       allowsDelayedPaymentMethods: true,
       returnURL: Linking.createURL("stripe-redirect"),
       appearance: {
@@ -92,9 +91,11 @@ export function ApproveSubmitButton({
       text1: "Processed payment",
       type: "success",
     });
-    updateJobProgress({
-      uuid: initiatedJobUuid,
+    approveJob({
+      initiated_uuid: initiatedJobUuid,
       progress: "accepted",
+      user_uuid: user!.id,
+      payment_intent_id: data?.paymentIntentId!,
     });
   };
 

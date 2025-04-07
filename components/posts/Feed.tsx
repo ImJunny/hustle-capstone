@@ -6,7 +6,7 @@ import HomePost from "./HomePost";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
 import { QueryObserverResult } from "@tanstack/react-query";
 
-const useFeedHeight = () => {
+export const useFeedHeight = () => {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = Dimensions.get("window");
   const insetTop = Device.brand === "google" ? 0 : insets.top;

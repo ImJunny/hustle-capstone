@@ -192,11 +192,11 @@ export const reviews = app_schema.table("reviews", {
     .notNull(),
   review: text("review"),
   created_at: timestamp("created_at").notNull().defaultNow(),
-  reviewer_type: text("type")
-    .references(() => reviewer_types.name)
-    .notNull(),
-  job_uuid: uuid("job_uuid")
-    .references(() => posts.uuid)
+  reviewer_type: text("reviewer_type", {
+    enum: ["worker", "employer"],
+  }),
+  initiated_job_uuid: uuid("initiated_job_uuid")
+    .references(() => initiated_jobs.uuid)
     .notNull(),
   service_uuid: uuid("job_uuid").references(() => posts.uuid),
   rating: integer("rating").notNull(),
@@ -222,14 +222,18 @@ export const payments = app_schema.table("payments", {
     .references(() => users.uuid)
     .notNull(),
   job_uuid: uuid("job_uuid")
-    .references(() => initiated_jobs.uuid)
+    .references(() => initiated_jobs.uuid, { onDelete: "cascade" })
     .notNull(),
+  title: text("title").notNull(),
   amount: integer("amount").notNull(),
-  stripe_payment_intent_id: text("stripe_payment_intent_id").notNull(),
+  stripe_payment_intent_id: text("stripe_payment_intent_id"),
   status: text("status", {
     enum: ["pending", "succeeded", "failed", "refunded"],
   }).notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
+  type: text("type", {
+    enum: ["income", "expense"],
+  }).notNull(),
 });
 
 export const following = app_schema.table("following", {
@@ -271,11 +275,6 @@ export const onboarding_phase_types = app_schema.table(
 );
 
 export const message_types = app_schema.table("message_types", {
-  id: serial("id").primaryKey(),
-  name: text("name").unique().notNull(),
-});
-
-export const reviewer_types = app_schema.table("reviewer_types", {
   id: serial("id").primaryKey(),
   name: text("name").unique().notNull(),
 });

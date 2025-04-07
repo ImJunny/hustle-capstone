@@ -1,0 +1,1 @@
+ALTER TABLE "app"."payments" ADD COLUMN "type" text NOT NULL;

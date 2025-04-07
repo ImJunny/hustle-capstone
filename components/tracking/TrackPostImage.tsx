@@ -39,31 +39,18 @@ export default function TrackPostImage({ data, self }: TrackPostImageProps) {
     >
       <Image
         source={{ uri: data.image_url }}
-        style={{ width: 80, height: 80, borderRadius: 4 }}
+        style={{ width: 90, height: 90, borderRadius: 4 }}
       />
       {renderOverlay()}
       {status_type === "in progress" ? (
         <Icon
           name="briefcase-outline"
-          size="2xl"
+          size="3xl"
           style={{ position: "absolute" }}
         />
       ) : status_type === "complete" || status_type === "paid" ? (
-        <Icon name="checkmark" size="3xl" style={{ position: "absolute" }} />
+        <Icon name="checkmark" size="4xl" style={{ position: "absolute" }} />
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  entry: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 16,
-    gap: 16,
-  },
-  entryContent: {
-    flex: 1,
-    alignSelf: "stretch",
-  },
-});

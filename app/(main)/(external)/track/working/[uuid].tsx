@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -31,6 +31,7 @@ export default function TrackWorkingDetailsScreen() {
     data = null,
     isLoading,
     error,
+    refetch,
   } = trpc.job.get_track_working_details.useQuery(
     {
       user_uuid: user?.id!,
@@ -101,7 +102,7 @@ export default function TrackWorkingDetailsScreen() {
   return (
     <>
       <SimpleHeader title="Tracking details" />
-      <ScrollView color="background" style={styles.container}>
+      <ScrollView color="background" style={styles.container} refetch={refetch}>
         {/**TOP SECTION */}
         <View style={styles.topSection}>
           <TouchableOpacity
@@ -109,7 +110,7 @@ export default function TrackWorkingDetailsScreen() {
           >
             <Image
               source={{ uri: data.job_image_url }}
-              style={{ width: 100, height: 100 }}
+              style={{ width: 100, height: 100, borderRadius: 4 }}
             />
           </TouchableOpacity>
           <View style={styles.textHeader}>

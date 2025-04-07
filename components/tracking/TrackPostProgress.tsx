@@ -46,16 +46,3 @@ export default function TrackPostProgress({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  entry: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 16,
-    gap: 16,
-  },
-  entryContent: {
-    flex: 1,
-    alignSelf: "stretch",
-  },
-});

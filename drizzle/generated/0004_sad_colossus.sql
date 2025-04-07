@@ -1,0 +1,2 @@
+ALTER TABLE "app"."payments" ADD COLUMN "receiver_uuid" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."payments" ADD CONSTRAINT "payments_receiver_uuid_users_uuid_fk" FOREIGN KEY ("receiver_uuid") REFERENCES "app"."users"("uuid") ON DELETE no action ON UPDATE no action;

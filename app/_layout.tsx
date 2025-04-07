@@ -75,7 +75,7 @@ export default function RootLayout() {
                 >
                   <Stack.Screen
                     name="(main)"
-                    options={{ animation: "ios_from_right" }}
+                    // options={{ animation: "ios_from_right" }}
                   />
                   <Stack.Screen name="(auth)" />
                   <Stack.Screen name="onboarding" />

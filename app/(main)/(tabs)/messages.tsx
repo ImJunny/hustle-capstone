@@ -14,9 +14,10 @@ import { useStore } from "zustand";
 export default function MessagesScreen() {
   const { user } = useAuthData();
 
-  const { data, isLoading } = trpc.messages.get_message_previews.useQuery({
-    user_uuid: user?.id!,
-  });
+  const { data, isLoading, refetch } =
+    trpc.messages.get_message_previews.useQuery({
+      user_uuid: user?.id!,
+    });
 
   const addReadChat = useMessageStore((state) => state.addReadChat);
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="background">
+      <ScrollView style={{ flex: 1 }} color="background" refetch={refetch}>
         <View>
           {data.map((message, i) => (
             <Message

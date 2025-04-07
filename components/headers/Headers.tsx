@@ -23,27 +23,6 @@ interface IndexHeaderProps {
   setIndex: (index: number) => void;
 }
 
-export function ExampleHeader() {
-  return (
-    <HeaderWrapper
-      options={{
-        left: (
-          <Text
-            weight="semibold"
-            size="3xl"
-            style={{
-              fontFamily: "Lexend-bold",
-            }}
-          >
-            Hustle
-          </Text>
-        ),
-        right: <IconButton name="filter" size="xl" />,
-      }}
-    />
-  );
-}
-
 export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
   return (
     <HeaderWrapper
@@ -85,7 +64,6 @@ export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
             </View>
           </View>
         ),
-        right: <IconButton name="filter" size="xl" />,
       }}
     />
   );
@@ -292,7 +270,6 @@ export function MessagesHeader() {
 export function ExploreHeader() {
   return (
     <HeaderWrapper
-      style={{ borderBottomWidth: 0 }}
       options={{
         center: (
           <Pressable

@@ -19,6 +19,10 @@ import StarDisplay from "@/components/ui/StarDisplay";
 import { TrackHiringLabels } from "@/constants/Tracking";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import TrackCancelButton from "@/components/tracking/TrackCancelButton";
+import TrackJobPayNowButton from "@/components/tracking/TrackJobPayNowButton";
+import Skeleton from "@/components/ui/Skeleton";
+import { date } from "drizzle-orm/mysql-core";
+import TrackJobReviewSection from "@/components/tracking/TrackJobReviewSection";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -28,6 +32,7 @@ export default function TrackWorkingDetailsScreen() {
     data = null,
     isLoading,
     error,
+    refetch,
   } = trpc.job.get_track_hiring_details.useQuery(
     {
       user_uuid: user?.id!,
@@ -73,14 +78,14 @@ export default function TrackWorkingDetailsScreen() {
   return (
     <>
       <SimpleHeader title="Tracking details" />
-      <ScrollView color="background" style={styles.container}>
+      <ScrollView color="background" style={styles.container} refetch={refetch}>
         <View style={styles.progressSection}>
           <TouchableOpacity
             onPress={() => router.push(`/post/${data.job_post_uuid}`)}
           >
             <Image
               source={{ uri: data.job_image_url }}
-              style={{ width: 100, height: 100 }}
+              style={{ width: 100, height: 100, borderRadius: 4 }}
             />
           </TouchableOpacity>
 
@@ -121,7 +126,10 @@ export default function TrackWorkingDetailsScreen() {
                     <Text color="muted">{description}</Text>
                   </View>
                   {(data as any).progress === "complete" && (
-                    <Button>Pay now</Button>
+                    <TrackJobPayNowButton
+                      rate={estimateData.rate}
+                      initiated_uuid={(data as any).initiated_job_post_uuid}
+                    />
                   )}
                 </>
               ) : (
@@ -170,6 +178,16 @@ export default function TrackWorkingDetailsScreen() {
             </>
           )}
         </View>
+
+        {/**REVIEW SECTION */}
+        {/* {(data as any).progress === "paid" && (
+          <View>
+            <Separator />
+            <TrackJobReviewSection
+              initiated_uuid={(data as any).initiated_job_post_uuid}
+            />
+          </View>
+        )} */}
 
         {/**CANCEL SECTION */}
         {((data as any).progress as any) === "approved" && (

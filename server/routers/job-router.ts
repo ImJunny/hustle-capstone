@@ -2,7 +2,9 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../lib/trpc";
 import {
   acceptJob,
+  approveJob,
   cancelJob,
+  finalizeJob,
   getAcceptedUsers,
   getTrackHiringDetails,
   getTrackHiringPosts,
@@ -120,6 +122,7 @@ export const jobRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       await updateJobProgress(input.uuid, input.progress);
     }),
+
   cancel_job: protectedProcedure
     .input(
       z.object({
@@ -136,5 +139,37 @@ export const jobRouter = createTRPCRouter({
         input.cancellation_reason,
         input.details
       );
+    }),
+  approve_job: protectedProcedure
+    .input(
+      z.object({
+        initiated_uuid: z.string(),
+        progress: z.enum([
+          "accepted",
+          "approved",
+          "in progress",
+          "complete",
+          "paid",
+        ]),
+        user_uuid: z.string(),
+        payment_intent_id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await approveJob(
+        input.initiated_uuid,
+        input.progress,
+        input.user_uuid,
+        input.payment_intent_id
+      );
+    }),
+  finalize_job: protectedProcedure
+    .input(
+      z.object({
+        initiated_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await finalizeJob(input.initiated_uuid);
     }),
 });

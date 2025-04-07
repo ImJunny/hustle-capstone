@@ -91,6 +91,17 @@ type AddressEntryProps = {
 function AddressEntry({ address, openSheet }: AddressEntryProps) {
   const themeColor = useThemeColor();
 
+  let primaryInfo = [];
+  if (address.address_line_1) primaryInfo.push(address.address_line_1);
+  if (address.address_line_2) primaryInfo.push(address.address_line_2);
+  const primaryText = primaryInfo.join(", ");
+
+  let secondaryInfo = [];
+  if (address.city) secondaryInfo.push(address.city);
+  if (address.state) secondaryInfo.push(address.state);
+  if (address.zip_code) secondaryInfo.push(address.zip_code);
+  const secondaryText = secondaryInfo.join(", ");
+
   return (
     <View
       color="background"
@@ -100,13 +111,8 @@ function AddressEntry({ address, openSheet }: AddressEntryProps) {
         <Text weight="semibold" style={{ marginBottom: 4 }}>
           {address.title}
         </Text>
-        <Text>
-          {address.address_line_1}
-          {address.address_line_2 && `, ${address.address_line_2}`}
-        </Text>
-        <Text>
-          {address.city}, {address.state}, {address.zip_code}
-        </Text>
+        <Text>{primaryText}</Text>
+        <Text>{secondaryText}</Text>
         <Text>{address.country}</Text>
       </View>
 

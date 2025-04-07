@@ -20,7 +20,7 @@ export default function LogOut() {
     resetMessages();
     resetFollowed();
   };
-
+  const utils = trpc.useUtils();
   async function handleSignout() {
     const { error } = await supabase.auth.signOut();
     Toast.show({
@@ -30,7 +30,6 @@ export default function LogOut() {
     });
     if (error) return;
     router.replace("/signin");
-    const utils = trpc.useUtils();
     await utils.invalidate();
     resetStores();
   }

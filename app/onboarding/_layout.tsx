@@ -43,6 +43,7 @@ export default function Layout() {
     resetMessages();
     resetFollowed();
   };
+  const utils = trpc.useUtils();
   async function handleSignout() {
     const { error } = await supabase.auth.signOut();
     Toast.show({
@@ -52,7 +53,7 @@ export default function Layout() {
     });
     if (error) return;
     router.replace("/signin");
-    const utils = trpc.useUtils();
+
     await utils.invalidate();
     resetStores();
   }

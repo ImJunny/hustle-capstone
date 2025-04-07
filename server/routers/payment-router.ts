@@ -4,12 +4,13 @@ import {
   createPaymentMethod,
   deletePaymentMethod,
   getCustomerId,
+  getPaymentIntent,
+  getTransactionsData,
   getUserPaymentMethods,
-  processPayment,
 } from "../actions/payment-actions";
 
 export const paymentRouter = createTRPCRouter({
-  process_payment: protectedProcedure
+  get_payment_intent: protectedProcedure
     .input(
       z.object({
         user_uuid: z.string(),
@@ -17,7 +18,7 @@ export const paymentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const result = await processPayment(input.user_uuid, input.amount);
+      const result = await getPaymentIntent(input.user_uuid, input.amount);
       return result;
     }),
   create_customer: protectedProcedure
@@ -70,5 +71,14 @@ export const paymentRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getUserPaymentMethods(input.user_uuid);
+    }),
+  get_transaction_data: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getTransactionsData(input.user_uuid);
     }),
 });

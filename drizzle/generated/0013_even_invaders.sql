@@ -1,0 +1,2 @@
+ALTER TABLE "app"."reviews" ADD COLUMN "initiated_job_uuid" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "app"."reviews" ADD CONSTRAINT "reviews_initiated_job_uuid_initiated_jobs_uuid_fk" FOREIGN KEY ("initiated_job_uuid") REFERENCES "app"."initiated_jobs"("uuid") ON DELETE no action ON UPDATE no action;

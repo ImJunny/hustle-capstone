@@ -15,6 +15,7 @@ import { AcceptedUser } from "@/server/actions/jobs-actions";
 import Icon from "@/components/ui/Icon";
 import { formatDistanceToNow } from "date-fns";
 import AvatarImage from "@/components/ui/AvatarImage";
+import ScrollView from "@/components/ui/ScrollView";
 
 // Addresses screen
 export default function ChooseWorkerScreen() {
@@ -24,7 +25,11 @@ export default function ChooseWorkerScreen() {
 
   if (!user) return;
 
-  const { data: workers, isLoading } = trpc.job.get_accepted_users.useQuery(
+  const {
+    data: workers,
+    isLoading,
+    refetch,
+  } = trpc.job.get_accepted_users.useQuery(
     {
       job_post_uuid: job_post_uuid as string,
     },
@@ -56,7 +61,7 @@ export default function ChooseWorkerScreen() {
   return (
     <>
       <SimpleHeader title="Approve a worker" />
-      <View style={{ flex: 1 }} color="base">
+      <ScrollView style={{ flex: 1 }} color="base" refetch={refetch}>
         <View style={{ padding: 16, borderBottomWidth: 1 }} color="background">
           <Text size="sm" color="muted">
             Below are a list of users who have accepted your job. You can view
@@ -72,7 +77,7 @@ export default function ChooseWorkerScreen() {
             setCurrentWorker={setCurrentWorker}
           />
         ))}
-      </View>
+      </ScrollView>
       <View
         color="background"
         style={[styles.footer, { borderColor: themeColor.border }]}

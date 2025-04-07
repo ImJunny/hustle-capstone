@@ -101,12 +101,12 @@ export const countries = [
 
 export const cancellation_reasons = [
   {
-    label: "The job or service is not what I expected.",
+    label: "The job or service is not what I expected",
     value: "not_expected",
   },
-  { label: "I am not available for the job.", value: "unavailable" },
-  { label: "I do not want to work with this user.", value: "user" },
-  { label: "I do not want to provide the reason.", value: "ommitted" },
+  { label: "I am not available for the job", value: "unavailable" },
+  { label: "I do not want to work with this user", value: "user" },
+  { label: "I do not want to provide the reason", value: "ommitted" },
   { label: "Other", value: "other" },
 ];
 

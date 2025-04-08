@@ -3,12 +3,16 @@ import LoadingView from "./LoadingView";
 import Text from "./Text";
 import View from "./View";
 import { TRPCClientErrorLike } from "@trpc/react-query";
+import { TRPCQueryOptions } from "@trpc/react-query/dist/shared";
+import { QueryObserverResult } from "@tanstack/react-query";
+import ScrollView from "./ScrollView";
 
 type LoadingScreenProps = {
   loads: boolean[] | boolean;
   data?: NonNullable<any>;
   header?: React.ReactNode;
-  errors?: any;
+  errors?: TRPCClientErrorLike<any>[];
+  refetch?: QueryObserverResult["refetch"];
 };
 
 export default function LoadingScreen({
@@ -16,6 +20,7 @@ export default function LoadingScreen({
   data,
   header,
   errors,
+  refetch,
 }: LoadingScreenProps) {
   if ((Array.isArray(loads) && loads.some((isLoading) => isLoading)) || !data) {
     return (
@@ -24,15 +29,16 @@ export default function LoadingScreen({
         <LoadingView />
       </>
     );
-  } else if (errors.length > 0) {
+  } else if (errors && errors.length > 0) {
     return (
       <>
         {header}
-        <View
+        <ScrollView
+          refetch={refetch ? refetch : undefined}
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <Text>A problem occurred</Text>
-        </View>
+        </ScrollView>
       </>
     );
   } else {

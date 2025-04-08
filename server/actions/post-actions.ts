@@ -8,6 +8,7 @@ import {
   initiated_jobs,
   saved_posts,
   comments,
+  reviews,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -489,6 +490,16 @@ export async function getHomePosts(
       SELECT COUNT(*)
       FROM ${comments}
       WHERE ${comments.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+      SELECT AVG(rating)
+      FROM ${reviews}
+      WHERE ${reviews}.reviewee_uuid = ${posts.user_uuid}
+      )`,
+        review_count: sql<number>`(
+      SELECT COUNT(*)
+      FROM ${reviews}
+      WHERE ${reviews}.reviewee_uuid = ${posts.user_uuid}
       )`,
       })
       .from(posts)

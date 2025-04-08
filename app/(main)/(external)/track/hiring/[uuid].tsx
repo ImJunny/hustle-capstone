@@ -179,16 +179,6 @@ export default function TrackWorkingDetailsScreen() {
           )}
         </View>
 
-        {/**REVIEW SECTION */}
-        {/* {(data as any).progress === "paid" && (
-          <View>
-            <Separator />
-            <TrackJobReviewSection
-              initiated_uuid={(data as any).initiated_job_post_uuid}
-            />
-          </View>
-        )} */}
-
         {/**CANCEL SECTION */}
         {((data as any).progress as any) === "approved" && (
           <View>
@@ -261,7 +251,10 @@ export default function TrackWorkingDetailsScreen() {
                     <Text weight="semibold">
                       @{(data as any).user_username}
                     </Text>
-                    <StarDisplay rating={3.5} count={15} />
+                    <StarDisplay
+                      rating={(data as any).user_avg_rating}
+                      count={(data as any).user_review_count}
+                    />
                   </View>
 
                   <Button
@@ -277,6 +270,16 @@ export default function TrackWorkingDetailsScreen() {
                 </View>
               </Pressable>
             </View>
+          </>
+        )}
+
+        {/**REVIEW SECTION */}
+        {(data as any).progress === "paid" && (
+          <>
+            <Separator />
+            <TrackJobReviewSection
+              initiated_uuid={(data as any).initiated_job_post_uuid}
+            />
           </>
         )}
       </ScrollView>

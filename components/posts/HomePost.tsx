@@ -235,7 +235,10 @@ function HomePost({ data }: { data: THomePost }) {
                 <Text color="white" weight="semibold">
                   @{data.user_username}
                 </Text>
-                <StarDisplay rating={4.3} count={3} />
+                <StarDisplay
+                  rating={data.avg_rating ?? 0}
+                  count={data.review_count ?? 0}
+                />
               </View>
               <Button
                 style={styles.viewButton}

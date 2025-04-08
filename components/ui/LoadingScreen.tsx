@@ -7,7 +7,7 @@ import { TRPCClientErrorLike } from "@trpc/react-query";
 type LoadingScreenProps = {
   loads: boolean[] | boolean;
   data?: NonNullable<any>;
-  header: React.ReactNode;
+  header?: React.ReactNode;
   errors?: any;
 };
 

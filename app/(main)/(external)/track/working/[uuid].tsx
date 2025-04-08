@@ -21,6 +21,7 @@ import { TrackWorkingLabels } from "@/constants/Tracking";
 import TrackJobStartButton from "@/components/tracking/TrackJobStartButton";
 import TrackJobCompleteButton from "@/components/tracking/TrackJobCompleteButton";
 import TrackCancelButton from "@/components/tracking/TrackCancelButton";
+import TrackJobReviewSection from "@/components/tracking/TrackJobReviewSection";
 
 export default function TrackWorkingDetailsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -251,7 +252,10 @@ export default function TrackWorkingDetailsScreen() {
               />
               <View style={{ gap: 4 }}>
                 <Text weight="semibold">@{data.employer_username}</Text>
-                <StarDisplay rating={3.5} count={15} />
+                <StarDisplay
+                  rating={data.employer_avg_rating as unknown as number}
+                  count={data.employer_review_count as unknown as number}
+                />
               </View>
 
               <Button
@@ -267,6 +271,16 @@ export default function TrackWorkingDetailsScreen() {
             </View>
           </Pressable>
         </View>
+
+        {/**REVIEW SECTION */}
+        {(data as any).progress === "paid" && (
+          <>
+            <Separator />
+            <TrackJobReviewSection
+              initiated_uuid={data.initiated_job_post_uuid}
+            />
+          </>
+        )}
       </ScrollView>
     </>
   );

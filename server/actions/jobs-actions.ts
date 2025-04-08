@@ -6,6 +6,7 @@ import {
   payments,
   post_images,
   posts,
+  reviews,
   users,
 } from "@/drizzle/schema";
 import { stripe } from "@/stripe-server";
@@ -165,12 +166,12 @@ export async function getTrackWorkingDetails(
     const result = await db
       .select({
         job_image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+      )`,
         initiated_job_post_uuid: initiated_jobs.uuid,
         job_post_uuid: posts.uuid,
         title: posts.title,
@@ -181,6 +182,16 @@ export async function getTrackWorkingDetails(
         accepted_rate: posts.min_rate,
         user_uuid: users.uuid,
         service_uuid: initiated_jobs.linked_service_post_uuid,
+        employer_avg_rating: sql`(
+        SELECT AVG(${reviews.rating})
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
+        employer_review_count: sql`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -210,17 +221,17 @@ export async function getTrackHiringDetails(
     const data_with_user = await db
       .select({
         accepted_count: sql`(
-          SELECT COUNT(*)
-          FROM ${initiated_jobs}
-          WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
-        )`,
+        SELECT COUNT(*)
+        FROM ${initiated_jobs}
+        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+      )`,
         job_image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+      )`,
         initiated_job_post_uuid: initiated_jobs.uuid,
         job_post_uuid: posts.uuid,
         title: posts.title,
@@ -231,6 +242,16 @@ export async function getTrackHiringDetails(
         user_avatar_url: users.avatar_url,
         user_uuid: users.uuid,
         service_uuid: initiated_jobs.linked_service_post_uuid,
+        user_avg_rating: sql`(
+        SELECT AVG(${reviews.rating})
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
+        user_review_count: sql`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -251,9 +272,9 @@ export async function getTrackHiringDetails(
     const data_without_user = await db
       .select({
         accepted_count: sql`(
-        SELECT COUNT(*)
-        FROM ${initiated_jobs}
-        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+      SELECT COUNT(*)
+      FROM ${initiated_jobs}
+      WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
       )`,
         job_image_url: post_images.image_url,
         job_post_uuid: posts.uuid,
@@ -269,12 +290,12 @@ export async function getTrackHiringDetails(
           eq(
             post_images.image_url,
             sql`(
-            SELECT image_url
-            FROM ${post_images}
-            WHERE ${post_images.post_uuid} = ${posts.uuid}
-            ORDER BY ${post_images.image_url} ASC
-            LIMIT 1
-          )`
+        SELECT image_url
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+        )`
           )
         )
       )
@@ -382,19 +403,29 @@ export async function getAcceptedUsers(job_post_uuid: string) {
         created_at: initiated_jobs.created_at,
         initiated_job_uuid: initiated_jobs.uuid,
         service: sql`(
-        SELECT json_build_object(
-          'uuid', ${posts.uuid},
-          'title', ${posts.title},
-          'image_url', (
-            SELECT ${post_images.image_url}
-            FROM ${post_images}
-            WHERE ${post_images.post_uuid} = ${initiated_jobs.linked_service_post_uuid}
-            ORDER BY ${post_images.image_url} ASC
-            LIMIT 1
-          )
+      SELECT json_build_object(
+        'uuid', ${posts.uuid},
+        'title', ${posts.title},
+        'image_url', (
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${initiated_jobs.linked_service_post_uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
         )
-        FROM ${posts}
-        WHERE ${posts.uuid} = ${initiated_jobs.linked_service_post_uuid}
+      )
+      FROM ${posts}
+      WHERE ${posts.uuid} = ${initiated_jobs.linked_service_post_uuid}
+      )`,
+        avg_rating: sql`(
+        SELECT AVG(${reviews.rating})
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
+        review_count: sql`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
       )`,
       })
       .from(initiated_jobs)

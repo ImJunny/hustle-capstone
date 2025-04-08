@@ -28,7 +28,7 @@ export default function ReviewPost({ data }: { data: ReviewData }) {
       <TouchableOpacity
         onPress={() => router.push(`/profile/${data.reviewer_uuid}`)}
       >
-        <AvatarImage url={data.avatar_url} size={50} />
+        <AvatarImage url={data.avatar_url} size={60} />
       </TouchableOpacity>
 
       <View
@@ -55,7 +55,7 @@ export default function ReviewPost({ data }: { data: ReviewData }) {
           >
             <Image
               source={{ uri: data.post_image_url }}
-              style={{ width: 40, height: 40 }}
+              style={{ width: 50, height: 50 }}
             />
           </TouchableOpacity>
         </View>

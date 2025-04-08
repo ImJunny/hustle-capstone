@@ -10,6 +10,7 @@ import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import { Post as TPost } from "@/server/actions/post-actions";
 import Skeleton from "../ui/Skeleton";
+import StarDisplay from "../ui/StarDisplay";
 
 type PostProps = {
   type: "work" | "hire";
@@ -67,14 +68,10 @@ export default function Post({ type, data, style }: PostProps) {
                   alignItems: "center",
                 }}
               >
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star-half" />
-                <Icon name="star-outline" />
-                <Text style={{ marginLeft: 2 }} size="sm">
-                  2
-                </Text>
+                <StarDisplay
+                  rating={(data as any).avg_rating}
+                  count={(data as any).review_count}
+                />
               </View>
             )}
 

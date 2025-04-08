@@ -118,10 +118,6 @@ export async function getReviews(
         avatar_url: users.avatar_url,
         reviewer_username: users.username,
         reviewer_uuid: reviews.reviewer_uuid,
-        reviewee_username:
-          sql`(SELECT username FROM ${users} WHERE ${users}.uuid = ${reviews.reviewee_uuid})`.as(
-            "reviewee_username"
-          ),
         post_image_url:
           sql`(SELECT ${post_images.image_url} FROM ${post_images} WHERE ${post_images}.post_uuid = ${posts.uuid} ORDER BY ${post_images}.image_url ASC LIMIT 1)`.as(
             "post_image_url"
@@ -160,6 +156,7 @@ export async function getServiceReviews(post_uuid: string) {
       .select({
         avatar_url: users.avatar_url,
         reviewer_username: users.username,
+        reviewer_uuid: reviews.reviewer_uuid,
         review: reviews.review,
         rating: reviews.rating,
         created_at: reviews.created_at,
@@ -167,6 +164,7 @@ export async function getServiceReviews(post_uuid: string) {
           sql`(SELECT ${post_images.image_url} FROM ${post_images} WHERE ${post_images}.post_uuid = ${posts.uuid} ORDER BY ${post_images}.image_url ASC LIMIT 1)`.as(
             "post_image_url"
           ),
+        post_uuid: posts.uuid,
       })
       .from(reviews)
       .innerJoin(
@@ -176,13 +174,12 @@ export async function getServiceReviews(post_uuid: string) {
       .innerJoin(
         posts,
         and(
-          eq(posts.uuid, initiated_jobs.job_post_uuid),
+          eq(posts.uuid, initiated_jobs.linked_service_post_uuid),
           eq(posts.uuid, post_uuid)
         )
       )
       .innerJoin(users, eq(users.uuid, reviews.reviewer_uuid))
       .orderBy(desc(reviews.created_at));
-
     return result;
   } catch (error) {
     console.error(error);

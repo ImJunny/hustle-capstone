@@ -227,11 +227,11 @@ export default function TrackWorkingDetailsScreen() {
               </View>
             )}
 
-            {/** EMPLOYER SECTION */}
+            {/** WORKER SECTION */}
             <Separator />
             <View style={styles.employerSection}>
               <Text size="lg" weight="semibold">
-                Employer
+                Worker
               </Text>
               <Pressable
                 onPress={() => {

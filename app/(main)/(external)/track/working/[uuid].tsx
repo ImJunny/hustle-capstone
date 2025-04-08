@@ -234,7 +234,7 @@ export default function TrackWorkingDetailsScreen() {
         <Separator />
         <View style={styles.employerSection}>
           <Text size="lg" weight="semibold">
-            Employer
+            Hirer
           </Text>
           <Pressable
             onPress={() => {

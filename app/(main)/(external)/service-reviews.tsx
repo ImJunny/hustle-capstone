@@ -7,6 +7,8 @@ import { ReviewData } from "@/server/actions/review-actions";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import Text from "@/components/ui/Text";
 import { useLocalSearchParams } from "expo-router";
+import ScrollView from "@/components/ui/ScrollView";
+import { SimpleHeader } from "@/components/headers/Headers";
 
 export default function ServiceReviewsScreen() {
   const { uuid } = useLocalSearchParams();
@@ -18,19 +20,25 @@ export default function ServiceReviewsScreen() {
     return <LoadingScreen data={data} loads={isLoading} errors={error} />;
   } else if (data.length === 0) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>No service reviews yet</Text>
-      </View>
+      <>
+        <SimpleHeader title="Service reviews" />
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>No service reviews yet</Text>
+        </View>
+      </>
     );
   }
 
   return (
     <>
-      <View color="background" style={{ flex: 1 }}>
+      <SimpleHeader title="Service reviews" />
+      <ScrollView color="background" style={{ flex: 1 }}>
         {data?.map((review, i) => (
           <ReviewPost key={i} data={review as unknown as ReviewData} />
         ))}
-      </View>
+      </ScrollView>
     </>
   );
 }

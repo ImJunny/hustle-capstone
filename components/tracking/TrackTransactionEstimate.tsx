@@ -67,7 +67,7 @@ function PriceRow({
         weight={isTotal ? "semibold" : "normal"}
         color={isTotal ? "foreground" : "muted"}
       >
-        {isDeduction && "-"}${value}
+        {isDeduction && "-"}${value.toFixed(2)}
       </Text>
     </View>
   );

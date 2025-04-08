@@ -23,10 +23,12 @@ export default function TrackJobReview({
 
   if (!data) return null;
   return (
-    <View style={{ gap: 4, alignItems: "center" }}>
-      <Text color="muted">{formattedDate}</Text>
+    <View style={{ gap: 6, alignItems: "center" }}>
       <StarDisplay rating={data.rating} size={32} />
-      <Text size="sm">{data.review}</Text>
+      <Text>{data.review}</Text>
+      <Text color="muted" size="sm">
+        {formattedDate}
+      </Text>
     </View>
   );
 }

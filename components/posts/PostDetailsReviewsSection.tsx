@@ -36,7 +36,7 @@ export default function PostDetailsReviewsSection({
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => router.push(`/service-reviews/${data.uuid}` as any)}
+        onPress={() => router.push(`/service-reviews?uuid=${data.uuid}` as any)}
       >
         <View style={{ flexDirection: "row", marginBottom: 15 }}>
           <View>

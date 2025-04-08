@@ -51,7 +51,7 @@ export default function Layout() {
         >
           <MaterialTopTabs.Screen
             name="employer-reviews"
-            options={{ title: "Reviews by employers" }}
+            options={{ title: "Reviews by hirers" }}
             initialParams={{ uuid }}
           />
           <MaterialTopTabs.Screen

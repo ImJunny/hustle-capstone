@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import PostList from "@/components/posts/PostList";
 import { exampleJobPosts } from "@/server/utils/example-data";
 import { SimpleHeader } from "@/components/headers/Headers";
-import { FlatList } from "react-native-gesture-handler";
 import { trpc } from "@/server/lib/trpc-client";
 import View from "@/components/ui/View";
 import Text from "@/components/ui/Text";
@@ -15,19 +14,14 @@ import { router } from "expo-router";
 import StarDisplay from "@/components/ui/StarDisplay";
 import FollowButton from "@/components/profile/FollowButton";
 import { useFollowedStore } from "@/hooks/useFollowedStore";
+import FlatList from "@/components/ui/Flatlist";
 
 export default function FollowingScreen() {
   const { user } = useAuthData();
-  const {
-    data,
-    isLoading,
-    error,
-    dataUpdatedAt,
-    isFetched,
-    isFetchedAfterMount,
-  } = trpc.user.get_following.useQuery({
-    user_uuid: user?.id!,
-  });
+  const { data, isLoading, error, dataUpdatedAt, isFetched, refetch } =
+    trpc.user.get_following.useQuery({
+      user_uuid: user?.id!,
+    });
 
   const setFollowed = useFollowedStore((state) => state.setFollowed);
   const lastUpdated = useFollowedStore((state) => state.dataUpdatedAt);
@@ -69,6 +63,7 @@ export default function FollowingScreen() {
     <>
       <SimpleHeader title="Users you're following" />
       <FlatList
+        refetch={refetch}
         data={data}
         renderItem={({ item }) => <User data={item} />}
         keyExtractor={(item) => item.uuid}

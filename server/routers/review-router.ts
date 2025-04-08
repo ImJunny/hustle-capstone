@@ -4,6 +4,7 @@ import {
   createReview,
   getReview,
   getReviews,
+  getServiceReviews,
   isAlreadyReviewed,
 } from "../actions/review-actions";
 
@@ -54,5 +55,14 @@ export const reviewRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getReviews(input.user_uuid, input.reviewer_type);
+    }),
+  get_services_reviews: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getServiceReviews(input.post_uuid);
     }),
 });

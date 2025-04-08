@@ -218,31 +218,57 @@ export async function getPostDetailsInfo(
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
         tags: sql<string[]>`(
-            SELECT ARRAY_AGG(${post_tags.tag_type})
-            FROM ${post_tags}
-            WHERE ${post_tags.post_uuid} = ${posts.uuid}
-          )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
         poster_info: {
           username: users.username,
           bio: users.bio,
           avatar_url: users.avatar_url,
+          avg_rating: sql<number | null>`(
+        SELECT AVG(rating)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+        )`,
+          review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+        )`,
         },
         is_liked: sql<boolean>`EXISTS(
-          SELECT 1
-          FROM ${saved_posts}
-          WHERE ${saved_posts.post_uuid} = ${uuid}
-          AND ${saved_posts.user_uuid} = ${user_uuid}
-        )`,
+        SELECT 1
+        FROM ${saved_posts}
+        WHERE ${saved_posts.post_uuid} = ${uuid}
+        AND ${saved_posts.user_uuid} = ${user_uuid}
+      )`,
         images: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_images.image_url} ORDER BY ${post_images.image_url} ASC)
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
+        SELECT ARRAY_AGG(${post_images.image_url} ORDER BY ${post_images.image_url} ASC)
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
       )`,
         comment_count: sql<number>`(
         SELECT COUNT(*)
         FROM ${comments}
         WHERE ${comments.post_uuid} = ${posts.uuid}
-        )`,
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${uuid}
+        AND ${reviews.reviewer_type} = 'employer'
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${uuid}
+        AND ${reviews.reviewer_type} = 'employer'
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))

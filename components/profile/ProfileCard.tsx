@@ -38,7 +38,7 @@ export default function ProfileCard({
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <StarDisplay rating={data.avg_rating} />
-              <Text size="lg" style={{ textDecorationLine: "underline" }}>
+              <Text style={{ textDecorationLine: "underline" }}>
                 {data.review_count} Reviews
               </Text>
             </View>

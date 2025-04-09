@@ -2,12 +2,13 @@ import Button from "../ui/Button";
 import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import View from "../ui/View";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { UserData } from "@/server/actions/user-actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import FollowButton from "./FollowButton";
 import AvatarImage from "../ui/AvatarImage";
+import StarDisplay from "../ui/StarDisplay";
 
 export default function ProfileCard({
   data,
@@ -30,16 +31,18 @@ export default function ProfileCard({
           <Text color="foreground" size="xl" weight="semibold">
             {data?.display_name}
           </Text>
-          <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
-            <Icon name={"star"} color="foreground" />
-            <Icon name={"star"} color="foreground" />
-            <Icon name={"star"} color="foreground" />
-            <Icon name={"star"} color="foreground" />
-            <Icon name={"star-half"} color="foreground" />
-            <Text size="lg" style={{ textDecorationLine: "underline" }}>
-              7 Reviews
-            </Text>
-          </View>
+          <TouchableOpacity
+            onPress={() => router.push(`/employer-reviews?uuid=${data.uuid}`)}
+          >
+            <View
+              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+            >
+              <StarDisplay rating={data.avg_rating} />
+              <Text style={{ textDecorationLine: "underline" }}>
+                {data.review_count} Reviews
+              </Text>
+            </View>
+          </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <Button
               style={{ flex: 1, height: 32 }}

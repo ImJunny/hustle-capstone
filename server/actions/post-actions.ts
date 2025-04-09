@@ -8,6 +8,7 @@ import {
   initiated_jobs,
   saved_posts,
   comments,
+  reviews,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -154,10 +155,24 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -172,7 +187,7 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
       .groupBy(posts.uuid) // Ensures we get one row per post
       .orderBy(desc(posts.created_at));
 
-    return result as Post[];
+    return result as unknown as Post[];
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get user job posts.");
@@ -217,31 +232,57 @@ export async function getPostDetailsInfo(
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
         tags: sql<string[]>`(
-            SELECT ARRAY_AGG(${post_tags.tag_type})
-            FROM ${post_tags}
-            WHERE ${post_tags.post_uuid} = ${posts.uuid}
-          )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
         poster_info: {
           username: users.username,
           bio: users.bio,
           avatar_url: users.avatar_url,
+          avg_rating: sql<number | null>`(
+        SELECT AVG(rating)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+        )`,
+          review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+        )`,
         },
         is_liked: sql<boolean>`EXISTS(
-          SELECT 1
-          FROM ${saved_posts}
-          WHERE ${saved_posts.post_uuid} = ${uuid}
-          AND ${saved_posts.user_uuid} = ${user_uuid}
-        )`,
+        SELECT 1
+        FROM ${saved_posts}
+        WHERE ${saved_posts.post_uuid} = ${uuid}
+        AND ${saved_posts.user_uuid} = ${user_uuid}
+      )`,
         images: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_images.image_url} ORDER BY ${post_images.image_url} ASC)
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
+        SELECT ARRAY_AGG(${post_images.image_url} ORDER BY ${post_images.image_url} ASC)
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
       )`,
         comment_count: sql<number>`(
         SELECT COUNT(*)
         FROM ${comments}
         WHERE ${comments.post_uuid} = ${posts.uuid}
-        )`,
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${uuid}
+        AND ${reviews.reviewer_type} = 'employer'
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${uuid}
+        AND ${reviews.reviewer_type} = 'employer'
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -280,10 +321,24 @@ export async function getPostInfo(uuid: string) {
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid)) // Keep left join
@@ -291,7 +346,6 @@ export async function getPostInfo(uuid: string) {
       .where(eq(posts.uuid, uuid))
       .groupBy(posts.uuid, post_tags.post_uuid) // Ensure correct grouping
       .then(([result]) => result);
-
     return result;
   } catch (error) {
     console.log(error);
@@ -332,17 +386,31 @@ export async function getPostsByFilters(
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
           : sql`NULL`,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
         image_url: sql`(
-          SELECT ${post_images.image_url}
-          FROM ${post_images}
-          WHERE ${post_images.post_uuid} = ${posts.uuid}
-          ORDER BY ${post_images.image_url} ASC
-          LIMIT 1
-        )`,
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -489,6 +557,16 @@ export async function getHomePosts(
       SELECT COUNT(*)
       FROM ${comments}
       WHERE ${comments.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+      SELECT AVG(rating)
+      FROM ${reviews}
+      WHERE ${reviews}.reviewee_uuid = ${posts.user_uuid}
+      )`,
+        review_count: sql<number>`(
+      SELECT COUNT(*)
+      FROM ${reviews}
+      WHERE ${reviews}.reviewee_uuid = ${posts.user_uuid}
       )`,
       })
       .from(posts)
@@ -706,10 +784,24 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
@@ -736,10 +828,24 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-          SELECT ARRAY_AGG(${post_tags.tag_type})
-          FROM ${post_tags}
-          WHERE ${post_tags.post_uuid} = ${posts.uuid}
-        )`,
+        SELECT ARRAY_AGG(${post_tags.tag_type})
+        FROM ${post_tags}
+        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      )`,
+        avg_rating: sql<number | null>`(
+        SELECT AVG(${reviews}.rating)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
+        review_count: sql<number>`(
+        SELECT COUNT(*)
+        FROM ${reviews}
+        INNER JOIN ${initiated_jobs}
+        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      )`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))

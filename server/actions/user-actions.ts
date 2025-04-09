@@ -1,5 +1,5 @@
 import { db } from "../../drizzle/db";
-import { following, messages, users } from "../../drizzle/schema";
+import { following, messages, reviews, users } from "../../drizzle/schema";
 import { and, desc, eq, sql } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 
@@ -75,7 +75,17 @@ export async function getUserData(uuid: string, their_uuid?: string) {
       .select(selectFields)
       .from(users)
       .where(eq(users.uuid, their_uuid ?? uuid));
-    return result;
+
+    const { review_count, avg_rating } = await db
+      .select({
+        review_count: sql<number>`COUNT(${reviews.rating})`.as("count"),
+        avg_rating: sql<number>`AVG(${reviews.rating})`.as("avg"),
+      })
+      .from(reviews)
+      .where(eq(reviews.reviewee_uuid, their_uuid ?? uuid))
+      .then(([result]) => result || { review_count: 0, avg_rating: 0 });
+
+    return { ...result, review_count, avg_rating };
   } catch (error) {
     console.error(error);
     throw new Error("Error fetching user data.");

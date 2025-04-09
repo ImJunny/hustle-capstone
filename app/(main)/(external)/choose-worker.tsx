@@ -16,6 +16,7 @@ import Icon from "@/components/ui/Icon";
 import { formatDistanceToNow } from "date-fns";
 import AvatarImage from "@/components/ui/AvatarImage";
 import ScrollView from "@/components/ui/ScrollView";
+import StarDisplay from "@/components/ui/StarDisplay";
 
 // Addresses screen
 export default function ChooseWorkerScreen() {
@@ -148,16 +149,10 @@ function WorkerEntry({
               </View>
 
               <Text>@{worker.user_username}</Text>
-              <View style={styles.employerStarsRow}>
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star" />
-                <Icon name="star-half" />
-                <Icon name="star-outline" />
-                <Text size="sm" style={{ marginLeft: 4 }}>
-                  4
-                </Text>
-              </View>
+              <StarDisplay
+                rating={worker.avg_rating as number}
+                count={worker.review_count as number}
+              />
             </View>
           </View>
         </TouchableOpacity>

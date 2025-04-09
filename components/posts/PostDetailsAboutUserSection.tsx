@@ -12,6 +12,7 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import IconButton from "../ui/IconButton";
 import AvatarImage from "../ui/AvatarImage";
+import StarDisplay from "../ui/StarDisplay";
 
 type PostDetailsAboutUserProps = {
   data: PostDetailsInfo;
@@ -53,14 +54,10 @@ export default function PostDetailsAboutUserSection({
                 marginTop: 4,
               }}
             >
-              <Icon name={"star"} />
-              <Icon name={"star"} />
-              <Icon name={"star"} />
-              <Icon name={"star"} />
-              <Icon name={"star"} />
-              <Text style={{ marginLeft: 4 }} size="sm">
-                1
-              </Text>
+              <StarDisplay
+                rating={data.poster_info?.avg_rating ?? 0}
+                count={data.poster_info?.review_count}
+              />
             </View>
           </View>
 

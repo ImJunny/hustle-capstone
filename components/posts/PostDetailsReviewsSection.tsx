@@ -1,14 +1,25 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { trpc } from "@/server/lib/trpc-client";
+import { PostDetailsInfo } from "@/server/actions/post-actions";
+import StarDisplay from "../ui/StarDisplay";
+import { router } from "expo-router";
 
-export default function PostDetailsReviewsSection() {
+export default function PostDetailsReviewsSection({
+  data,
+}: {
+  data: PostDetailsInfo;
+}) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
+  const partition = data.avg_rating
+    ? parseFloat(Number(data.avg_rating).toFixed(2)).toString()
+    : "0";
 
   return (
     <View
@@ -24,38 +35,39 @@ export default function PostDetailsReviewsSection() {
           Service Rating
         </Text>
       </View>
-      <View style={{ flexDirection: "row", marginBottom: 15 }}>
-        <View>
-          <Text size="4xl" weight="semibold">
-            4.5 out of 5
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 2,
-              marginVertical: 6,
-              alignItems: "center",
-            }}
-          >
-            <Icon name="star" />
-            <Icon name="star" />
-            <Icon name="star" />
-            <Icon name="star" />
-            <Icon name="star-half" />
-            <Text
-              weight="semibold"
+      <TouchableOpacity
+        onPress={() => router.push(`/service-reviews?uuid=${data.uuid}` as any)}
+      >
+        <View style={{ flexDirection: "row", marginBottom: 15 }}>
+          <View>
+            <Text size="4xl" weight="semibold">
+              {partition} out of 5
+            </Text>
+            <View
               style={{
-                marginLeft: 4,
+                flexDirection: "row",
+                gap: 2,
+                marginVertical: 6,
+                alignItems: "center",
               }}
             >
-              17 Reviews
-            </Text>
+              <StarDisplay rating={data.avg_rating ? data.avg_rating : 0} />
+
+              <Text
+                weight="semibold"
+                style={{
+                  marginLeft: 4,
+                }}
+              >
+                {data.review_count} Review{data.review_count > 1 ? "s" : ""}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.reviewButton}>
+            <IconButton name="chevron-forward" size="2xl" />
           </View>
         </View>
-        <View style={styles.reviewButton}>
-          <IconButton name="chevron-forward" size="2xl" />
-        </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 }

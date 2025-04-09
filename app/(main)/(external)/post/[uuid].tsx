@@ -233,7 +233,11 @@ export default function PostScreen() {
           data={data as unknown as PostDetailsInfo}
         />
 
-        {data.type === "hire" && <PostDetailsReviewsSection />}
+        {data.type === "hire" && (
+          <PostDetailsReviewsSection
+            data={data as unknown as PostDetailsInfo}
+          />
+        )}
         <PostDetailsAboutUserSection
           data={data as unknown as PostDetailsInfo}
         />

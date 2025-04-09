@@ -5,9 +5,8 @@ import Icon from "../ui/Icon";
 import { router } from "expo-router";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
-import LoadingScreen from "../ui/LoadingScreen";
-import { SimpleHeader } from "../headers/Headers";
-import SimpleReview from "../review/SimpleReview";
+import TrackJobReview from "./TrackJobReview";
+import Skeleton from "../ui/Skeleton";
 
 export default function TrackJobReviewSection({
   initiated_uuid,
@@ -15,17 +14,25 @@ export default function TrackJobReviewSection({
   initiated_uuid: string;
 }) {
   const { user } = useAuthData();
-  const { data: isReviewed } = trpc.review.is_already_reviewed.useQuery({
-    user_uuid: user?.id as string,
-    initiated_uuid,
-  });
+  const { data: isReviewed, isLoading } =
+    trpc.review.is_already_reviewed.useQuery({
+      user_uuid: user?.id as string,
+      initiated_uuid,
+    });
 
   if (isReviewed) {
     return (
-      <View>
-        <Text weight="semibold">Your review</Text>
-        <SimpleReview />
-      </View>
+      <Skeleton show={isLoading}>
+        <View style={{ marginVertical: 52 }}>
+          <Text weight="semibold" size="lg" style={{ textAlign: "center" }}>
+            Your review
+          </Text>
+          <TrackJobReview
+            initiated_uuid={initiated_uuid}
+            user_uuid={user?.id as string}
+          />
+        </View>
+      </Skeleton>
     );
   }
 
@@ -49,7 +56,8 @@ const styles = StyleSheet.create({
   entry: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 28,
   },
   entryText: {
     marginRight: "auto",

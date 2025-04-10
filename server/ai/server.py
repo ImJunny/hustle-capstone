@@ -35,8 +35,8 @@ def detect_sensitive_info(tokens):
   return detected_info
 
 
-@app.get("/getIsSafe")
-def determineSafe(input_text: str = Query(..., description="Input string to minimize unnecessary words")):
+@app.get("/getIsDataSafe")
+def determinePostSafe(input_text: str = Query(..., description="Input string to minimize unnecessary words")):
   # use NLTK
   stop_words = set(stopwords.words('english'))
   tokens = word_tokenize(input_text)
@@ -51,14 +51,13 @@ def determineSafe(input_text: str = Query(..., description="Input string to mini
   
   # use Groq
   minimized_tokens = [token for token in tokens if token.lower() not in stop_words]
-  minimized_text = " ".join(minimized_tokens
-  )
+  minimized_text = " ".join(minimized_tokens)
 
   chat_completion = client.chat.completions.create(
       messages=[
           {
               "role": "user",
-              "content": f"Genuine post safe to post on social media?RESPOND T or F ONLY! {minimized_text}",
+              "content": f"Data no sensitive info (phone, email, external accounts, ssn, addresses) or profanity? RESPOND T or F ONLY! \"{minimized_text}\"",
           }
       ],
       model="gemma2-9b-it",

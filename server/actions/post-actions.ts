@@ -26,6 +26,8 @@ import {
 } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
+import { get } from "lodash";
+import { getIsDataSafe } from "./llm-actions";
 
 // Create post
 export async function createPost(
@@ -42,6 +44,10 @@ export async function createPost(
   tags: string[]
 ) {
   try {
+    const text = `${title}+${description}`;
+    const isSafe = await getIsDataSafe(text);
+    if (!isSafe) throw new Error("unsafe");
+
     const post_uuid = uuidv4();
 
     await db.insert(posts).values({
@@ -79,8 +85,13 @@ export async function createPost(
       )
     );
   } catch (error) {
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Your post includes sensitive information");
+
     console.log(error);
-    throw new Error("Failed to create post.");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to create post."
+    );
   }
 }
 
@@ -98,6 +109,10 @@ export async function updatePost(
   tags: string[]
 ) {
   try {
+    const formattedText = `${title}+${description}`.replaceAll(" ", "%20");
+    const isSafe = await getIsDataSafe(formattedText);
+    if (!isSafe) throw new Error("unsafe");
+
     await db
       .update(posts)
       .set({
@@ -136,6 +151,9 @@ export async function updatePost(
       )
     );
   } catch (error) {
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Your post includes sensitive information");
+
     console.log(error);
     throw new Error("Failed to save post.");
   }

@@ -36,9 +36,9 @@ export default function PostSubmitButton({
           swipeable: false,
         });
       },
-      onError: () => {
+      onError: (error) => {
         Toast.show({
-          text1: "Error creating post",
+          text1: error.message,
           type: "error",
           swipeable: false,
         });
@@ -58,9 +58,9 @@ export default function PostSubmitButton({
           swipeable: false,
         });
       },
-      onError: () => {
+      onError: (error) => {
         Toast.show({
-          text1: "Error saving changes",
+          text1: error.message,
           type: "error",
           swipeable: false,
         });

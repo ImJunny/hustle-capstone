@@ -57,7 +57,7 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
       messages=[
           {
               "role": "user",
-              "content": f"Data no sensitive info (phone, email, external accounts, ssn, addresses) or profanity? RESPOND T or F ONLY! \"{minimized_text}\"",
+              "content": f"Data safe/not sensitive (no phone, email, external accounts, ssn, addresses) and no profanity? RESPOND T or F ONLY! \"{minimized_text}\"",
           }
       ],
       model="gemma2-9b-it",

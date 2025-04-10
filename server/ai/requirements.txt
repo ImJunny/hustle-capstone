@@ -1,6 +1,5 @@
 nltk
 uvicorn
 groq
-os
 python-dotenv
 fastapi

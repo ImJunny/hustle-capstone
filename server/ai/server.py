@@ -58,13 +58,15 @@ def determineSafe(input_text: str = Query(..., description="Input string to mini
       messages=[
           {
               "role": "user",
-              "content": minimized_text,
+              "content": f"Genuine post safe to post on social media?RESPOND T or F ONLY! {minimized_text}",
           }
       ],
       model="gemma2-9b-it",
   )
 
   response = chat_completion.choices[0].message.content.strip()
+  if response == "F": response = False
+  else: response = True
   return {
     "response": response,
     "source":"groq"

@@ -1,15 +1,15 @@
-# fly.toml app configuration file generated for hustle-capstone on 2025-04-10T08:58:05Z
+# fly.toml app configuration file generated for hustle-capstone-weathered-flower-2164 on 2025-04-10T05:25:20-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'hustle-capstone'
+app = 'hustle-capstone-weathered-flower-2164'
 primary_region = 'iad'
 
 [build]
 
 [http_service]
-  internal_port = 8080
+  internal_port = 8000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true

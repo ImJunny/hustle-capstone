@@ -7,8 +7,9 @@ from dotenv import load_dotenv # type: ignore
 import os
 import nltk # type: ignore
 
-nltk.download('punkt')
-nltk.download('stopwords')
+# remove nltk downloads for docker
+# nltk.download('punkt')
+# nltk.download('stopwords')
 load_dotenv()
 api_key = os.getenv("GROQ_SECRET_KEY")
 
@@ -22,7 +23,7 @@ def detect_sensitive_info(tokens):
     "phone_numbers": r"\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b",
     "emails": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
     "ssns": r"\b\d{3}-\d{2}-\d{4}\b",
-    "addresses": r"\b\d{1,5}\s(?:[A-Za-z0-9#]+\s?)+,\s(?:[A-Za-z]+\s?)+,\s[A-Z]{2}\s\d{5}(-\d{4})?\b"  # Enhanced address pattern
+    "addresses": r"\b\d{1,5}\s(?:[A-Za-z0-9#]+\s?)+,\s(?:[A-Za-z]+\s?)+,\s[A-Z]{2}\s\d{5}(-\d{4})?\b"
   }
   
   detected_info = {key: [] for key in patterns}

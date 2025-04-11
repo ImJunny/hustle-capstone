@@ -63,16 +63,20 @@ export default function CommentsSheetFooter({ uuid }: { uuid: string }) {
       >
         <Input
           placeholder="Comment..."
-          style={{ flex: 1 }}
+          style={{ flex: 1, borderRadius: 999 }}
           value={text}
           onChangeText={(value) => setText(value)}
         />
-
-        <IconButton
-          name="paper-plane"
-          onPress={handleSend}
-          disabled={isLoading || disabled}
-        />
+        <View color="foreground" style={{ borderRadius: 999 }}>
+          <IconButton
+            disabled={disabled || isLoading}
+            style={{ margin: 6 }}
+            name="paper-plane"
+            size={24}
+            color="background"
+            onPress={handleSend}
+          />
+        </View>
       </View>
     </KeyboardAvoidingView>
   );

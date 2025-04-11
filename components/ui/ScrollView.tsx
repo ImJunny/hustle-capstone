@@ -36,12 +36,7 @@ const ScrollView = forwardRef<NativeScrollView, ScrollViewProps>(
         showsHorizontalScrollIndicator={false}
         refreshControl={
           refetch ? (
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor="transparent"
-              colors={["transparent"]}
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           ) : undefined
         }
         {...otherProps}

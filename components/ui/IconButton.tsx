@@ -28,12 +28,14 @@ export default function IconButton({
   flippedX,
   hideOpacity,
   disabled,
+  style,
   ...props
 }: IconButtonProps) {
   return (
     <TouchableOpacity
+      disabled={disabled}
       activeOpacity={hideOpacity ? 1 : 0.2}
-      style={{ opacity: disabled ? 0.2 : 1 }}
+      style={[{ opacity: disabled ? 0.2 : 1 }, style]}
       {...props}
     >
       <Icon size={size} name={name} color={color} flippedX={flippedX} />

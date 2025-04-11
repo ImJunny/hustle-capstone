@@ -6,6 +6,7 @@ import LoadingView from "@/components/ui/LoadingView";
 import { trpc } from "@/server/lib/trpc-client";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function SavedJobsScreen() {
   const { user } = useAuthData();
@@ -19,33 +20,24 @@ export default function SavedJobsScreen() {
     type: "work",
   });
 
-  if (!user?.id) {
+  if (isLoading || error || !savedJobs) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text weight="semibold" size="xl">
-          Please log in to view saved jobs
-        </Text>
-      </View>
-    );
-  }
-
-  if (isLoading) {
-    return <LoadingView />;
-  }
-
-  if (error) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Failed to load saved jobs</Text>
-      </View>
+      <LoadingScreen refetch={refetch} data={savedJobs} loads={isLoading} />
     );
   }
 
   if (!savedJobs || savedJobs.length === 0) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ScrollView
+        refetch={refetch}
+        contentContainerStyle={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Text>No saved jobs found</Text>
-      </View>
+      </ScrollView>
     );
   }
 

@@ -3,12 +3,7 @@ import Sheet from "../ui/Sheet";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import View from "../ui/View";
 import Button from "../ui/Button";
-import {
-  BottomSheetFlatList,
-  BottomSheetFooter,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetFlatList, BottomSheetFooter } from "@gorhom/bottom-sheet";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -259,7 +254,7 @@ export default function FilterSheet({
           keyExtractor={(item) => item.key}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
-          contentContainerStyle={{ flexGrow: 1, gap: 30, paddingBottom: 80 }}
+          contentContainerStyle={{ flexGrow: 1, gap: 30, paddingBottom: 100 }}
           renderItem={({ item, index }) => (
             <>
               {item.component}

@@ -44,8 +44,7 @@ export async function createPost(
   tags: string[]
 ) {
   try {
-    const text = `${title}+${description}`;
-    const isSafe = await getIsDataSafe(text);
+    const isSafe = await getIsDataSafe(`${title}+${description}`);
     if (!isSafe) throw new Error("unsafe");
 
     const post_uuid = uuidv4();
@@ -109,8 +108,7 @@ export async function updatePost(
   tags: string[]
 ) {
   try {
-    const formattedText = `${title}+${description}`.replaceAll(" ", "%20");
-    const isSafe = await getIsDataSafe(formattedText);
+    const isSafe = await getIsDataSafe(`${title}+${description}`);
     if (!isSafe) throw new Error("unsafe");
 
     await db

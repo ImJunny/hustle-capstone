@@ -40,10 +40,11 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
   # use NLTK
   stop_words = set(stopwords.words('english'))
   tokens = word_tokenize(input_text)
-  
+
   sensitive_info = detect_sensitive_info(tokens)
   is_safe = not any(sensitive_info[key] for key in sensitive_info)
   if not sensitive_info:
+    print("nltk")
     return {
       "response": is_safe,
       "source" : "nltk"
@@ -66,6 +67,8 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
   response = chat_completion.choices[0].message.content.strip()
   if response == "F": response = False
   else: response = True
+
+  print(response)
   return {
     "response": response,
     "source":"groq"

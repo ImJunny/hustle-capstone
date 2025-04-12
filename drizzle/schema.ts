@@ -4,6 +4,7 @@ import {
   date,
   geometry,
   integer,
+  numeric,
   pgSchema,
   serial,
   text,
@@ -225,7 +226,7 @@ export const payments = app_schema.table("payments", {
     .references(() => initiated_jobs.uuid, { onDelete: "cascade" })
     .notNull(),
   title: text("title").notNull(),
-  amount: integer("amount").notNull(),
+  amount: numeric("amount").notNull(),
   stripe_payment_intent_id: text("stripe_payment_intent_id"),
   status: text("status", {
     enum: ["pending", "succeeded", "failed", "refunded"],

@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import View from "../ui/View";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import { Image } from "expo-image";
@@ -16,6 +15,7 @@ export default function TrackPostImage({ data, self }: TrackPostImageProps) {
   const renderOverlay = () => {
     if (
       status_type === "complete" ||
+      status_type === "in progress" ||
       progress === "in progress" ||
       progress === "complete" ||
       progress === "paid"

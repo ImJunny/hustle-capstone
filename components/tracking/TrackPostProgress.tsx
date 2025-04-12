@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import Text from "@/components/ui/Text";
 import View from "../ui/View";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export type TrackPostProgressProps = {
   data: TrackPostType;
@@ -14,6 +14,11 @@ export default function TrackPostProgress({
   self,
 }: TrackPostProgressProps) {
   const { progress } = data;
+  const { user } = useAuthData();
+  const otherApproved =
+    data.approved_worker_uuid != user?.id &&
+    typeof data.approved_worker_uuid === "string";
+
   return (
     <View>
       {progress === "in progress" ? (
@@ -21,7 +26,10 @@ export default function TrackPostProgress({
           In progress{`${self ? ", awaiting completion" : ""}`}
         </Text>
       ) : progress === "accepted" ? (
-        <Text weight="semibold">Accepted</Text>
+        <Text weight="semibold">
+          Accepted
+          {otherApproved ? ", another worker approved" : ""}
+        </Text>
       ) : progress === "approved" ? (
         <Text weight="semibold">Approved{self ? " the worker" : ""}</Text>
       ) : progress === "complete" ? (

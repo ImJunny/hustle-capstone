@@ -12,11 +12,19 @@ import { QueryObserverResult } from "@tanstack/react-query";
 export type ScrollViewProps = {
   color?: TColors;
   refetch?: QueryObserverResult["refetch"];
+  showsVerticalScrollIndicator?: boolean;
 } & NativeScrollViewProps;
 
 const ScrollView = forwardRef<NativeScrollView, ScrollViewProps>(
   (
-    { style, color = "transparent", bounces = false, refetch, ...otherProps },
+    {
+      style,
+      color = "transparent",
+      bounces = false,
+      refetch,
+      showsVerticalScrollIndicator = false,
+      ...otherProps
+    },
     ref
   ) => {
     const backgroundColor = useThemeColor()[color];
@@ -32,7 +40,7 @@ const ScrollView = forwardRef<NativeScrollView, ScrollViewProps>(
         ref={ref}
         style={[{ backgroundColor }, style]}
         bounces={bounces}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         showsHorizontalScrollIndicator={false}
         refreshControl={
           refetch ? (

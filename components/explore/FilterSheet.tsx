@@ -10,6 +10,7 @@ import {
   Platform,
   StyleSheet,
   TouchableOpacity,
+  ViewStyle,
 } from "react-native";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -96,6 +97,22 @@ export default function FilterSheet({
       googleInputRef.current.blur();
     }
   }
+
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardOpen(true);
+    });
+    const hideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardOpen(false);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
   const filterOptions = [
     {
       key: "Type",
@@ -204,7 +221,10 @@ export default function FilterSheet({
     {
       key: "Tags",
       component: (
-        <FilterEntry title="Tags">
+        <FilterEntry
+          title="Tags"
+          style={{ marginBottom: isKeyboardOpen ? 200 : 0 }}
+        >
           <TagFilterInput
             data={tagTypes}
             value={tags}
@@ -215,6 +235,7 @@ export default function FilterSheet({
       ),
     },
   ];
+
   return (
     <Sheet
       sheetRef={sheetRef}
@@ -254,7 +275,10 @@ export default function FilterSheet({
           keyExtractor={(item) => item.key}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
-          contentContainerStyle={{ flexGrow: 1, gap: 30, paddingBottom: 100 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            gap: 30,
+          }}
           renderItem={({ item, index }) => (
             <>
               {item.component}
@@ -273,13 +297,15 @@ function FilterEntry({
   title,
   text,
   children,
+  style,
 }: {
   title: string;
   text?: string;
   children: ReactNode;
+  style?: ViewStyle;
 }) {
   return (
-    <View>
+    <View style={style}>
       <View style={styles.label}>
         <Text weight="semibold" size="lg">
           {title}

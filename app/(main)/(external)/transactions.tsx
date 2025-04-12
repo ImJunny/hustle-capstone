@@ -30,7 +30,7 @@ export default function TransactionsScreen() {
   let pendingBalance = 0;
   data?.transactions.forEach((transaction) => {
     if (transaction.status === "pending" && transaction.type === "income")
-      pendingBalance += transaction.amount;
+      pendingBalance += Number(transaction.amount);
   });
   const groupedTransactions = groupTransactionsByMonth(
     data?.transactions as any
@@ -169,7 +169,7 @@ export default function TransactionsScreen() {
                         type={transaction.type}
                         title={transaction.title}
                         status={transaction.status}
-                        amount={transaction.amount}
+                        amount={Number(transaction.amount)}
                         date={transaction.created_at}
                       />
                     ))}

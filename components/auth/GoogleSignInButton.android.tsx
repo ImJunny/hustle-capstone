@@ -24,18 +24,15 @@ export default function GoogleSignInButtonAndroid() {
       if (type === "success") {
         const {
           data: { user },
-          error,
         } = await supabase.auth.signInWithIdToken({
           provider: "google",
           token: data.idToken!,
         });
-        console.log(error);
         if (user && user.email)
           createUserMutation.mutate({
             uuid: user.id,
             email: user.email,
           });
-        else console.log("no user");
       }
     } catch (error) {
       console.log(error);

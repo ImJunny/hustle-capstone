@@ -39,7 +39,11 @@ export default function LogOut() {
   }
 
   return (
-    <TouchableOpacity onPress={handleSignout} disabled={loading}>
+    <TouchableOpacity
+      onPress={handleSignout}
+      style={{ opacity: loading ? 0.5 : 1 }}
+      disabled={loading}
+    >
       <View style={styles.lastEntry}>
         <Icon name="log-out-outline" size="xl" color="red" />
         <Text style={styles.lastText}>Log out</Text>

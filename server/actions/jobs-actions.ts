@@ -10,7 +10,7 @@ import {
   users,
 } from "@/drizzle/schema";
 import { stripe } from "@/stripe-server";
-import { and, eq, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, ne, or, sql } from "drizzle-orm";
 import { update } from "lodash";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
@@ -125,12 +125,19 @@ export async function getTrackWorkingPosts(user_uuid: string) {
         status_type: posts.status_type,
         progress: initiated_jobs.progress_type,
         image_url: sql`(
-            SELECT ${post_images.image_url}
-            FROM ${post_images}
-            WHERE ${post_images.post_uuid} = ${posts.uuid}
-            ORDER BY ${post_images.image_url} ASC
-            LIMIT 1
-          )`,
+        SELECT ${post_images.image_url}
+        FROM ${post_images}
+        WHERE ${post_images.post_uuid} = ${posts.uuid}
+        ORDER BY ${post_images.image_url} ASC
+        LIMIT 1
+        )`,
+        approved_worker_uuid: sql`(
+        SELECT ${initiated_jobs.worker_uuid}
+        FROM ${initiated_jobs}
+        WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+          AND ${initiated_jobs.progress_type} != 'accepted'
+        LIMIT 1
+        )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -145,7 +152,8 @@ export async function getTrackWorkingPosts(user_uuid: string) {
           ),
           ne(initiated_jobs.progress_type, "closed")
         )
-      );
+      )
+      .orderBy(desc(initiated_jobs.created_at));
     return result;
   } catch (error) {
     console.error(error);
@@ -605,7 +613,7 @@ export async function approveJob(
     // hirer payment entry
     await db.insert(payments).values({
       job_uuid: initiated_uuid,
-      amount,
+      amount: String(amount),
       stripe_payment_intent_id: payment_intent_id,
       title: job_title,
       status: "pending",
@@ -622,7 +630,7 @@ export async function approveJob(
     // worker payment entry
     await db.insert(payments).values({
       job_uuid: initiated_uuid,
-      amount: workerCompensation.total,
+      amount: String(workerCompensation.total),
       stripe_payment_intent_id: null,
       title: job_title,
       status: "pending",

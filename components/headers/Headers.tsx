@@ -17,6 +17,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 import AvatarImage from "../ui/AvatarImage";
+import Icon from "../ui/Icon";
 
 interface IndexHeaderProps {
   index: number;
@@ -295,7 +296,8 @@ export function SearchingHeader() {
   const [value, setValue] = useState(text as string);
 
   async function handleSearch() {
-    if (value.length > 0) router.replace(`/search?keyword=${value}`);
+    if (value.length > 0)
+      router.replace(`/search?keyword=${value}&sort=relevance`);
   }
   return (
     <HeaderWrapper
@@ -632,7 +634,15 @@ export function SingleMessageFooter({
               onChangeText={(value) => setText(value)}
               onSubmitEditing={handleSubmit}
             />
-            <IconButton name="paper-plane" size="xl" onPress={handleSubmit} />
+            <View color="foreground" style={{ borderRadius: 999 }}>
+              <IconButton
+                style={{ margin: 6 }}
+                name="paper-plane"
+                size={24}
+                color="background"
+                onPress={handleSubmit}
+              />
+            </View>
           </View>
         ),
       }}

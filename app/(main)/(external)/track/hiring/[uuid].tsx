@@ -20,8 +20,6 @@ import { TrackHiringLabels } from "@/constants/Tracking";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import TrackCancelButton from "@/components/tracking/TrackCancelButton";
 import TrackJobPayNowButton from "@/components/tracking/TrackJobPayNowButton";
-import Skeleton from "@/components/ui/Skeleton";
-import { date } from "drizzle-orm/mysql-core";
 import TrackJobReviewSection from "@/components/tracking/TrackJobReviewSection";
 
 export default function TrackWorkingDetailsScreen() {

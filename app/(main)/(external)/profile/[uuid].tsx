@@ -82,7 +82,6 @@ export default function ProfileScreen() {
           <Text weight="semibold" size="2xl">
             No data to show
           </Text>
-          <Text>Create a post or complete jobs</Text>
         </View>
       </>
     );
@@ -102,13 +101,16 @@ export default function ProfileScreen() {
                 posts={jobPosts as unknown as Post[]}
               />
             )}
-            <Separator />
+
             {servicePosts && servicePosts.length > 0 && (
-              <ProfileSection
-                title="Services I provide"
-                type="hire"
-                posts={servicePosts as unknown as Post[]}
-              />
+              <>
+                <Separator />
+                <ProfileSection
+                  title="Services I provide"
+                  type="hire"
+                  posts={servicePosts as unknown as Post[]}
+                />
+              </>
             )}
           </View>
         </View>

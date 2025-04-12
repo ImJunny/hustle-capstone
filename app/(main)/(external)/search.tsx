@@ -84,7 +84,7 @@ export default function SearchedPage() {
           <Text>No posts found matching those keywords and filters</Text>
         </View>
       ) : (
-        <ScrollView refetch={refetch}>
+        <ScrollView refetch={refetch} showsVerticalScrollIndicator={true}>
           {data.map((post, i) => (
             <Post key={i} data={post as unknown as TPost} type={post.type} />
           ))}

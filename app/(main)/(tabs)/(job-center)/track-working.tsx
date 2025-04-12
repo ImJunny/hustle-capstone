@@ -7,11 +7,12 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import TrackPost from "@/components/tracking/TrackPost";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function TrackWorkingScreen() {
   const { user } = useAuthData();
 
-  const { data, isLoading, refetch } =
+  const { data, isLoading, refetch, error } =
     trpc.job.get_track_working_posts.useQuery({
       user_uuid: user?.id!,
     });
@@ -30,20 +31,15 @@ export default function TrackWorkingScreen() {
     );
   });
 
-  if (!user || isLoading) {
+  if (!user || isLoading || error) {
     return (
-      <>
-        <SimpleHeader title="Jobs you're working" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Error encountered while getting posts</Text>
-          </View>
-        )}
-      </>
+      <LoadingScreen
+        refetch={refetch}
+        data={data}
+        loads={isLoading}
+        errors={[error]}
+        header={<SimpleHeader title="Jobs you're working" />}
+      />
     );
   }
 
@@ -51,11 +47,16 @@ export default function TrackWorkingScreen() {
     return (
       <>
         <SimpleHeader title="Jobs you're working" />
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        <ScrollView
+          refetch={refetch}
+          contentContainerStyle={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <Text>No jobs to track</Text>
-        </View>
+        </ScrollView>
       </>
     );
   }

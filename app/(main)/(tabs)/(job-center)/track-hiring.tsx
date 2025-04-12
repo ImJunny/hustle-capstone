@@ -1,21 +1,19 @@
 import { SimpleHeader } from "@/components/headers/Headers";
-import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
-import View from "@/components/ui/View";
 import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 import { TrackPost as TrackPostType } from "@/server/actions/jobs-actions";
 import TrackPost from "@/components/tracking/TrackPost";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function TrackHireScreen() {
   const { user } = useAuthData();
 
-  const { data, isLoading, refetch } = trpc.job.get_track_hiring_posts.useQuery(
-    {
+  const { data, isLoading, refetch, error } =
+    trpc.job.get_track_hiring_posts.useQuery({
       user_uuid: user?.id!,
-    }
-  );
+    });
 
   const sortedData = data?.sort((a, b) => {
     const progressOrder = [
@@ -31,20 +29,15 @@ export default function TrackHireScreen() {
     );
   });
 
-  if (!user || isLoading) {
+  if (!user || isLoading || error) {
     return (
-      <>
-        <SimpleHeader title="Jobs you're hiring" />
-        {isLoading ? (
-          <LoadingView />
-        ) : (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text>Error encountered while getting posts</Text>
-          </View>
-        )}
-      </>
+      <LoadingScreen
+        refetch={refetch}
+        data={data}
+        loads={isLoading}
+        errors={[error]}
+        header={<SimpleHeader title="Jobs you're hiring" />}
+      />
     );
   }
 
@@ -52,11 +45,16 @@ export default function TrackHireScreen() {
     return (
       <>
         <SimpleHeader title="Jobs you're hiring" />
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        <ScrollView
+          refetch={refetch}
+          contentContainerStyle={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <Text>No jobs to track</Text>
-        </View>
+        </ScrollView>
       </>
     );
   }

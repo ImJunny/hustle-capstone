@@ -6,6 +6,7 @@ import LoadingView from "@/components/ui/LoadingView";
 import { trpc } from "@/server/lib/trpc-client";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function SavedServicesScreen() {
   const { user } = useAuthData();
@@ -19,23 +20,24 @@ export default function SavedServicesScreen() {
     type: "hire",
   });
 
-  if (isLoading) {
-    return <LoadingView />;
-  }
-
-  if (error) {
+  if (isLoading || error || !savedServices) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Failed to load saved services</Text>
-      </View>
+      <LoadingScreen refetch={refetch} data={savedServices} loads={isLoading} />
     );
   }
 
   if (!savedServices || savedServices.length === 0) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ScrollView
+        refetch={refetch}
+        contentContainerStyle={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Text>No saved services found</Text>
-      </View>
+      </ScrollView>
     );
   }
 

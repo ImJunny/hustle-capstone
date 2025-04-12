@@ -5,12 +5,9 @@ import Separator from "@/components/ui/Separator";
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { createUser } from "@/server/actions/user-actions";
 import { supabase } from "@/server/lib/supabase";
 import { trpc } from "@/server/lib/trpc-client";
 import { AuthError } from "@supabase/supabase-js";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {

@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useState } from "react";
 import Icon from "../ui/Icon";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { supabase } from "@/server/lib/supabase";
@@ -21,13 +21,17 @@ export default function LogOut() {
     resetFollowed();
   };
   const utils = trpc.useUtils();
+
+  const [loading, setLoading] = useState(false);
   async function handleSignout() {
+    setLoading(true);
     const { error } = await supabase.auth.signOut();
     Toast.show({
       text1: error ? "Error signing out" : "Signed out",
       type: error ? "error" : "info",
       swipeable: false,
     });
+    setLoading(false);
     if (error) return;
     router.replace("/signin");
     await utils.invalidate();
@@ -35,7 +39,11 @@ export default function LogOut() {
   }
 
   return (
-    <TouchableOpacity onPress={handleSignout}>
+    <TouchableOpacity
+      onPress={handleSignout}
+      style={{ opacity: loading ? 0.5 : 1 }}
+      disabled={loading}
+    >
       <View style={styles.lastEntry}>
         <Icon name="log-out-outline" size="xl" color="red" />
         <Text style={styles.lastText}>Log out</Text>

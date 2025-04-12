@@ -2,6 +2,7 @@ import { db } from "../../drizzle/db";
 import { following, messages, reviews, users } from "../../drizzle/schema";
 import { and, desc, eq, sql } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
+import { getIsDataSafe } from "./llm-actions";
 
 // Check if user exists
 export async function doesUserExist(uuid: string) {
@@ -102,6 +103,10 @@ export async function updateUserProfile(
   image_buffer: ArrayBuffer | null
 ) {
   try {
+    const isSafe = await getIsDataSafe(`${bio}+${display_name}+${username}`);
+    console.log(isSafe);
+    if (!isSafe) throw new Error("unsafe");
+
     if (image_buffer) {
       uploadImage(uuid, image_buffer);
       await db
@@ -123,6 +128,9 @@ export async function updateUserProfile(
       .where(eq(users.uuid, uuid));
   } catch (error) {
     console.log(error);
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Your profile includes sensitive information");
+
     throw new Error("Error updating profile.");
   }
 }

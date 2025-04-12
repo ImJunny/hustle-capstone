@@ -33,9 +33,9 @@ export default function SaveButton({
         });
         await utils.user.get_user_data.invalidate();
       },
-      onError: () => {
+      onError: (error) => {
         Toast.show({
-          text1: "Error in saving profile",
+          text1: error.message,
           type: "error",
           swipeable: false,
         });

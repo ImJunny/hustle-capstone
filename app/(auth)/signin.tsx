@@ -6,20 +6,13 @@ import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { supabase } from "@/server/lib/supabase";
-import { AuthError, User } from "@supabase/supabase-js";
 import { Link, router } from "expo-router";
-import { useEffect, useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from "react-native";
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { trpc } from "@/server/lib/trpc-client";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 // form schema for input validation
@@ -30,6 +23,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function SignInScreen() {
+  const platform = Platform.OS;
   // declare form properties
   const {
     control,
@@ -156,7 +150,9 @@ export default function SignInScreen() {
               OR
             </Text>
           </View>
+
           <GoogleSignInButton />
+
           <Text color="muted" style={{ textAlign: "center" }}>
             Forgot password?
           </Text>

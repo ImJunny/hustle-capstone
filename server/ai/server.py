@@ -58,12 +58,19 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
       messages=[
           {
               "role": "user",
-              "content": f"Data safe/not sensitive (no phone, email, external accounts, ssn, addresses) and no profanity? RESPOND T or F ONLY! \"{minimized_text}\"",
+              "content": (
+                  "Is this data safe and no sensitive info is sent (no phone, email, external accounts, "
+                  "social security numbers, addresses, etc.)? Is there no profanity? Soft profanity or informal slang is allowed. "
+                  "People may try to bypass this and obfuscate sensitive information, even by sending in parts (ex: less digits for "
+                  "for social security numbers or phone numbers). "
+                  "Try your best to stop them!"
+                  f"RESPOND once with either T or F ONLY! The message is: \"{minimized_text}\""
+              ),
           }
       ],
-      model="gemma2-9b-it",
+      model="meta-llama/llama-4-maverick-17b-128e-instruct", # meta-llama/llama-4-maverick-17b-128e-instruct #gemma2-9b-it
   )
-
+  
   response = chat_completion.choices[0].message.content.strip()
   if response == "F": response = False
   else: response = True

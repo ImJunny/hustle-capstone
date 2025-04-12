@@ -568,9 +568,13 @@ export function SingleMessageHeader({
 export function SingleMessageFooter({
   sender_uuid,
   receiver_uuid,
+  groupedMessages,
+  setGroupedMessages,
 }: {
   sender_uuid: string;
   receiver_uuid: string;
+  groupedMessages: any[];
+  setGroupedMessages: Dispatch<SetStateAction<any[]>>;
 }) {
   const utils = trpc.useUtils();
   const [text, setText] = useState("");
@@ -586,7 +590,31 @@ export function SingleMessageFooter({
       onError: (error) => {
         Toast.show({
           text1: error.message,
+          type: "error",
           swipeable: false,
+        });
+        setGroupedMessages((prev: any) => {
+          const updatedMessages = { ...prev };
+
+          Object.keys(updatedMessages).forEach((dateKey) => {
+            const messages = updatedMessages[dateKey];
+            const lastIndex = [...messages]
+              .reverse()
+              .findIndex((message: any) => message.sender_uuid === sender_uuid);
+
+            if (lastIndex !== -1) {
+              const indexToRemove = messages.length - 1 - lastIndex;
+              messages.splice(indexToRemove, 1);
+
+              if (messages.length === 0) {
+                delete updatedMessages[dateKey];
+              } else {
+                updatedMessages[dateKey] = messages;
+              }
+            }
+          });
+
+          return updatedMessages;
         });
       },
     });
@@ -636,6 +664,7 @@ export function SingleMessageFooter({
             />
             <View color="foreground" style={{ borderRadius: 999 }}>
               <IconButton
+                disabled={isLoading}
                 style={{ margin: 6 }}
                 name="paper-plane"
                 size={24}

@@ -34,13 +34,19 @@ export default function OnboardingNextButton({
         handleRedirect();
         clearErrors("username");
       },
-      onError: () => {
-        setError("username", { message: "Username is already taken." });
+      onError: (error) => {
+        setError("username", { message: error.message });
       },
     });
   const { mutate: updateDisplayName, isLoading: displayNameLoading } =
     trpc.onboarding.update_onboarding_display_name.useMutation({
-      onSuccess: handleRedirect,
+      onSuccess: () => {
+        handleRedirect();
+        clearErrors("display_name");
+      },
+      onError: (error) => {
+        setError("display_name", { message: error.message });
+      },
     });
   const { mutate: updateProfileImage, isLoading: imageLoading } =
     trpc.onboarding.update_onboarding_profile_image.useMutation({

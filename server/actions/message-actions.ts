@@ -9,6 +9,7 @@ import {
   post_tags,
 } from "../../drizzle/schema";
 import { eq, or, and, ne, desc, sql } from "drizzle-orm/sql";
+import { getIsDataSafe } from "./llm-actions";
 
 export async function getChatInfo(sender_uuid: string, receiver_uuid: string) {
   try {
@@ -183,6 +184,9 @@ export async function sendTextMessage(
   message: string
 ) {
   try {
+    const isSafe = await getIsDataSafe(message);
+    if (!isSafe) throw new Error("unsafe");
+
     // Insert the message and retrieve the inserted message's UUID
     const [newMessage] = await db
       .insert(messages)
@@ -224,7 +228,10 @@ export async function sendTextMessage(
         last_message_uuid: newMessage.uuid,
       });
   } catch (error) {
-    console.error("Error sending message:", error);
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Your message includes sensitive information");
+
+    console.error(error);
     throw new Error("Failed to send message.");
   }
 }

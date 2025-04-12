@@ -15,6 +15,7 @@ import LoadingView from "@/components/ui/LoadingView";
 import { supabase } from "@/server/lib/supabase";
 import { useMessageStore } from "@/hooks/useMessageStore";
 import PostMessage from "@/components/messages/PostMessage";
+import { Keyboard, KeyboardEvent } from "react-native";
 
 // Format timestamp for display
 const formatTimestamp = (timestamp: string) => {
@@ -74,6 +75,7 @@ export default function MessageScreen() {
         receiver_uuid: data?.receiver_info.receiver_uuid,
       });
     }
+    scrollViewRef.current?.scrollToEnd({ animated: false });
   }, [data]);
 
   useEffect(() => {
@@ -104,6 +106,25 @@ export default function MessageScreen() {
     };
   }, [channel]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        const interval = setInterval(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        }, 100);
+
+        setTimeout(() => {
+          clearInterval(interval);
+        }, 400);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   const scrollViewRef = useRef<RNScrollView>(null);
 
   const [isLayoutDone, setIsLayoutDone] = useState(false);
@@ -112,7 +133,13 @@ export default function MessageScreen() {
     setIsLayoutDone(true);
   };
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({ animated: false });
+    const interval = setInterval(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 400);
   }, [groupedMessages, isLayoutDone]);
 
   if (isLoading) {
@@ -216,6 +243,8 @@ export default function MessageScreen() {
       <SingleMessageFooter
         sender_uuid={user.id}
         receiver_uuid={data.receiver_info.receiver_uuid}
+        groupedMessages={groupedMessages}
+        setGroupedMessages={setGroupedMessages}
       />
     </>
   );

@@ -2,6 +2,7 @@ import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema";
 import { eq, and, ne, ilike } from "drizzle-orm";
 import { uploadImage } from "./s3-actions";
+import { getIsDataSafe } from "./llm-actions";
 
 // Update onboarding date of birth
 export async function updateOnboardingDateOfBirth(
@@ -25,6 +26,9 @@ export async function updateOnboardingDateOfBirth(
 // Update onboarding user name
 export async function updateOnboardingUsername(uuid: string, username: string) {
   try {
+    const isSafe = await getIsDataSafe(username);
+    if (!isSafe) throw new Error("unsafe");
+
     const result = await db
       .select()
       .from(users)
@@ -43,6 +47,9 @@ export async function updateOnboardingUsername(uuid: string, username: string) {
       .where(eq(users.uuid, uuid));
   } catch (error) {
     console.log(error);
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Username cannot be used");
+
     throw new Error("Failed to update username.");
   }
 }
@@ -53,6 +60,9 @@ export async function updateOnboardingDisplayName(
   display_name: string
 ) {
   try {
+    const isSafe = await getIsDataSafe(display_name);
+    if (!isSafe) throw new Error("unsafe");
+
     await db
       .update(users)
       .set({
@@ -62,6 +72,8 @@ export async function updateOnboardingDisplayName(
       .where(eq(users.uuid, uuid));
   } catch (error) {
     console.log(error);
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Display name cannot be used");
     throw new Error("Failed to update display name.");
   }
 }

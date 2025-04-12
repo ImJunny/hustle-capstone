@@ -154,7 +154,7 @@ export async function getTransactionsData(user_uuid: string) {
     let balance = 0;
     transactions.forEach((transaction) => {
       if (transaction.status === "succeeded" && transaction.type === "income") {
-        balance += transaction.amount;
+        balance += Number(transaction.amount);
       }
     });
 

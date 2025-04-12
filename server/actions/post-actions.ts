@@ -109,8 +109,8 @@ export async function updatePost(
   tags: string[]
 ) {
   try {
-    const formattedText = `${title}+${description}`.replaceAll(" ", "%20");
-    const isSafe = await getIsDataSafe(formattedText);
+    const text = `${title}+${description}`;
+    const isSafe = await getIsDataSafe(text);
     if (!isSafe) throw new Error("unsafe");
 
     await db
@@ -597,6 +597,7 @@ export async function getHomePosts(
         )
       )
       .orderBy(desc(posts.created_at));
+
     return result;
   } catch (error) {
     console.log(error);

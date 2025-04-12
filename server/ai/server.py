@@ -39,7 +39,7 @@ def detect_sensitive_info(tokens):
 def determinePostSafe(input_text: str = Query(..., description="Input string to minimize unnecessary words")):
   # use NLTK
   stop_words = set(stopwords.words('english'))
-  tokens = word_tokenize(input_text)
+  tokens = word_tokenize(input_text.replace("%20", " "))
   
   sensitive_info = detect_sensitive_info(tokens)
   is_safe = not any(sensitive_info[key] for key in sensitive_info)
@@ -50,22 +50,26 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
     }
   
   # use Groq
-  minimized_tokens = [token for token in tokens if token.lower() not in stop_words]
-  minimized_text = " ".join(minimized_tokens)
-
+  # minimized_tokens = [token for token in tokens if token.lower() not in stop_words]
+  # minimized_text = " ".join(minimized_tokens)
+  # print(minimized_text)
+  tokens = " ".join(tokens)
+  print(tokens)
   chat_completion = client.chat.completions.create(
       messages=[
           {
               "role": "user",
-              "content": f"Data safe/not sensitive (no phone, email, external accounts, ssn, addresses) and no profanity? RESPOND T or F ONLY! \"{minimized_text}\"",
+              "content": f"Data safe/not sensitive (no phone, email, external accounts, ssn, addresses) and no profanity? People may try to obfuscate info. RESPOND T or F ONLY! \"{tokens}\"",
           }
       ],
-      model="gemma2-9b-it",
+      model="meta-llama/llama-4-maverick-17b-128e-instruct",
   )
 
   response = chat_completion.choices[0].message.content.strip()
-  if response == "F": response = False
+  print(response)
+  if response.lower().startswith("f"): response = False
   else: response = True
+
   return {
     "response": response,
     "source":"groq"

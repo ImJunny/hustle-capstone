@@ -43,6 +43,12 @@ export default function CommentsSheet() {
 
   if (!uuid || !user) return;
 
+  const handleClose = () => {
+    commentsSheetRef?.current?.forceClose();
+    Keyboard.dismiss();
+    setCommentsSheetRef(null);
+  };
+
   return (
     <Sheet
       keyboardBehavior="extend"
@@ -93,14 +99,7 @@ export default function CommentsSheet() {
               )}
             </View>
 
-            <IconButton
-              name="close-outline"
-              size="2xl"
-              onPress={() => {
-                commentsSheetRef?.current?.forceClose();
-                Keyboard.dismiss();
-              }}
-            />
+            <IconButton name="close-outline" size="2xl" onPress={handleClose} />
           </View>
         </View>
       )}

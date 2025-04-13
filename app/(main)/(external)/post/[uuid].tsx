@@ -53,15 +53,6 @@ export default function PostScreen() {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(uuid) : unsavePost(uuid);
-    // newIsSaved
-    //   ? Toast.show({
-    //       text1: "Saved",
-    //       visibilityTime: 500,
-    //     })
-    //   : Toast.show({
-    //       text1: "Unsaved",
-    //       visibilityTime: 500,
-    //     });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: uuid, user_uuid: user?.id! },

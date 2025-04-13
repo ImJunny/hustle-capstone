@@ -5,7 +5,7 @@ import { create } from "zustand";
 type CommentsStore = {
   postUUID: string | undefined;
   setPostUUID: (uuid: string) => void;
-  setCommentsSheetRef: (ref: RefObject<BottomSheetMethods>) => void;
+  setCommentsSheetRef: (ref: RefObject<BottomSheetMethods> | null) => void;
   commentsSheetRef: RefObject<BottomSheetMethods> | null;
 };
 

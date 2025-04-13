@@ -6,6 +6,8 @@ import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { usePostStore } from "@/hooks/usePostStore";
+import CommentsSheet from "@/components/posts/CommentsSheet";
+import SharePostSheet from "@/components/posts/SharePostSheet";
 
 interface Route {
   key: string;
@@ -13,10 +15,11 @@ interface Route {
 }
 
 const useFetchPosts = (type: "work" | "hire") => {
-  const { user } = useAuthData();
+  const { user, geocode } = useAuthData();
   const { data: posts, refetch } = trpc.post.get_home_posts.useQuery({
     type,
     user_uuid: user?.id,
+    geocode: geocode ?? undefined,
   });
 
   const savePost = usePostStore((state) => state.savePost);

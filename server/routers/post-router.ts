@@ -161,10 +161,11 @@ export const postRouter = createTRPCRouter({
       z.object({
         type: z.enum(["work", "hire"]),
         user_uuid: z.string().optional(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
     .query(async ({ input }) => {
-      return await getHomePosts(input.type, input.user_uuid);
+      return await getHomePosts(input.type, input.user_uuid, input.geocode);
     }),
   get_active_post_counts: protectedProcedure
     .input(
@@ -222,10 +223,10 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         uuid: z.string(),
-        type: z.enum(["work", "hire"]).optional(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
     .query(async ({ input }) => {
-      return await getExplorePosts(input.uuid, input.type);
+      return await getExplorePosts(input.uuid, input.geocode);
     }),
 });

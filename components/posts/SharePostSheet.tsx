@@ -58,6 +58,12 @@ export default function SharePostSheet() {
 
   if (!user) return;
 
+  const handleClose = () => {
+    sharePostSheetRef?.current?.forceClose();
+    Keyboard.dismiss();
+    setSharePostSheetRef(null);
+  };
+
   return (
     <Sheet
       backgroundStyle={[
@@ -75,15 +81,7 @@ export default function SharePostSheet() {
               Share
             </Text>
 
-            <IconButton
-              name="close-outline"
-              size="2xl"
-              onPress={() => {
-                sharePostSheetRef?.current?.forceClose();
-                sharePostSheetRef?.current?.snapToPosition(0);
-                Keyboard.dismiss();
-              }}
-            />
+            <IconButton name="close-outline" size="2xl" onPress={handleClose} />
           </View>
         </View>
       )}

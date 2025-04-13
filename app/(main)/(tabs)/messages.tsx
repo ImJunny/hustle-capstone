@@ -41,7 +41,7 @@ export default function MessagesScreen() {
       <LoadingScreen
         loads={[isLoading, !fetchedChats]}
         data={data}
-        header={<BackHeader />}
+        header={<MessagesHeader />}
       />
     );
   }

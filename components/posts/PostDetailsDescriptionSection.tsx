@@ -26,6 +26,15 @@ export default function PostDetailsDescriptionSection({
     addSuffix: true,
   });
 
+  function getGeneralDistance(distance: number | null) {
+    if (data.location_type === "remote") return "remote";
+    if (distance === null) return "local";
+
+    distance = Math.ceil(distance);
+    return `${distance} mi`;
+  }
+  const distance = getGeneralDistance((data.distance as number) ?? null);
+
   return (
     <View style={[styles.section, { borderColor }]} color="background">
       <Text size="2xl" weight="semibold" style={{ marginVertical: 4 }}>
@@ -43,11 +52,7 @@ export default function PostDetailsDescriptionSection({
         </Badge>
         <Badge>
           <Text size="sm" weight="semibold">
-            {data.location_type === "remote"
-              ? "remote"
-              : data.distance
-              ? `< ${data.distance} mi`
-              : "local"}
+            {distance}
           </Text>
         </Badge>
         {data.tags?.map((tag, i) => (

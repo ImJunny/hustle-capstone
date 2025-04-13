@@ -15,19 +15,15 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import Post from "@/components/posts/Post";
 import { Post as TPost } from "@/server/actions/post-actions";
 import Separator from "@/components/ui/Separator";
-import Animated, {
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
 export default function ExploreScreen() {
   const themeColor = useThemeColor();
   const { user } = useAuthData();
+  const { geocode: expoGeocode } = useAuthData();
   const { data, isLoading, error, refetch } =
     trpc.post.get_explore_posts.useQuery({
       uuid: user?.id!,
+      geocode: expoGeocode ?? undefined,
     });
   const jobPosts = data?.jobs?.filter((post) => post.type === "work");
   const servicePosts = data?.services?.filter((post) => post.type === "hire");
@@ -106,7 +102,7 @@ export default function ExploreScreen() {
             Jobs you might like
           </Text>
           {jobPosts?.map((post, i) => (
-            <Post key={i} data={post as TPost} type={post.type} />
+            <Post key={i} data={post as unknown as TPost} type={post.type} />
           ))}
         </View>
         <View style={{ paddingHorizontal: 16 }}>
@@ -118,7 +114,7 @@ export default function ExploreScreen() {
             Services suggested for you
           </Text>
           {servicePosts?.map((post, i) => (
-            <Post key={i} data={post as TPost} type="hire" />
+            <Post key={i} data={post as unknown as TPost} type="hire" />
           ))}
         </View>
       </ScrollView>

@@ -47,15 +47,6 @@ function HomePost({ data }: { data: THomePost }) {
   const handleSaveToggle = useCallback(() => {
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
-    // newIsSaved
-    //   ? Toast.show({
-    //       text1: "Saved",
-    //       visibilityTime: 500,
-    //     })
-    //   : Toast.show({
-    //       text1: "Unsaved",
-    //       visibilityTime: 500,
-    //     });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: data.uuid, user_uuid: user?.id! },
@@ -103,6 +94,15 @@ function HomePost({ data }: { data: THomePost }) {
   const sharePostSheetRef = useSharePostStore(
     (state) => state.sharePostSheetRef
   );
+
+  function getGeneralDistance(distance: number | null) {
+    if (data.location_type === "remote") return "remote";
+    if (distance === null) return "local";
+
+    distance = Math.ceil(distance);
+    return `${distance} mi`;
+  }
+  const distance = getGeneralDistance((data.distance as number) ?? null);
 
   return (
     <GestureDetector gesture={doubleTap}>
@@ -159,7 +159,7 @@ function HomePost({ data }: { data: THomePost }) {
                     </Badge>
                     <Badge>
                       <Text size="sm" weight="semibold">
-                        {data.location_type === "remote" ? "remote" : "local"}
+                        {distance}
                       </Text>
                     </Badge>
                     {data.tags?.map((tag, i) => (

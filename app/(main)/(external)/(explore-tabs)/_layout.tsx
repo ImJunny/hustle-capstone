@@ -7,11 +7,7 @@ import {
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import {
-  ParamListBase,
-  TabNavigationState,
-  useTheme,
-} from "@react-navigation/native";
+import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { FontSizes } from "@/constants/Sizes";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
@@ -40,8 +36,9 @@ export default function Layout() {
             },
             tabBarLabelStyle: {
               fontFamily: "Inter-semibold",
-              fontSize: FontSizes.lg,
+              fontSize: FontSizes.md,
             },
+            tabBarActiveTintColor: themeColor.foreground,
             tabBarIndicatorStyle: {
               backgroundColor: themeColor.foreground,
               height: 3,

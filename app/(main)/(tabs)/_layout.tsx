@@ -65,10 +65,13 @@ export default function TabLayout() {
         options={{
           title: "Job Center",
           tabBarIcon: ({ focused }) => (
-            <Icon
-              name={focused ? "calendar-clear" : "calendar-clear-outline"}
-              size="xl"
-            />
+            <View style={{ position: "relative" }}>
+              <Icon
+                name={focused ? "calendar-clear" : "calendar-clear-outline"}
+                size="xl"
+              />
+              {/* {true && <TabIconBadge />} */}
+            </View>
           ),
         }}
       />
@@ -87,21 +90,7 @@ export default function TabLayout() {
                 size="xl"
                 flippedX
               />
-              {/* {false && (
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    backgroundColor: "red",
-                    borderRadius: 10,
-                    width: 8,
-                    height: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                />
-              )} */}
+              {/* {true && <TabIconBadge />} */}
             </View>
           ),
         }}
@@ -113,11 +102,29 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Icon
               name={focused ? "person-circle" : "person-circle-outline"}
-              size="xl"
+              size={29}
             />
           ),
         }}
       />
     </Tabs>
+  );
+}
+
+function TabIconBadge() {
+  return (
+    <View
+      color="red"
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        borderRadius: 10,
+        width: 8,
+        height: 8,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    />
   );
 }

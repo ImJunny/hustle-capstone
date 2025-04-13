@@ -1,14 +1,18 @@
 import CommentsSheet from "@/components/posts/CommentsSheet";
 import SharePostSheet from "@/components/posts/SharePostSheet";
 import { Stack, useSegments } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Layout() {
   const segments = useSegments();
   const currentPath = segments.join("/");
-  const sheetsVisible =
-    currentPath == "(main)/(tabs)" ||
-    currentPath == "(main)/(external)/post/[uuid]";
+  const [sheetsVisible, setSheetsVisible] = useState(true);
+  useEffect(() => {
+    setSheetsVisible(
+      currentPath == "(main)/(tabs)" ||
+        currentPath == "(main)/(external)/post/[uuid]"
+    );
+  }, [segments]);
 
   return (
     <>

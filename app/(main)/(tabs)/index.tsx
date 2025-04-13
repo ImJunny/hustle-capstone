@@ -6,6 +6,7 @@ import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { usePostStore } from "@/hooks/usePostStore";
+import Skeleton from "@/components/ui/Skeleton";
 
 interface Route {
   key: string;
@@ -37,12 +38,21 @@ const useFetchPosts = (type: "work" | "hire") => {
 
 const WorkRoute = () => {
   const { posts, refetch } = useFetchPosts("work");
-  return <Feed data={posts!} refetch={refetch} />;
+
+  return (
+    <Skeleton height="100%" width="100%" radius={0}>
+      {posts ? <Feed data={posts} refetch={refetch} /> : null}
+    </Skeleton>
+  );
 };
 
 const HireRoute = () => {
   const { posts, refetch } = useFetchPosts("hire");
-  return <Feed data={posts!} refetch={refetch} />;
+  return (
+    <Skeleton height="100%" width="100%" radius={0}>
+      {posts ? <Feed data={posts} refetch={refetch} /> : null}
+    </Skeleton>
+  );
 };
 
 const renderScene = ({ route }: { route: Route }) => {

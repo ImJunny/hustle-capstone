@@ -12,7 +12,13 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import { useSharePostStore } from "@/hooks/useSharePostStore";
@@ -24,6 +30,7 @@ import PostDetailsReviewsSection from "@/components/posts/PostDetailsReviewsSect
 import PostDetailsFooter from "@/components/posts/PostDetailsFooter";
 import PostDetailsSheet from "@/components/posts/PostDetailsSheet";
 import PostDetailsDeleteModal from "@/components/posts/PostDetailsDeleteModal";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function PostScreen() {
   const { uuid: postUuid } = useLocalSearchParams();
@@ -31,13 +38,12 @@ export default function PostScreen() {
   const { user, geocode } = useAuthData();
   const utils = trpc.useUtils();
   const { width } = Dimensions.get("window");
-  const { data, isLoading, refetch } = trpc.post.get_post_details_info.useQuery(
-    {
+  const { data, isLoading, refetch, error } =
+    trpc.post.get_post_details_info.useQuery({
       uuid: uuid,
       user_uuid: user?.id as string,
       geocode: geocode ?? undefined,
-    }
-  );
+    });
 
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
@@ -51,7 +57,20 @@ export default function PostScreen() {
     }
   }, [data]);
 
+  // save/unsave animation
+  const showLike = useSharedValue(0);
+  const likeAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(showLike.value, { duration: 200 }),
+    transform: [
+      { scale: withSpring(showLike.value ? 1 : 0.5, { damping: 12 }) },
+    ],
+  }));
   const handleSaveToggle = useCallback(() => {
+    showLike.value = 1;
+    setTimeout(() => {
+      showLike.value = 0;
+    }, 700);
+
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(uuid) : unsavePost(uuid);
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
@@ -92,88 +111,59 @@ export default function PostScreen() {
       runOnJS(handleSaveToggle)();
     });
 
-  if (isLoading) {
+  if (isLoading || !data || error) {
     return (
       <>
-        <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
-          <View
-            style={{
-              borderTopRightRadius: 999,
-              borderBottomRightRadius: 999,
-              paddingVertical: 8,
-              paddingLeft: 8,
-              paddingRight: 16,
-              marginTop: 4,
-            }}
-          >
-            <IconButton name="arrow-back" onPress={() => router.back()} />
-          </View>
-        </View>
-        <LoadingView color="background" />
-      </>
-    );
-  } else if (!data) {
-    return (
-      <>
-        <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
-          <View
-            style={{
-              borderTopRightRadius: 999,
-              borderBottomRightRadius: 999,
-              paddingVertical: 8,
-              paddingLeft: 8,
-              paddingRight: 16,
-              marginTop: 4,
-            }}
-          >
-            <IconButton name="arrow-back" onPress={() => router.back()} />
-          </View>
-        </View>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>Post not found.</Text>
-        </View>
+        <BackButton />
+        <LoadingScreen data={data} errors={[error]} loads={isLoading} />
       </>
     );
   }
 
   return (
     <>
-      <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
-        <View
-          style={{
-            borderTopRightRadius: 999,
-            borderBottomRightRadius: 999,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            paddingVertical: 8,
-            paddingLeft: 8,
-            paddingRight: 16,
-            marginTop: 4,
-          }}
-        >
-          <IconButton name="arrow-back" onPress={() => router.back()} />
-        </View>
-      </View>
-
+      <BackButton />
       <ScrollView color="base" refetch={refetch}>
         <GestureDetector gesture={doubleTap}>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            snapToInterval={width}
-            snapToAlignment="center"
-            decelerationRate="fast"
-            showsHorizontalScrollIndicator={false}
-          >
-            {data.images.map((image, i) => (
-              <Image
-                key={i}
-                style={{ width, height: width }}
-                source={{ uri: image }}
+          <View>
+            <Animated.View
+              style={[
+                {
+                  position: "absolute",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 100,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                },
+                likeAnimatedStyle,
+              ]}
+            >
+              <Icon
+                name={isSaved ? "add-circle" : "add-circle-outline"}
+                size={100}
+                color="white"
               />
-            ))}
-          </ScrollView>
+            </Animated.View>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              snapToInterval={width}
+              snapToAlignment="center"
+              decelerationRate="fast"
+              showsHorizontalScrollIndicator={false}
+            >
+              {data.images.map((image, i) => (
+                <Image
+                  key={i}
+                  style={{ width, height: width }}
+                  source={{ uri: image }}
+                />
+              ))}
+            </ScrollView>
+          </View>
         </GestureDetector>
         <View
           style={{
@@ -249,5 +239,25 @@ export default function PostScreen() {
         setModalOpen={setModalOpen}
       />
     </>
+  );
+}
+
+function BackButton() {
+  return (
+    <View color="transparent" style={{ position: "absolute", zIndex: 1 }}>
+      <View
+        style={{
+          borderTopRightRadius: 999,
+          borderBottomRightRadius: 999,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          paddingVertical: 8,
+          paddingLeft: 8,
+          paddingRight: 16,
+          marginTop: 4,
+        }}
+      >
+        <IconButton name="arrow-back" onPress={() => router.back()} />
+      </View>
+    </View>
   );
 }

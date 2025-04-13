@@ -49,10 +49,11 @@ export default function ProfileMainScreen() {
         {posts?.length == 0 ? (
           <View
             style={{
-              flex: 1,
               justifyContent: "center",
               alignItems: "center",
               gap: 4,
+              marginVertical: "auto",
+              height: "100%",
             }}
           >
             <Text weight="semibold" size="2xl">

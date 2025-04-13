@@ -29,8 +29,9 @@ export default function Sheet({
   const themeColor = useThemeColor();
 
   const renderBackdrop = useCallback(
-    (props: any) =>
-      backdrop && (
+    (props: any) => {
+      if (!backdrop) return null;
+      return (
         <BottomSheetBackdrop
           {...props}
           disappearsOnIndex={-1}
@@ -39,8 +40,9 @@ export default function Sheet({
           pointerEvents="auto"
           pressBehavior="close"
         />
-      ),
-    []
+      );
+    },
+    [backdrop]
   );
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);

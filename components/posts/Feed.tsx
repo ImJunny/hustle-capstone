@@ -1,10 +1,11 @@
 import { FlatList, Dimensions, RefreshControl } from "react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomePost from "./HomePost";
 import { HomePost as THomePost } from "@/server/actions/post-actions";
 import { QueryObserverResult } from "@tanstack/react-query";
+import Skeleton from "../ui/Skeleton";
 
 export const useFeedHeight = () => {
   const insets = useSafeAreaInsets();
@@ -24,8 +25,8 @@ const Feed = <T extends { uuid: string }>({
 }: FeedListProps<T>) => {
   const postHeight = useFeedHeight();
 
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(() => {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
     refetch().then(() => setRefreshing(false));
   }, []);

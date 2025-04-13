@@ -22,7 +22,13 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 import Toast from "react-native-toast-message";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import AvatarImage from "../ui/AvatarImage";
@@ -44,7 +50,20 @@ function HomePost({ data }: { data: THomePost }) {
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
 
+  // save/unsave animation
+  const showLike = useSharedValue(0);
+  const likeAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(showLike.value, { duration: 200 }),
+    transform: [
+      { scale: withSpring(showLike.value ? 1 : 0.5, { damping: 12 }) },
+    ],
+  }));
   const handleSaveToggle = useCallback(() => {
+    showLike.value = 1;
+    setTimeout(() => {
+      showLike.value = 0;
+    }, 600);
+
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
@@ -107,6 +126,27 @@ function HomePost({ data }: { data: THomePost }) {
   return (
     <GestureDetector gesture={doubleTap}>
       <View style={[styles.container, { height: postHeight }]} color="black">
+        <Animated.View
+          style={[
+            {
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 100,
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            },
+            likeAnimatedStyle,
+          ]}
+        >
+          <Icon
+            name={isSaved ? "add-circle" : "add-circle-outline"}
+            size={100}
+            color="white"
+          />
+        </Animated.View>
         <View
           style={{
             height: postHeight * 0.75,

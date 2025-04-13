@@ -1,17 +1,13 @@
 import React from "react";
-import { router, useLocalSearchParams, withLayoutContext } from "expo-router";
-import { SearchingHeader, SimpleHeader } from "@/components/headers/Headers";
+import { useLocalSearchParams, withLayoutContext } from "expo-router";
+import { SimpleHeader } from "@/components/headers/Headers";
 
 import {
   createMaterialTopTabNavigator,
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import {
-  ParamListBase,
-  TabNavigationState,
-  useTheme,
-} from "@react-navigation/native";
+import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { FontSizes } from "@/constants/Sizes";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
@@ -41,8 +37,9 @@ export default function Layout() {
             },
             tabBarLabelStyle: {
               fontFamily: "Inter-semibold",
-              fontSize: FontSizes.lg,
+              fontSize: FontSizes.md,
             },
+            tabBarActiveTintColor: themeColor.foreground,
             tabBarIndicatorStyle: {
               backgroundColor: themeColor.foreground,
               height: 3,
@@ -51,12 +48,12 @@ export default function Layout() {
         >
           <MaterialTopTabs.Screen
             name="employer-reviews"
-            options={{ title: "Reviews by hirers" }}
+            options={{ title: "From hirers" }}
             initialParams={{ uuid }}
           />
           <MaterialTopTabs.Screen
             name="worker-reviews"
-            options={{ title: "Reviews by workers" }}
+            options={{ title: "From workers" }}
             initialParams={{ uuid }}
           />
         </MaterialTopTabs>

@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db";
 import { payments, users } from "@/drizzle/schema";
-import { stripe } from "@/stripe-server";
 import { and, desc, eq, ne, or } from "drizzle-orm";
+import { stripe } from "../lib/stripe-server";
 
 // Process payment; gets info to be passed in StripeProvider
 export async function getPaymentIntent(user_uuid: string, amount: number) {

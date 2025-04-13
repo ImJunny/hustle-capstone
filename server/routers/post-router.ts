@@ -83,11 +83,11 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         uuid: z.string(),
-        type: z.enum(["work", "hire"]).optional(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
       })
     )
     .query(async ({ input }) => {
-      return await getUserPosts(input.uuid, input.type);
+      return await getUserPosts(input.uuid, input.geocode);
     }),
   get_post_details_info: protectedProcedure
     .input(

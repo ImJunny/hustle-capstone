@@ -28,13 +28,14 @@ import PostDetailsDeleteModal from "@/components/posts/PostDetailsDeleteModal";
 export default function PostScreen() {
   const { uuid: postUuid } = useLocalSearchParams();
   const uuid = postUuid as string;
-  const { user } = useAuthData();
+  const { user, geocode } = useAuthData();
   const utils = trpc.useUtils();
   const { width } = Dimensions.get("window");
   const { data, isLoading, refetch } = trpc.post.get_post_details_info.useQuery(
     {
       uuid: uuid,
       user_uuid: user?.id as string,
+      geocode: geocode ?? undefined,
     }
   );
 

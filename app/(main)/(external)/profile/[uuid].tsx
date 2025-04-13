@@ -13,9 +13,10 @@ import ProfileCard from "@/components/profile/ProfileCard";
 import { useAuthData } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import { useFollowedStore } from "@/hooks/useFollowedStore";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function ProfileScreen() {
-  const { user } = useAuthData();
+  const { user, geocode } = useAuthData();
   const { uuid } = useLocalSearchParams();
 
   const { data, error, isLoading } = trpc.user.get_user_data.useQuery({
@@ -29,6 +30,7 @@ export default function ProfileScreen() {
     refetch,
   } = trpc.post.get_user_posts.useQuery({
     uuid: uuid as string,
+    geocode: geocode ?? undefined,
   });
 
   const jobPosts = posts?.filter((post) => post.type === "work");
@@ -55,35 +57,14 @@ export default function ProfileScreen() {
     }
   }, [data?.is_following, uuid]);
 
-  if (error) {
+  if (!data || !posts || error || isLoading || postsLoading) {
     return (
-      <View>
-        <Text>User not found.</Text>
-      </View>
-    );
-  }
-
-  if (isLoading || postsLoading || !isFetched) {
-    return <LoadingView />;
-  }
-  if (!posts || posts.length === 0) {
-    return (
-      <>
-        <ProfileHeader username={data?.username ?? ""} />
-        <ProfileCard data={data as unknown as UserData} />
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 4,
-          }}
-        >
-          <Text weight="semibold" size="2xl">
-            No data to show
-          </Text>
-        </View>
-      </>
+      <LoadingScreen
+        refetch={refetch}
+        data={data}
+        errors={[error]}
+        loads={[isLoading, postsLoading]}
+      />
     );
   }
 
@@ -91,8 +72,21 @@ export default function ProfileScreen() {
     <>
       <ProfileHeader username={data?.username!} />
       <ScrollView refetch={refetch}>
-        <View color="base">
-          <ProfileCard data={data as unknown as UserData} />
+        <ProfileCard data={data as unknown as UserData} />
+        {posts?.length == 0 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <Text weight="semibold" size="2xl">
+              No data to show
+            </Text>
+          </View>
+        ) : (
           <View>
             {jobPosts && jobPosts.length > 0 && (
               <ProfileSection
@@ -113,7 +107,7 @@ export default function ProfileScreen() {
               </>
             )}
           </View>
-        </View>
+        )}
       </ScrollView>
     </>
   );

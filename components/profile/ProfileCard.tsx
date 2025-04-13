@@ -55,11 +55,7 @@ export default function ProfileCard({
               {isSelf ? "Edit profile" : "Message"}
             </Button>
 
-            {isSelf ? (
-              <Button style={{ flex: 1, height: 32 }}>Share</Button>
-            ) : (
-              <FollowButton user_uuid={data.uuid} />
-            )}
+            {isSelf ? <></> : <FollowButton user_uuid={data.uuid} />}
           </View>
         </View>
       </View>

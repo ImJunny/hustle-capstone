@@ -6,8 +6,6 @@ import { TabView } from "react-native-tab-view";
 import { trpc } from "@/server/lib/trpc-client";
 import { useAuthData } from "@/contexts/AuthContext";
 import { usePostStore } from "@/hooks/usePostStore";
-import CommentsSheet from "@/components/posts/CommentsSheet";
-import SharePostSheet from "@/components/posts/SharePostSheet";
 
 interface Route {
   key: string;

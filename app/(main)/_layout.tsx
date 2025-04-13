@@ -1,10 +1,15 @@
 import CommentsSheet from "@/components/posts/CommentsSheet";
 import SharePostSheet from "@/components/posts/SharePostSheet";
-import Text from "@/components/ui/Text";
-import { Stack } from "expo-router";
+import { Stack, useSegments } from "expo-router";
 import React from "react";
 
 export default function Layout() {
+  const segments = useSegments();
+  const currentPath = segments.join("/");
+  const sheetsVisible =
+    currentPath == "(main)/(tabs)" ||
+    currentPath == "(main)/(external)/post/[uuid]";
+
   return (
     <>
       <Stack screenOptions={{ headerShown: false, animation: "none" }}>
@@ -46,8 +51,9 @@ export default function Layout() {
           options={{ animation: "ios_from_right" }}
         />
       </Stack>
-      <CommentsSheet />
-      <SharePostSheet />
+
+      <CommentsSheet visible={sheetsVisible} />
+      <SharePostSheet visible={sheetsVisible} />
     </>
   );
 }

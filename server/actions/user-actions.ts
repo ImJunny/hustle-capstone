@@ -85,7 +85,6 @@ export async function getUserData(uuid: string, their_uuid?: string) {
       .from(reviews)
       .where(eq(reviews.reviewee_uuid, their_uuid ?? uuid))
       .then(([result]) => result || { review_count: 0, avg_rating: 0 });
-
     return { ...result, review_count, avg_rating };
   } catch (error) {
     console.error(error);

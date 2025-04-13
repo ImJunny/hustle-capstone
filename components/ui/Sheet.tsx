@@ -7,7 +7,7 @@ import View from "../ui/View";
 import Text from "../ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { BackHandler } from "react-native";
+import { BackHandler, ViewStyle } from "react-native";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import IconButton from "../ui/IconButton";
 import { Keyboard } from "react-native";
@@ -18,25 +18,28 @@ export default function Sheet({
   children,
   snapPoints,
   handleComponent,
+  backdrop = true,
   ...props
 }: {
   title?: string;
   sheetRef: React.RefObject<BottomSheetMethods>;
   children: ReactNode;
+  backdrop?: boolean;
 } & BottomSheetProps) {
   const themeColor = useThemeColor();
 
   const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.4}
-        pointerEvents="auto"
-        pressBehavior="close"
-      />
-    ),
+    (props: any) =>
+      backdrop && (
+        <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          opacity={0.4}
+          pointerEvents="auto"
+          pressBehavior="close"
+        />
+      ),
     []
   );
 

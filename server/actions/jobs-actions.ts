@@ -9,9 +9,9 @@ import {
   reviews,
   users,
 } from "@/drizzle/schema";
-import { stripe } from "@/stripe-server";
 import { and, desc, eq, ne, or, sql } from "drizzle-orm";
 import { update } from "lodash";
+import { stripe } from "../lib/stripe-server";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(

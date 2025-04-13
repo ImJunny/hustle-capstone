@@ -10,6 +10,7 @@ import { MessagePreview } from "@/server/actions/message-actions";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { useMessageStore } from "@/hooks/useMessageStore";
 import { useStore } from "zustand";
+import Text from "@/components/ui/Text";
 
 export default function MessagesScreen() {
   const { user } = useAuthData();
@@ -41,7 +42,7 @@ export default function MessagesScreen() {
       <LoadingScreen
         loads={[isLoading, !fetchedChats]}
         data={data}
-        header={<BackHeader />}
+        header={<MessagesHeader />}
       />
     );
   }
@@ -49,17 +50,33 @@ export default function MessagesScreen() {
   return (
     <>
       <MessagesHeader />
-      <ScrollView style={{ flex: 1 }} color="background" refetch={refetch}>
-        <View>
-          {data.map((message, i) => (
-            <Message
-              key={i}
-              data={message as unknown as MessagePreview}
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        color="background"
+        refetch={refetch}
+      >
+        <View style={{ flex: 1 }}>
+          {data.length == 0 ? (
+            <View
               style={{
-                borderBottomWidth: i != exampleMessages.length - 1 ? 1 : 0,
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-          ))}
+            >
+              <Text>No messages yet </Text>
+            </View>
+          ) : (
+            data.map((message, i) => (
+              <Message
+                key={i}
+                data={message as unknown as MessagePreview}
+                style={{
+                  borderBottomWidth: i != exampleMessages.length - 1 ? 1 : 0,
+                }}
+              />
+            ))
+          )}
         </View>
       </ScrollView>
     </>

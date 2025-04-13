@@ -33,11 +33,11 @@ export default function Layout() {
             borderBottomWidth: 1,
             borderColor: themeColor.border,
           },
-          tabBarActiveTintColor: themeColor.muted,
           tabBarLabelStyle: {
-            fontSize: FontSizes.md,
             fontFamily: "Inter-semibold",
+            fontSize: FontSizes.md,
           },
+          tabBarActiveTintColor: themeColor.foreground,
           tabBarIndicatorStyle: {
             backgroundColor: themeColor.foreground,
             height: 3,

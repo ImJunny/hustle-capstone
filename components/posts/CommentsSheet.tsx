@@ -1,5 +1,5 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { Keyboard } from "react-native";
+import { Keyboard, ViewStyle } from "react-native";
 import { useEffect, useRef } from "react";
 import { BottomSheetFooter, BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
@@ -17,7 +17,7 @@ import { Image } from "expo-image";
 import LoadingView from "../ui/LoadingView";
 import { FlatList } from "react-native-gesture-handler";
 
-export default function CommentsSheet() {
+export default function CommentsSheet({ visible }: { visible: boolean }) {
   const { user } = useAuthData();
   const ref = useRef<BottomSheetMethods>(null);
   const setCommentsSheetRef = useCommentsStore(
@@ -43,8 +43,17 @@ export default function CommentsSheet() {
 
   if (!uuid || !user) return;
 
+  const handleClose = () => {
+    commentsSheetRef?.current?.forceClose();
+    Keyboard.dismiss();
+  };
+
   return (
     <Sheet
+      style={{
+        display: visible ? "flex" : "none",
+      }}
+      backdrop={visible}
       keyboardBehavior="extend"
       sheetRef={ref}
       snapPoints={[1, "100%"]}
@@ -93,14 +102,7 @@ export default function CommentsSheet() {
               )}
             </View>
 
-            <IconButton
-              name="close-outline"
-              size="2xl"
-              onPress={() => {
-                commentsSheetRef?.current?.forceClose();
-                Keyboard.dismiss();
-              }}
-            />
+            <IconButton name="close-outline" size="2xl" onPress={handleClose} />
           </View>
         </View>
       )}

@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/components/ui/Text";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import Badge from "../ui/Badge";
 import View, { ViewProps } from "../ui/View";
 import { Link } from "expo-router";
-import Icon from "../ui/Icon";
 import { Image } from "expo-image";
 import { format, isThisYear } from "date-fns";
 import { Post as TPost } from "@/server/actions/post-actions";
-import Skeleton from "../ui/Skeleton";
 import StarDisplay from "../ui/StarDisplay";
 
 type PostProps = {

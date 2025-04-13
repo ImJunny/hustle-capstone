@@ -158,7 +158,10 @@ export async function updatePost(
 }
 
 // Get user job posts; can pass in optional type, otherwise all
-export async function getUserPosts(uuid: string, type?: "work" | "hire") {
+export async function getUserPosts(
+  uuid: string,
+  geocode: [number, number] | undefined
+) {
   try {
     let result = await db
       .select({
@@ -189,18 +192,16 @@ export async function getUserPosts(uuid: string, type?: "work" | "hire") {
         ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
         WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
+        distance: geocode
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
+          : sql`NULL`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
-      .where(
-        and(
-          eq(posts.user_uuid, uuid),
-          ne(posts.status_type, "deleted"),
-          type ? eq(posts.type, type) : undefined
-        )
-      )
-      .groupBy(posts.uuid) // Ensures we get one row per post
+      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
+      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "deleted")))
+      .groupBy(posts.uuid, addresses.location) // Ensures we get one row per post
       .orderBy(desc(posts.created_at));
 
     return result as unknown as Post[];
@@ -535,7 +536,8 @@ export async function deletePost(uuid: string) {
 
 export async function getHomePosts(
   type: "work" | "hire",
-  user_uuid: string | undefined
+  user_uuid: string | undefined,
+  geocode: [number, number] | undefined
 ) {
   try {
     let result = await db
@@ -584,6 +586,9 @@ export async function getHomePosts(
       FROM ${reviews}
       WHERE ${reviews}.reviewee_uuid = ${posts.user_uuid}
       )`,
+        distance: geocode
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
+          : sql`NULL`,
       })
       .from(posts)
       .innerJoin(
@@ -594,6 +599,7 @@ export async function getHomePosts(
           eq(posts.type, type)
         )
       )
+      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .orderBy(desc(posts.created_at));
     return result;
   } catch (error) {
@@ -787,7 +793,10 @@ export async function getSavedPosts(
 }
 
 // Get explore posts; TEMPORARY BEFORE ALGORITHM
-export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
+export async function getExplorePosts(
+  uuid: string,
+  geocode: [number, number] | undefined
+) {
   try {
     let jobs = await db
       .select({
@@ -818,10 +827,14 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
         ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
         WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
+        distance: geocode
+          ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
+          : sql`NULL`,
       })
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .where(
         and(
           ne(posts.user_uuid, uuid),
@@ -829,7 +842,7 @@ export async function getExplorePosts(uuid: string, type?: "work" | "hire") {
           eq(posts.type, "work")
         )
       )
-      .groupBy(posts.uuid)
+      .groupBy(posts.uuid, addresses.location)
       .orderBy(desc(posts.created_at))
       .limit(4);
 

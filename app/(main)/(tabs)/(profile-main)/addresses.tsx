@@ -59,7 +59,7 @@ export default function AddressesScreen() {
   return (
     <>
       <AddressesHeader />
-      <View style={{ flex: 1 }} color="base">
+      <View style={{ flex: 1 }} color="background">
         {addresses.map((address, i) => (
           <AddressEntry
             key={i}

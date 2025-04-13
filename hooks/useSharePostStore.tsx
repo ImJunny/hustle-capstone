@@ -5,7 +5,7 @@ import { create } from "zustand";
 type SharePostStore = {
   postUUID: string | undefined;
   setPostUUID: (uuid: string) => void;
-  setSharePostSheetRef: (ref: RefObject<BottomSheetMethods>) => void;
+  setSharePostSheetRef: (ref: RefObject<BottomSheetMethods> | null) => void;
   sharePostSheetRef: RefObject<BottomSheetMethods> | null;
 };
 

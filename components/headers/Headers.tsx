@@ -241,30 +241,15 @@ export function ChooseWorkerHeader() {
 
 export function MessagesHeader() {
   return (
-    <View color="background">
-      <HeaderWrapper
-        style={{ borderBottomWidth: 0 }}
-        options={{
-          left: (
-            <Text size="xl" weight="semibold">
-              Messages
-            </Text>
-          ),
-        }}
-      />
-      <HeaderWrapper
-        style={{ marginTop: -10 }}
-        options={{
-          center: (
-            <Input
-              placeholder="Search users, jobs, services..."
-              style={{ width: "100%", borderRadius: 999 }}
-              autoCapitalize="none"
-            />
-          ),
-        }}
-      />
-    </View>
+    <HeaderWrapper
+      options={{
+        left: (
+          <Text size="xl" weight="semibold">
+            Messages
+          </Text>
+        ),
+      }}
+    />
   );
 }
 

@@ -20,7 +20,6 @@ export default function GoogleSignInButtonAndroid() {
     try {
       await GoogleSignin.hasPlayServices();
       const { data, type } = await GoogleSignin.signIn();
-      console.log(data?.idToken);
       if (type === "success") {
         const {
           data: { user },

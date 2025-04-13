@@ -1,5 +1,10 @@
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { Keyboard, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Keyboard,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { BottomSheetFooter, BottomSheetView } from "@gorhom/bottom-sheet";
 import Sheet from "@/components/ui/Sheet";
@@ -16,7 +21,7 @@ import { ShareUser } from "@/server/actions/user-actions";
 import AvatarImage from "../ui/AvatarImage";
 import SharePostSheetFooter from "./SharePostSheetFooter";
 
-export default function SharePostSheet() {
+export default function SharePostSheet({ visible }: { visible: boolean }) {
   const { user } = useAuthData();
   const ref = useRef<BottomSheetMethods>(null);
   const setSharePostSheetRef = useSharePostStore(
@@ -58,8 +63,17 @@ export default function SharePostSheet() {
 
   if (!user) return;
 
+  const handleClose = () => {
+    sharePostSheetRef?.current?.forceClose();
+    Keyboard.dismiss();
+  };
+
   return (
     <Sheet
+      style={{
+        display: visible ? "flex" : "none",
+      }}
+      backdrop={visible}
       backgroundStyle={[
         styles.backgroundStyle,
         {
@@ -75,15 +89,7 @@ export default function SharePostSheet() {
               Share
             </Text>
 
-            <IconButton
-              name="close-outline"
-              size="2xl"
-              onPress={() => {
-                sharePostSheetRef?.current?.forceClose();
-                sharePostSheetRef?.current?.snapToPosition(0);
-                Keyboard.dismiss();
-              }}
-            />
+            <IconButton name="close-outline" size="2xl" onPress={handleClose} />
           </View>
         </View>
       )}

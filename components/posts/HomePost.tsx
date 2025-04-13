@@ -22,7 +22,13 @@ import { useAuthData } from "@/contexts/AuthContext";
 import { trpc } from "@/server/lib/trpc-client";
 import Toast from "react-native-toast-message";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { usePostStore } from "@/hooks/usePostStore";
 import { useCommentsStore } from "@/hooks/useCommentsStore";
 import AvatarImage from "../ui/AvatarImage";
@@ -44,18 +50,22 @@ function HomePost({ data }: { data: THomePost }) {
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
 
+  // save/unsave animation
+  const showLike = useSharedValue(0);
+  const likeAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(showLike.value, { duration: 200 }),
+    transform: [
+      { scale: withSpring(showLike.value ? 1 : 0.5, { damping: 12 }) },
+    ],
+  }));
   const handleSaveToggle = useCallback(() => {
+    showLike.value = 1;
+    setTimeout(() => {
+      showLike.value = 0;
+    }, 600);
+
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(data.uuid) : unsavePost(data.uuid);
-    // newIsSaved
-    //   ? Toast.show({
-    //       text1: "Saved",
-    //       visibilityTime: 500,
-    //     })
-    //   : Toast.show({
-    //       text1: "Unsaved",
-    //       visibilityTime: 500,
-    //     });
     const mutation = newIsSaved ? saveMutation : unsaveMutation;
     mutation.mutate(
       { post_uuid: data.uuid, user_uuid: user?.id! },
@@ -104,9 +114,39 @@ function HomePost({ data }: { data: THomePost }) {
     (state) => state.sharePostSheetRef
   );
 
+  function getGeneralDistance(distance: number | null) {
+    if (data.location_type === "remote") return "remote";
+    if (distance === null) return "local";
+
+    distance = Math.ceil(distance);
+    return `${distance} mi`;
+  }
+  const distance = getGeneralDistance((data.distance as number) ?? null);
+
   return (
     <GestureDetector gesture={doubleTap}>
       <View style={[styles.container, { height: postHeight }]} color="black">
+        <Animated.View
+          style={[
+            {
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 100,
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            },
+            likeAnimatedStyle,
+          ]}
+        >
+          <Icon
+            name={isSaved ? "add-circle" : "add-circle-outline"}
+            size={100}
+            color="white"
+          />
+        </Animated.View>
         <View
           style={{
             height: postHeight * 0.75,
@@ -159,7 +199,7 @@ function HomePost({ data }: { data: THomePost }) {
                     </Badge>
                     <Badge>
                       <Text size="sm" weight="semibold">
-                        {data.location_type === "remote" ? "remote" : "local"}
+                        {distance}
                       </Text>
                     </Badge>
                     {data.tags?.map((tag, i) => (

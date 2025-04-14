@@ -22,6 +22,7 @@ export default function PostReportSheet({
   sheetRef: RefObject<BottomSheetMethods>;
   uuid: string;
 }) {
+  const utils = trpc.useUtils();
   const { user } = useAuthData();
   const { data, isLoading } = trpc.report.is_reported_post.useQuery({
     uuid: uuid,
@@ -43,6 +44,7 @@ export default function PostReportSheet({
           text1: "Post reported",
         });
         setReported(true);
+        utils.report.invalidate();
       },
       onError: (error) => {
         Toast.show({
@@ -61,6 +63,7 @@ export default function PostReportSheet({
           text1: "Undid report",
         });
         setReported(false);
+        utils.report.invalidate();
       },
       onError: (error) => {
         Toast.show({
@@ -91,7 +94,7 @@ export default function PostReportSheet({
     <Sheet
       sheetRef={sheetRef}
       title="Report post"
-      snapPoints={[1]}
+      snapPoints={[1, "70"]}
       backdropOpacity={0.8}
     >
       <BottomSheetView style={{ padding: 16, flex: 1 }}>

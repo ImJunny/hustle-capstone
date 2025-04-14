@@ -33,7 +33,6 @@ export default function ProfileSection({
         <Post
           key={i}
           data={post}
-          type={type}
           style={{
             borderColor,
           }}

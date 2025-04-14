@@ -7,6 +7,7 @@ export default function Layout() {
       <Stack.Screen name="settings" options={{ animation: "ios_from_right" }} />
       <Stack.Screen name="addresses" />
       <Stack.Screen name="edit-profile" />
+      <Stack.Screen name="reported-posts" />
     </Stack>
   );
 }

@@ -34,7 +34,6 @@ export default function SavedPostsSection({
         <Post
           key={post.uuid}
           data={post}
-          type={type}
           style={{
             borderColor,
           }}

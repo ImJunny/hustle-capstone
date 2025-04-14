@@ -199,9 +199,9 @@ export async function getUserPosts(
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
-      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "deleted")))
-      .groupBy(posts.uuid, addresses.location) // Ensures we get one row per post
+      .groupBy(posts.uuid, addresses.location)
       .orderBy(desc(posts.created_at));
 
     return result as unknown as Post[];

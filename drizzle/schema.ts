@@ -214,6 +214,7 @@ export const reported_posts = app_schema.table(
       .references(() => users.uuid)
       .notNull(),
     reason: text("reason").references(() => post_report_reasons.name),
+    created_at: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [primaryKey({ columns: [table.post_uuid, table.user_uuid] })]
 );

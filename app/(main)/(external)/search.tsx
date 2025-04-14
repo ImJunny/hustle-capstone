@@ -86,7 +86,7 @@ export default function SearchedPage() {
       ) : (
         <ScrollView refetch={refetch} showsVerticalScrollIndicator={true}>
           {data.map((post, i) => (
-            <Post key={i} data={post as unknown as TPost} type={post.type} />
+            <Post key={i} data={post as unknown as TPost} />
           ))}
         </ScrollView>
       )}

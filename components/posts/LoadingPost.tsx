@@ -12,7 +12,6 @@ export default function LoadingPost({ uuid }: { uuid: string }) {
     <Skeleton show={isLoading}>
       <Post
         data={{ ...data, distance: null } as TPost}
-        type={data.type}
         style={{ height: "auto", paddingHorizontal: 0 }}
       />
     </Skeleton>

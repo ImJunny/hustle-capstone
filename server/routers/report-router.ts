@@ -1,5 +1,6 @@
 import { uuid } from "drizzle-orm/pg-core";
 import {
+  getReportedPosts,
   isReportedPost,
   reportPost,
   undoReportPost,
@@ -38,5 +39,15 @@ export const reportRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       await undoReportPost(input.uuid, input.user_uuid);
+    }),
+  get_reported_posts: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getReportedPosts(input.user_uuid, input.geocode);
     }),
 });

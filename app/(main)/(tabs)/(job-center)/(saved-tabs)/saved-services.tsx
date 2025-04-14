@@ -44,7 +44,7 @@ export default function SavedServicesScreen() {
   return (
     <ScrollView refetch={refetch}>
       {savedServices.map((post, i) => (
-        <Post key={i} data={post as TPost} type={post.type} />
+        <Post key={i} data={post as TPost} />
       ))}
     </ScrollView>
   );

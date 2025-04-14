@@ -142,3 +142,12 @@ export const explore_categories = [
     image: require(`@/assets/images/explore/category-gaming.jpg`),
   },
 ];
+
+export const report_reasons: Record<string, string> = {
+  offensive: "Offensive content",
+  spam: "Spam",
+  fraud: "Scam or fraud",
+  violence: "Violence",
+  sexual: "Nudity or sexual content",
+  other: "Other",
+};

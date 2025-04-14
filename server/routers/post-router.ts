@@ -15,8 +15,10 @@ import {
   getSavedPosts,
   getPostDetailsFooterInfo,
   getExplorePosts,
+  reportPost,
 } from "../actions/post-actions";
 import Input from "@/components/ui/Input";
+import { report_reasons } from "@/constants/Data";
 
 export const postRouter = createTRPCRouter({
   create_post: protectedProcedure
@@ -228,5 +230,16 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getExplorePosts(input.uuid, input.geocode);
+    }),
+  report_post: protectedProcedure
+    .input(
+      z.object({
+        uuid: z.string(),
+        reason: z.enum(Object.values(report_reasons) as [string, ...string[]]),
+        user_uuid: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await reportPost(input.uuid, input.reason, input.user_uuid);
     }),
 });

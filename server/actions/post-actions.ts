@@ -28,6 +28,7 @@ import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
 import { get } from "lodash";
 import { getIsDataSafe } from "./llm-actions";
+import { report_reasons } from "@/constants/Data";
 
 // Create post
 export async function createPost(
@@ -199,7 +200,7 @@ export async function getUserPosts(
       .from(posts)
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
-      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "deleted")))
       .groupBy(posts.uuid, addresses.location) // Ensures we get one row per post
       .orderBy(desc(posts.created_at));
@@ -599,7 +600,7 @@ export async function getHomePosts(
           eq(posts.type, type)
         )
       )
-      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .orderBy(desc(posts.created_at));
     return result;
   } catch (error) {
@@ -894,5 +895,17 @@ export async function getExplorePosts(
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get explore posts.");
+  }
+}
+
+export async function reportPost(
+  uuid: string,
+  reason: keyof typeof report_reasons,
+  user_uuid: string
+) {
+  try {
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to report post.");
   }
 }

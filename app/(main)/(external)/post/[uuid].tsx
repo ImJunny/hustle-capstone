@@ -4,7 +4,6 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import ScrollView from "@/components/ui/ScrollView";
 import { Dimensions, TouchableOpacity } from "react-native";
 import { trpc } from "@/server/lib/trpc-client";
-import LoadingView from "@/components/ui/LoadingView";
 import { Image } from "expo-image";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { useAuthData } from "@/contexts/AuthContext";

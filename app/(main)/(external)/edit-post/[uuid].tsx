@@ -1,7 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
 import React from "react";
-import ScrollView from "@/components/ui/ScrollView";
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SimpleHeader } from "@/components/headers/Headers";
 import PostForm from "@/components/posts/PostForm";
@@ -13,11 +12,12 @@ import { trpc } from "@/server/lib/trpc-client";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { FlatList } from "react-native-gesture-handler";
 import { useAuthData } from "@/contexts/AuthContext";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function CreatePostForm() {
   const { uuid } = useLocalSearchParams();
   const { user } = useAuthData();
-  const { data } = trpc.post.get_post_details_info.useQuery({
+  const { data, isLoading, error } = trpc.post.get_post_details_info.useQuery({
     uuid: uuid as string,
     user_uuid: user?.id as string,
   });
@@ -35,6 +35,16 @@ export default function CreatePostForm() {
     },
     { id: "form", component: <PostForm /> },
   ];
+
+  if (isLoading || !data || error) {
+    return (
+      <LoadingScreen
+        header={<SimpleHeader title="Edit post" />}
+        loads={isLoading}
+        errors={[error]}
+      />
+    );
+  }
 
   return (
     <CreatePostProvider data={data as unknown as PostDetailsInfo}>

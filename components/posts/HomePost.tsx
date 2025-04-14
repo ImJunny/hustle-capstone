@@ -70,7 +70,7 @@ function HomePost({ data }: { data: THomePost }) {
     mutation.mutate(
       { post_uuid: data.uuid, user_uuid: user?.id! },
       {
-        onSuccess: () => utils.post.invalidate(),
+        onSuccess: () => {},
         onError: (error) => {
           Toast.show({ text1: error.message, swipeable: false, type: "error" });
           newIsSaved ? unsavePost(data.uuid) : savePost(data.uuid);

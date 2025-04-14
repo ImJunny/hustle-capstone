@@ -599,7 +599,7 @@ export async function getHomePosts(
           eq(posts.type, type)
         )
       )
-      .innerJoin(addresses, eq(posts.address_uuid, addresses.uuid))
+      .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
       .orderBy(desc(posts.created_at));
     return result;
   } catch (error) {

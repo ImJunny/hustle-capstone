@@ -53,3 +53,13 @@ export const tagTypes = [
   { name: "cooking", value: "cooking" },
   { name: "events", value: "events" },
 ] as const;
+
+export const report_reasons = {
+  dislike: "I dont like this post",
+  offensive: "It is offensive",
+  spam: "It is spam",
+  fraud: "It is a scam or fraud",
+  violence: "It contains violence",
+  sexual: "It contains nudity or sexual content",
+  other: "Other",
+} as const;

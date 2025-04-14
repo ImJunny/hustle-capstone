@@ -13,15 +13,20 @@ import { trpc } from "@/server/lib/trpc-client";
 import { PostDetailsInfo } from "@/server/actions/post-actions";
 import { FlatList } from "react-native-gesture-handler";
 import { useAuthData } from "@/contexts/AuthContext";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function CreatePostForm() {
+  const themeColor = useThemeColor();
   const { uuid } = useLocalSearchParams();
   const { user } = useAuthData();
-  const { data } = trpc.post.get_post_details_info.useQuery({
+  const { data, error, isLoading } = trpc.post.get_post_details_info.useQuery({
     uuid: uuid as string,
     user_uuid: user?.id as string,
   });
-  const themeColor = useThemeColor();
+
+  if (!data || isLoading || error) {
+    return <LoadingScreen data={data} loads={isLoading} errors={[error]} />;
+  }
 
   const flatListData = [
     {

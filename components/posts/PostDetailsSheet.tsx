@@ -12,40 +12,60 @@ import { TFontSizes } from "@/constants/Sizes";
 export default function PostDetailsSheet({
   isSelf,
   sheetRef,
+  reportSheetRef,
   uuid,
   setModalOpen,
 }: {
   isSelf: boolean;
   sheetRef: RefObject<BottomSheetMethods>;
+  reportSheetRef: RefObject<BottomSheetMethods>;
   uuid: string;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
+  const handleEdit = () => {
+    sheetRef.current?.forceClose();
+    router.push(`/edit-post/${uuid}`);
+  };
+
+  const handleDelete = () => {
+    sheetRef.current?.forceClose();
+    setModalOpen(true);
+  };
+
+  const handleReport = () => {
+    sheetRef.current?.forceClose();
+    reportSheetRef.current?.expand();
+  };
+
   return (
-    <Sheet sheetRef={sheetRef} title="Post options" snapPoints={[1, "35%"]}>
+    <Sheet
+      sheetRef={sheetRef}
+      title="Post options"
+      snapPoints={[1, "35%"]}
+      backdropOpacity={0.1}
+    >
       <BottomSheetView style={{ padding: 16, gap: 16 }}>
         {isSelf ? (
           <>
             <SheetOption
               text="Edit post"
               name="create-outline"
-              onPress={() => {
-                setModalOpen(false);
-                sheetRef.current?.forceClose();
-                router.push(`/edit-post/${uuid}`);
-              }}
+              onPress={handleEdit}
             />
             <SheetOption
               text="Delete post"
               name="trash-outline"
               color="red"
-              onPress={() => {
-                sheetRef.current?.forceClose();
-                setModalOpen(true);
-              }}
+              onPress={handleDelete}
             />
           </>
         ) : (
-          <SheetOption text="Report post" name="flag-outline" color="red" />
+          <SheetOption
+            text="Report post"
+            name="flag-outline"
+            color="red"
+            onPress={handleReport}
+          />
         )}
       </BottomSheetView>
     </Sheet>

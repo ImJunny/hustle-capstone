@@ -26,7 +26,6 @@ import {
 } from "drizzle-orm/sql";
 import { uploadImage } from "./s3-actions";
 import { v4 as uuidv4 } from "uuid";
-import { get } from "lodash";
 import { getIsDataSafe } from "./llm-actions";
 
 // Create post
@@ -894,5 +893,17 @@ export async function getExplorePosts(
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get explore posts.");
+  }
+}
+
+export async function reportPost(
+  uuid: string,
+  user_uuid: string,
+  reason: string
+) {
+  try {
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to report post.");
   }
 }

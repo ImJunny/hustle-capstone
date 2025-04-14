@@ -63,6 +63,11 @@ export default function SettingsScreen() {
                 title="Notifications"
                 onPress={() => {}}
               />
+              <SettingsEntry
+                name="flag-outline"
+                title="Reported posts"
+                onPress={() => {}}
+              />
               <Logout />
             </View>
           </View>

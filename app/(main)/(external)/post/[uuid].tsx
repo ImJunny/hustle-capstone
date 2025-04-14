@@ -31,6 +31,7 @@ import PostDetailsFooter from "@/components/posts/PostDetailsFooter";
 import PostDetailsSheet from "@/components/posts/PostDetailsSheet";
 import PostDetailsDeleteModal from "@/components/posts/PostDetailsDeleteModal";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import PostReportSheet from "@/components/posts/PostReportSheet";
 
 export default function PostScreen() {
   const { uuid: postUuid } = useLocalSearchParams();
@@ -96,6 +97,8 @@ export default function PostScreen() {
   ]);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const reportSheetRef = useRef<BottomSheet>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const setPostUUID = useCommentsStore((state) => state.setPostUUID);
@@ -230,9 +233,10 @@ export default function PostScreen() {
         isSelf={data.user_uuid === user?.id}
         uuid={uuid}
         sheetRef={bottomSheetRef}
+        reportSheetRef={reportSheetRef}
         setModalOpen={setModalOpen}
       />
-
+      <PostReportSheet sheetRef={reportSheetRef} uuid={uuid} />
       <PostDetailsDeleteModal
         uuid={uuid}
         modalOpen={modalOpen}

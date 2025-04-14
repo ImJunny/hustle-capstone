@@ -54,7 +54,7 @@ export const tagTypes = [
   { name: "events", value: "events" },
 ] as const;
 
-export const report_reasons = {
+export const reportReasons = {
   dislike: "I dont like this post",
   offensive: "It is offensive",
   spam: "It is spam",

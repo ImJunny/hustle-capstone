@@ -7,6 +7,7 @@ import {
   numeric,
   pgSchema,
   serial,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -203,6 +204,20 @@ export const reviews = app_schema.table("reviews", {
   rating: integer("rating").notNull(),
 });
 
+export const reported_posts = app_schema.table(
+  "reported_posts",
+  {
+    post_uuid: uuid("post_uuid")
+      .references(() => posts.uuid)
+      .notNull(),
+    user_uuid: uuid("user_uuid")
+      .references(() => users.uuid)
+      .notNull(),
+    reason: text("reason").references(() => post_report_reasons.name),
+  },
+  (table) => [primaryKey({ columns: [table.post_uuid, table.user_uuid] })]
+);
+
 export const saved_posts = app_schema.table("saved_posts", {
   uuid: uuid("uuid")
     .primaryKey()
@@ -276,6 +291,11 @@ export const onboarding_phase_types = app_schema.table(
 );
 
 export const message_types = app_schema.table("message_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});
+
+export const post_report_reasons = app_schema.table("post_report_reasons", {
   id: serial("id").primaryKey(),
   name: text("name").unique().notNull(),
 });

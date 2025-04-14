@@ -9,6 +9,7 @@ import {
   saved_posts,
   comments,
   reviews,
+  reported_posts,
 } from "../../drizzle/schema";
 import {
   eq,
@@ -893,17 +894,5 @@ export async function getExplorePosts(
   } catch (error) {
     console.log(error);
     throw new Error("Failed to get explore posts.");
-  }
-}
-
-export async function reportPost(
-  uuid: string,
-  user_uuid: string,
-  reason: string
-) {
-  try {
-  } catch (error) {
-    console.log(error);
-    throw new Error("Failed to report post.");
   }
 }

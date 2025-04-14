@@ -4,16 +4,16 @@ import { TColors } from "@/constants/Colors";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import Icon, { IconSymbolName } from "../ui/Icon";
 import Sheet from "../ui/Sheet";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { TFontSizes } from "@/constants/Sizes";
 import { trpc } from "@/server/lib/trpc-client";
-import { report_reasons } from "@/drizzle/db-types";
+import { reportReasons } from "@/drizzle/db-types";
 import Toast from "react-native-toast-message";
-import { router } from "expo-router";
 import { useAuthData } from "@/contexts/AuthContext";
 import View from "../ui/View";
 import Button from "../ui/Button";
+import LoadingView from "../ui/LoadingView";
 
 export default function PostReportSheet({
   sheetRef,
@@ -22,29 +22,67 @@ export default function PostReportSheet({
   sheetRef: RefObject<BottomSheetMethods>;
   uuid: string;
 }) {
-  const [selected, setSelected] = useState<string>("");
-  const [reported, setReported] = useState(false);
   const { user } = useAuthData();
-  const { mutate: report, isLoading } = trpc.post.report_post.useMutation({
-    onSuccess: () => {
-      setReported(true);
-    },
-    onError: (error) => {
-      Toast.show({
-        type: "error",
-        text1: error.message,
-      });
-    },
-    onSettled: () => {
-      setSelected("");
-    },
+  const { data, isLoading } = trpc.report.is_reported_post.useQuery({
+    uuid: uuid,
+    user_uuid: user?.id as string,
   });
+  const [selected, setSelected] = useState<string>("");
+  const [reported, setReported] = useState(data);
 
-  const handlePress = (reason: keyof typeof report_reasons) => {
-    setSelected(report_reasons[reason]);
+  useEffect(() => {
+    if (data) {
+      setReported(data);
+    }
+  }, [data]);
+
+  const { mutate: report, isLoading: reportLoading } =
+    trpc.report.report_post.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: "Post reported",
+        });
+        setReported(true);
+      },
+      onError: (error) => {
+        Toast.show({
+          type: "error",
+          text1: error.message,
+        });
+      },
+      onSettled: () => {
+        setSelected("");
+      },
+    });
+  const { mutate: undoReport, isLoading: undoLoading } =
+    trpc.report.undo_report_post.useMutation({
+      onSuccess: () => {
+        Toast.show({
+          text1: "Undid report",
+        });
+        setReported(false);
+      },
+      onError: (error) => {
+        Toast.show({
+          type: "error",
+          text1: error.message,
+        });
+      },
+    });
+
+  const handlePress = (reason: keyof typeof reportReasons) => {
+    setSelected(reportReasons[reason]);
     report({
       uuid,
       reason,
+      user_uuid: user?.id as string,
+    });
+    sheetRef.current?.forceClose();
+  };
+
+  const handleUndo = () => {
+    undoReport({
+      uuid,
       user_uuid: user?.id as string,
     });
   };
@@ -53,19 +91,22 @@ export default function PostReportSheet({
     <Sheet
       sheetRef={sheetRef}
       title="Report post"
-      snapPoints={[1, "60%"]}
+      snapPoints={[1]}
       backdropOpacity={0.8}
     >
       <BottomSheetView style={{ padding: 16, flex: 1 }}>
-        {reported ? (
+        {isLoading ? (
+          <LoadingView />
+        ) : reported ? (
           <View
             style={{
               alignItems: "center",
               justifyContent: "center",
               gap: 36,
+              marginVertical: 40,
             }}
           >
-            <Icon name="flag" size={50} style={{ marginTop: 40 }} />
+            <Icon name="flag" size={50} />
             <View style={{ gap: 4, alignItems: "center" }}>
               <Text weight="semibold" size="xl">
                 You reported this post
@@ -76,20 +117,22 @@ export default function PostReportSheet({
               </Text>
             </View>
 
-            <Button>Undo</Button>
+            <Button onPress={handleUndo} disabled={undoLoading}>
+              Undo
+            </Button>
           </View>
         ) : (
-          <View style={{ gap: 16 }}>
+          <View style={{ gap: 20 }}>
             <Text size="sm" color="muted">
               Reporting this post will hide it from your feed. You can undo this
               report or view this post in the settings.
             </Text>
-            {Object.entries(report_reasons).map(([key, value], i) => (
+            {Object.entries(reportReasons).map(([key, value], i) => (
               <SheetOption
                 key={i}
                 text={value}
-                onPress={() => handlePress(key as keyof typeof report_reasons)}
-                isLoading={isLoading}
+                onPress={() => handlePress(key as keyof typeof reportReasons)}
+                isLoading={reportLoading}
                 selected={selected}
               />
             ))}

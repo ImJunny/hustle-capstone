@@ -8,6 +8,7 @@ import { createTRPCRouter } from "./trpc";
 import { commentRouter } from "../routers/comment-router";
 import { paymentRouter } from "../routers/payment-router";
 import { reviewRouter } from "../routers/review-router";
+import { reportRouter } from "../routers/report-router";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -20,5 +21,6 @@ export const appRouter = createTRPCRouter({
   comment: commentRouter,
   payment: paymentRouter,
   review: reviewRouter,
+  report: reportRouter,
 });
 export type AppRouter = typeof appRouter;

@@ -15,7 +15,6 @@ import {
   getSavedPosts,
   getPostDetailsFooterInfo,
   getExplorePosts,
-  reportPost,
 } from "../actions/post-actions";
 
 export const postRouter = createTRPCRouter({
@@ -228,16 +227,5 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getExplorePosts(input.uuid, input.geocode);
-    }),
-  report_post: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-        user_uuid: z.string(),
-        reason: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await reportPost(input.uuid, input.user_uuid, input.reason);
     }),
 });

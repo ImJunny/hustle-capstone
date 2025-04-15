@@ -219,6 +219,20 @@ export const reported_posts = app_schema.table(
   (table) => [primaryKey({ columns: [table.post_uuid, table.user_uuid] })]
 );
 
+export const viewed_posts = app_schema.table(
+  "viewed_posts",
+  {
+    post_uuid: uuid("post_uuid")
+      .references(() => posts.uuid)
+      .notNull(),
+    user_uuid: uuid("user_uuid")
+      .references(() => users.uuid)
+      .notNull(),
+    created_at: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.post_uuid, table.user_uuid] })]
+);
+
 export const saved_posts = app_schema.table("saved_posts", {
   uuid: uuid("uuid")
     .primaryKey()

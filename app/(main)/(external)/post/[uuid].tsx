@@ -46,6 +46,15 @@ export default function PostScreen() {
       geocode: geocode ?? undefined,
     });
 
+  const { mutate: markViewed } = trpc.post.mark_as_viewed_post.useMutation();
+  useEffect(() => {
+    if (user)
+      markViewed({
+        post_uuid: uuid,
+        user_uuid: user?.id,
+      });
+  }, [uuid, user?.id, markViewed]);
+
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
   const savePost = usePostStore((state) => state.savePost);

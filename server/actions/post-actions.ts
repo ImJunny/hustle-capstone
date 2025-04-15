@@ -982,7 +982,7 @@ export async function getRecentlyViewedPosts(
           ne(posts.status_type, "deleted")
         )
       )
-      .groupBy(posts.uuid, addresses.location)
+      .groupBy(posts.uuid, addresses.location, viewed_posts.created_at)
       .orderBy(desc(viewed_posts.created_at));
     return result;
   } catch (error) {

@@ -245,6 +245,16 @@ export const saved_posts = app_schema.table("saved_posts", {
     .notNull(),
 });
 
+export const tag_preferences = app_schema.table("tag_preferences", {
+  user_uuid: uuid("user_uuid")
+    .references(() => users.uuid)
+    .notNull(),
+  tag_type: text("tag_type")
+    .references(() => tag_types.name)
+    .notNull(),
+  weight: numeric("weight").notNull(),
+});
+
 export const payments = app_schema.table("payments", {
   uuid: uuid("uuid")
     .primaryKey()

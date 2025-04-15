@@ -9,7 +9,6 @@ import {
   saved_posts,
   comments,
   reviews,
-  reported_posts,
   viewed_posts,
 } from "../../drizzle/schema";
 import {
@@ -899,6 +898,7 @@ export async function getExplorePosts(
   }
 }
 
+// marks post as viewed and add preferences
 export async function markAsViewedPost(postUuid: string, userUuid: string) {
   try {
     const isViewed = await db
@@ -912,7 +912,8 @@ export async function markAsViewedPost(postUuid: string, userUuid: string) {
       )
       .limit(1)
       .then((result) => result.length > 0);
-    if (isViewed)
+    // if viewed
+    if (isViewed) {
       await db
         .update(viewed_posts)
         .set({ created_at: new Date() })
@@ -922,11 +923,13 @@ export async function markAsViewedPost(postUuid: string, userUuid: string) {
             eq(viewed_posts.user_uuid, userUuid)
           )
         );
-    else
-      await db.insert(viewed_posts).values({
-        post_uuid: postUuid,
-        user_uuid: userUuid,
-      });
+      return;
+    }
+    // if not viewed yet
+    await db.insert(viewed_posts).values({
+      post_uuid: postUuid,
+      user_uuid: userUuid,
+    });
   } catch (error) {
     console.error(error);
     throw new Error("Failed to mark post as viewed.");

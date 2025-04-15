@@ -31,6 +31,7 @@ import PostDetailsFooter from "@/components/posts/PostDetailsFooter";
 import PostDetailsSheet from "@/components/posts/PostDetailsSheet";
 import PostDetailsDeleteModal from "@/components/posts/PostDetailsDeleteModal";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import PostReportSheet from "@/components/posts/PostReportSheet";
 
 export default function PostScreen() {
   const { uuid: postUuid } = useLocalSearchParams();
@@ -44,6 +45,15 @@ export default function PostScreen() {
       user_uuid: user?.id as string,
       geocode: geocode ?? undefined,
     });
+
+  const { mutate: markViewed } = trpc.post.mark_as_viewed_post.useMutation();
+  useEffect(() => {
+    if (user)
+      markViewed({
+        post_uuid: uuid,
+        user_uuid: user?.id,
+      });
+  }, [uuid, user?.id, markViewed]);
 
   const saveMutation = trpc.post.save_post.useMutation();
   const unsaveMutation = trpc.post.unsave_post.useMutation();
@@ -96,6 +106,8 @@ export default function PostScreen() {
   ]);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const reportSheetRef = useRef<BottomSheet>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const setPostUUID = useCommentsStore((state) => state.setPostUUID);
@@ -230,9 +242,10 @@ export default function PostScreen() {
         isSelf={data.user_uuid === user?.id}
         uuid={uuid}
         sheetRef={bottomSheetRef}
+        reportSheetRef={reportSheetRef}
         setModalOpen={setModalOpen}
       />
-
+      <PostReportSheet sheetRef={reportSheetRef} uuid={uuid} />
       <PostDetailsDeleteModal
         uuid={uuid}
         modalOpen={modalOpen}

@@ -15,8 +15,9 @@ import {
   getSavedPosts,
   getPostDetailsFooterInfo,
   getExplorePosts,
+  markAsViewedPost,
+  getRecentlyViewedPosts,
 } from "../actions/post-actions";
-import Input from "@/components/ui/Input";
 
 export const postRouter = createTRPCRouter({
   create_post: protectedProcedure
@@ -228,5 +229,25 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       return await getExplorePosts(input.uuid, input.geocode);
+    }),
+  mark_as_viewed_post: protectedProcedure
+    .input(
+      z.object({
+        post_uuid: z.string(),
+        user_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await markAsViewedPost(input.post_uuid, input.user_uuid);
+    }),
+  get_recently_viewed_posts: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        geocode: z.tuple([z.number(), z.number()]).optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getRecentlyViewedPosts(input.user_uuid, input.geocode);
     }),
 });

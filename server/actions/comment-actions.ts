@@ -2,6 +2,7 @@ import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
 import { comments, users } from "@/drizzle/schema";
 import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { getIsDataSafe } from "./llm-actions";
 
 // GET COMMENTS
 export async function getComments(post_uuid: string, user_uuid: string) {
@@ -33,6 +34,11 @@ export async function sendComment(
   comment: string
 ) {
   try {
+    const isSafe = await getIsDataSafe(comment);
+    if (!isSafe) {
+      throw new Error("unsafe");
+    }
+
     await db.insert(comments).values({
       post_uuid,
       user_uuid,
@@ -40,6 +46,9 @@ export async function sendComment(
     });
   } catch (error) {
     console.error(error);
+    if (error instanceof Error && error.message === "unsafe")
+      throw new Error("Your comment includes sensitive information");
+
     throw new Error("Failed to send comment.");
   }
 }

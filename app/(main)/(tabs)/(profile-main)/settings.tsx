@@ -63,6 +63,13 @@ export default function SettingsScreen() {
                 title="Notifications"
                 onPress={() => {}}
               />
+              <SettingsEntry
+                name="flag-outline"
+                title="Reported posts"
+                onPress={() => {
+                  router.push("/reported-posts");
+                }}
+              />
               <Logout />
             </View>
           </View>

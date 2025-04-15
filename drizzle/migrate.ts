@@ -5,6 +5,7 @@ import {
   location_types,
   message_types,
   onboarding_phase_types,
+  post_report_reasons,
   progress_types,
   status_types,
   tag_types,
@@ -16,6 +17,7 @@ import {
   statusTypes,
   tagTypes,
   messageTypes,
+  reportReasons,
 } from "./db-types";
 
 export async function runMigrations() {
@@ -52,6 +54,12 @@ export async function runMigrations() {
         .insert(message_types)
         .values({ name: type })
         .onConflictDoNothing();
+    for (const key of Object.keys(reportReasons)) {
+      await db
+        .insert(post_report_reasons)
+        .values({ name: key })
+        .onConflictDoNothing();
+    }
 
     console.log("migrations successful");
     return;

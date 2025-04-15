@@ -102,7 +102,7 @@ export default function ExploreScreen() {
             Jobs you might like
           </Text>
           {jobPosts?.map((post, i) => (
-            <Post key={i} data={post as unknown as TPost} type={post.type} />
+            <Post key={i} data={post as unknown as TPost} />
           ))}
         </View>
         <View style={{ paddingHorizontal: 16 }}>
@@ -114,7 +114,7 @@ export default function ExploreScreen() {
             Services suggested for you
           </Text>
           {servicePosts?.map((post, i) => (
-            <Post key={i} data={post as unknown as TPost} type="hire" />
+            <Post key={i} data={post as unknown as TPost} />
           ))}
         </View>
       </ScrollView>

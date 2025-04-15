@@ -49,11 +49,11 @@ export default function ProfileScreen() {
         setFetched(uuid as string);
       }
 
-      const timeout = setTimeout(() => {
-        setFollowed(uuid as string, data.is_following);
-      }, 2500);
+      // const timeout = setTimeout(() => {
+      //   setFollowed(uuid as string, data.is_following);
+      // }, 2500);
 
-      return () => clearTimeout(timeout);
+      // return () => clearTimeout(timeout);
     }
   }, [data?.is_following, uuid]);
 

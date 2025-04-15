@@ -11,7 +11,7 @@ type LoadingScreenProps = {
   loads: boolean[] | boolean;
   data?: NonNullable<any>;
   header?: React.ReactNode;
-  errors?: any[];
+  errors?: any;
   refetch?: QueryObserverResult["refetch"];
 };
 

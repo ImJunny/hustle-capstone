@@ -44,7 +44,7 @@ export default function SavedJobsScreen() {
   return (
     <ScrollView refetch={refetch}>
       {savedJobs.map((post, i) => (
-        <Post key={i} data={post as TPost} type={post.type} />
+        <Post key={i} data={post as TPost} />
       ))}
     </ScrollView>
   );

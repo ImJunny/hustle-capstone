@@ -41,15 +41,25 @@ export const tagTypes = [
   { name: "gaming", value: "gaming" },
   { name: "misc", value: "misc" },
   { name: "art", value: "art" },
-  { name: "other", value: "other" },
   { name: "labor", value: "labor" },
   { name: "pets", value: "pets" },
   { name: "music", value: "music" },
   { name: "cleaning", value: "cleaning" },
-  { name: "repairs", value: "repairs" },
+  { name: "repair", value: "repair" },
   { name: "photography", value: "photography" },
   { name: "writing", value: "writing" },
   { name: "fitness", value: "fitness" },
   { name: "cooking", value: "cooking" },
   { name: "events", value: "events" },
+  { name: "other", value: "other" },
 ] as const;
+
+export const reportReasons = {
+  dislike: "I dont like this post",
+  offensive: "It is offensive",
+  spam: "It is spam",
+  fraud: "It is a scam or fraud",
+  violence: "It contains violence",
+  sexual: "It contains nudity or sexual content",
+  other: "Other",
+} as const;

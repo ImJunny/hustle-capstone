@@ -1,18 +1,17 @@
-import PostList from "@/components/posts/PostList";
 import { SimpleHeader } from "@/components/headers/Headers";
-import { trpc } from "@/server/lib/trpc-client";
-import { useAuthData } from "@/contexts/AuthContext";
-import LoadingScreen from "@/components/ui/LoadingScreen";
-import View from "@/components/ui/View";
-import Text from "@/components/ui/Text";
-import { Post as PostType } from "@/server/actions/post-actions";
-import ScrollView from "@/components/ui/ScrollView";
 import Post from "@/components/posts/Post";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import ScrollView from "@/components/ui/ScrollView";
+import View from "@/components/ui/View";
+import { useAuthData } from "@/contexts/AuthContext";
+import { trpc } from "@/server/lib/trpc-client";
+import { Post as TPost } from "@/server/actions/post-actions";
+import Text from "@/components/ui/Text";
 
-export default function RecentlyViewedScreen() {
+export default function ReportedPostsScreen() {
   const { user, geocode } = useAuthData();
   const { data, isLoading, error, refetch } =
-    trpc.post.get_recently_viewed_posts.useQuery({
+    trpc.report.get_reported_posts.useQuery({
       user_uuid: user?.id as string,
       geocode: geocode ?? undefined,
     });
@@ -23,7 +22,7 @@ export default function RecentlyViewedScreen() {
         data={data}
         loads={isLoading}
         errors={error}
-        header={<SimpleHeader title="Recently viewed" />}
+        header={<SimpleHeader title="Reported posts" />}
       />
     );
   }
@@ -31,11 +30,11 @@ export default function RecentlyViewedScreen() {
   if (data.length === 0) {
     return (
       <>
-        <SimpleHeader title="Recently viewed" />
+        <SimpleHeader title="Reported posts" />
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text>No recently viewed posts</Text>
+          <Text>No reported posts</Text>
         </View>
       </>
     );
@@ -43,10 +42,10 @@ export default function RecentlyViewedScreen() {
 
   return (
     <>
-      <SimpleHeader title="Recently viewed" />
+      <SimpleHeader title="Reported posts" />
       <ScrollView refetch={refetch}>
         {data.map((post, i) => (
-          <Post data={post as PostType} key={i} />
+          <Post key={i} data={post as TPost} />
         ))}
       </ScrollView>
     </>

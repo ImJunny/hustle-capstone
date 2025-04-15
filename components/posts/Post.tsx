@@ -11,16 +11,15 @@ import { Post as TPost } from "@/server/actions/post-actions";
 import StarDisplay from "../ui/StarDisplay";
 
 type PostProps = {
-  type: "work" | "hire";
   data: TPost;
 } & ViewProps;
 
-export default function Post({ type, data, style }: PostProps) {
+export default function Post({ data, style }: PostProps) {
   const themeColor = useThemeColor();
   const borderColor = themeColor.border;
 
   const formattedDueDate =
-    type === "work" && data?.due_date
+    data.type === "work" && data?.due_date
       ? isThisYear(new Date(data.due_date))
         ? format(new Date(data.due_date), "MMMM d")
         : format(new Date(data.due_date), "MMMM d, yyyy")

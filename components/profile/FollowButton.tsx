@@ -33,8 +33,8 @@ export default function FollowButton({
       await mutation({ follower_uuid: user?.id!, following_uuid: user_uuid });
 
       if (invalidate) {
-        utils.user.get_following.invalidate();
-        utils.user.get_user_data.invalidate();
+        // utils.user.get_following.invalidate();
+        // utils.user.get_user_data.invalidate();
       }
     } catch (error: any) {
       setFollowed(user_uuid, !newIsFollowing);

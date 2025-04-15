@@ -19,12 +19,14 @@ export default function Sheet({
   snapPoints,
   handleComponent,
   backdrop = true,
+  backdropOpacity = 0.4,
   ...props
 }: {
   title?: string;
   sheetRef: React.RefObject<BottomSheetMethods>;
   children: ReactNode;
   backdrop?: boolean;
+  backdropOpacity?: number;
 } & BottomSheetProps) {
   const themeColor = useThemeColor();
 
@@ -36,7 +38,7 @@ export default function Sheet({
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
-          opacity={0.4}
+          opacity={backdropOpacity}
           pointerEvents="auto"
           pressBehavior="close"
         />

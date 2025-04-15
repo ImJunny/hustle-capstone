@@ -1,6 +1,6 @@
 import React from "react";
 import ScrollView from "../ui/ScrollView";
-import { TPost } from "@/server/utils/example-data";
+import { Post as TPost } from "@/server/actions/post-actions";
 import Post from "./Post";
 
 export default function PostList({ data }: { data: TPost[] }) {

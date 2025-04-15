@@ -66,7 +66,7 @@ export default function TrackWorkingDetailsScreen() {
         utils.job.invalidate();
         router.back();
         router.setParams({
-          param_type: "work",
+          param_type: "offer_accept",
         });
       },
 

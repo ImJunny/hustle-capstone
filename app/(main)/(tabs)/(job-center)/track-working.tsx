@@ -19,9 +19,9 @@ export default function TrackWorkingScreen() {
 
   const sortedData = data?.sort((a, b) => {
     const progressOrder = [
-      "in progress",
-      "approved",
       "accepted",
+      "approved",
+      "in progress",
       "complete",
       "paid",
     ];

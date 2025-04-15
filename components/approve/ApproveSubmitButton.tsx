@@ -35,6 +35,9 @@ export function ApproveSubmitButton({
       utils.job.invalidate();
       router.back();
       router.back();
+      router.setParams({
+        param_type: "approved",
+      });
     },
     onError: (error) => {
       Toast.show({

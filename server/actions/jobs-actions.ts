@@ -125,19 +125,26 @@ export async function getTrackWorkingPosts(user_uuid: string) {
         status_type: posts.status_type,
         progress: initiated_jobs.progress_type,
         image_url: sql`(
-        SELECT ${post_images.image_url}
-        FROM ${post_images}
-        WHERE ${post_images.post_uuid} = ${posts.uuid}
-        ORDER BY ${post_images.image_url} ASC
-        LIMIT 1
-        )`,
-        approved_worker_uuid: sql`(
-        SELECT ${initiated_jobs.worker_uuid}
+      SELECT ${post_images.image_url}
+      FROM ${post_images}
+      WHERE ${post_images.post_uuid} = ${posts.uuid}
+      ORDER BY ${post_images.image_url} ASC
+      LIMIT 1
+      )`,
+        else_approved: sql`(
+      SELECT CASE
+      WHEN EXISTS (
+        SELECT 1
         FROM ${initiated_jobs}
         WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
-          AND ${initiated_jobs.progress_type} != 'accepted'
-        LIMIT 1
-        )`,
+        AND ${initiated_jobs.worker_uuid} != ${user_uuid}
+        AND ${initiated_jobs.progress_type} != 'accepted'
+        AND ${initiated_jobs.progress_type} != 'closed'
+      )
+      THEN true
+      ELSE false
+      END
+      )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -268,7 +275,8 @@ export async function getTrackHiringDetails(
           eq(initiated_jobs.job_post_uuid, posts.uuid),
           eq(posts.uuid, job_post_uuid),
           eq(posts.user_uuid, user_uuid),
-          ne(initiated_jobs.progress_type, "accepted")
+          ne(initiated_jobs.progress_type, "accepted"),
+          ne(initiated_jobs.progress_type, "closed")
         )
       )
       .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
@@ -360,7 +368,8 @@ export async function getTrackHiringPosts(user_uuid: string) {
               .where(
                 and(
                   eq(initiated_jobs.job_post_uuid, post.uuid),
-                  sql`${initiated_jobs.progress_type} != 'accepted'`
+                  ne(initiated_jobs.progress_type, "accepted"),
+                  ne(initiated_jobs.progress_type, "closed")
                 )
               )
               .limit(1)
@@ -474,6 +483,7 @@ export async function updateJobProgress(
 
     // If accepted->approved, close other initiated and mark
     // post as in progress; should notify users it is closed
+    console.log(uuid);
     if (progress === "accepted") {
       await db
         .update(initiated_jobs)
@@ -483,6 +493,7 @@ export async function updateJobProgress(
         .where(
           and(
             eq(initiated_jobs.job_post_uuid, postUuid),
+
             ne(initiated_jobs.uuid, uuid)
           )
         );

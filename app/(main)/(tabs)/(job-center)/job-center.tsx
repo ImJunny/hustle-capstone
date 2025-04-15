@@ -171,6 +171,25 @@ export default function JobCenterScreen() {
           </View>
           <View style={styles.category}>
             <Text size="xl" weight="semibold">
+              Services
+            </Text>
+            <View style={{ gap: 10 }}>
+              <LinkEntry
+                iconName="briefcase-outline"
+                title="Offers"
+                href="/track-working"
+                active_count={data.active_working_count}
+              />
+              <LinkEntry
+                iconName="calendar-outline"
+                title="Requests"
+                href="/track-hiring"
+                active_count={data.active_hiring_count}
+              />
+            </View>
+          </View>
+          <View style={styles.category}>
+            <Text size="xl" weight="semibold">
               Activity
             </Text>
             <View style={{ gap: 10 }}>

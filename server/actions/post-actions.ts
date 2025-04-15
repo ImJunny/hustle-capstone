@@ -665,22 +665,52 @@ export async function getPostDetailsFooterInfo(
   job_post_uuid: string
 ) {
   try {
-    const result = await db
+    const data = await db
       .select({
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
-        initiated: sql<boolean>`EXISTS(
-        SELECT 1
-        FROM ${initiated_jobs}
-        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
-        AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+        type: posts.type,
+        status: posts.status_type,
+        progress: sql<string | null>`(
+      SELECT ${initiated_jobs.progress_type}
+      FROM ${initiated_jobs}
+      WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+      AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+      LIMIT 1
       )`,
+        self: sql<boolean>`(${posts.user_uuid} = ${user_uuid})`,
       })
       .from(posts)
       .where(eq(posts.uuid, job_post_uuid))
       .then(([result]) => result);
+    const { min_rate, max_rate, type, status, progress, self } = data;
 
-    return result;
+    let result: {
+      min_rate: number;
+      max_rate: number | null;
+      state: string | null;
+    } = { min_rate, max_rate, state: null };
+
+    // no button
+    if (status == "complete") return { ...result, state: "complete" };
+
+    if (
+      status == "deleted" ||
+      status == "closed" ||
+      status == "draft" ||
+      (type == "hire" && self)
+    )
+      return { ...result, state: null };
+
+    if (type == "work") {
+      // work manage button
+      if ((status == "open" && progress == "accepted") || self)
+        return { ...result, state: "manage" };
+      // work offer/accept button
+      return { ...result, state: "offer_accept" };
+    } else {
+      return { ...result, state: "hire_service" };
+    }
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");

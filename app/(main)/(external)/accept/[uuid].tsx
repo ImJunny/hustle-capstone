@@ -40,7 +40,7 @@ export default function AcceptScreen() {
           swipeable: false,
         });
         utils.job.invalidate();
-        utils.post.invalidate();
+        utils.post.get_post_details_footer_info.invalidate();
         router.back();
         router.setParams({
           param_type: "manage",

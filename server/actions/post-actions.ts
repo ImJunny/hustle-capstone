@@ -161,7 +161,8 @@ export async function updatePost(
 // Get user job posts; can pass in optional type, otherwise all
 export async function getUserPosts(
   uuid: string,
-  geocode: [number, number] | undefined
+  geocode: [number, number] | undefined,
+  type?: "work" | "hire"
 ) {
   try {
     let result = await db
@@ -175,23 +176,23 @@ export async function getUserPosts(
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-        SELECT ARRAY_AGG(${post_tags.tag_type})
-        FROM ${post_tags}
-        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      SELECT ARRAY_AGG(${post_tags.tag_type})
+      FROM ${post_tags}
+      WHERE ${post_tags.post_uuid} = ${posts.uuid}
       )`,
         avg_rating: sql<number | null>`(
-        SELECT AVG(${reviews}.rating)
-        FROM ${reviews}
-        INNER JOIN ${initiated_jobs}
-        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
-        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      SELECT AVG(${reviews}.rating)
+      FROM ${reviews}
+      INNER JOIN ${initiated_jobs}
+      ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+      WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
         review_count: sql<number>`(
-        SELECT COUNT(*)
-        FROM ${reviews}
-        INNER JOIN ${initiated_jobs}
-        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
-        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      SELECT COUNT(*)
+      FROM ${reviews}
+      INNER JOIN ${initiated_jobs}
+      ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+      WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
         distance: geocode
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
@@ -201,7 +202,13 @@ export async function getUserPosts(
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
-      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "deleted")))
+      .where(
+        and(
+          eq(posts.user_uuid, uuid),
+          ne(posts.status_type, "deleted"),
+          type ? eq(posts.type, type) : sql`TRUE`
+        )
+      )
       .groupBy(posts.uuid, addresses.location)
       .orderBy(desc(posts.created_at));
 
@@ -665,22 +672,52 @@ export async function getPostDetailsFooterInfo(
   job_post_uuid: string
 ) {
   try {
-    const result = await db
+    const data = await db
       .select({
         min_rate: posts.min_rate,
         max_rate: posts.max_rate,
-        initiated: sql<boolean>`EXISTS(
-        SELECT 1
-        FROM ${initiated_jobs}
-        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
-        AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+        type: posts.type,
+        status: posts.status_type,
+        progress: sql<string | null>`(
+      SELECT ${initiated_jobs.progress_type}
+      FROM ${initiated_jobs}
+      WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+      AND ${initiated_jobs.worker_uuid} = ${user_uuid}
+      LIMIT 1
       )`,
+        self: sql<boolean>`(${posts.user_uuid} = ${user_uuid})`,
       })
       .from(posts)
       .where(eq(posts.uuid, job_post_uuid))
       .then(([result]) => result);
+    const { min_rate, max_rate, type, status, progress, self } = data;
 
-    return result;
+    let result: {
+      min_rate: number;
+      max_rate: number | null;
+      state: string | null;
+    } = { min_rate, max_rate, state: null };
+
+    // no button
+    if (status == "complete") return { ...result, state: "complete" };
+
+    if (
+      status == "deleted" ||
+      status == "closed" ||
+      status == "draft" ||
+      (type == "hire" && self)
+    )
+      return { ...result, state: null };
+
+    if (type == "work") {
+      // work manage button
+      if ((status == "open" && progress == "accepted") || self)
+        return { ...result, state: "manage" };
+      // work offer/accept button
+      return { ...result, state: "offer_accept" };
+    } else {
+      return { ...result, state: "hire_service" };
+    }
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get post user progress");

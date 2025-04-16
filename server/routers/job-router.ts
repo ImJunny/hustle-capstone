@@ -4,6 +4,7 @@ import {
   acceptJob,
   approveJob,
   cancelJob,
+  completeJob,
   finalizeJob,
   getAcceptedUsers,
   getTrackHiringDetails,
@@ -11,9 +12,11 @@ import {
   getTrackWorkingDetails,
   getTrackWorkingPosts,
   getTransactionEstimate,
+  hireService,
+  startJob,
   unacceptJob,
-  updateJobProgress,
 } from "../actions/jobs-actions";
+import { sendPostMessage, sendTextMessage } from "../actions/message-actions";
 
 export const jobRouter = createTRPCRouter({
   get_transaction_estimate: protectedProcedure
@@ -106,23 +109,6 @@ export const jobRouter = createTRPCRouter({
       const result = await getAcceptedUsers(input.job_post_uuid);
       return result;
     }),
-  update_job_progress: protectedProcedure
-    .input(
-      z.object({
-        uuid: z.string(),
-        progress: z.enum([
-          "accepted",
-          "approved",
-          "in progress",
-          "complete",
-          "paid",
-        ]),
-      })
-    )
-    .mutation(async ({ input }) => {
-      await updateJobProgress(input.uuid, input.progress);
-    }),
-
   cancel_job: protectedProcedure
     .input(
       z.object({
@@ -144,13 +130,6 @@ export const jobRouter = createTRPCRouter({
     .input(
       z.object({
         initiated_uuid: z.string(),
-        progress: z.enum([
-          "accepted",
-          "approved",
-          "in progress",
-          "complete",
-          "paid",
-        ]),
         user_uuid: z.string(),
         payment_intent_id: z.string(),
       })
@@ -158,10 +137,27 @@ export const jobRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await approveJob(
         input.initiated_uuid,
-        input.progress,
         input.user_uuid,
         input.payment_intent_id
       );
+    }),
+  start_job: protectedProcedure
+    .input(
+      z.object({
+        initiated_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await startJob(input.initiated_uuid);
+    }),
+  complete_job: protectedProcedure
+    .input(
+      z.object({
+        initiated_uuid: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await completeJob(input.initiated_uuid);
     }),
   finalize_job: protectedProcedure
     .input(
@@ -171,5 +167,22 @@ export const jobRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       return await finalizeJob(input.initiated_uuid);
+    }),
+  hire_service: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        job_uuid: z.string(),
+        service_uuid: z.string(),
+        message: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await hireService(
+        input.user_uuid,
+        input.job_uuid,
+        input.service_uuid,
+        input.message
+      );
     }),
 });

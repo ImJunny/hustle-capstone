@@ -66,7 +66,7 @@ export default function TrackWorkingDetailsScreen() {
         utils.job.invalidate();
         router.back();
         router.setParams({
-          param_type: "work",
+          param_type: "offer_accept",
         });
       },
 
@@ -172,12 +172,10 @@ export default function TrackWorkingDetailsScreen() {
                   {data.progress === "approved" ? (
                     <TrackJobStartButton
                       initiated_uuid={data.initiated_job_post_uuid}
-                      progress={data.progress as any}
                     />
                   ) : data.progress === "in progress" ? (
                     <TrackJobCompleteButton
                       initiated_uuid={data.initiated_job_post_uuid}
-                      progress={data.progress as any}
                     />
                   ) : null}
                 </View>

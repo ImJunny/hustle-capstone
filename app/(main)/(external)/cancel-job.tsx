@@ -58,9 +58,13 @@ export default function CancelJobScreen() {
       Toast.show({
         text1: "Job cancelled",
       });
-      utils.job.invalidate();
+      utils.job.get_track_hiring_details.invalidate();
+      utils.job.get_track_working_details.invalidate();
       utils.post.invalidate();
       router.back();
+      router.setParams({
+        param_type: undefined,
+      });
     },
     onError: (error) => {
       Toast.show({

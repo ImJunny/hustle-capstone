@@ -11,6 +11,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet } from "react-native";
 
 export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
+  const themeColor = useThemeColor();
   const { user } = useAuthData();
   const { param_type } = useLocalSearchParams();
 
@@ -20,19 +21,14 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
       job_post_uuid: data.uuid!,
     });
 
-  const [init, setInit] = useState(param_type ?? data.type);
+  const [init, setInit] = useState(param_type ?? footerData?.state);
 
   useEffect(() => {
-    setInit((prev) => param_type ?? prev);
-  }, [param_type]);
-  const themeColor = useThemeColor();
+    setInit((prev) => param_type ?? footerData?.state ?? prev);
+  }, [param_type, footerData?.state]);
 
   const renderButton = () => {
-    if (
-      init === "manage" ||
-      data.user_uuid === user?.id ||
-      (footerData?.initiated && param_type === undefined)
-    ) {
+    if (init == "manage") {
       return (
         <Skeleton show={isLoading}>
           <Button
@@ -49,18 +45,18 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
           </Button>
         </Skeleton>
       );
-    } else if (init === "work") {
+    } else if (init == "offer_accept") {
       return (
         <Skeleton show={isLoading}>
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <Button
+            {/* <Button
               style={{ marginLeft: "auto" }}
               type="outline"
               borderColor="foreground"
               onPress={() => router.push(`/track/working/${data.uuid}` as any)}
             >
               Make offer
-            </Button>
+            </Button> */}
             <Button
               style={{ marginLeft: "auto" }}
               onPress={() => {
@@ -72,18 +68,28 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
           </View>
         </Skeleton>
       );
-    } else if (init === "hire") {
+    } else if (init == "hire_service") {
       return (
         <Skeleton show={isLoading}>
           <Button
             style={{ marginLeft: "auto" }}
             borderColor="foreground"
-            onPress={() => {}}
+            onPress={() => {
+              router.push(`/hire-service/${data.uuid}` as any);
+            }}
           >
             Hire service
           </Button>
         </Skeleton>
       );
+    } else if (init == "complete") {
+      return (
+        <Text weight="semibold" size="lg">
+          Completed
+        </Text>
+      );
+    } else {
+      return <Skeleton show={isLoading} width={150} height={40} />;
     }
   };
 

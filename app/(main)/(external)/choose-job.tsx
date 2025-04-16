@@ -1,4 +1,5 @@
 import {
+  ChooseJobHeader,
   ChooseServiceHeader,
   SimpleHeader,
 } from "@/components/headers/Headers";
@@ -16,41 +17,50 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Post } from "@/server/actions/post-actions";
 import { Image } from "expo-image";
 import ScrollView from "@/components/ui/ScrollView";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 // Addresses screen
-export default function ChooseServiceScreen() {
+export default function ChooseJobScreen() {
   const themeColor = useThemeColor();
   const { user } = useAuthData();
   if (!user) return;
 
-  const { data: services, isLoading } = trpc.post.get_user_posts.useQuery({
+  const {
+    data: jobs,
+    isLoading,
+    error,
+    refetch,
+  } = trpc.post.get_user_posts.useQuery({
     uuid: user.id,
-    type: "hire",
+    type: "work",
   });
 
-  const { selected_service } = useLocalSearchParams();
-  const [currentService, setCurrentService] = useState<Post | null>(
-    selected_service ? JSON.parse(selected_service as string) : null
+  const { selected_job } = useLocalSearchParams();
+  const [currentJob, setCurrentJob] = useState<Post | null>(
+    selected_job ? JSON.parse(selected_job as string) : null
   );
 
-  if (isLoading) {
+  if (!jobs || isLoading || error) {
     return (
-      <>
-        <SimpleHeader title="Link a service" />
-        <LoadingView />
-      </>
+      <LoadingScreen
+        refetch={refetch}
+        data={jobs}
+        loads={isLoading}
+        errors={[error]}
+        header={<SimpleHeader title="Link a job" />}
+      />
     );
   }
-
-  if (!services) {
+  console.log(selected_job);
+  if (jobs.length == 0) {
     return (
       <>
-        <ChooseServiceHeader />
+        <ChooseJobHeader />
         <View style={styles.centerPage}>
           <Text weight="semibold" size="2xl">
-            No services added yet
+            No jobs added yet
           </Text>
-          <Text>Add a service by clicking on the add button at the top</Text>
+          <Text>Add a job by clicking on the add button at the top</Text>
         </View>
       </>
     );
@@ -58,32 +68,14 @@ export default function ChooseServiceScreen() {
 
   return (
     <>
-      <ChooseServiceHeader />
+      <ChooseJobHeader />
       <ScrollView style={{ flex: 1 }} color="base">
-        <TouchableOpacity onPress={() => setCurrentService(null)}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              height: 100,
-              paddingHorizontal: 16,
-              alignItems: "center",
-              borderBottomWidth: 1,
-            }}
-            color="black"
-          >
-            <Text weight="semibold" size="lg">
-              None
-            </Text>
-            <RadioButton value={null} selected={currentService} disabled />
-          </View>
-        </TouchableOpacity>
-        {services.map((service, i) => (
-          <ServiceEntry
+        {jobs.map((job, i) => (
+          <JobEntry
             key={i}
-            service={service as Post}
-            currentService={currentService}
-            setCurrentService={setCurrentService}
+            job={job as Post}
+            currentJob={currentJob}
+            setCurrentJob={setCurrentJob}
           />
         ))}
       </ScrollView>
@@ -96,11 +88,12 @@ export default function ChooseServiceScreen() {
           onPress={() => {
             router.back();
             router.setParams({
-              selected_service: JSON.stringify(currentService),
+              selected_job: JSON.stringify(currentJob),
             });
           }}
+          disabled={!currentJob}
         >
-          Select service
+          Select job
         </Button>
       </View>
     </>
@@ -108,40 +101,32 @@ export default function ChooseServiceScreen() {
 }
 
 // Address entry components
-type ServiceEntryProps = {
-  service: Post;
-  currentService: Post | null;
-  setCurrentService: Dispatch<SetStateAction<Post | null>>;
+type JobEntryProps = {
+  job: Post;
+  currentJob: Post | null;
+  setCurrentJob: Dispatch<SetStateAction<Post | null>>;
 };
 
-function ServiceEntry({
-  service,
-  currentService,
-  setCurrentService,
-}: ServiceEntryProps) {
+function JobEntry({ job, currentJob, setCurrentJob }: JobEntryProps) {
   const themeColor = useThemeColor();
   return (
-    <TouchableOpacity onPress={() => setCurrentService(service)}>
+    <TouchableOpacity onPress={() => setCurrentJob(job)}>
       <View
         color="background"
         style={[styles.entry, { borderColor: themeColor.border }]}
       >
         <View style={{ flexDirection: "row", gap: 20 }}>
           <Image
-            source={{ uri: service.image_url }}
+            source={{ uri: job.image_url }}
             style={{ width: 68, height: 68, borderRadius: 4 }}
           />
           <View style={{ justifyContent: "center" }}>
             <Text weight="semibold" size="lg">
-              {service.title}
+              {job.title}
             </Text>
           </View>
         </View>
-        <RadioButton
-          value={service.uuid}
-          selected={currentService?.uuid}
-          disabled
-        />
+        <RadioButton value={job.uuid} selected={currentJob?.uuid} disabled />
       </View>
     </TouchableOpacity>
   );

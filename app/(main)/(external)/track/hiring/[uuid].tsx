@@ -1,6 +1,6 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -22,8 +22,8 @@ import TrackCancelButton from "@/components/tracking/TrackCancelButton";
 import TrackJobPayNowButton from "@/components/tracking/TrackJobPayNowButton";
 import TrackJobReviewSection from "@/components/tracking/TrackJobReviewSection";
 
-export default function TrackWorkingDetailsScreen() {
-  const { uuid } = useLocalSearchParams();
+export default function TrackHiringDetailsScreen() {
+  const { uuid, param_type } = useLocalSearchParams();
   const { user } = useAuthData();
 
   const {
@@ -57,9 +57,19 @@ export default function TrackWorkingDetailsScreen() {
     { enabled: !!user }
   );
 
-  const description = data?.is_approved
-    ? TrackHiringLabels[(data as any).progress]
-    : "";
+  const [init, setInit] = useState(() => {
+    return (param_type as string) ?? data?.worker_data?.progress;
+  });
+  useEffect(() => {
+    if (data?.worker_data?.progress) {
+      setInit(data.worker_data.progress);
+    }
+  }, [param_type, data?.worker_data?.progress]);
+
+  const description =
+    data?.worker_data || init
+      ? TrackHiringLabels[init as keyof typeof TrackHiringLabels]
+      : "";
 
   // Fallbacks
   if (isLoading || estimateLoading || !data || error || estimateError) {
@@ -93,9 +103,9 @@ export default function TrackWorkingDetailsScreen() {
             </Text>
             <Text>Due {formattedDueDate}</Text>
           </View>
-          {data.is_approved ? (
+          {data?.worker_data ? (
             <>
-              {(data as any).progress === "cancelled" ? (
+              {init === "cancelled" ? (
                 <>
                   <Text
                     color="muted"
@@ -106,7 +116,7 @@ export default function TrackWorkingDetailsScreen() {
                     Canceled
                   </Text>
                 </>
-              ) : (data as any).progress === "closed" ? (
+              ) : init === "closed" ? (
                 <>
                   <Text
                     color="muted"
@@ -117,24 +127,26 @@ export default function TrackWorkingDetailsScreen() {
                     Closed
                   </Text>
                 </>
-              ) : (data as any).progress !== "paid" ? (
+              ) : init == "approved" ||
+                init == "in progress" ||
+                init == "complete" ? (
                 <>
-                  <TrackingProgressBar progress={(data as any).progress} />
+                  <TrackingProgressBar progress={(init as any) ?? "approved"} />
                   <View style={{ alignSelf: "flex-start" }}>
                     <Text color="muted">{description}</Text>
                   </View>
-                  {(data as any).progress === "complete" && (
+                  {init === "complete" && (
                     <TrackJobPayNowButton
                       rate={estimateData.rate}
-                      initiated_uuid={(data as any).initiated_job_post_uuid}
+                      initiated_uuid={data?.worker_data?.initiated_uuid}
                     />
                   )}
                 </>
-              ) : (
+              ) : init == "paid" ? (
                 <Text color="green" weight="semibold" size="lg">
                   Payment sent
                 </Text>
-              )}
+              ) : null}
             </>
           ) : (
             <>
@@ -178,11 +190,11 @@ export default function TrackWorkingDetailsScreen() {
         </View>
 
         {/**CANCEL SECTION */}
-        {((data as any).progress as any) === "approved" && (
+        {init === "approved" && (
           <View>
             <Separator />
             <TrackCancelButton
-              initiated_uuid={(data as any).initiated_job_post_uuid}
+              initiated_uuid={data?.worker_data?.initiated_uuid as string}
             />
           </View>
         )}
@@ -207,20 +219,20 @@ export default function TrackWorkingDetailsScreen() {
           </View>
         </View>
 
-        {/** YOUR LINKED SERVICE SECTION*/}
-        {data.is_approved && (
+        {/** WORKER LINKED SERVICE SECTION*/}
+        {data.worker_data && (
           <>
-            {(data as any).service_uuid && (
+            {data.worker_data.service_uuid && (
               <View style={styles.serviceSection}>
                 <Text size="lg" weight="semibold">
-                  Your linked service
+                  Their linked service
                 </Text>
 
-                <LoadingPost uuid={(data as any).service_uuid} />
+                <LoadingPost uuid={data.worker_data?.service_uuid} />
 
                 <Text color="muted">
-                  You linked a service which is viewable to the employer. Their
-                  review will be applied to both you and your service.
+                  They linked a service for the job. Your review for their job
+                  will apply to their service.
                 </Text>
               </View>
             )}
@@ -233,25 +245,23 @@ export default function TrackWorkingDetailsScreen() {
               </Text>
               <Pressable
                 onPress={() => {
-                  router.push(`/profile/${(data as any).user_uuid}` as any);
+                  router.push(`/profile/${data.worker_data?.user_uuid}` as any);
                 }}
               >
                 <View style={styles.employerRow}>
                   <Image
                     source={
-                      (data as any).user_avatar_url
-                        ? { uri: (data as any).user_avatar_url }
+                      data.worker_data?.avatar_url
+                        ? { uri: data.worker_data?.avatar_url }
                         : require("@/assets/images/default-avatar-icon.jpg")
                     }
                     style={{ borderRadius: 999, width: 40, height: 40 }}
                   />
                   <View style={{ gap: 4 }}>
-                    <Text weight="semibold">
-                      @{(data as any).user_username}
-                    </Text>
+                    <Text weight="semibold">@{data.worker_data.username}</Text>
                     <StarDisplay
-                      rating={(data as any).user_avg_rating}
-                      count={(data as any).user_review_count}
+                      rating={data.worker_data.avg_rating}
+                      count={data.worker_data.review_count}
                     />
                   </View>
 
@@ -260,7 +270,7 @@ export default function TrackWorkingDetailsScreen() {
                     borderColor="foreground"
                     style={styles.messageButton}
                     onPress={() =>
-                      router.push(`/message/${(data as any).user_uuid}`)
+                      router.push(`/message/${data.worker_data?.user_uuid}`)
                     }
                   >
                     Message
@@ -272,11 +282,11 @@ export default function TrackWorkingDetailsScreen() {
         )}
 
         {/**REVIEW SECTION */}
-        {(data as any).progress === "paid" && (
+        {init === "paid" && (
           <>
             <Separator />
             <TrackJobReviewSection
-              initiated_uuid={(data as any).initiated_job_post_uuid}
+              initiated_uuid={data.worker_data?.initiated_uuid as string}
             />
           </>
         )}

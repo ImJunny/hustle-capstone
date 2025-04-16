@@ -1,6 +1,7 @@
 import View from "@/components/ui/View";
 import React from "react";
 import RecentSuggestion from "@/components/explore/RecentSuggestion";
+import Text from "@/components/ui/Text";
 
 const recents = [
   { id: 1, recent: "Technology" },
@@ -13,13 +14,16 @@ export default function ExploreScreen() {
   return (
     <>
       <View color="background">
-        {recents.map((suggestion, i) => (
+        <Text style={{ textAlign: "center", marginTop: 32 }}>
+          To be implemented
+        </Text>
+        {/* {recents.map((suggestion, i) => (
           <RecentSuggestion
             key={suggestion.id}
             recent={suggestion.recent}
             style={{}}
           />
-        ))}
+        ))} */}
       </View>
     </>
   );

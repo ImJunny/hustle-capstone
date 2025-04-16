@@ -9,35 +9,31 @@ import Toast from "react-native-toast-message";
 
 export default function TrackJobStartButton({
   initiated_uuid,
-  progress,
 }: {
   initiated_uuid: string;
-  progress: "in progress" | "approved" | "complete";
 }) {
   const themeColor = useThemeColor();
   const utils = trpc.useUtils();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { mutate: updateProgress, isLoading } =
-    trpc.job.update_job_progress.useMutation({
-      onSuccess: () => {
-        utils.post.invalidate();
-        utils.job.invalidate();
-      },
-      onError: (error) => {
-        Toast.show({
-          text1: error.message,
-          type: "error",
-          swipeable: false,
-        });
-      },
-    });
+  const { mutate: startJob, isLoading } = trpc.job.start_job.useMutation({
+    onSuccess: () => {
+      utils.post.invalidate();
+      utils.job.invalidate();
+    },
+    onError: (error) => {
+      Toast.show({
+        text1: error.message,
+        type: "error",
+        swipeable: false,
+      });
+    },
+  });
 
   const handleClick = () => {
     setModalOpen(false);
-    updateProgress({
-      uuid: initiated_uuid,
-      progress,
+    startJob({
+      initiated_uuid,
     });
   };
 

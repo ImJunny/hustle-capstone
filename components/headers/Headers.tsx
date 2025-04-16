@@ -71,6 +71,7 @@ export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
 }
 
 export function JobsCenterHeader() {
+  const handleRedirect = () => router.push("/notifications");
   return (
     <HeaderWrapper
       options={{
@@ -79,7 +80,13 @@ export function JobsCenterHeader() {
             Job Center
           </Text>
         ),
-        right: <IconButton name="notifications-outline" size="xl" />,
+        right: (
+          <IconButton
+            name="notifications-outline"
+            size="xl"
+            onPress={handleRedirect}
+          />
+        ),
       }}
     />
   );
@@ -222,6 +229,29 @@ export function ChooseServiceHeader() {
   );
 }
 
+export function ChooseJobHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Link a job
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push(`/create-post/?type=work` as any)}
+          />
+        ),
+      }}
+    />
+  );
+}
+
 export function ChooseWorkerHeader() {
   return (
     <HeaderWrapper
@@ -311,7 +341,11 @@ export function SearchingHeader() {
               onSubmitEditing={handleSearch}
               autoCapitalize="none"
             />
-            <IconButton name="ellipsis-vertical" size="xl" />
+            <IconButton
+              name="ellipsis-vertical"
+              size="xl"
+              onPress={() => Toast.show({ text1: "To be implemented" })}
+            />
           </View>
         ),
       }}
@@ -544,7 +578,6 @@ export function SingleMessageHeader({
             </View>
           </Pressable>
         ),
-        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );

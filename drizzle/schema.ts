@@ -92,6 +92,16 @@ export const initiated_jobs = app_schema.table("initiated_jobs", {
   rate: integer("rate").notNull(),
 });
 
+export const notifications = app_schema.table("notifications", {
+  uuid: uuid("uuid")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`),
+  user_uuid: uuid("user_uuid").references(() => users.uuid),
+  post_uuid: uuid("post_uuid"),
+  text: text("text").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const post_images = app_schema.table("post_images", {
   uuid: uuid("uuid")
     .primaryKey()
@@ -141,6 +151,16 @@ export const messages = app_schema.table("messages", {
   post_uuid: uuid("post_uuid").references(() => posts.uuid),
   is_read: boolean("is_read").default(false),
 });
+
+export const disabled_notifications = app_schema.table(
+  "disabled_notifications",
+  {
+    user_uuid: uuid("user_uuid").references(() => users.uuid),
+    notification_type: text("notification_type").references(
+      () => notification_types.name
+    ),
+  }
+);
 
 export const chats = app_schema.table("chats", {
   uuid: uuid("uuid")
@@ -321,6 +341,11 @@ export const message_types = app_schema.table("message_types", {
 });
 
 export const post_report_reasons = app_schema.table("post_report_reasons", {
+  id: serial("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});
+
+export const notification_types = app_schema.table("notification_types", {
   id: serial("id").primaryKey(),
   name: text("name").unique().notNull(),
 });

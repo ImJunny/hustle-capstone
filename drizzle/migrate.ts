@@ -4,6 +4,7 @@ import { db } from "./db";
 import {
   location_types,
   message_types,
+  notification_types,
   onboarding_phase_types,
   post_report_reasons,
   progress_types,
@@ -18,6 +19,7 @@ import {
   tagTypes,
   messageTypes,
   reportReasons,
+  notificationTypes,
 } from "./db-types";
 
 export async function runMigrations() {
@@ -58,6 +60,12 @@ export async function runMigrations() {
       await db
         .insert(post_report_reasons)
         .values({ name: key })
+        .onConflictDoNothing();
+    }
+    for (const type of notificationTypes) {
+      await db
+        .insert(notification_types)
+        .values({ name: type })
         .onConflictDoNothing();
     }
 

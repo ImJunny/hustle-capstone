@@ -63,3 +63,12 @@ export const reportReasons = {
   sexual: "It contains nudity or sexual content",
   other: "Other",
 } as const;
+
+export const notificationTypes = [
+  "job_accepted",
+  "job_approved",
+  "job_in_progress",
+  "job_complete",
+  "job_paid",
+  "job_cancelled",
+] as const;

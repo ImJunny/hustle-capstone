@@ -2,6 +2,8 @@ import { SimpleHeader } from "@/components/headers/Headers";
 import TrackTransactionEstimate from "@/components/tracking/TrackTransactionEstimate";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
+import Input from "@/components/ui/Input";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
 import Text from "@/components/ui/Text";
@@ -16,35 +18,31 @@ import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
 
-export default function AcceptScreen() {
+export default function HireServiceScreen() {
   const themeColor = useThemeColor();
-  const { uuid, selected_service } = useLocalSearchParams();
+  const { uuid, selected_job } = useLocalSearchParams();
   const utils = trpc.useUtils();
   const { user } = useAuthData();
 
   // get selected service
-  const [service, setService] = useState<Post | null>(null);
+  const [job, setJob] = useState<Post | null>(null);
   useEffect(() => {
-    if (selected_service) {
-      const parsedService = JSON.parse(selected_service as string) as Post;
-      setService(parsedService);
+    if (selected_job) {
+      const parsedJob = JSON.parse(selected_job as string) as Post;
+      setJob(parsedJob);
     }
-  }, [selected_service]);
+  }, [selected_job]);
 
   // function to handle confirm accept
-  const { mutate: acceptJob, isLoading: acceptLoading } =
-    trpc.job.accept_job.useMutation({
+  const { mutate: hireService, isLoading: acceptLoading } =
+    trpc.job.hire_service.useMutation({
       onSuccess: () => {
         Toast.show({
-          text1: "Accepted job",
+          text1: "Sent service request",
           swipeable: false,
         });
-        utils.job.invalidate();
-        utils.post.get_post_details_footer_info.invalidate();
+        utils.messages.invalidate();
         router.back();
-        router.setParams({
-          param_type: "manage",
-        });
       },
       onError: (error) => {
         Toast.show({
@@ -54,11 +52,14 @@ export default function AcceptScreen() {
         });
       },
     });
-  const handleAccept = () => {
-    acceptJob({
+
+  const handleHire = () => {
+    const textMessage = text.trim().length > 0 ? text.trim() : undefined;
+    hireService({
       user_uuid: user?.id!,
-      job_post_uuid: uuid as string,
-      linked_service_post_uuid: service?.uuid ?? null,
+      job_uuid: job?.uuid as string,
+      service_uuid: uuid as string,
+      message: textMessage,
     });
   };
 
@@ -69,31 +70,22 @@ export default function AcceptScreen() {
     }
   );
 
-  // render page
-  if (isLoading) {
-    return (
-      <>
-        <SimpleHeader title="Accept job" />
-        <LoadingView />
-      </>
-    );
-  } else if (error) {
-    return (
-      <>
-        <SimpleHeader title="Accept job" />
+  const [text, setText] = useState("");
 
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>Encountered an error getting job information</Text>
-        </View>
-      </>
+  if (!data || isLoading || error) {
+    return (
+      <LoadingScreen
+        data={data}
+        loads={isLoading}
+        errors={[error]}
+        header={<SimpleHeader title="Hire service" />}
+      />
     );
   }
 
   return (
     <>
-      <SimpleHeader title="Accept job" />
+      <SimpleHeader title="Hire service" />
       <ScrollView style={styles.page} color="background">
         <View
           color="background"
@@ -105,10 +97,8 @@ export default function AcceptScreen() {
             Disclaimer
           </Text>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            Accepting this job does not guarentee you will be approved for it.
-            The employer will consider all users who accept this job and proceed
-            with who they choose. You cannot unaccept within 24 hours of the due
-            date.
+            Hiring a service here will send a direct message with your linked
+            job. However, this does not guarentee they will accept your job.
           </Text>
         </View>
         <View
@@ -118,35 +108,23 @@ export default function AcceptScreen() {
           }}
         >
           <Text weight="semibold" size="lg">
-            How much you'll receive
-          </Text>
-          <TrackTransactionEstimate data={data} />
-        </View>
-
-        <View
-          color="background"
-          style={{
-            padding: 26,
-          }}
-        >
-          <Text weight="semibold" size="lg">
-            Link a service (optional)
+            Link a job
           </Text>
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: "/choose-service",
+                pathname: "/choose-job" as any,
                 params: {
-                  selected_service: JSON.stringify(service),
+                  selected_job: JSON.stringify(job),
                 },
               });
             }}
             style={[styles.linker, { borderColor: themeColor.foreground }]}
           >
             <View>
-              {service ? (
+              {job ? (
                 <View>
-                  <Text>{service.title}</Text>
+                  <Text>{job.title}</Text>
                 </View>
               ) : (
                 <Text color="muted">None</Text>
@@ -156,19 +134,37 @@ export default function AcceptScreen() {
             <Icon name="chevron-forward" size="xl" />
           </TouchableOpacity>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            You can link a service which can be viewed by the employer. Their
-            review will apply to both your account and service. You cannot
-            unlink this service after it has already been accepted.
+            You must link a job in order to hire a service. There is no
+            guarentee they will accept your job, but this job will be viewable
+            to them.
           </Text>
+        </View>
+
+        <View
+          color="background"
+          style={{
+            padding: 26,
+          }}
+        >
+          <Text weight="semibold" size="lg" style={{ marginBottom: 4 }}>
+            Additional notes (optional)
+          </Text>
+          <Input
+            value={text}
+            onChangeText={(value) => setText(value)}
+            type="outline"
+            placeholder="Let them know more about the job"
+            style={{ height: 100, textAlignVertical: "top", paddingTop: 8 }}
+          />
         </View>
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
         <Button
           style={styles.button}
-          onPress={handleAccept}
-          disabled={acceptLoading}
+          onPress={handleHire}
+          disabled={acceptLoading || !selected_job}
         >
-          Confirm accept
+          Hire service
         </Button>
       </View>
     </>

@@ -13,11 +13,7 @@ export default function TrackPostProgress({
   data,
   self,
 }: TrackPostProgressProps) {
-  const { progress } = data;
-  const { user } = useAuthData();
-  const otherApproved =
-    data.approved_worker_uuid != user?.id &&
-    typeof data.approved_worker_uuid === "string";
+  const { progress, else_approved } = data;
 
   return (
     <View>
@@ -28,7 +24,7 @@ export default function TrackPostProgress({
       ) : progress === "accepted" ? (
         <Text weight="semibold">
           Accepted
-          {otherApproved ? ", another worker approved" : ""}
+          {else_approved ? ", another worker approved" : ""}
         </Text>
       ) : progress === "approved" ? (
         <Text weight="semibold">Approved{self ? " the worker" : ""}</Text>

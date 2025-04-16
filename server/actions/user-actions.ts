@@ -229,17 +229,21 @@ export async function getShareUsers(user_uuid: string) {
       .from(users)
       .where(
         sql`(${users.uuid} IN (
-        SELECT ${following.followed_uuid}
-        FROM ${following}
-        WHERE ${following.follower_uuid} = ${user_uuid}
+      SELECT ${following.followed_uuid}
+      FROM ${following}
+      WHERE ${following.follower_uuid} = ${user_uuid}
       ) OR ${users.uuid} IN (
-        SELECT DISTINCT receiver_uuid
-        FROM ${messages}
-        WHERE sender_uuid = ${user_uuid}
-        UNION
-        SELECT DISTINCT sender_uuid
-        FROM ${messages}
-        WHERE receiver_uuid = ${user_uuid}
+      SELECT ${following.follower_uuid}
+      FROM ${following}
+      WHERE ${following.followed_uuid} = ${user_uuid}
+      ) OR ${users.uuid} IN (
+      SELECT DISTINCT receiver_uuid
+      FROM ${messages}
+      WHERE sender_uuid = ${user_uuid}
+      UNION
+      SELECT DISTINCT sender_uuid
+      FROM ${messages}
+      WHERE receiver_uuid = ${user_uuid}
       ))`
       );
 

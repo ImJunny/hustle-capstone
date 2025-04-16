@@ -11,39 +11,36 @@ import { router } from "expo-router";
 export function ApproveSubmitButton({
   initiatedJobUuid,
   amount,
+  uuid,
 }: {
   initiatedJobUuid: string;
   amount: number;
+  uuid: string;
 }) {
   const themeColor = useThemeColor();
   const utils = trpc.useUtils();
   const { user } = useAuthData();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const { data } = trpc.payment.get_payment_intent.useQuery({
+  const { data, isLoading } = trpc.payment.get_payment_intent.useQuery({
     user_uuid: user!.id,
     amount,
   });
 
-  const { mutate: approveJob } = trpc.job.approve_job.useMutation({
-    onSuccess: () => {
-      Toast.show({
-        text1: "Payment successful",
-        type: "success",
-        swipeable: false,
-      });
-      utils.post.invalidate();
-      utils.job.invalidate();
-      router.back();
-      router.back();
-    },
-    onError: (error) => {
-      Toast.show({
-        text1: error.message,
-        type: "error",
-        swipeable: false,
-      });
-    },
-  });
+  const { mutate: approveJob, isLoading: approvalLoading } =
+    trpc.job.approve_job.useMutation({
+      onSuccess: () => {
+        utils.job.get_track_hiring_details.invalidate();
+        router.back();
+        router.replace(`/track/hiring/${uuid}?param_type=approved` as any);
+      },
+      onError: (error) => {
+        Toast.show({
+          text1: error.message,
+          type: "error",
+          swipeable: false,
+        });
+      },
+    });
 
   // Initialize payment sheet
   const handleInitPaymentSheet = async (data: any) => {
@@ -101,7 +98,11 @@ export function ApproveSubmitButton({
 
   return (
     <View>
-      <Button style={styles.button} onPress={handlePresentPaymentSheet}>
+      <Button
+        style={styles.button}
+        onPress={handlePresentPaymentSheet}
+        disabled={isLoading || approvalLoading}
+      >
         Pay and approve
       </Button>
     </View>

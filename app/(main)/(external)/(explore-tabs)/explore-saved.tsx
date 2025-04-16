@@ -1,6 +1,7 @@
 import View from "@/components/ui/View";
 import React from "react";
 import SavedSuggestion from "@/components/explore/SavedSuggestion";
+import Text from "@/components/ui/Text";
 
 const saves = [
   { id: 1, saved: "Technology", rate: "$100 >", distance: " < 20 mi" },
@@ -13,7 +14,10 @@ export default function ExploreScreen() {
   return (
     <>
       <View color="background">
-        {saves.map((suggestion, i) => (
+        <Text style={{ textAlign: "center", marginTop: 32 }}>
+          To be implemented
+        </Text>
+        {/* {saves.map((suggestion, i) => (
           <SavedSuggestion
             key={suggestion.id}
             saved={suggestion.saved}
@@ -21,7 +25,7 @@ export default function ExploreScreen() {
             distance={suggestion.distance}
             style={{}}
           />
-        ))}
+        ))} */}
       </View>
     </>
   );

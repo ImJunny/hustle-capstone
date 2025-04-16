@@ -87,6 +87,7 @@ export default function AcceptScreen() {
         <ApproveSubmitButton
           initiatedJobUuid={initiated_uuid as string}
           amount={data?.rate}
+          uuid={uuid as string}
         />
       </View>
     </StripeProvider>

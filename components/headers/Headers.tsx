@@ -229,6 +229,29 @@ export function ChooseServiceHeader() {
   );
 }
 
+export function ChooseJobHeader() {
+  return (
+    <HeaderWrapper
+      options={{
+        left: (
+          <View style={{ gap: 12, flexDirection: "row", alignItems: "center" }}>
+            <IconButton name="arrow-back" onPress={() => router.back()} />
+            <Text size="xl" weight="semibold">
+              Link a job
+            </Text>
+          </View>
+        ),
+        right: (
+          <IconButton
+            name="add"
+            onPress={() => router.push(`/create-post/?type=work` as any)}
+          />
+        ),
+      }}
+    />
+  );
+}
+
 export function ChooseWorkerHeader() {
   return (
     <HeaderWrapper
@@ -555,7 +578,6 @@ export function SingleMessageHeader({
             </View>
           </Pressable>
         ),
-        right: <IconButton name="ellipsis-vertical" size="xl" />,
       }}
     />
   );

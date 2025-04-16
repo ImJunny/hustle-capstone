@@ -35,6 +35,8 @@ export default function CreatePostForm() {
     <CreatePostProvider type={(type as "work" | "hire") ?? undefined}>
       {type === "hire" ? (
         <SimpleHeader title="Create a service" />
+      ) : type === "work" ? (
+        <SimpleHeader title="Create a job" />
       ) : (
         <CreatePostHeader />
       )}

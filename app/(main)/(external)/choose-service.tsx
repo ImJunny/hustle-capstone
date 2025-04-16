@@ -45,7 +45,7 @@ export default function ChooseServiceScreen() {
   if (!services) {
     return (
       <>
-        <SimpleHeader title="Link a service" />
+        <ChooseServiceHeader />
         <View style={styles.centerPage}>
           <Text weight="semibold" size="2xl">
             No services added yet

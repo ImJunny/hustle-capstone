@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import View from "./View";
 import Icon from "./Icon";
 
-export default function Input({
+export default function StarInput({
   value,
   onChange,
 }: {

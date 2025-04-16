@@ -13,9 +13,10 @@ import { router } from "expo-router";
 import { Swipeable } from "react-native-gesture-handler";
 import { Alert, View as RNView } from "react-native";
 import IconButton from "@/components/ui/IconButton";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 import { UseMutateFunction } from "@tanstack/react-query";
+import type { Swipeable as SwipeableType } from "react-native-gesture-handler";
 
 export default function NotificationsScreen() {
   const utils = trpc.useUtils();
@@ -103,6 +104,8 @@ function Notification({
   removeNotif: UseMutateFunction<unknown, unknown, { uuid: string }, unknown>;
 }) {
   const formattedDate = getRelativeDate(String(data.notification.created_at));
+  const swipeableRef = useRef<SwipeableType>(null); // 💡 Create ref
+
   const handleRedirect = () =>
     router.push(`/post/${data.notification.post_uuid}`);
 
@@ -117,6 +120,7 @@ function Notification({
           style: "destructive",
           onPress: async () => {
             try {
+              swipeableRef.current?.close(); // 👈 Close swipe first
               removeNotif({ uuid: data.notification.uuid });
               setNotifs((prevNotifs) =>
                 prevNotifs?.filter(
@@ -146,7 +150,7 @@ function Notification({
   );
 
   return (
-    <Swipeable renderRightActions={renderRightActions}>
+    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
       <View
         color="background"
         style={{

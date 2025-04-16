@@ -62,6 +62,7 @@ export default function PostReportSheet({
         Toast.show({
           text1: "Undid report",
         });
+        sheetRef.current?.forceClose();
         setReported(false);
         utils.report.invalidate();
       },

@@ -12,9 +12,11 @@ import {
   getTrackWorkingDetails,
   getTrackWorkingPosts,
   getTransactionEstimate,
+  hireService,
   startJob,
   unacceptJob,
 } from "../actions/jobs-actions";
+import { sendPostMessage, sendTextMessage } from "../actions/message-actions";
 
 export const jobRouter = createTRPCRouter({
   get_transaction_estimate: protectedProcedure
@@ -165,5 +167,22 @@ export const jobRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       return await finalizeJob(input.initiated_uuid);
+    }),
+  hire_service: protectedProcedure
+    .input(
+      z.object({
+        user_uuid: z.string(),
+        job_uuid: z.string(),
+        service_uuid: z.string(),
+        message: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await hireService(
+        input.user_uuid,
+        input.job_uuid,
+        input.service_uuid,
+        input.message
+      );
     }),
 });

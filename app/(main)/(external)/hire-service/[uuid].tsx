@@ -2,6 +2,7 @@ import { SimpleHeader } from "@/components/headers/Headers";
 import TrackTransactionEstimate from "@/components/tracking/TrackTransactionEstimate";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
+import Input from "@/components/ui/Input";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import LoadingView from "@/components/ui/LoadingView";
 import ScrollView from "@/components/ui/ScrollView";
@@ -33,19 +34,15 @@ export default function HireServiceScreen() {
   }, [selected_job]);
 
   // function to handle confirm accept
-  const { mutate: acceptJob, isLoading: acceptLoading } =
-    trpc.job.accept_job.useMutation({
+  const { mutate: hireService, isLoading: acceptLoading } =
+    trpc.job.hire_service.useMutation({
       onSuccess: () => {
         Toast.show({
-          text1: "Accepted job",
+          text1: "Sent service request",
           swipeable: false,
         });
-        utils.job.invalidate();
-        utils.post.get_post_details_footer_info.invalidate();
+        utils.messages.invalidate();
         router.back();
-        router.setParams({
-          param_type: "manage",
-        });
       },
       onError: (error) => {
         Toast.show({
@@ -55,12 +52,14 @@ export default function HireServiceScreen() {
         });
       },
     });
-  const handleAccept = () => {
-    // FIX -------------------
-    acceptJob({
+
+  const handleHire = () => {
+    const textMessage = text.trim().length > 0 ? text.trim() : undefined;
+    hireService({
       user_uuid: user?.id!,
-      job_post_uuid: uuid as string,
-      linked_service_post_uuid: job?.uuid ?? null,
+      job_uuid: job?.uuid as string,
+      service_uuid: uuid as string,
+      message: textMessage,
     });
   };
 
@@ -70,6 +69,8 @@ export default function HireServiceScreen() {
       job_post_uuid: uuid as string,
     }
   );
+
+  const [text, setText] = useState("");
 
   if (!data || isLoading || error) {
     return (
@@ -96,9 +97,8 @@ export default function HireServiceScreen() {
             Disclaimer
           </Text>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            You must link a job in order to hire a service. There is no
-            guarentee they will accept your job, but this job will be viewable
-            by them.
+            Hiring a service here will send a direct message with your linked
+            job. However, this does not guarentee they will accept your job.
           </Text>
         </View>
         <View
@@ -134,18 +134,37 @@ export default function HireServiceScreen() {
             <Icon name="chevron-forward" size="xl" />
           </TouchableOpacity>
           <Text size="sm" style={{ marginTop: 4 }} color="muted">
-            You can link a job which can be viewed by the worker. This will let
-            them know what job you are looking to hire them for.
+            You must link a job in order to hire a service. There is no
+            guarentee they will accept your job, but this job will be viewable
+            to them.
           </Text>
+        </View>
+
+        <View
+          color="background"
+          style={{
+            padding: 26,
+          }}
+        >
+          <Text weight="semibold" size="lg" style={{ marginBottom: 4 }}>
+            Additional notes (optional)
+          </Text>
+          <Input
+            value={text}
+            onChangeText={(value) => setText(value)}
+            type="outline"
+            placeholder="Let them know more about the job"
+            style={{ height: 100, textAlignVertical: "top", paddingTop: 8 }}
+          />
         </View>
       </ScrollView>
       <View style={[styles.footer, { borderColor: themeColor.border }]}>
         <Button
           style={styles.button}
-          onPress={handleAccept}
-          disabled={acceptLoading}
+          onPress={handleHire}
+          disabled={acceptLoading || !selected_job}
         >
-          Request service
+          Hire service
         </Button>
       </View>
     </>

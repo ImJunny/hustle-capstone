@@ -1,4 +1,5 @@
 import {
+  ChooseJobHeader,
   ChooseServiceHeader,
   SimpleHeader,
 } from "@/components/headers/Headers";
@@ -50,11 +51,11 @@ export default function ChooseJobScreen() {
       />
     );
   }
-
+  console.log(selected_job);
   if (jobs.length == 0) {
     return (
       <>
-        <SimpleHeader title="Link a job" />
+        <ChooseJobHeader />
         <View style={styles.centerPage}>
           <Text weight="semibold" size="2xl">
             No jobs added yet
@@ -67,26 +68,8 @@ export default function ChooseJobScreen() {
 
   return (
     <>
-      <ChooseServiceHeader />
+      <ChooseJobHeader />
       <ScrollView style={{ flex: 1 }} color="base">
-        <TouchableOpacity onPress={() => setCurrentJob(null)}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              height: 100,
-              paddingHorizontal: 16,
-              alignItems: "center",
-              borderBottomWidth: 1,
-            }}
-            color="black"
-          >
-            <Text weight="semibold" size="lg">
-              None
-            </Text>
-            <RadioButton value={null} selected={currentJob} disabled />
-          </View>
-        </TouchableOpacity>
         {jobs.map((job, i) => (
           <JobEntry
             key={i}
@@ -108,6 +91,7 @@ export default function ChooseJobScreen() {
               selected_job: JSON.stringify(currentJob),
             });
           }}
+          disabled={!currentJob}
         >
           Select job
         </Button>

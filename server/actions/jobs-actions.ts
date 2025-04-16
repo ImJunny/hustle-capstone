@@ -13,6 +13,7 @@ import { and, desc, eq, ne, or, sql } from "drizzle-orm";
 import { update } from "lodash";
 import { stripe } from "../lib/stripe-server";
 import { sendNotification } from "./notification-actions";
+import { sendPostMessage, sendTextMessage } from "./message-actions";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
@@ -749,5 +750,28 @@ export async function finalizeJob(initiated_uuid: string) {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to finalize job.");
+  }
+}
+
+// sends message about hiring service
+export async function hireService(
+  user_uuid: string,
+  job_uuid: string,
+  service_uuid: string,
+  message: string | undefined
+) {
+  try {
+    const worker_uuid = await db
+      .select({ worker_uuid: posts.user_uuid })
+      .from(posts)
+      .where(eq(posts.uuid, service_uuid))
+      .limit(1)
+      .then(([result]) => result.worker_uuid);
+
+    await sendPostMessage(user_uuid, [worker_uuid], job_uuid);
+    if (message) await sendTextMessage(user_uuid, worker_uuid, message);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to send message.");
   }
 }

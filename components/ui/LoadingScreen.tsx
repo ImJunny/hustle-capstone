@@ -35,7 +35,11 @@ export default function LoadingScreen({
         {header}
         <ScrollView
           refetch={refetch ? refetch : undefined}
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          contentContainerStyle={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Text>A problem occurred</Text>
         </ScrollView>

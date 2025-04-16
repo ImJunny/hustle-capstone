@@ -1,9 +1,10 @@
-import { StyleSheet, TouchableOpacity} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Text from "../ui/Text";
 import Icon from "../ui/Icon";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import View from "../ui/View";
+import Toast from "react-native-toast-message";
 
 export default function ExploreMiniHeader({
   filterSheetRef,
@@ -16,7 +17,10 @@ export default function ExploreMiniHeader({
   const borderColor = themeColor.border;
   return (
     <View style={[styles.container, { borderColor }]} color="background">
-      <TouchableOpacity style={styles.entry}>
+      <TouchableOpacity
+        style={styles.entry}
+        onPress={() => Toast.show({ text1: "To be implemented" })}
+      >
         <Icon name="heart-outline" size="lg" />
         <Text size="lg" weight="semibold">
           Save this search

@@ -215,7 +215,28 @@ export default function TrackHiringDetailsScreen() {
             <Text size="lg" weight="semibold">
               Job location
             </Text>
-            <Text color="muted">Location is hidden until you are approved</Text>
+            {data?.worker_data && (
+              <Text color="muted">
+                Location is hidden until someone is approved
+              </Text>
+            )}
+
+            {!data?.address ? (
+              <View>
+                <Text>Remote</Text>
+              </View>
+            ) : (
+              <View>
+                <Text>{(data.address as any).address_line_1}</Text>
+                {(data.address as any).address_line_2 && (
+                  <Text>{(data.address as any).address_line_2}</Text>
+                )}
+                <Text>
+                  {(data.address as any).city}, {(data.address as any).state},{" "}
+                  {(data.address as any).zip_code}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 

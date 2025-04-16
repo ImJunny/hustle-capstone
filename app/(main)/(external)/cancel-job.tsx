@@ -86,7 +86,7 @@ export default function CancelJobScreen() {
   return (
     <>
       <SimpleHeader title="Cancel job" />
-      <ScrollView style={styles.page} color="background">
+      <ScrollView contentContainerStyle={styles.page} color="background">
         <View color="background">
           <Text weight="semibold" size="lg">
             Cancellation

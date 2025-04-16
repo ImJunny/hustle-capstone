@@ -36,7 +36,7 @@ const Feed = <T extends { uuid: string }>({
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      bounces={false}
+      bounces={true}
       data={data}
       renderItem={({ item }) => (
         <HomePost data={item as unknown as THomePost} />

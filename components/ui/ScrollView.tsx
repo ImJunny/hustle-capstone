@@ -39,7 +39,7 @@ const ScrollView = forwardRef<NativeScrollView, ScrollViewProps>(
       <NativeScrollView
         ref={ref}
         style={[{ backgroundColor }, style]}
-        bounces={bounces}
+        bounces={true}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         showsHorizontalScrollIndicator={false}
         refreshControl={

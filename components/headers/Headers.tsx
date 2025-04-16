@@ -318,7 +318,11 @@ export function SearchingHeader() {
               onSubmitEditing={handleSearch}
               autoCapitalize="none"
             />
-            <IconButton name="ellipsis-vertical" size="xl" />
+            <IconButton
+              name="ellipsis-vertical"
+              size="xl"
+              onPress={() => Toast.show({ text1: "To be implemented" })}
+            />
           </View>
         ),
       }}

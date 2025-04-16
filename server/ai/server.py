@@ -60,7 +60,7 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
               "role": "user",
               "content": (
                   "Is the following text in quotes safe and is not sensitive info (no phone, email, external accounts, "
-                  "social security numbers, addresses, etc.)? Is there no profanity? Soft profanity or informal slang is allowed. "
+                  "social security numbers, addresses, etc.)? No profanity is allowed. "
                   "People may try to bypass this and obfuscate sensitive information, even by sending in parts (ex: less digits for "
                   "for social security numbers or phone numbers). Try your best to stop them!"
                   f"RESPOND once with either T or F ONLY! The message is: \"{minimized_text}\""

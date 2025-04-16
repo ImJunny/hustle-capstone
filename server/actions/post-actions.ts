@@ -161,7 +161,8 @@ export async function updatePost(
 // Get user job posts; can pass in optional type, otherwise all
 export async function getUserPosts(
   uuid: string,
-  geocode: [number, number] | undefined
+  geocode: [number, number] | undefined,
+  type?: "work" | "hire"
 ) {
   try {
     let result = await db
@@ -175,23 +176,23 @@ export async function getUserPosts(
         location_type: posts.location_type,
         image_url: sql<string | null>`MIN(${post_images.image_url})`,
         tags: sql<string[]>`(
-        SELECT ARRAY_AGG(${post_tags.tag_type})
-        FROM ${post_tags}
-        WHERE ${post_tags.post_uuid} = ${posts.uuid}
+      SELECT ARRAY_AGG(${post_tags.tag_type})
+      FROM ${post_tags}
+      WHERE ${post_tags.post_uuid} = ${posts.uuid}
       )`,
         avg_rating: sql<number | null>`(
-        SELECT AVG(${reviews}.rating)
-        FROM ${reviews}
-        INNER JOIN ${initiated_jobs}
-        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
-        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      SELECT AVG(${reviews}.rating)
+      FROM ${reviews}
+      INNER JOIN ${initiated_jobs}
+      ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+      WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
         review_count: sql<number>`(
-        SELECT COUNT(*)
-        FROM ${reviews}
-        INNER JOIN ${initiated_jobs}
-        ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
-        WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
+      SELECT COUNT(*)
+      FROM ${reviews}
+      INNER JOIN ${initiated_jobs}
+      ON ${reviews.initiated_job_uuid} = ${initiated_jobs.uuid}
+      WHERE ${initiated_jobs.linked_service_post_uuid} = ${posts.uuid}
       )`,
         distance: geocode
           ? sql`ST_Distance(addresses.location::geometry::geography, ST_SetSRID(ST_MakePoint(${geocode[0]}, ${geocode[1]}), 4326)::geometry::geography) * 0.000621371`
@@ -201,7 +202,13 @@ export async function getUserPosts(
       .leftJoin(post_tags, eq(post_tags.post_uuid, posts.uuid))
       .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
       .leftJoin(addresses, eq(posts.address_uuid, addresses.uuid))
-      .where(and(eq(posts.user_uuid, uuid), ne(posts.status_type, "deleted")))
+      .where(
+        and(
+          eq(posts.user_uuid, uuid),
+          ne(posts.status_type, "deleted"),
+          type ? eq(posts.type, type) : sql`TRUE`
+        )
+      )
       .groupBy(posts.uuid, addresses.location)
       .orderBy(desc(posts.created_at));
 

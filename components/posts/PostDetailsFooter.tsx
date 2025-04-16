@@ -49,14 +49,14 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
       return (
         <Skeleton show={isLoading}>
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <Button
+            {/* <Button
               style={{ marginLeft: "auto" }}
               type="outline"
               borderColor="foreground"
               onPress={() => router.push(`/track/working/${data.uuid}` as any)}
             >
               Make offer
-            </Button>
+            </Button> */}
             <Button
               style={{ marginLeft: "auto" }}
               onPress={() => {
@@ -74,7 +74,9 @@ export default function PostDetailsFooter({ data }: { data: PostDetailsInfo }) {
           <Button
             style={{ marginLeft: "auto" }}
             borderColor="foreground"
-            onPress={() => {}}
+            onPress={() => {
+              router.push(`/hire-service/${data.uuid}` as any);
+            }}
           >
             Hire service
           </Button>

@@ -114,7 +114,7 @@ export async function acceptJob(
       .from(posts)
       .where(eq(posts.uuid, job_post_uuid))
       .then(([result]) => result.user_uuid);
-    await sendNotification(employer_uuid, "accepted", user_uuid);
+    await sendNotification(employer_uuid, "job_accepted", user_uuid);
   } catch (error) {
     console.log(error);
     if (error instanceof Error && error.message === "already_accepted")
@@ -499,13 +499,13 @@ export async function cancelJob(
     const worker_uuid = initiatedData.worker_uuid;
     await sendNotification(
       employer_uuid,
-      "cancelled",
+      "job_cancelled",
       user_uuid,
       initiatedData.post_uuid
     );
     await sendNotification(
       worker_uuid,
-      "cancelled",
+      "job_cancelled",
       user_uuid,
       initiatedData.post_uuid
     );
@@ -597,7 +597,7 @@ export async function approveJob(
       .where(eq(initiated_jobs.uuid, initiated_uuid));
 
     // notify worker of approval
-    await sendNotification(worker_uuid, "approved", user_uuid, post_uuid);
+    await sendNotification(worker_uuid, "job_approved", user_uuid, post_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to approve job.");
@@ -636,7 +636,7 @@ export async function startJob(initiated_uuid: string) {
 
     await sendNotification(
       employer_uuid,
-      "in_progress",
+      "job_in_progress",
       initiatedData.worker_uuid,
       initiatedData.post_uuid
     );
@@ -678,7 +678,7 @@ export async function completeJob(initiated_uuid: string) {
 
     await sendNotification(
       employer_uuid,
-      "complete",
+      "job_complete",
       initiatedData.worker_uuid,
       initiatedData.post_uuid
     );
@@ -745,7 +745,7 @@ export async function finalizeJob(initiated_uuid: string) {
       .returning({ post_uuid: posts.uuid })
       .then(([result]) => result.post_uuid);
 
-    await sendNotification(worker_uuid, "paid", employer_uuid, post_uuid);
+    await sendNotification(worker_uuid, "job_paid", employer_uuid, post_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to finalize job.");

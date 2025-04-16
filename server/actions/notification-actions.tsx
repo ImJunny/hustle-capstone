@@ -10,27 +10,27 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { sendEmail } from "./email-actions";
 
 const notification_titles = {
-  accepted: (username: string) => ({
+  job_accepted: (username: string) => ({
     title: `Job accepted by @${username}!`,
     description: "Open Hustle to view more.",
   }), // for hirer
-  approved: (username: string) => ({
+  job_approved: (username: string) => ({
     title: `Job approved by @${username}!`,
     description: "Open Hustle to view more.",
   }), // for worker
-  in_progress: (username: string) => ({
+  job_in_progress: (username: string) => ({
     title: `Job by @${username} in progress!`,
     description: "Open Hustle to view more.",
   }), // for hirer
-  complete: (username: string) => ({
+  job_complete: (username: string) => ({
     title: `Job by @${username} completed!`,
     description: "Open Hustle to view more.",
   }), // for hirer
-  paid: (username: string) => ({
+  job_paid: (username: string) => ({
     title: `@${username} paid you!`,
     description: "Open Hustle to view more.",
   }), // for worker
-  cancelled: (username: string) => ({
+  job_cancelled: (username: string) => ({
     title: `Job cancelled.`,
     description: "Open Hustle to view more.",
   }), // for hirer or worker
@@ -43,6 +43,18 @@ export async function sendNotification(
   post_uuid?: string
 ) {
   try {
+    const is_disabled_notif_type = await db
+      .select()
+      .from(disabled_notifications)
+      .where(
+        and(
+          eq(disabled_notifications.user_uuid, user_uuid),
+          eq(disabled_notifications.notification_type, type)
+        )
+      )
+      .then((result) => result.length > 0);
+    if (is_disabled_notif_type) return;
+
     const username = await db
       .select({ username: users.username })
       .from(users)

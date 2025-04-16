@@ -6,14 +6,18 @@ import { StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import Icon from "@/components/ui/Icon";
 import SafeAreaView from "@/components/ui/SafeAreaView";
+import { useAuthData } from "@/contexts/AuthContext";
 
 export default function LocationPrompt() {
+  const { setGeocode } = useAuthData();
+
   async function getCurrentLocation() {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      router.push("/(main)/(tabs)");
-      return;
+    if (status == "granted") {
+      const location = await Location.getCurrentPositionAsync({});
+      setGeocode([location.coords.latitude, location.coords.longitude]);
     }
+    router.push("/(main)/(tabs)");
   }
 
   return (

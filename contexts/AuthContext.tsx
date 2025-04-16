@@ -1,6 +1,13 @@
 import { supabase } from "@/server/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { AppState } from "react-native";
 import * as Location from "expo-location";
 
@@ -8,7 +15,8 @@ const AuthContext = createContext<{
   session: Session | null;
   user: User | null;
   geocode: [number, number] | null;
-}>({ session: null, user: null, geocode: null });
+  setGeocode: Dispatch<SetStateAction<[number, number] | null>>;
+}>({ session: null, user: null, geocode: null, setGeocode: () => {} });
 
 export function useAuthData() {
   return useContext(AuthContext);
@@ -29,14 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") setGeocode(null);
-      const location = await Location.getCurrentPositionAsync({});
-      setGeocode([location.coords.latitude, location.coords.longitude]);
-      // console.log("test", [
-      //   location.coords.latitude,
-      //   location.coords.longitude,
-      // ]);
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status === "granted") {
+        const location = await Location.getCurrentPositionAsync({});
+        setGeocode([location.coords.latitude, location.coords.longitude]);
+        return location;
+      } else {
+        return null;
+      }
     })();
   }, []);
 
@@ -64,6 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const value = { session, user, geocode };
+  const value = { session, user, geocode, setGeocode };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

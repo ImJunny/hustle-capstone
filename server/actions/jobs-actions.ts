@@ -1,6 +1,7 @@
 import { ServiceFee } from "@/constants/Rates";
 import { db } from "@/drizzle/db";
 import {
+  addresses,
   initiated_jobs,
   job_cancellations,
   payments,
@@ -10,7 +11,6 @@ import {
   users,
 } from "@/drizzle/schema";
 import { and, desc, eq, ne, or, sql } from "drizzle-orm";
-import { update } from "lodash";
 import { stripe } from "../lib/stripe-server";
 import { sendNotification } from "./notification-actions";
 import { sendPostMessage, sendTextMessage } from "./message-actions";
@@ -217,6 +217,27 @@ export async function getTrackWorkingDetails(
         FROM ${reviews}
         WHERE ${reviews.reviewee_uuid} = ${users.uuid}
       )`,
+        address: sql`(
+          SELECT json_build_object(
+            'title', ${addresses.title},
+            'address_line_1', ${addresses.address_line_1},
+            'address_line_2', ${addresses.address_line_2},
+            'city', ${addresses.city},
+            'state', ${addresses.state},
+            'country', ${addresses.country},
+            'zip_code', ${addresses.zip_code},
+            'location', ${addresses.location}
+          )
+          FROM ${addresses}
+          WHERE ${addresses.uuid} = ${posts.address_uuid}
+          AND NOT EXISTS (
+            SELECT 1
+            FROM ${initiated_jobs}
+            WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+            AND (${initiated_jobs.progress_type} = 'accepted' AND ${initiated_jobs.progress_type} = 'closed')
+          )
+          LIMIT 1
+        )`,
       })
       .from(initiated_jobs)
       .innerJoin(
@@ -229,6 +250,7 @@ export async function getTrackWorkingDetails(
       )
       .innerJoin(users, eq(posts.user_uuid, users.uuid))
       .limit(1);
+
     if (result.length > 0) return result[0];
     else return null;
   } catch (error) {
@@ -260,6 +282,21 @@ export async function getTrackHiringDetails(
       FROM ${initiated_jobs}
       WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
       AND ${initiated_jobs.progress_type} = 'accepted'
+      LIMIT 1
+      )`,
+        address: sql`(
+      SELECT json_build_object(
+      'title', ${addresses.title},
+      'address_line_1', ${addresses.address_line_1},
+      'address_line_2', ${addresses.address_line_2},
+      'city', ${addresses.city},
+      'state', ${addresses.state},
+      'country', ${addresses.country},
+      'zip_code', ${addresses.zip_code},
+      'location', ${addresses.location}
+      )
+      FROM ${addresses}
+      WHERE ${addresses.uuid} = ${posts.address_uuid}
       LIMIT 1
       )`,
       })
@@ -294,7 +331,8 @@ export async function getTrackHiringDetails(
         initiated_jobs,
         and(
           eq(initiated_jobs.worker_uuid, users.uuid),
-          ne(initiated_jobs.progress_type, "accepted")
+          ne(initiated_jobs.progress_type, "accepted"),
+          ne(initiated_jobs.progress_type, "closed")
         )
       )
       .where(eq(initiated_jobs.job_post_uuid, job_post_uuid))

@@ -1,6 +1,5 @@
 import Text from "@/components/ui/Text";
 import View from "@/components/ui/View";
-import React, { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SimpleHeader } from "@/components/headers/Headers";
 import ScrollView from "@/components/ui/ScrollView";
@@ -98,7 +97,6 @@ export default function TrackWorkingDetailsScreen() {
       />
     );
   }
-
   // Actual render
   return (
     <>
@@ -208,7 +206,32 @@ export default function TrackWorkingDetailsScreen() {
             <Text size="lg" weight="semibold">
               Job location
             </Text>
-            <Text color="muted">Location is hidden until you are approved</Text>
+            {(data?.progress == "accepted" || data?.progress == "closed") && (
+              <Text color="muted">
+                Location is hidden until you are approved
+              </Text>
+            )}
+
+            {data?.progress != "accepted" &&
+            data?.progress != "closed" &&
+            !data?.address ? (
+              <View>
+                <Text>Remote</Text>
+              </View>
+            ) : data?.progress != "accepted" &&
+              data?.progress != "closed" &&
+              data?.address ? (
+              <View>
+                <Text>{(data.address as any).address_line_1}</Text>
+                {(data.address as any).address_line_2 && (
+                  <Text>{(data.address as any).address_line_2}</Text>
+                )}
+                <Text>
+                  {(data.address as any).city}, {(data.address as any).state},{" "}
+                  {(data.address as any).zip_code}
+                </Text>
+              </View>
+            ) : null}
           </View>
         </View>
 

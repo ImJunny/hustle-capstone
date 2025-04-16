@@ -79,7 +79,7 @@ export default function PostScreen() {
     showLike.value = 1;
     setTimeout(() => {
       showLike.value = 0;
-    }, 850);
+    }, 720);
 
     const newIsSaved = !isSaved;
     newIsSaved ? savePost(uuid) : unsavePost(uuid);

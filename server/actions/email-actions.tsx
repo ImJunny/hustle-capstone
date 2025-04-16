@@ -1,8 +1,8 @@
 import Text from "@/components/ui/Text";
 import { db } from "@/drizzle/db";
-import { notifications, users } from "@/drizzle/schema";
+import { users } from "@/drizzle/schema";
 import { Html } from "@react-email/components";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.EXPO_PUBLIC_RESEND_API_KEY);

@@ -107,6 +107,14 @@ export async function acceptJob(
       worker_uuid: user_uuid,
       progress_type: "accepted",
     });
+
+    //notify employer
+    const employer_uuid = await db
+      .select({ user_uuid: posts.user_uuid })
+      .from(posts)
+      .where(eq(posts.uuid, job_post_uuid))
+      .then(([result]) => result.user_uuid);
+    await sendNotification(employer_uuid, "accepted", user_uuid);
   } catch (error) {
     console.log(error);
     if (error instanceof Error && error.message === "already_accepted")
@@ -234,92 +242,71 @@ export async function getTrackHiringDetails(
   job_post_uuid: string
 ) {
   try {
-    const data_with_user = await db
+    const base_data = await db
       .select({
-        accepted_count: sql`(
-        SELECT COUNT(*)
-        FROM ${initiated_jobs}
-        WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
-      )`,
         job_image_url: sql`(
-        SELECT ${post_images.image_url}
-        FROM ${post_images}
-        WHERE ${post_images.post_uuid} = ${posts.uuid}
-        ORDER BY ${post_images.image_url} ASC
-        LIMIT 1
+      SELECT ${post_images.image_url}
+      FROM ${post_images}
+      WHERE ${post_images.post_uuid} = ${posts.uuid}
+      ORDER BY ${post_images.image_url} ASC
+      LIMIT 1
       )`,
-        initiated_job_post_uuid: initiated_jobs.uuid,
         job_post_uuid: posts.uuid,
         title: posts.title,
         due_date: posts.due_date,
-        progress: initiated_jobs.progress_type,
-        accepted_rate: posts.min_rate,
-        user_username: users.username,
-        user_avatar_url: users.avatar_url,
-        user_uuid: users.uuid,
-        service_uuid: initiated_jobs.linked_service_post_uuid,
-        user_avg_rating: sql`(
-        SELECT AVG(${reviews.rating})
-        FROM ${reviews}
-        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
-      )`,
-        user_review_count: sql`(
-        SELECT COUNT(*)
-        FROM ${reviews}
-        WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+        accepted_rate: sql`(
+      SELECT ${initiated_jobs.rate}
+      FROM ${initiated_jobs}
+      WHERE ${initiated_jobs.job_post_uuid} = ${posts.uuid}
+      AND ${initiated_jobs.progress_type} = 'accepted'
+      LIMIT 1
       )`,
       })
-      .from(initiated_jobs)
-      .innerJoin(
-        posts,
-        and(
-          eq(initiated_jobs.job_post_uuid, posts.uuid),
-          eq(posts.uuid, job_post_uuid),
-          eq(posts.user_uuid, user_uuid),
-          ne(initiated_jobs.progress_type, "accepted"),
-          ne(initiated_jobs.progress_type, "closed")
-        )
-      )
-      .innerJoin(users, eq(initiated_jobs.worker_uuid, users.uuid))
+      .from(posts)
+      .leftJoin(post_images, eq(post_images.post_uuid, posts.uuid))
+      .where(and(eq(posts.uuid, job_post_uuid), eq(posts.user_uuid, user_uuid)))
       .limit(1)
       .then(([result]) => result);
 
-    // If no approved worker, check for unapproved workers
-    if (data_with_user) return { ...data_with_user, is_approved: true };
-    const data_without_user = await db
+    const worker_data = await db
       .select({
-        accepted_count: sql`(
-      SELECT COUNT(*)
-      FROM ${initiated_jobs}
-      WHERE ${initiated_jobs.job_post_uuid} = ${job_post_uuid}
+        username: users.username,
+        display_name: users.display_name,
+        avg_rating: sql<number>`(
+      SELECT AVG(${reviews.rating})
+      FROM ${reviews}
+      WHERE ${reviews.reviewee_uuid} = ${users.uuid}
       )`,
-        job_image_url: post_images.image_url,
-        job_post_uuid: posts.uuid,
-        title: posts.title,
-        due_date: posts.due_date,
-        accepted_rate: posts.min_rate,
+        review_count: sql<number>`(
+      SELECT COUNT(*)
+      FROM ${reviews}
+      WHERE ${reviews.reviewee_uuid} = ${users.uuid}
+      )`,
+        progress: initiated_jobs.progress_type,
+        service_uuid: initiated_jobs.linked_service_post_uuid,
+        initiated_uuid: initiated_jobs.uuid,
+        user_uuid: initiated_jobs.worker_uuid,
+        avatar_url: users.avatar_url,
       })
-      .from(posts)
-      .leftJoin(
-        post_images,
+      .from(users)
+      .innerJoin(
+        initiated_jobs,
         and(
-          eq(post_images.post_uuid, posts.uuid),
-          eq(
-            post_images.image_url,
-            sql`(
-        SELECT image_url
-        FROM ${post_images}
-        WHERE ${post_images.post_uuid} = ${posts.uuid}
-        ORDER BY ${post_images.image_url} ASC
-        LIMIT 1
-        )`
-          )
+          eq(initiated_jobs.worker_uuid, users.uuid),
+          ne(initiated_jobs.progress_type, "accepted")
         )
       )
-      .where(eq(posts.uuid, job_post_uuid))
+      .where(eq(initiated_jobs.job_post_uuid, job_post_uuid))
       .limit(1)
-      .then(([result]) => result);
-    return { ...data_without_user, is_approved: false };
+      .then((results) => (results.length > 0 ? results[0] : null));
+
+    const accepted_count = (await db
+      .select({ accepted_count: sql`COUNT(*)` })
+      .from(initiated_jobs)
+      .where(eq(initiated_jobs.job_post_uuid, job_post_uuid))
+      .then(([result]) => result.accepted_count)) as number;
+
+    return { ...base_data, accepted_count, worker_data };
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get job tracking details");
@@ -458,69 +445,6 @@ export async function getAcceptedUsers(job_post_uuid: string) {
 }
 export type AcceptedUser = Awaited<ReturnType<typeof getAcceptedUsers>>[number];
 
-// UPDATE JOB PROGRESS from CURRENT PROGRESS
-export async function updateJobProgress(
-  uuid: string,
-  progress: "accepted" | "approved" | "in progress" | "complete" | "paid"
-) {
-  try {
-    const progressOrder = [
-      "accepted",
-      "approved",
-      "in progress",
-      "complete",
-      "paid",
-    ];
-    const currentIndex = progressOrder.indexOf(progress);
-    if (currentIndex === -1 || currentIndex === progressOrder.length - 1) {
-      throw new Error("Invalid or final progress type.");
-    }
-
-    const postUuid = await db
-      .select({ post_uuid: initiated_jobs.job_post_uuid })
-      .from(initiated_jobs)
-      .where(eq(initiated_jobs.uuid, uuid))
-      .then(([result]) => result.post_uuid);
-
-    // If accepted->approved, close other initiated and mark
-    // post as in progress; should notify users it is closed
-    console.log(uuid);
-    if (progress === "accepted") {
-      await db
-        .update(initiated_jobs)
-        .set({
-          progress_type: "closed",
-        })
-        .where(
-          and(
-            eq(initiated_jobs.job_post_uuid, postUuid),
-
-            ne(initiated_jobs.uuid, uuid)
-          )
-        );
-
-      await db
-        .update(posts)
-        .set({
-          status_type: "in progress",
-        })
-        .where(eq(posts.uuid, postUuid));
-    }
-
-    const nextProgress = progressOrder[currentIndex + 1];
-
-    await db
-      .update(initiated_jobs)
-      .set({
-        progress_type: nextProgress,
-      })
-      .where(eq(initiated_jobs.uuid, uuid));
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to update progress.");
-  }
-}
-
 // CANCEL JOB for APPROVED job; refund pending payments,
 // make job available again, and make post status in progress->open
 export async function cancelJob(
@@ -542,18 +466,6 @@ export async function cancelJob(
       })
       .then(([result]) => result);
 
-    // is this needed?
-    await db
-      .update(initiated_jobs)
-      .set({
-        progress_type: "closed",
-      })
-      .where(
-        and(
-          eq(initiated_jobs.uuid, initiated_uuid),
-          ne(initiated_jobs.worker_uuid, initiatedData.worker_uuid)
-        )
-      );
     await db.insert(job_cancellations).values({
       job_uuid: initiated_uuid,
       user_uuid: user_uuid,
@@ -561,7 +473,7 @@ export async function cancelJob(
       details,
     });
 
-    // refund them
+    // refund
     await db
       .update(payments)
       .set({
@@ -570,16 +482,13 @@ export async function cancelJob(
       })
       .where(eq(payments.job_uuid, initiated_uuid));
 
+    // draft post
     await db
-      .update(initiated_jobs)
+      .update(posts)
       .set({
-        progress_type: "accepted",
+        status_type: "open",
       })
-      .where(eq(initiated_jobs.uuid, initiated_uuid));
-
-    await db.update(posts).set({
-      status_type: "open",
-    });
+      .where(eq(posts.uuid, initiatedData.post_uuid));
   } catch (error) {
     console.error(error);
     throw new Error("Failed to cancel job.");
@@ -641,13 +550,68 @@ export async function approveJob(
       type: "income",
     });
 
-    await updateJobProgress(initiated_uuid, progress);
+    // update rows after approval
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "closed",
+      })
+      .where(
+        and(
+          eq(initiated_jobs.job_post_uuid, post_uuid),
+          ne(initiated_jobs.uuid, initiated_uuid)
+        )
+      );
+
+    await db
+      .update(posts)
+      .set({
+        status_type: "in progress",
+      })
+      .where(eq(posts.uuid, post_uuid));
+
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "approved",
+      })
+      .where(eq(initiated_jobs.uuid, initiated_uuid));
 
     // notify worker of approval
-    await sendNotification(user_uuid, "approved", extra_user_uuid);
+    // await sendNotification(user_uuid, "approved", extra_user_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to approve job.");
+  }
+}
+
+// worker approved->in progress
+export async function startJob(initiated_uuid: string) {
+  try {
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "in progress",
+      })
+      .where(and(eq(initiated_jobs.uuid, initiated_uuid)));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to start job.");
+  }
+}
+
+// worker in progress->complete
+export async function completeJob(initiated_uuid: string) {
+  try {
+    await db
+      .update(initiated_jobs)
+      .set({
+        progress_type: "complete",
+      })
+      .where(and(eq(initiated_jobs.uuid, initiated_uuid)));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to complete job.");
   }
 }
 

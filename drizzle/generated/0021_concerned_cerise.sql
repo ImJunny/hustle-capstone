@@ -1,0 +1,1 @@
+ALTER TABLE "app"."notifications" ADD COLUMN "created_at" timestamp DEFAULT now() NOT NULL;

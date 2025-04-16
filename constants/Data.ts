@@ -142,3 +142,12 @@ export const explore_categories = [
     image: require(`@/assets/images/explore/category-gaming.jpg`),
   },
 ];
+
+const notification_titles = {
+  accepted: (username: string) => `Job accepted by ${username}!`, //for hirer
+  approved: (username: string) => `Approved by ${username}!`, //for worker
+  in_progress: (username: string) => `Job by ${username} in progress!`, //for hirer
+  complete: (username: string) => `Job by ${username} completed!`, //for hirer
+  paid: (username: string) => `${username} paid you!`, //for worker
+  cancelled: (username: string) => `Job cancelled by ${username}.`, //for hirer or worker
+};

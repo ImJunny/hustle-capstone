@@ -12,6 +12,7 @@ import {
 import { and, desc, eq, ne, or, sql } from "drizzle-orm";
 import { update } from "lodash";
 import { stripe } from "../lib/stripe-server";
+import { sendNotification } from "./notification-actions";
 
 // Get job rate for unnaccepted OR accepted rate; unaccepted defaults to min, accepted defaults to initiated rate
 export async function getTransactionEstimate(
@@ -505,15 +506,6 @@ export async function updateJobProgress(
         })
         .where(eq(posts.uuid, postUuid));
     }
-    //If in progress->complete, mark post as complete
-    // if (progress === "in progress") {
-    //   await db
-    //     .update(posts)
-    //     .set({
-    //       status_type: "complete",
-    //     })
-    //     .where(eq(posts.uuid, postUuid));
-    // }
 
     const nextProgress = progressOrder[currentIndex + 1];
 
@@ -650,6 +642,9 @@ export async function approveJob(
     });
 
     await updateJobProgress(initiated_uuid, progress);
+
+    // notify worker of approval
+    await sendNotification(user_uuid, "approved", extra_user_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to approve job.");

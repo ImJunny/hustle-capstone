@@ -142,30 +142,3 @@ export const explore_categories = [
     image: require(`@/assets/images/explore/category-gaming.jpg`),
   },
 ];
-
-export const notification_titles = {
-  accepted: (username: string) => ({
-    title: `Job accepted by ${username}!`,
-    description: "Open Hustle to view more.",
-  }), // for hirer
-  approved: (username: string) => ({
-    title: `Approved by ${username}!`,
-    description: "Open Hustle to view more.",
-  }), // for worker
-  in_progress: (username: string) => ({
-    title: `Job by ${username} in progress!`,
-    description: "Open Hustle to view more.",
-  }), // for hirer
-  complete: (username: string) => ({
-    title: `Job by ${username} completed!`,
-    description: "Open Hustle to view more.",
-  }), // for hirer
-  paid: (username: string) => ({
-    title: `${username} paid you!`,
-    description: "Open Hustle to view more.",
-  }), // for worker
-  cancelled: (username: string) => ({
-    title: `Job cancelled by ${username}.`,
-    description: "Open Hustle to view more.",
-  }), // for hirer or worker
-};

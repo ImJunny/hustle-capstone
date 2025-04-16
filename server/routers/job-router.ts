@@ -128,13 +128,6 @@ export const jobRouter = createTRPCRouter({
     .input(
       z.object({
         initiated_uuid: z.string(),
-        progress: z.enum([
-          "accepted",
-          "approved",
-          "in progress",
-          "complete",
-          "paid",
-        ]),
         user_uuid: z.string(),
         payment_intent_id: z.string(),
       })
@@ -142,7 +135,6 @@ export const jobRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await approveJob(
         input.initiated_uuid,
-        input.progress,
         input.user_uuid,
         input.payment_intent_id
       );

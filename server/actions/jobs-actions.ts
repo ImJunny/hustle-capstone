@@ -489,6 +489,26 @@ export async function cancelJob(
         status_type: "open",
       })
       .where(eq(posts.uuid, initiatedData.post_uuid));
+
+    const employer_uuid = await db
+      .select({ user_uuid: posts.user_uuid })
+      .from(posts)
+      .where(eq(posts.uuid, initiatedData.post_uuid))
+      .then(([result]) => result.user_uuid);
+
+    const worker_uuid = initiatedData.worker_uuid;
+    await sendNotification(
+      employer_uuid,
+      "cancelled",
+      user_uuid,
+      initiatedData.post_uuid
+    );
+    await sendNotification(
+      worker_uuid,
+      "cancelled",
+      user_uuid,
+      initiatedData.post_uuid
+    );
   } catch (error) {
     console.error(error);
     throw new Error("Failed to cancel job.");
@@ -498,7 +518,6 @@ export async function cancelJob(
 // APPROVE JOB should make payment entry and update job progress
 export async function approveJob(
   initiated_uuid: string,
-  progress: "accepted" | "approved" | "in progress" | "complete" | "paid",
   user_uuid: string,
   payment_intent_id: string
 ) {
@@ -578,7 +597,7 @@ export async function approveJob(
       .where(eq(initiated_jobs.uuid, initiated_uuid));
 
     // notify worker of approval
-    // await sendNotification(user_uuid, "approved", extra_user_uuid);
+    await sendNotification(worker_uuid, "approved", user_uuid, post_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to approve job.");
@@ -588,12 +607,39 @@ export async function approveJob(
 // worker approved->in progress
 export async function startJob(initiated_uuid: string) {
   try {
-    await db
+    const initiatedData = await db
       .update(initiated_jobs)
       .set({
         progress_type: "in progress",
       })
-      .where(and(eq(initiated_jobs.uuid, initiated_uuid)));
+      .where(and(eq(initiated_jobs.uuid, initiated_uuid)))
+      .returning({
+        worker_uuid: initiated_jobs.worker_uuid,
+        post_uuid: initiated_jobs.job_post_uuid,
+      })
+      .then(([result]) => result);
+
+    const employer_uuid = await db
+      .select({ user_uuid: posts.user_uuid })
+      .from(posts)
+      .where(
+        eq(
+          posts.uuid,
+          await db
+            .select({ job_post_uuid: initiated_jobs.job_post_uuid })
+            .from(initiated_jobs)
+            .where(eq(initiated_jobs.uuid, initiated_uuid))
+            .then(([result]) => result.job_post_uuid)
+        )
+      )
+      .then(([result]) => result.user_uuid);
+
+    await sendNotification(
+      employer_uuid,
+      "in_progress",
+      initiatedData.worker_uuid,
+      initiatedData.post_uuid
+    );
   } catch (error) {
     console.error(error);
     throw new Error("Failed to start job.");
@@ -603,12 +649,39 @@ export async function startJob(initiated_uuid: string) {
 // worker in progress->complete
 export async function completeJob(initiated_uuid: string) {
   try {
-    await db
+    const initiatedData = await db
       .update(initiated_jobs)
       .set({
         progress_type: "complete",
       })
-      .where(and(eq(initiated_jobs.uuid, initiated_uuid)));
+      .where(and(eq(initiated_jobs.uuid, initiated_uuid)))
+      .returning({
+        worker_uuid: initiated_jobs.worker_uuid,
+        post_uuid: initiated_jobs.job_post_uuid,
+      })
+      .then(([result]) => result);
+
+    const employer_uuid = await db
+      .select({ user_uuid: posts.user_uuid })
+      .from(posts)
+      .where(
+        eq(
+          posts.uuid,
+          await db
+            .select({ job_post_uuid: initiated_jobs.job_post_uuid })
+            .from(initiated_jobs)
+            .where(eq(initiated_jobs.uuid, initiated_uuid))
+            .then(([result]) => result.job_post_uuid)
+        )
+      )
+      .then(([result]) => result.user_uuid);
+
+    await sendNotification(
+      employer_uuid,
+      "complete",
+      initiatedData.worker_uuid,
+      initiatedData.post_uuid
+    );
   } catch (error) {
     console.error(error);
     throw new Error("Failed to complete job.");
@@ -630,14 +703,31 @@ export async function finalizeJob(initiated_uuid: string) {
         )
       );
 
-    await db
+    const worker_uuid = await db
       .update(initiated_jobs)
       .set({
         progress_type: "paid",
       })
-      .where(eq(initiated_jobs.uuid, initiated_uuid));
+      .where(eq(initiated_jobs.uuid, initiated_uuid))
+      .returning({ worker_uuid: initiated_jobs.worker_uuid })
+      .then(([result]) => result.worker_uuid);
 
-    await db
+    const employer_uuid = await db
+      .select({ user_uuid: posts.user_uuid })
+      .from(posts)
+      .where(
+        eq(
+          posts.uuid,
+          await db
+            .select({ job_post_uuid: initiated_jobs.job_post_uuid })
+            .from(initiated_jobs)
+            .where(eq(initiated_jobs.uuid, initiated_uuid))
+            .then(([result]) => result.job_post_uuid)
+        )
+      )
+      .then(([result]) => result.user_uuid);
+
+    const post_uuid = await db
       .update(posts)
       .set({
         status_type: "complete",
@@ -651,7 +741,11 @@ export async function finalizeJob(initiated_uuid: string) {
             .where(eq(initiated_jobs.uuid, initiated_uuid))
             .then(([result]) => result.post_uuid)
         )
-      );
+      )
+      .returning({ post_uuid: posts.uuid })
+      .then(([result]) => result.post_uuid);
+
+    await sendNotification(worker_uuid, "paid", employer_uuid, post_uuid);
   } catch (error) {
     console.error(error);
     throw new Error("Failed to finalize job.");

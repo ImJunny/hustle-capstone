@@ -71,6 +71,7 @@ export function IndexHeader({ index, setIndex }: IndexHeaderProps) {
 }
 
 export function JobsCenterHeader() {
+  const handleRedirect = () => router.push("/notifications");
   return (
     <HeaderWrapper
       options={{
@@ -79,7 +80,13 @@ export function JobsCenterHeader() {
             Job Center
           </Text>
         ),
-        right: <IconButton name="notifications-outline" size="xl" />,
+        right: (
+          <IconButton
+            name="notifications-outline"
+            size="xl"
+            onPress={handleRedirect}
+          />
+        ),
       }}
     />
   );

@@ -59,15 +59,17 @@ export default function SettingsScreen() {
             </Text>
             <View style={{ gap: 10 }}>
               <SettingsEntry
-                name="notifications-outline"
-                title="Notifications"
-                onPress={() => {}}
-              />
-              <SettingsEntry
                 name="flag-outline"
                 title="Reported posts"
                 onPress={() => {
                   router.push("/reported-posts");
+                }}
+              />
+              <SettingsEntry
+                name="notifications-outline"
+                title="Notifications"
+                onPress={() => {
+                  router.push("/notifications-settings");
                 }}
               />
               <Logout />

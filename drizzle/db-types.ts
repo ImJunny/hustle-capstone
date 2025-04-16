@@ -70,4 +70,5 @@ export const notificationTypes = [
   "job_in_progress",
   "job_complete",
   "job_paid",
+  "job_cancelled",
 ] as const;

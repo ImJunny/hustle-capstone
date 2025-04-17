@@ -59,11 +59,10 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
           {
               "role": "user",
               "content": (
-                  "Is the following text in quotes safe and is not sensitive info (no phone, email, external accounts, "
-                  "social security numbers, addresses, etc.)? No profanity is allowed. "
-                  "People may try to bypass this and obfuscate sensitive information, even by sending in parts (ex: less digits for "
-                  "for social security numbers or phone numbers). Try your best to stop them!"
-                  f"RESPOND once with either T or F ONLY! The message is: \"{minimized_text}\""
+                  "Is the following text in quotes safe, does not profanity, and does NOT contain sensitive info (phone, email, external accounts, "
+                  "social security numbers, addresses, etc.)? People may try to bypass this and obfuscate sensitive information, even by sending in parts (ex: less digits for "
+                  "for social security numbers or phone numbers)."
+                  f"RESPOND once with only True (if it is safe) or False (if it is sensitive). The message is: \"{minimized_text}\"."
               ),
           }
       ],
@@ -71,8 +70,10 @@ def determinePostSafe(input_text: str = Query(..., description="Input string to 
   )
   
   response = chat_completion.choices[0].message.content.strip()
-  if response == "F": response = False
-  else: response = True
+  if response.startswith("F"): 
+      response = False
+  else: 
+      response = True
 
   print(response)
   return {

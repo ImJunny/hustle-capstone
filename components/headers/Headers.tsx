@@ -604,6 +604,7 @@ export function SingleMessageFooter({
     trpc.messages.send_text_message.useMutation({
       onSuccess: () => {
         utils.messages.get_message_previews.invalidate();
+        utils.user.get_share_users.invalidate();
       },
       onError: (error) => {
         Toast.show({
